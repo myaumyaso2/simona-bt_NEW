@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { MapPin, Phone, Send, Clock, ShieldCheck } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
+import { SimonaLogo } from '@/components/brand/SimonaLogo';
 
 export function Footer() {
   const { openModal } = useStore();
@@ -15,10 +16,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Col 1: Brand & Tagline */}
           <div className="lg:col-span-2">
-            <Link href="/" className="inline-block">
-              <span className="font-serif tracking-widest text-3xl font-light text-white hover:text-simona-teal transition-colors">
-                СИМОНА
-              </span>
+            <Link href="/" className="inline-block group">
+              <SimonaLogo variant="white" descriptor="bt_kitchens" size="lg" />
             </Link>
             <p className="mt-4 text-xs text-zinc-400 font-light max-w-sm leading-relaxed">
               Премиальный интернет-бутик и digital-витрина салонов встраиваемой бытовой техники в Нижнем Новгороде. Официальный партнер Miele, ASKO, Liebherr, SMEG, Bertazzoni, Falmec, OMOIKIRI.

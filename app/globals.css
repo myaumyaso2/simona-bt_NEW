@@ -5,6 +5,13 @@
 :root {
   --background: #0E1012;
   --foreground: #F4F5F7;
+  --simona-teal: #00979C;
+  --simona-teal-light: #00B5BA;
+  --simona-teal-dark: #007484;
+  --simona-graphite: #263137;
+  --simona-slate: #717C83;
+  --simona-gold: #FDBF3E;
+  --simona-red: #A70725;
 }
 
 body {
@@ -30,12 +37,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00A896;
+  background: #00979C;
 }
 
 /* Selection highlight */
 ::selection {
-  background-color: rgba(0, 168, 150, 0.35);
+  background-color: rgba(0, 151, 156, 0.35);
   color: #FFFFFF;
 }
 
@@ -48,12 +55,12 @@ body {
 }
 
 .glass-panel-hover:hover {
-  border-color: rgba(0, 168, 150, 0.4);
+  border-color: rgba(0, 151, 156, 0.4);
 }
 
 /* Subtle glow effects */
 .glow-teal {
-  box-shadow: 0 0 35px -5px rgba(0, 168, 150, 0.25);
+  box-shadow: 0 0 35px -5px rgba(0, 151, 156, 0.25);
 }
 
 .glow-subtle {

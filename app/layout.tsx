@@ -1,10 +1,18 @@
 import type { Metadata } from 'next';
+import { Montserrat } from 'next/font/google';
 import './globals.css';
 import { StoreProvider } from '@/components/providers/StoreContext';
 import { UmbrellaBar } from '@/components/layout/UmbrellaBar';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { GlobalModalContainer } from '@/components/modals/GlobalModalContainer';
+
+const montserrat = Montserrat({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-montserrat',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'СИМОНА — Премиальная бытовая техника в Нижнем Новгороде | Miele, ASKO, Liebherr, SMEG',
@@ -26,8 +34,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className="scroll-smooth">
-      <body className="bg-[#0E1012] text-[#F4F5F7] min-h-screen flex flex-col antialiased selection:bg-simona-teal/30 selection:text-white">
+    <html lang="ru" className={`scroll-smooth ${montserrat.variable}`}>
+      <body className="bg-[#0E1012] text-[#F4F5F7] font-sans min-h-screen flex flex-col antialiased selection:bg-simona-teal/30 selection:text-white">
         <StoreProvider>
           <UmbrellaBar />
           <Header />

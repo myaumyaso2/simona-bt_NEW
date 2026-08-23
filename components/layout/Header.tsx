@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, ShoppingBag, Menu, X, Sparkles, ChevronDown } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
+import { SimonaLogo } from '@/components/brand/SimonaLogo';
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -29,13 +30,8 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-baseline space-x-3 group">
-            <span className="font-serif tracking-widest text-2xl sm:text-3xl font-light text-white group-hover:text-simona-teal transition-colors">
-              СИМОНА
-            </span>
-            <span className="hidden sm:inline-block text-[10px] tracking-[0.25em] uppercase text-zinc-400 border-l border-zinc-700 pl-3">
-              PREMIUM APPLIANCES
-            </span>
+          <Link href="/" className="group flex items-center">
+            <SimonaLogo variant="white" descriptor="bt" size="md" />
           </Link>
 
           {/* Desktop Nav */}
