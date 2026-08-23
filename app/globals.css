@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0E1012;
+  --foreground: #F4F5F7;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  overflow-x: hidden;
+}
+
+/* Custom quiet luxury scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111315;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #252A30;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00A896;
+}
+
+/* Selection highlight */
+::selection {
+  background-color: rgba(0, 168, 150, 0.35);
+  color: #FFFFFF;
+}
+
+/* Smooth glassmorphism */
+.glass-panel {
+  background: rgba(22, 25, 29, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(0, 168, 150, 0.4);
+}
+
+/* Subtle glow effects */
+.glow-teal {
+  box-shadow: 0 0 35px -5px rgba(0, 168, 150, 0.25);
+}
+
+.glow-subtle {
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7);
+}
