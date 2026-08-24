@@ -10,6 +10,7 @@ import { B2BClubSection } from '@/components/sections/B2BClubSection';
 import { ServiceContour } from '@/components/sections/ServiceContour';
 import { LiveContentWidget } from '@/components/sections/LiveContentWidget';
 import { ShowroomsSection } from '@/components/sections/ShowroomsSection';
+import { ShowroomGallerySection } from '@/components/sections/ShowroomGallerySection';
 import { ProductItem } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -73,6 +74,9 @@ export default async function HomePage() {
 
       {/* 10. Презентация салонов на ул. Белинского */}
       <ShowroomsSection />
+
+      {/* 11. Официальная фотогалерея флагманского салона на Белинского, 15 */}
+      <ShowroomGallerySection />
     </div>
   );
 }

@@ -15,12 +15,12 @@ export function HeroSection() {
       {/* Official Brandbook Pattern Background (Nodes 1236:59605 & 2103:2483) */}
       <SimonaPatternOverlay variant="teal" opacity={0.05} />
 
-      {/* Ambient Light Visual Backing */}
+      {/* Ambient Light Visual Backing with Real Salon Photo */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-[0.06] scale-105 transition-transform duration-1000"
+          className="absolute inset-0 bg-cover bg-center opacity-[0.08] scale-105 transition-transform duration-1000"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=85')`,
+            backgroundImage: `url('/showrooms/belinskogo-15/salon_01.jpg')`,
           }}
         />
         {/* Soft Radial Ambient Spotlight */}

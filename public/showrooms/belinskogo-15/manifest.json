@@ -1,0 +1,62 @@
+[
+  {
+    "src": "/showrooms/belinskogo-15/salon_01.jpg",
+    "caption": "Флагманский салон на Белинского, 15: общая экспозиция",
+    "category": "showrooms"
+  },
+  {
+    "src": "/showrooms/belinskogo-15/salon_02.jpg",
+    "caption": "Зона премиальной встраиваемой техники",
+    "category": "showrooms"
+  },
+  {
+    "src": "/showrooms/belinskogo-15/active_kitchen_01.jpg",
+    "caption": "Активная кухня: остров Miele & ASKO",
+    "category": "active_kitchen"
+  },
+  {
+    "src": "/showrooms/belinskogo-15/active_kitchen_02.jpg",
+    "caption": "Шеф-зона и дегустационный стол",
+    "category": "active_kitchen"
+  },
+  {
+    "src": "/showrooms/belinskogo-15/miele_zone_01.jpg",
+    "caption": "Флагманская бренд-зона Miele",
+    "category": "brands"
+  },
+  {
+    "src": "/showrooms/belinskogo-15/asko_zone_01.jpg",
+    "caption": "Бренд-зона ASKO: скандинавский дизайн",
+    "category": "brands"
+  },
+  {
+    "src": "/showrooms/belinskogo-15/smeg_zone_01.jpg",
+    "caption": "Экспозиция SMEG: итальянская эстетика",
+    "category": "brands"
+  },
+  {
+    "src": "/showrooms/belinskogo-15/wine_storage_01.jpg",
+    "caption": "Премиальные винные шкафы Liebherr",
+    "category": "brands"
+  },
+  {
+    "src": "/showrooms/belinskogo-15/lounge_01.jpg",
+    "caption": "Лаунж-переговорная для дизайнеров и архитекторов",
+    "category": "showrooms"
+  },
+  {
+    "src": "/showrooms/belinskogo-15/coffee_corner_01.jpg",
+    "caption": "Кофейная станция и дегустация сортов",
+    "category": "showrooms"
+  },
+  {
+    "src": "/showrooms/belinskogo-15/details_01.jpg",
+    "caption": "Тактильные переключатели и премиальные материалы",
+    "category": "showrooms"
+  },
+  {
+    "src": "/showrooms/belinskogo-15/details_02.jpg",
+    "caption": "Инженерная интеграция и схемы встройки",
+    "category": "showrooms"
+  }
+]

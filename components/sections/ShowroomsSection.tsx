@@ -22,7 +22,7 @@ const SHOWROOMS = [
       'Лаунж-переговорная для дизайнеров',
       'Бесплатная закрытая парковка для гостей',
     ],
-    image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80',
+    image: '/showrooms/belinskogo-15/salon_01.jpg',
     mapQuery: 'Нижний Новгород, улица Белинского, 15',
   },
   {

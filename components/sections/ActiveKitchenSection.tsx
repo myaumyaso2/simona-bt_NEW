@@ -45,7 +45,7 @@ export function ActiveKitchenSection() {
                 <div
                   className="h-[480px] bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
                   style={{
-                    backgroundImage: `url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80')`,
+                    backgroundImage: `url('/showrooms/belinskogo-15/active_kitchen_01.jpg')`,
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />

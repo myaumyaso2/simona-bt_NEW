@@ -63,6 +63,9 @@ export function Header() {
             <Link href="#showrooms" className="hover:text-simona-teal transition-colors">
               Салоны
             </Link>
+            <Link href="#gallery" className="hover:text-simona-teal transition-colors">
+              Галерея
+            </Link>
           </nav>
 
           {/* Actions: Search, Cart, CTA */}
@@ -164,6 +167,13 @@ export function Header() {
               className="block text-sm font-medium text-[#16181B] hover:text-simona-teal"
             >
               Салоны на ул. Белинского
+            </Link>
+            <Link
+              href="#gallery"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-[#16181B] hover:text-simona-teal"
+            >
+              Фотогалерея интерьеров
             </Link>
 
             <div className="pt-3 flex flex-col gap-2">
