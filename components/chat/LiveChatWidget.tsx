@@ -77,7 +77,7 @@ export function LiveChatWidget() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="relative group p-4 rounded-full bg-simona-teal hover:bg-simona-teal-light text-white shadow-2xl shadow-simona-teal/40 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center"
+          className="relative group p-4 rounded-full bg-simona-teal hover:bg-simona-teal-hover text-white shadow-2xl shadow-simona-teal/40 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center"
           aria-label="Онлайн-чат с экспертом СИМОНА"
         >
           <span className="absolute top-0 right-0 -mr-1 -mt-1 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-[#0E1012] animate-pulse" />
@@ -95,7 +95,7 @@ export function LiveChatWidget() {
           <div className="p-4 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="relative">
-                <div className="w-9 h-9 rounded-full bg-simona-teal/20 text-simona-teal font-serif text-sm font-bold flex items-center justify-center border border-simona-teal/40">
+                <div className="w-9 h-9 rounded-full bg-simona-teal/20 text-simona-teal font-montserrat font-bold text-sm font-bold flex items-center justify-center border border-simona-teal/40">
                   С
                 </div>
                 <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-zinc-900" />
@@ -157,7 +157,7 @@ export function LiveChatWidget() {
                   />
                   <button
                     type="submit"
-                    className="px-3 py-1.5 rounded bg-simona-teal hover:bg-simona-teal-light text-white text-[11px] font-semibold"
+                    className="px-3 py-1.5 rounded bg-simona-teal hover:bg-simona-teal-hover text-white text-[11px] font-semibold"
                   >
                     OK
                   </button>
@@ -182,7 +182,7 @@ export function LiveChatWidget() {
             />
             <button
               type="submit"
-              className="p-2 rounded-lg bg-simona-teal hover:bg-simona-teal-light text-white transition disabled:opacity-50"
+              className="p-2 rounded-lg bg-simona-teal hover:bg-simona-teal-hover text-white transition disabled:opacity-50"
               disabled={!inputText.trim()}
             >
               <Send className="w-4 h-4" />

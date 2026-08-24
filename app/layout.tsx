@@ -35,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" className={`scroll-smooth ${montserrat.variable}`}>
-      <body className="bg-[#0E1012] text-[#F4F5F7] font-sans min-h-screen flex flex-col antialiased selection:bg-simona-teal/30 selection:text-white">
+      <body className="bg-white text-[#16181B] font-sans min-h-screen flex flex-col antialiased selection:bg-simona-teal/20 selection:text-[#16181B]">
         <StoreProvider>
           <UmbrellaBar />
           <Header />

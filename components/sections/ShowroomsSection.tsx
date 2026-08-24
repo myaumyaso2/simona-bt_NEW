@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
-import { MapPin, Phone, Clock, Navigation, Sparkles, Flame, CheckCircle2 } from 'lucide-react';
+import { MapPin, Phone, Clock, Navigation, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
+import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
+import { SimonaIconChef } from '@/components/brand/SimonaIcons';
 
 const SHOWROOMS = [
   {
@@ -47,17 +49,20 @@ export function ShowroomsSection() {
   const { openModal } = useStore();
 
   return (
-    <section id="showrooms" className="py-24 bg-[#0E1012] border-t border-zinc-900 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="showrooms" className="py-24 md:py-32 bg-[#F8F9FA] border-t border-black/[0.06] relative overflow-hidden">
+      {/* Official Brandbook Pattern Background */}
+      <SimonaPatternOverlay variant="subtle" opacity={0.035} />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-simona-teal mb-3">
+          <div className="text-xs font-bold uppercase tracking-[0.2em] text-simona-teal mb-3">
             Офлайн-пространства в Нижнем Новгороде
           </div>
-          <h2 className="text-3xl sm:text-4xl font-serif font-light text-white tracking-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-bold text-[#16181B] tracking-tight">
             2 салона на ул. Белинского
           </h2>
-          <p className="mt-4 text-sm text-zinc-400 font-light">
-            Приглашаем вас прикоснуться к премиальным материалам, оценить тактильность переключателей и насладиться чашкой кофе.
+          <p className="mt-4 text-sm text-[#6E7074] font-normal leading-relaxed">
+            Приглашаем вас прикоснуться к премиальным материалам, оценить тактильность переключателей и насладиться авторским кофе.
           </p>
         </div>
 
@@ -65,74 +70,79 @@ export function ShowroomsSection() {
           {SHOWROOMS.map((room) => (
             <div
               key={room.id}
-              className="rounded-2xl bg-zinc-900/60 border border-zinc-800/80 overflow-hidden flex flex-col justify-between hover:border-zinc-700 transition-all duration-300"
+              className="p-1.5 rounded-[2rem] bg-black/[0.02] ring-1 ring-black/[0.06] shadow-xl flex flex-col justify-between"
             >
-              <div>
-                <div className="relative aspect-[16/9] w-full overflow-hidden">
-                  <img
-                    src={room.image}
-                    alt={room.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 rounded-full bg-black/70 backdrop-blur-md text-xs font-semibold text-simona-teal border border-simona-teal/30">
-                      {room.badge}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-8">
-                  <h3 className="text-2xl font-serif text-white">{room.title}</h3>
-
-                  <div className="mt-4 space-y-2 text-xs text-zinc-300">
-                    <div className="flex items-center space-x-2.5">
-                      <MapPin className="w-4 h-4 text-simona-teal shrink-0" />
-                      <span>{room.address} <span className="text-zinc-500">({room.metro})</span></span>
-                    </div>
-                    <div className="flex items-center space-x-2.5">
-                      <Clock className="w-4 h-4 text-zinc-500 shrink-0" />
-                      <span>{room.hours}</span>
-                    </div>
-                    <div className="flex items-center space-x-2.5">
-                      <Phone className="w-4 h-4 text-simona-teal shrink-0" />
-                      <a href="tel:+78312170015" className="hover:text-simona-teal transition-colors font-medium">
-                        {room.phone}
-                      </a>
+              <div className="rounded-[calc(2rem-6px)] overflow-hidden bg-white shadow-sm border border-black/[0.03] h-full flex flex-col justify-between">
+                <div>
+                  <div className="relative aspect-[16/9] w-full overflow-hidden">
+                    <img
+                      src={room.image}
+                      alt={room.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute top-4 left-4">
+                      <span className="px-3.5 py-1 rounded-full bg-white/90 backdrop-blur-md text-xs font-bold text-simona-teal border border-simona-teal/30 shadow-md">
+                        {room.badge}
+                      </span>
                     </div>
                   </div>
 
-                  <p className="mt-5 text-xs sm:text-sm text-zinc-400 font-light leading-relaxed">
-                    {room.desc}
-                  </p>
+                  <div className="p-8">
+                    <h3 className="text-2xl font-montserrat font-bold text-[#16181B]">{room.title}</h3>
 
-                  <div className="mt-6 pt-5 border-t border-zinc-800 space-y-2">
-                    {room.highlights.map((h, i) => (
-                      <div key={i} className="flex items-center text-xs text-zinc-300 space-x-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-simona-teal shrink-0" />
-                        <span>{h}</span>
+                    <div className="mt-4 space-y-2 text-xs text-[#3E3D40]">
+                      <div className="flex items-center space-x-2.5">
+                        <MapPin className="w-4 h-4 text-simona-teal shrink-0" />
+                        <span>{room.address} <span className="text-[#87888A]">({room.metro})</span></span>
                       </div>
-                    ))}
+                      <div className="flex items-center space-x-2.5">
+                        <Clock className="w-4 h-4 text-[#87888A] shrink-0" />
+                        <span>{room.hours}</span>
+                      </div>
+                      <div className="flex items-center space-x-2.5">
+                        <Phone className="w-4 h-4 text-simona-teal shrink-0" />
+                        <a href="tel:+78312170015" className="hover:text-simona-teal transition-colors font-semibold text-[#16181B]">
+                          {room.phone}
+                        </a>
+                      </div>
+                    </div>
+
+                    <p className="mt-5 text-xs sm:text-sm text-[#6E7074] font-normal leading-relaxed">
+                      {room.desc}
+                    </p>
+
+                    <div className="mt-6 pt-5 border-t border-black/[0.06] space-y-2">
+                      {room.highlights.map((h, i) => (
+                        <div key={i} className="flex items-center text-xs text-[#3E3D40] font-medium space-x-2">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-simona-teal shrink-0" />
+                          <span>{h}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="p-8 pt-0 flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => openModal('SHOWROOM_VISIT', { preferredShowroom: room.id === 'belinskogo-15' ? 'Белинского, 15' : 'Белинского, 11/66' })}
-                  className="flex-1 py-3 px-4 rounded-lg bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-semibold uppercase tracking-wider transition text-center shadow-md shadow-simona-teal/20"
-                >
-                  Забронировать визит с экспертом
-                </button>
-                <a
-                  href={`https://yandex.ru/maps/?text=${encodeURIComponent(room.mapQuery)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="py-3 px-4 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium transition flex items-center justify-center border border-zinc-700"
-                >
-                  <Navigation className="w-3.5 h-3.5 mr-1.5 text-simona-teal" />
-                  Маршрут на карте
-                </a>
+                <div className="p-8 pt-0 flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={() => openModal('SHOWROOM_VISIT', { preferredShowroom: room.id === 'belinskogo-15' ? 'Белинского, 15' : 'Белинского, 11/66' })}
+                    className="flex-1 pl-6 pr-2 py-2 rounded-full bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold uppercase tracking-wider transition-all shadow-md shadow-simona-teal/20 flex items-center justify-between group active:scale-98"
+                  >
+                    <span>Забронировать визит</span>
+                    <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <Sparkles className="w-3.5 h-3.5 text-white" />
+                    </span>
+                  </button>
+                  <a
+                    href={`https://yandex.ru/maps/?text=${encodeURIComponent(room.mapQuery)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="pl-5 pr-4 py-2.5 rounded-full bg-[#F2F3F4] hover:bg-zinc-200/80 text-[#16181B] text-xs font-semibold transition flex items-center justify-center border border-black/[0.06] active:scale-98"
+                  >
+                    <Navigation className="w-3.5 h-3.5 mr-1.5 text-simona-teal" />
+                    Маршрут на карте
+                  </a>
+                </div>
               </div>
             </div>
           ))}

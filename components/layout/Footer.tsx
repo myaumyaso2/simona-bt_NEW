@@ -11,15 +11,15 @@ export function Footer() {
   const kuhniUrl = process.env.NEXT_PUBLIC_KUHNI_URL || 'https://simona-kuhni.ru';
 
   return (
-    <footer className="bg-[#08090A] border-t border-zinc-900 text-zinc-400 text-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <footer className="bg-[#16181B] border-t border-black/[0.1] text-zinc-400 text-xs">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Col 1: Brand & Tagline */}
           <div className="lg:col-span-2">
             <Link href="/" className="inline-block group">
               <SimonaLogo variant="white" descriptor="bt_kitchens" size="lg" />
             </Link>
-            <p className="mt-4 text-xs text-zinc-400 font-light max-w-sm leading-relaxed">
+            <p className="mt-4 text-xs text-zinc-400 font-normal max-w-sm leading-relaxed">
               Премиальный интернет-бутик и digital-витрина салонов встраиваемой бытовой техники в Нижнем Новгороде. Официальный партнер Miele, ASKO, Liebherr, SMEG, Bertazzoni, Falmec, OMOIKIRI.
             </p>
 
@@ -28,9 +28,9 @@ export function Footer() {
                 href="https://t.me/simona_bt_bot"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-simona-teal/20 text-zinc-300 hover:text-white border border-zinc-800 transition text-[11px] flex items-center"
+                className="px-4 py-2 rounded-full bg-white/[0.05] hover:bg-simona-teal/20 text-zinc-300 hover:text-white border border-white/[0.1] transition text-[11px] font-medium flex items-center"
               >
-                <Send className="w-3.5 h-3.5 mr-1.5 text-simona-teal" />
+                <Send className="w-3.5 h-3.5 mr-2 text-simona-teal" />
                 Telegram-канал СИМОНА
               </a>
             </div>
@@ -48,7 +48,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#active-kitchen" className="hover:text-simona-teal transition-colors text-amber-400/90">
+                <Link href="#active-kitchen" className="hover:text-simona-teal transition-colors text-amber-400 font-medium">
                   🔥 Активная кухня
                 </Link>
               </li>
@@ -68,7 +68,7 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <Link href="#b2b-club" className="hover:text-simona-teal transition-colors text-simona-teal">
+                <Link href="#b2b-club" className="hover:text-simona-teal transition-colors text-simona-wine-light font-semibold">
                   Клуб дизайнеров (B2B)
                 </Link>
               </li>
@@ -82,13 +82,13 @@ export function Footer() {
             </h4>
             <div className="space-y-4">
               <div>
-                <div className="text-zinc-200 font-medium">Флагман СИМОНА</div>
+                <div className="text-zinc-200 font-semibold">Флагман СИМОНА</div>
                 <div className="text-zinc-400 text-[11px] mt-0.5">ул. Белинского, 15</div>
                 <div className="text-zinc-500 text-[10px]">Крупная встройка, «Активная кухня»</div>
               </div>
 
               <div>
-                <div className="text-zinc-200 font-medium">Салон OMOIKIRI & KÖRTING</div>
+                <div className="text-zinc-200 font-semibold">Салон OMOIKIRI & KÖRTING</div>
                 <div className="text-zinc-400 text-[11px] mt-0.5">ул. Белинского, 11/66</div>
                 <div className="text-zinc-500 text-[10px]">Японские мойки, смесители, встройка</div>
               </div>
@@ -108,7 +108,7 @@ export function Footer() {
             <div className="space-y-3">
               <a
                 href="tel:+78312170015"
-                className="text-base font-serif text-white hover:text-simona-teal transition-colors block"
+                className="text-base font-bold tracking-wide text-white hover:text-simona-teal transition-colors block"
               >
                 +7 (831) 217-00-15
               </a>
@@ -118,7 +118,7 @@ export function Footer() {
 
               <button
                 onClick={() => openModal('SHOWROOM_VISIT')}
-                className="w-full mt-2 py-2 px-3 rounded-lg bg-zinc-800 hover:bg-simona-teal hover:text-white text-zinc-200 text-[11px] font-semibold tracking-wide transition border border-zinc-700"
+                className="w-full mt-2 py-2.5 px-4 rounded-full bg-white/[0.08] hover:bg-simona-teal hover:text-white text-white text-[11px] font-semibold tracking-wide transition border border-white/[0.12] active:scale-98"
               >
                 Забронировать визит
               </button>
@@ -127,7 +127,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-zinc-900 flex flex-col md:flex-row items-center justify-between text-[11px] text-zinc-500 gap-4">
+        <div className="mt-16 pt-8 border-t border-white/[0.08] flex flex-col md:flex-row items-center justify-between text-[11px] text-zinc-500 gap-4">
           <div>
             © {new Date().getFullYear()} Салон бытовой техники «СИМОНА» (simona-bt.ru). Все права защищены.
           </div>

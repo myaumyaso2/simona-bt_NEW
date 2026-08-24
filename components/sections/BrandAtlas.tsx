@@ -3,6 +3,7 @@
 import React from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
+import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
 
 const BRANDS = [
   {
@@ -81,53 +82,60 @@ export function BrandAtlas() {
   const { openModal } = useStore();
 
   return (
-    <section id="brands" className="py-24 bg-[#0E1012] border-t border-zinc-900 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="brands" className="py-24 md:py-32 bg-white border-t border-black/[0.06] relative overflow-hidden">
+      {/* Official Brandbook Pattern Background */}
+      <SimonaPatternOverlay variant="subtle" opacity={0.03} />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-simona-teal mb-3">
-              Авторизованный партнер
+            <div className="text-xs font-bold uppercase tracking-[0.2em] text-simona-teal mb-3">
+              Авторизованный партнер фабрик Европы и Азии
             </div>
-            <h2 className="text-3xl sm:text-4xl font-serif font-light text-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-bold text-[#16181B] tracking-tight">
               Брендовый атлас
             </h2>
           </div>
-          <p className="mt-4 md:mt-0 text-sm text-zinc-400 max-w-md font-light">
-            Прямые поставки от ведущих фабрик Европы, Скандинавии и Японии. Официальная заводская гарантия и шеф-монтаж.
+          <p className="mt-4 md:mt-0 text-sm text-[#6E7074] max-w-md font-normal leading-relaxed">
+            Прямые поставки от ведущих фабрик Европы, Скандинавии и Японии. Официальная заводская гарантия, подбор аксессуаров и шеф-монтаж.
           </p>
         </div>
 
-        {/* Brands Grid */}
+        {/* Brands Grid: Light Double-Bezel Architecture */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {BRANDS.map((brand) => (
             <div
               key={brand.name}
               onClick={() => openModal('QUICK_CONSULT')}
-              className="group p-6 rounded-xl bg-zinc-900/50 hover:bg-zinc-800/80 border border-zinc-800/80 hover:border-simona-teal/50 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+              className="group p-1 rounded-2xl bg-black/[0.02] ring-1 ring-black/[0.06] hover:ring-simona-teal/50 hover:bg-black/[0.03] transition-all duration-300 cursor-pointer shadow-sm"
             >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[11px] font-medium tracking-wider text-zinc-500 uppercase">
-                    {brand.country}
-                  </span>
-                  <ArrowUpRight className="w-4 h-4 text-zinc-600 group-hover:text-simona-teal group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              <div className="p-5 rounded-xl bg-white shadow-sm h-full flex flex-col justify-between border border-black/[0.02]">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[10px] font-bold tracking-wider text-[#87888A] uppercase">
+                      {brand.country}
+                    </span>
+                    <span className="w-6 h-6 rounded-full bg-black/[0.04] flex items-center justify-center group-hover:bg-simona-teal/15 transition-colors">
+                      <ArrowUpRight className="w-3.5 h-3.5 text-[#6E7074] group-hover:text-simona-teal group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-montserrat font-bold text-[#16181B] group-hover:text-simona-teal transition-colors tracking-wide">
+                    {brand.name}
+                  </h3>
+                  <p className="mt-1 text-[11px] text-[#87888A] font-medium italic">
+                    {brand.origin}
+                  </p>
+                  <p className="mt-3 text-xs text-[#6E7074] leading-relaxed font-normal line-clamp-2">
+                    {brand.specialty}
+                  </p>
                 </div>
-                <h3 className="text-2xl font-serif font-normal text-white group-hover:text-simona-teal transition-colors tracking-wide">
-                  {brand.name}
-                </h3>
-                <p className="mt-1 text-[11px] text-zinc-400 font-light italic">
-                  {brand.origin}
-                </p>
-                <p className="mt-3 text-xs text-zinc-300 leading-relaxed font-light line-clamp-2">
-                  {brand.specialty}
-                </p>
-              </div>
 
-              <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between">
-                <span className="text-[10px] text-simona-teal font-medium">
-                  {brand.highlight}
-                </span>
+                <div className="mt-5 pt-3 border-t border-black/[0.06] flex items-center justify-between">
+                  <span className="text-[10px] text-simona-teal font-bold tracking-wide">
+                    {brand.highlight}
+                  </span>
+                </div>
               </div>
             </div>
           ))}

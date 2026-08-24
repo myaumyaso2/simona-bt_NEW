@@ -10,28 +10,36 @@ const config: Config = {
     extend: {
       colors: {
         simona: {
-          dark: "#0E1012",
-          surface: "#16191D",
-          card: "#1C2025",
-          border: "#2A2E35",
-          muted: "#8A929E",
-          graphite: "#263137", // Brandbook primary dark slate/graphite
-          slate: "#717C83",    // Brandbook secondary cool grey
-          light: "#F7FAFB",    // Brandbook clean background
+          bg: "#FFFFFF",
+          dark: "#16181B",      // Deep charcoal typography & dark accents
+          surface: "#F8F9FA",   // Pure architectural surface
+          card: "#FFFFFF",      // Clean gallery card
+          elevated: "#FFFFFF",
+          border: "rgba(0, 0, 0, 0.07)",
+          "border-subtle": "rgba(0, 0, 0, 0.04)",
+          muted: "#6E7074",     // WCAG AAA high contrast secondary text
+          graphite: "#3E3D40",  // Brandbook Dark Grey (90%)
+          grey: "#87888A",      // Brandbook Neutral Grey (60%)
+          "grey-light": "#D7D9DB",
+          light: "#F2F3F4",     // Brandbook Light Surface (10%)
+          white: "#FFFFFF",
           teal: {
-            DEFAULT: "#00979C", // Official Simona Brand Turquoise from Figma
+            DEFAULT: "#00979C", // Official Simona Turquoise (Pantone 7716 C)
             light: "#00B5BA",
-            dark: "#007484",
-            hover: "#00A8AD"
+            dark: "#007378",
+            hover: "#008489",
+          },
+          wine: {
+            DEFAULT: "#8A151A", // Official Simona Wine (Pantone 7628 C)
+            light: "#A61C22",
+            dark: "#680D11",
+            hover: "#9E1920",
           },
           gold: {
-            DEFAULT: "#FDBF3E", // Brandbook Warm Gold / Amber accent
-            light: "#FFE399"
+            DEFAULT: "#FDBF3E", // Luxury Gold (Pantone 1225 C)
+            light: "#FFE399",
+            dark: "#C69224",
           },
-          red: {
-            DEFAULT: "#A70725", // Brandbook Dark Red accent
-            light: "#DB0D49"
-          }
         },
         background: "var(--background)",
         foreground: "var(--foreground)",
@@ -39,6 +47,15 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-montserrat)", "system-ui", "-apple-system", "sans-serif"],
         montserrat: ["var(--font-montserrat)", "sans-serif"],
+      },
+      boxShadow: {
+        "light-bezel": "0 20px 40px -15px rgba(0, 0, 0, 0.05), 0 1px 3px 0 rgba(0, 0, 0, 0.02)",
+        "light-card": "0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02)",
+        "light-hover": "0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 0 25px -5px rgba(0, 151, 156, 0.12)",
+        "double-bezel": "0 16px 36px -10px rgba(0, 0, 0, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 1)",
+      },
+      transitionTimingFunction: {
+        luxury: "cubic-bezier(0.32, 0.72, 0, 1)",
       },
       animation: {
         "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
