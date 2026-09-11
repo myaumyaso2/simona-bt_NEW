@@ -73,19 +73,22 @@ export function LiveChatWidget() {
 
   return (
     <div className="fixed bottom-6 right-6 z-40">
-      {/* Trigger Button */}
+      {/* Trigger Button (Pulse Aura - Quiet Luxury Online Indicator) */}
       {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="relative group p-4 rounded-full bg-simona-teal hover:bg-simona-teal-hover text-white shadow-2xl shadow-simona-teal/40 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center"
-          aria-label="Онлайн-чат с экспертом СИМОНА"
-        >
-          <span className="absolute top-0 right-0 -mr-1 -mt-1 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-[#0E1012] animate-pulse" />
-          <MessageCircle className="w-6 h-6" />
-          <span className="hidden sm:inline-block ml-2 text-xs font-semibold pr-1">
-            Консультант онлайн
-          </span>
-        </button>
+        <div className="relative flex items-center justify-center">
+          {/* Subtle breathing turquoise aura */}
+          <span className="absolute -inset-1.5 rounded-full bg-simona-teal/25 animate-pulse blur-[3px] pointer-events-none" />
+          <span className="absolute inset-0 rounded-full border border-simona-teal/60 animate-ping opacity-40 [animation-duration:3.5s] pointer-events-none" />
+
+          <button
+            onClick={() => setIsOpen(true)}
+            className="relative w-14 h-14 rounded-full bg-simona-teal hover:bg-[#008489] text-white shadow-xl shadow-simona-teal/30 hover:shadow-simona-teal/50 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center"
+            aria-label="Онлайн-консультант СИМОНА"
+            title="Онлайн-консультант СИМОНА"
+          >
+            <MessageCircle className="w-6 h-6" />
+          </button>
+        </div>
       )}
 
       {/* Chat Box */}
@@ -95,17 +98,17 @@ export function LiveChatWidget() {
           <div className="p-4 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="relative">
-                <div className="w-9 h-9 rounded-full bg-simona-teal/20 text-simona-teal font-montserrat font-bold text-sm font-bold flex items-center justify-center border border-simona-teal/40">
+                <div className="w-9 h-9 rounded-full bg-simona-teal/20 text-simona-teal font-montserrat font-bold text-sm flex items-center justify-center border border-simona-teal/40">
                   С
                 </div>
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-zinc-900" />
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-simona-teal border border-zinc-900 shadow-[0_0_6px_rgba(0,151,156,0.8)]" />
               </div>
               <div>
                 <div className="font-medium text-white flex items-center">
                   <span>Салоны «СИМОНА»</span>
                 </div>
-                <div className="text-[10px] text-emerald-400 flex items-center">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 animate-pulse" />
+                <div className="text-[10px] text-simona-teal flex items-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-simona-teal mr-1.5 animate-pulse shadow-[0_0_6px_rgba(0,151,156,0.8)]" />
                   Дежурный эксперт в Telegram
                 </div>
               </div>

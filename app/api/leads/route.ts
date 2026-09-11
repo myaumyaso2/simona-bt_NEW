@@ -10,6 +10,7 @@ const leadSchema = z.object({
     'B2B_CLUB',
     'KITCHEN_ESTIMATE',
     'QUICK_CONSULT',
+    'EQUIPMENT_SELECTION',
   ]),
   name: z.string().min(2, 'Укажите имя'),
   phone: z.string().min(6, 'Укажите номер телефона'),

@@ -145,13 +145,13 @@ export function SimonaLogo({
   // Wordmark only (tight box 541x58)
   if (descriptor === 'none') {
     return (
-      <div className={`inline-flex items-center select-none ${className}`} style={{ height: `${logoHeightPx}px` }}>
+      <div className={`inline-flex items-center select-none ${className}`}>
         <svg
           viewBox="0 0 541 58"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={`${logoHeightMap[size]} w-auto transition-colors`}
-          style={{ height: `${logoHeightPx}px`, width: 'auto' }}
+          className="h-5 sm:h-6 w-auto transition-colors"
+          style={{ width: 'auto' }}
           aria-label="СИМОНА"
         >
           {MAIN_WORDMARK_PATHS.map((d, i) => (

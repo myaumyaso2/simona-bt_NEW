@@ -24,6 +24,7 @@ const SHOWROOMS = [
     ],
     image: '/showrooms/belinskogo-15/salon_01.jpg',
     mapQuery: 'Нижний Новгород, улица Белинского, 15',
+    mapUrl: 'https://yandex.ru/maps/-/CTh94C5D',
   },
   {
     id: 'belinskogo-11',
@@ -134,7 +135,7 @@ export function ShowroomsSection() {
                     </span>
                   </button>
                   <a
-                    href={`https://yandex.ru/maps/?text=${encodeURIComponent(room.mapQuery)}`}
+                    href={room.mapUrl || `https://yandex.ru/maps/?text=${encodeURIComponent(room.mapQuery)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="pl-5 pr-4 py-2.5 rounded-full bg-[#F2F3F4] hover:bg-zinc-200/80 text-[#16181B] text-xs font-semibold transition flex items-center justify-center border border-black/[0.06] active:scale-98"

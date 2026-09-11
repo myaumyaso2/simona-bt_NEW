@@ -10,18 +10,18 @@ const config: Config = {
     extend: {
       colors: {
         simona: {
-          bg: "#FFFFFF",
-          dark: "#16181B",      // Deep charcoal typography & dark accents
-          surface: "#F8F9FA",   // Pure architectural surface
-          card: "#FFFFFF",      // Clean gallery card
-          elevated: "#FFFFFF",
-          border: "rgba(0, 0, 0, 0.07)",
-          "border-subtle": "rgba(0, 0, 0, 0.04)",
-          muted: "#6E7074",     // WCAG AAA high contrast secondary text
-          graphite: "#3E3D40",  // Brandbook Dark Grey (90%)
-          grey: "#87888A",      // Brandbook Neutral Grey (60%)
+          bg: "#111315",
+          dark: "#0B0C0E",      // Deepest black for umbrella bar
+          surface: "#16191D",   // Architectural surface
+          card: "#1E2228",      // Cards and containers
+          elevated: "#242A32",
+          border: "#2B313A",
+          "border-subtle": "#1F242C",
+          muted: "#87888A",     // WCAG AAA secondary text
+          graphite: "#3E3D40",  // Brandbook Dark Grey
+          grey: "#87888A",      // Brandbook Neutral Grey
           "grey-light": "#D7D9DB",
-          light: "#F2F3F4",     // Brandbook Light Surface (10%)
+          light: "#F2F3F4",
           white: "#FFFFFF",
           teal: {
             DEFAULT: "#00979C", // Official Simona Turquoise (Pantone 7716 C)

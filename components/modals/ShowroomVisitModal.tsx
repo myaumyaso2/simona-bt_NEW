@@ -80,7 +80,7 @@ export function ShowroomVisitModal() {
           </div>
         ) : (
           <div>
-            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-simona-teal/10 text-simona-teal border border-simona-teal/25 text-xs font-bold mb-3">
+            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-simona-teal/10 text-simona-teal border border-simona-teal/25 text-xs font-bold mb-3">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Персональная консультация с экспертом</span>
             </div>
@@ -160,7 +160,7 @@ export function ShowroomVisitModal() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-full bg-simona-teal hover:bg-simona-teal-hover disabled:opacity-50 text-white font-bold uppercase tracking-wider transition shadow-lg shadow-simona-teal/20 active:scale-98"
+                className="w-full py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover disabled:opacity-50 text-white font-bold uppercase tracking-wider transition shadow-lg shadow-simona-teal/20 active:scale-98"
               >
                 {loading ? 'Отправка...' : 'Забронировать визит'}
               </button>

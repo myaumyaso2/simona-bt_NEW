@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import './globals.css';
 import { StoreProvider } from '@/components/providers/StoreContext';
+import { SmoothScrollProvider } from '@/components/providers/SmoothScrollProvider';
 import { UmbrellaBar } from '@/components/layout/UmbrellaBar';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -34,15 +35,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`scroll-smooth ${montserrat.variable}`}>
-      <body className="bg-white text-[#16181B] font-sans min-h-screen flex flex-col antialiased selection:bg-simona-teal/20 selection:text-[#16181B]">
-        <StoreProvider>
-          <UmbrellaBar />
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <GlobalModalContainer />
-        </StoreProvider>
+    <html lang="ru" className={montserrat.variable}>
+      <body className="bg-[#111315] text-white font-sans min-h-screen flex flex-col antialiased selection:bg-simona-teal/30 selection:text-white">
+        <SmoothScrollProvider>
+          <StoreProvider>
+            <UmbrellaBar />
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <GlobalModalContainer />
+          </StoreProvider>
+        </SmoothScrollProvider>
       </body>
     </html>
   );

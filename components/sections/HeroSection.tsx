@@ -1,120 +1,226 @@
 'use client';
 
-import React from 'react';
-import { Sparkles, ArrowRight, Compass } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import Link from 'next/link';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
-import { SimonaLogo } from '@/components/brand/SimonaLogo';
-import { SimonaIconChef, SimonaIconStar, SimonaIconGuarantee } from '@/components/brand/SimonaIcons';
+import { SimonaIconConsultation, SimonaIconMark } from '@/components/brand/SimonaIcons';
+import { HeroBackgroundSlider } from './HeroBackgroundSlider';
+
+const HERO_DESKTOP_SLIDES = [
+  '/hero/slides/desktop_1.webp',
+  '/hero/slides/desktop_2.webp',
+  '/hero/slides/desktop_3.webp',
+  '/hero/slides/desktop_4.webp',
+  '/hero/slides/desktop_5.webp',
+];
+
+const HERO_MOBILE_SLIDES = [
+  '/hero/slides/mobile_1.webp',
+  '/hero/slides/mobile_2.webp',
+  '/hero/slides/mobile_3.webp',
+  '/hero/slides/mobile_4.webp',
+  '/hero/slides/mobile_5.webp',
+];
 
 export function HeroSection() {
   const { openModal } = useStore();
+  const sectionRef = useRef<HTMLElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const badgeRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const buttonsRef = useRef<HTMLDivElement>(null);
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const contentParallaxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      // 1. Initial Entrance Cascade
+      const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+
+      tl.fromTo(
+        badgeRef.current,
+        { y: -18, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, delay: 0.15 }
+      )
+        .fromTo(
+          headingRef.current,
+          { y: 35, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.8 },
+          '-=0.35'
+        )
+        .fromTo(
+          subtitleRef.current,
+          { y: 22, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.7 },
+          '-=0.45'
+        )
+        .fromTo(
+          buttonsRef.current,
+          { y: 20, opacity: 0, scale: 0.96 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.65, ease: 'back.out(1.3)' },
+          '-=0.4'
+        );
+
+      if (featuresRef.current) {
+        const featureItems = featuresRef.current.children;
+        tl.fromTo(
+          featureItems,
+          { y: 28, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.65, stagger: 0.14 },
+          '-=0.3'
+        );
+      }
+
+      // 2. Parallax on Scroll Down (Content container floats up and dims, Background scrolls slower)
+      if (sectionRef.current && contentParallaxRef.current) {
+        gsap.to(contentParallaxRef.current, {
+          yPercent: -15,
+          opacity: 0.35,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+
+        if (bgRef.current) {
+          gsap.to(bgRef.current, {
+            yPercent: 12,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top top',
+              end: 'bottom top',
+              scrub: true,
+            },
+          });
+        }
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <section className="relative min-h-[92dvh] flex items-center justify-center overflow-hidden bg-[#FAFAFA] py-16 md:py-24">
-      {/* Official Brandbook Pattern Background (Nodes 1236:59605 & 2103:2483) */}
-      <SimonaPatternOverlay variant="teal" opacity={0.05} />
-
-      {/* Ambient Light Visual Backing with Real Salon Photo */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-[0.08] scale-105 transition-transform duration-1000"
-          style={{
-            backgroundImage: `url('/showrooms/belinskogo-15/salon_01.jpg')`,
-          }}
+    <section
+      ref={sectionRef}
+      className="relative min-h-[85vh] lg:min-h-[90vh] flex flex-col justify-between overflow-hidden bg-[#111315] pt-12 pb-10 lg:pt-16 lg:pb-12"
+    >
+      {/* Background Image & Luxury Dark Overlays */}
+      <div ref={bgRef} className="absolute inset-0 z-0 pointer-events-none">
+        <HeroBackgroundSlider
+          desktopImages={HERO_DESKTOP_SLIDES}
+          mobileImages={HERO_MOBILE_SLIDES}
+          slideDuration={7.5}
+          fadeDuration={1.8}
         />
-        {/* Soft Radial Ambient Spotlight */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[550px] bg-radial from-simona-teal/[0.08] via-transparent to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-[#FAFAFA] to-transparent" />
+        {/* Adaptive Vignette: Soft full overlay on mobile, focused left-only gradient on desktop */}
+        <div className="lg:hidden absolute inset-0 bg-gradient-to-b from-[#111315]/80 via-[#111315]/50 to-[#111315]/90" />
+        <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#111315] via-[#111315]/80 via-[48%] to-transparent" />
+        <div className="hidden lg:block absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_20%_40%,rgba(17,19,21,0.85)_0%,transparent_100%)]" />
+        {/* Sleek edge fading for seamless section transitions */}
+        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#111315] to-transparent opacity-60 pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#111315] to-transparent pointer-events-none" />
+        <SimonaPatternOverlay variant="subtle" opacity={0.015} />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        {/* Brand Sign Badge */}
-        <div className="inline-flex items-center space-x-2.5 px-4 py-1.5 rounded-full bg-white border border-black/[0.06] shadow-sm mb-8">
-          <SimonaLogo signOnly variant="teal" size="xs" className="w-4 h-3" />
-          <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-[#3E3D40]">
-            Нижний Новгород • Флагманские пространства на ул. Белинского
-          </span>
-        </div>
-
-        {/* Main Heading - Pure Montserrat per Brandbook */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-montserrat font-bold text-[#16181B] tracking-tight leading-[1.12] max-w-5xl mx-auto">
-          Бутик высокой кулинарной <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-simona-teal-dark via-simona-teal to-simona-teal-light">
-            и встраиваемой техники
-          </span>
-        </h1>
-
-        {/* Subtitle */}
-        <p className="mt-6 text-base sm:text-lg lg:text-xl text-[#6E7074] font-normal max-w-3xl mx-auto leading-relaxed">
-          Авторизованный партнер <strong className="text-[#16181B] font-semibold">Miele, ASKO, Liebherr, SMEG, Bertazzoni</strong>. 
-          Персональный шеф-тест-драйв на «Активной кухне», сомелье-подбор винных шкафов и инженерный расчет схем встройки.
-        </p>
-
-        {/* Primary Action Buttons: Button-in-Button Standard */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5">
-          <button
-            onClick={() => openModal('SHOWROOM_VISIT')}
-            className="w-full sm:w-auto pl-7 pr-2 py-2 rounded-full bg-simona-teal hover:bg-simona-teal-hover text-white font-semibold text-xs tracking-wider uppercase transition-all duration-300 shadow-xl shadow-simona-teal/25 flex items-center justify-between group active:scale-98"
+      {/* Main Hero Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-auto">
+        <div ref={contentParallaxRef} className="max-w-3xl">
+          {/* Partner Badge */}
+          <div
+            ref={badgeRef}
+            className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg bg-[#16191D]/90 border border-[#2B313A] backdrop-blur-md mb-6 sm:mb-8 shadow-lg shadow-black/40"
           >
-            <span className="mr-3">Записаться на визит с экспертом</span>
-            <span className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <Sparkles className="w-4 h-4 text-white group-hover:rotate-12 transition-transform" />
+            <span className="w-1.5 h-1.5 rounded-full bg-simona-teal shadow-[0_0_8px_rgba(0,151,156,0.8)]" />
+            <span className="text-[10px] sm:text-[11px] font-semibold tracking-[0.12em] uppercase text-[#D7D9DB]">
+              Официальный партнер Miele · ASKO · Liebherr · SMEG · OMOIKIRI
             </span>
-          </button>
+          </div>
 
-          <button
-            onClick={() => openModal('PROJECT_MATCHING')}
-            className="w-full sm:w-auto pl-7 pr-2 py-2 rounded-full bg-white hover:bg-zinc-50 text-[#16181B] font-semibold text-xs tracking-wider uppercase transition-all duration-300 border border-black/[0.08] hover:border-simona-teal/50 flex items-center justify-between group shadow-sm active:scale-98"
+          {/* Heading H1 */}
+          <h1
+            ref={headingRef}
+            className="text-3xl sm:text-5xl lg:text-6xl font-montserrat font-bold text-white tracking-tight leading-[1.15] mb-6 [text-shadow:_0_2px_12px_rgba(0,0,0,0.95),_0_4px_32px_rgba(0,0,0,0.9)]"
           >
-            <span className="mr-3">Подобрать под дизайн-проект</span>
-            <span className="w-9 h-9 rounded-full bg-black/[0.05] flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
-              <ArrowRight className="w-4 h-4 text-simona-teal" />
-            </span>
-          </button>
+            Премиальная бытовая техника для вашей идеальной кухни
+          </h1>
+
+          {/* Subtitle */}
+          <p
+            ref={subtitleRef}
+            className="text-sm sm:text-base lg:text-lg text-[#D7D9DB] font-normal leading-relaxed max-w-2xl mb-8 sm:mb-10 [text-shadow:_0_2px_8px_rgba(0,0,0,0.95)]"
+          >
+            Флагманские шоурумы в центре Нижнего Новгорода. Персональный подбор под дизайн-проект, выверка встроечных схем и сертифицированный шеф-монтаж.
+          </p>
+
+          {/* Action CTA Buttons */}
+          <div
+            ref={buttonsRef}
+            className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4"
+          >
+            <button
+              onClick={() => openModal('EQUIPMENT_SELECTION')}
+              className="inline-flex items-center justify-center px-7 py-4 rounded-xl bg-gradient-to-r from-simona-teal-dark to-simona-teal hover:to-simona-teal-light text-white text-sm font-semibold tracking-wide transition-all duration-300 shadow-lg shadow-simona-teal/30 hover:shadow-simona-teal/50 hover:scale-[1.02] active:scale-98 space-x-2.5 text-center cursor-pointer"
+            >
+              <SimonaIconConsultation className="w-5 h-5 text-white flex-shrink-0" />
+              <span>Получить консультацию</span>
+            </button>
+
+            <Link
+              href="/catalog"
+              className="inline-flex items-center justify-center px-7 py-4 rounded-xl bg-[#16191D] hover:bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal/50 text-white text-sm font-medium tracking-wide transition-all duration-300 space-x-2.5 text-center group"
+            >
+              <SimonaIconMark className="w-5 h-5 text-simona-teal flex-shrink-0 group-hover:scale-110 transition-transform" />
+              <span>Перейти в каталог</span>
+            </Link>
+          </div>
         </div>
+      </div>
 
-        {/* Light Double-Bezel Value Cards with Official Identity Icons */}
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto pt-8 border-t border-black/[0.06]">
-          <div className="p-1 rounded-2xl bg-black/[0.02] ring-1 ring-black/[0.05] transition-all hover:ring-simona-teal/40 shadow-sm">
-            <div className="p-4 rounded-xl bg-white shadow-sm flex flex-col items-center text-center">
-              <div className="w-9 h-9 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-2.5">
-                <SimonaIconChef className="w-4 h-4 text-amber-500" />
-              </div>
-              <span className="text-xs font-bold text-[#16181B]">Активная кухня</span>
-              <span className="text-[11px] text-[#6E7074] mt-0.5 font-medium">Шеф-дегустация и тест-драйв</span>
-            </div>
+      {/* 3 Key Advantages at Bottom */}
+      <div
+        ref={featuresRef}
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-12 pt-8 border-t border-[#2B313A]/60"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+          
+          <div className="flex flex-col space-y-1.5">
+            <span className="text-xl lg:text-2xl font-montserrat font-semibold text-white tracking-tight [text-shadow:_0_1px_8px_rgba(0,0,0,0.8)]">
+              Эксперты встройки
+            </span>
+            <span className="text-xs sm:text-sm text-[#D7D9DB]/85 leading-relaxed font-normal [text-shadow:_0_1px_4px_rgba(0,0,0,0.8)]">
+              Премиальная встраиваемая бытовая техника, персональный подбор комплектов и выверка монтажных схем.
+            </span>
           </div>
 
-          <div className="p-1 rounded-2xl bg-black/[0.02] ring-1 ring-black/[0.05] transition-all hover:ring-simona-teal/40 shadow-sm">
-            <div className="p-4 rounded-xl bg-white shadow-sm flex flex-col items-center text-center">
-              <div className="w-9 h-9 rounded-full bg-simona-teal/10 border border-simona-teal/20 flex items-center justify-center mb-2.5">
-                <Compass className="w-4 h-4 text-simona-teal" />
-              </div>
-              <span className="text-xs font-bold text-[#16181B]">2 салона в центре</span>
-              <span className="text-[11px] text-[#6E7074] mt-0.5 font-medium">Белинского, 15 и 11/66</span>
-            </div>
+          <div className="flex flex-col space-y-1.5">
+            <span className="text-xl lg:text-2xl font-montserrat font-semibold text-white tracking-tight [text-shadow:_0_1px_8px_rgba(0,0,0,0.8)]">
+              Активная кухня
+            </span>
+            <span className="text-xs sm:text-sm text-[#D7D9DB]/85 leading-relaxed font-normal [text-shadow:_0_1px_4px_rgba(0,0,0,0.8)]">
+              Демонстрируем работу премиальной бытовой техники, устраиваем дегустации, рассказываем о новинках.
+            </span>
           </div>
 
-          <div className="p-1 rounded-2xl bg-black/[0.02] ring-1 ring-black/[0.05] transition-all hover:ring-simona-teal/40 shadow-sm">
-            <div className="p-4 rounded-xl bg-white shadow-sm flex flex-col items-center text-center">
-              <div className="w-9 h-9 rounded-full bg-simona-wine/10 border border-simona-wine/20 flex items-center justify-center mb-2.5">
-                <SimonaIconStar className="w-4 h-4 text-simona-wine" />
-              </div>
-              <span className="text-xs font-bold text-[#16181B]">Клуб дизайнеров</span>
-              <span className="text-[11px] text-[#6E7074] mt-0.5 font-medium">Переговорная база & B2B 10%</span>
-            </div>
+          <div className="flex flex-col space-y-1.5">
+            <span className="text-xl lg:text-2xl font-montserrat font-semibold text-white tracking-tight [text-shadow:_0_1px_8px_rgba(0,0,0,0.8)]">
+              Дизайнерам и B2B
+            </span>
+            <span className="text-xs sm:text-sm text-[#D7D9DB]/85 leading-relaxed font-normal [text-shadow:_0_1px_4px_rgba(0,0,0,0.8)]">
+              Интересные условия сотрудничества с дизайнерами интерьера и оптовыми клиентами.
+            </span>
           </div>
 
-          <div className="p-1 rounded-2xl bg-black/[0.02] ring-1 ring-black/[0.05] transition-all hover:ring-simona-teal/40 shadow-sm">
-            <div className="p-4 rounded-xl bg-white shadow-sm flex flex-col items-center text-center">
-              <div className="w-9 h-9 rounded-full bg-simona-gold/15 border border-simona-gold/30 flex items-center justify-center mb-2.5">
-                <SimonaIconGuarantee className="w-4 h-4 text-amber-600" />
-              </div>
-              <span className="text-xs font-bold text-[#16181B]">Шеф-монтаж</span>
-              <span className="text-[11px] text-[#6E7074] mt-0.5 font-medium">Официальная гарантия фабрик</span>
-            </div>
-          </div>
         </div>
       </div>
     </section>

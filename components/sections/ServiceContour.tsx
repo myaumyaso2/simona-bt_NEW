@@ -1,62 +1,158 @@
 'use client';
 
-import React from 'react';
-import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
-import { SimonaIconDelivery, SimonaIconGuarantee, SimonaIconStar } from '@/components/brand/SimonaIcons';
+import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const SERVICES = [
   {
-    icon: SimonaIconGuarantee,
-    title: 'Бесплатное хранение на складе',
-    desc: 'Зафиксируйте цену и акции сейчас. Мы бережно сохраним весь комплект техники на нашем отапливаемом складе до окончания чистовой отделки квартиры.',
+    num: '01',
+    title: 'Бесплатное бережное хранение на складе',
+    desc: 'Резервируйте технику по фиксированной цене и храните на нашем отапливаемом складе до окончания ремонта и сборки кухонного гарнитура.',
   },
   {
-    icon: SimonaIconStar,
+    num: '02',
     title: 'Шеф-монтаж сертифицированными мастерами',
-    desc: 'Установка и подключение специалистами, прошедшими обучение в академиях Miele, ASKO и SMEG. Сохранение официальной заводской гарантии.',
+    desc: 'Инсталляция и пусконаладка строго по заводским регламентам брендов. Сохранение полной официальной заводской гарантии производителя.',
   },
   {
-    icon: SimonaIconDelivery,
-    title: 'Бережная доставка в белых перчатках',
-    desc: 'Собственная служба доставки бережно занесет технику в квартиру, распакует, проверит целостность и вывезет транспортировочную упаковку.',
+    num: '03',
+    title: 'Доставка в белых перчатках',
+    desc: 'Собственная служба доставки. Аккуратный подъем в квартиру на любой этаж, бережная распаковка при вас, осмотр и утилизация упаковки.',
   },
 ];
 
 export function ServiceContour() {
-  return (
-    <section className="py-24 md:py-32 bg-white border-t border-black/[0.06] relative overflow-hidden">
-      {/* Official Brandbook Pattern Background */}
-      <SimonaPatternOverlay variant="subtle" opacity={0.035} />
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="text-xs font-bold uppercase tracking-[0.2em] text-simona-teal mb-3">
-            Премиальный стандарт заботы
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-bold text-[#16181B] tracking-tight">
-            Сервисный контур СИМОНА
-          </h2>
-          <p className="mt-4 text-sm text-[#6E7074] font-normal leading-relaxed">
-            Покупка премиальной техники — это непрерывный комфорт от первого визита в салон до первого включения прибора на вашей кухне.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      if (headerRef.current) {
+        gsap.fromTo(
+          headerRef.current,
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.7,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: headerRef.current,
+              start: 'top 85%',
+            },
+          }
+        );
+      }
+
+      if (gridRef.current) {
+        const cards = gridRef.current.querySelectorAll('.service-card');
+        const lines = gridRef.current.querySelectorAll('.service-line');
+        const nums = gridRef.current.querySelectorAll('.service-num');
+
+        // Step-by-step card ignition
+        gsap.fromTo(
+          cards,
+          { y: 45, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            stagger: 0.18,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: gridRef.current,
+              start: 'top 85%',
+            },
+          }
+        );
+
+        // Animated indicator line growth
+        gsap.fromTo(
+          lines,
+          { scaleX: 0, transformOrigin: 'left center' },
+          {
+            scaleX: 1,
+            duration: 0.85,
+            stagger: 0.18,
+            delay: 0.2,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: gridRef.current,
+              start: 'top 85%',
+            },
+          }
+        );
+
+        // Subtle number pulse
+        gsap.fromTo(
+          nums,
+          { scale: 0.85, opacity: 0.4 },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 0.65,
+            stagger: 0.18,
+            ease: 'back.out(1.5)',
+            scrollTrigger: {
+              trigger: gridRef.current,
+              start: 'top 85%',
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section
+      id="service"
+      ref={sectionRef}
+      className="py-20 sm:py-28 bg-[#16191D] border-t border-[#2B313A]"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header per Figma node 1:371 */}
+        <div ref={headerRef} className="text-center max-w-3xl mx-auto mb-16">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-simona-teal mb-3">
+            Премиальный сервисный стандарт
           </p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-semibold text-white tracking-tight">
+            Забота о вашем комфорте на каждом этапе
+          </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {SERVICES.map((srv, idx) => (
+        {/* 3 Columns Cards Grid per Figma node 1:379 */}
+        <div
+          ref={gridRef}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
+        >
+          {SERVICES.map((item) => (
             <div
-              key={idx}
-              className="p-1 rounded-[1.75rem] bg-black/[0.02] ring-1 ring-black/[0.06] hover:ring-simona-teal/40 transition-all duration-300 flex flex-col justify-between shadow-sm"
+              key={item.num}
+              className="service-card p-8 sm:p-10 rounded-2xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal/50 transition-colors duration-300 flex flex-col justify-between space-y-6 shadow-xl group"
             >
-              <div className="p-8 rounded-[calc(1.75rem-4px)] bg-white shadow-sm border border-black/[0.02] h-full flex flex-col justify-between">
-                <div>
-                  <div className="w-12 h-12 rounded-xl bg-simona-teal/10 border border-simona-teal/20 text-simona-teal flex items-center justify-center mb-6 shadow-sm">
-                    <srv.icon className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-base font-montserrat font-bold text-[#16181B] mb-3">{srv.title}</h3>
-                  <p className="text-xs sm:text-sm text-[#6E7074] font-normal leading-relaxed">
-                    {srv.desc}
-                  </p>
-                </div>
+              <div>
+                <span className="service-num font-montserrat text-3xl sm:text-4xl font-bold text-simona-teal tracking-tight block mb-6 transition-colors">
+                  {item.num}
+                </span>
+
+                <h3 className="text-xl font-montserrat font-bold text-white leading-snug mb-3 group-hover:text-simona-teal transition-colors">
+                  {item.title}
+                </h3>
+
+                <p className="text-sm text-[#87888A] leading-relaxed">
+                  {item.desc}
+                </p>
+              </div>
+
+              <div className="w-16 h-1 bg-[#2B313A] rounded-full overflow-hidden">
+                <div className="service-line h-full w-full bg-gradient-to-r from-simona-teal to-simona-teal-light rounded-full will-change-transform shadow-[0_0_8px_rgba(0,151,156,0.6)]" />
               </div>
             </div>
           ))}

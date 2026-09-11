@@ -2,139 +2,168 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { MapPin, Phone, Send, Clock, ShieldCheck } from 'lucide-react';
+import { Send, ArrowRight, ExternalLink } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaLogo } from '@/components/brand/SimonaLogo';
+import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
 
 export function Footer() {
   const { openModal } = useStore();
   const kuhniUrl = process.env.NEXT_PUBLIC_KUHNI_URL || 'https://simona-kuhni.ru';
 
   return (
-    <footer className="bg-[#16181B] border-t border-black/[0.1] text-zinc-400 text-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
-          {/* Col 1: Brand & Tagline */}
-          <div className="lg:col-span-2">
-            <Link href="/" className="inline-block group">
-              <SimonaLogo variant="white" descriptor="bt_kitchens" size="lg" />
+    <footer className="relative bg-[#0B0C0E] border-t border-[#2B313A] text-xs text-[#87888A] overflow-hidden">
+      {/* Brand Pattern Background */}
+      <SimonaPatternOverlay variant="subtle" opacity={0.02} />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
+        {/* 4 Columns Grid per Figma node 1:566 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-14 border-b border-[#2B313A]">
+          
+          {/* Col 1: Brand & Kuhni Direction (4 Cols) */}
+          <div className="lg:col-span-4 space-y-4">
+            <Link href="/" className="inline-block">
+              <SimonaLogo variant="white" descriptor="bt_kitchens" size="md" />
             </Link>
-            <p className="mt-4 text-xs text-zinc-400 font-normal max-w-sm leading-relaxed">
-              Премиальный интернет-бутик и digital-витрина салонов встраиваемой бытовой техники в Нижнем Новгороде. Официальный партнер Miele, ASKO, Liebherr, SMEG, Bertazzoni, Falmec, OMOIKIRI.
+            
+            <p className="text-xs text-[#87888A] leading-relaxed max-w-sm">
+              Премиальный интернет-бутик и digital-витрина бытовой техники в Нижнем Новгороде.
             </p>
 
-            <div className="mt-6 flex items-center space-x-3">
+            <div className="pt-2">
               <a
-                href="https://t.me/simona_bt_bot"
+                href={kuhniUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 rounded-full bg-white/[0.05] hover:bg-simona-teal/20 text-zinc-300 hover:text-white border border-white/[0.1] transition text-[11px] font-medium flex items-center"
+                className="inline-flex items-center space-x-1.5 text-xs text-simona-teal hover:text-simona-teal-light font-medium group transition-colors"
               >
-                <Send className="w-3.5 h-3.5 mr-2 text-simona-teal" />
-                Telegram-канал СИМОНА
+                <span>НАПРАВЛЕНИЕ МЕБЕЛИ И КУХОНЬ simona-kuhni.ru</span>
+                <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
               </a>
             </div>
           </div>
 
-          {/* Col 2: Navigation */}
-          <div>
-            <h4 className="text-white font-semibold uppercase tracking-wider text-[11px] mb-4">
+          {/* Col 2: Salons in NN (3 Cols) */}
+          <div className="lg:col-span-3 space-y-3">
+            <h4 className="text-xs font-semibold uppercase tracking-[0.14em] text-white">
+              Салоны в Нижнем Новгороде
+            </h4>
+            
+            <div className="space-y-3 text-xs">
+              <div>
+                <p className="text-white font-medium">Флагман: ул. Белинского, 15</p>
+                <a href="tel:+78312170015" className="text-[#87888A] hover:text-simona-teal transition-colors">
+                  +7 (831) 217-00-15
+                </a>
+              </div>
+
+              <div>
+                <p className="text-white font-medium">Omoikiri & Körting: Белинского, 11/66</p>
+                <a href="tel:+78312170011" className="text-[#87888A] hover:text-simona-teal transition-colors">
+                  +7 (831) 217-00-11
+                </a>
+              </div>
+
+              <div className="pt-1">
+                <a
+                  href="https://t.me/simona_bt"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-1.5 text-simona-teal hover:underline font-medium"
+                >
+                  <Send className="w-3 h-3" />
+                  <span>Telegram-консьерж</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Col 3: Navigation (2 Cols) */}
+          <div className="lg:col-span-2 space-y-3">
+            <h4 className="text-xs font-semibold uppercase tracking-[0.14em] text-white">
               Навигация
             </h4>
-            <ul className="space-y-2.5">
+            
+            <ul className="space-y-2 text-xs">
               <li>
-                <Link href="#catalog" className="hover:text-simona-teal transition-colors">
+                <Link href="/catalog" className="text-[#87888A] hover:text-white transition-colors">
                   Каталог техники
                 </Link>
               </li>
               <li>
-                <Link href="#active-kitchen" className="hover:text-simona-teal transition-colors text-amber-400 font-medium">
-                  🔥 Активная кухня
-                </Link>
-              </li>
-              <li>
-                <Link href="#brands" className="hover:text-simona-teal transition-colors">
+                <Link href="#brands" className="text-[#87888A] hover:text-white transition-colors">
                   Брендовый атлас
                 </Link>
               </li>
               <li>
-                <Link href="#lookbook" className="hover:text-simona-teal transition-colors">
-                  Lookbook интерьеров
+                <Link href="#service" className="text-[#87888A] hover:text-white transition-colors">
+                  Бесплатное хранение
                 </Link>
               </li>
               <li>
-                <a href={kuhniUrl} target="_blank" rel="noopener noreferrer" className="hover:text-simona-teal transition-colors">
-                  Кухни и мебель
-                </a>
+                <Link href="#service" className="text-[#87888A] hover:text-white transition-colors">
+                  Шеф-монтаж
+                </Link>
               </li>
               <li>
-                <Link href="#b2b-club" className="hover:text-simona-teal transition-colors text-simona-wine-light font-semibold">
-                  Клуб дизайнеров (B2B)
-                </Link>
+                <button
+                  onClick={() => openModal('QUICK_CONSULT')}
+                  className="text-[#87888A] hover:text-white transition-colors text-left"
+                >
+                  Оплата и согласование
+                </button>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Salons */}
-          <div>
-            <h4 className="text-white font-semibold uppercase tracking-wider text-[11px] mb-4">
-              Салоны в Н.Новгороде
+          {/* Col 4: Designers B2B (3 Cols) */}
+          <div className="lg:col-span-3 space-y-3">
+            <h4 className="text-xs font-semibold uppercase tracking-[0.14em] text-white">
+              Архитекторам и дизайнерам
             </h4>
-            <div className="space-y-4">
-              <div>
-                <div className="text-zinc-200 font-semibold">Флагман СИМОНА</div>
-                <div className="text-zinc-400 text-[11px] mt-0.5">ул. Белинского, 15</div>
-                <div className="text-zinc-500 text-[10px]">Крупная встройка, «Активная кухня»</div>
-              </div>
+            
+            <p className="text-xs text-[#87888A] leading-relaxed">
+              Специальная программа сотрудничества, выверка схем за 24 часа, база 3D-моделей.
+            </p>
 
-              <div>
-                <div className="text-zinc-200 font-semibold">Салон OMOIKIRI & KÖRTING</div>
-                <div className="text-zinc-400 text-[11px] mt-0.5">ул. Белинского, 11/66</div>
-                <div className="text-zinc-500 text-[10px]">Японские мойки, смесители, встройка</div>
-              </div>
-
-              <div className="text-[11px] text-zinc-400 pt-1">
-                <Clock className="w-3 h-3 inline mr-1 text-zinc-500" />
-                Ежедневно 10:00 – 20:00
-              </div>
-            </div>
-          </div>
-
-          {/* Col 4: Contacts & CTA */}
-          <div>
-            <h4 className="text-white font-semibold uppercase tracking-wider text-[11px] mb-4">
-              Контакты
-            </h4>
-            <div className="space-y-3">
-              <a
-                href="tel:+78312170015"
-                className="text-base font-bold tracking-wide text-white hover:text-simona-teal transition-colors block"
-              >
-                +7 (831) 217-00-15
-              </a>
-              <div className="text-[11px] text-zinc-400">
-                Консультации и запись к экспертам
-              </div>
-
+            <div className="pt-1">
               <button
-                onClick={() => openModal('SHOWROOM_VISIT')}
-                className="w-full mt-2 py-2.5 px-4 rounded-full bg-white/[0.08] hover:bg-simona-teal hover:text-white text-white text-[11px] font-semibold tracking-wide transition border border-white/[0.12] active:scale-98"
+                onClick={() => openModal('B2B_CLUB')}
+                className="inline-flex items-center space-x-1.5 text-xs text-simona-teal hover:text-simona-teal-light font-medium group transition-colors"
               >
-                Забронировать визит
+                <span>Перейти в B2B-раздел</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>
+
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-white/[0.08] flex flex-col md:flex-row items-center justify-between text-[11px] text-zinc-500 gap-4">
-          <div>
-            © {new Date().getFullYear()} Салон бытовой техники «СИМОНА» (simona-bt.ru). Все права защищены.
-          </div>
-          <div className="flex flex-wrap gap-4 text-zinc-500">
-            <span>Политика конфиденциальности (152-ФЗ)</span>
-            <span>Оферта интернет-магазина (54-ФЗ)</span>
-            <span>Информация не является публичной офертой</span>
+        {/* Bottom Bar per Figma */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#87888A]">
+          <p>© 2026 Салон бытовой техники «СИМОНА». Все права защищены.</p>
+
+          <div className="flex items-center space-x-6">
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                alert('Политика конфиденциальности: Данные обрабатываются в соответствии с 152-ФЗ.');
+              }}
+              className="hover:text-white transition-colors"
+            >
+              Политика конфиденциальности
+            </a>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                alert('Пользовательское соглашение: Условия использования цифровой витрины simona-bt.ru.');
+              }}
+              className="hover:text-white transition-colors"
+            >
+              Пользовательское соглашение
+            </a>
           </div>
         </div>
       </div>

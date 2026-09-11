@@ -67,14 +67,14 @@ export function QuickConsultModal() {
             </p>
             <button
               onClick={closeModal}
-              className="mt-6 px-6 py-2.5 rounded-full bg-[#16181B] hover:bg-zinc-800 text-white text-xs font-semibold uppercase tracking-wider transition shadow-sm"
+              className="mt-6 px-6 py-2.5 rounded-xl bg-[#16181B] hover:bg-zinc-800 text-white text-xs font-semibold uppercase tracking-wider transition shadow-sm"
             >
               Закрыть
             </button>
           </div>
         ) : (
           <div>
-            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-simona-teal/10 text-simona-teal border border-simona-teal/25 text-xs font-bold mb-3">
+            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-simona-teal/10 text-simona-teal border border-simona-teal/25 text-xs font-bold mb-3">
               <HelpCircle className="w-3.5 h-3.5" />
               <span>Консультация эксперта СИМОНА</span>
             </div>
@@ -135,7 +135,7 @@ export function QuickConsultModal() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-full bg-simona-teal hover:bg-simona-teal-hover disabled:opacity-50 text-white font-bold uppercase tracking-wider transition shadow-lg shadow-simona-teal/20 active:scale-98"
+                className="w-full py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover disabled:opacity-50 text-white font-bold uppercase tracking-wider transition shadow-lg shadow-simona-teal/20 active:scale-98"
               >
                 {loading ? 'Отправка...' : 'Получить консультацию'}
               </button>

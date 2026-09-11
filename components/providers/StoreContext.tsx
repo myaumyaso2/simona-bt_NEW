@@ -3,16 +3,28 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ProductItem, CartItem } from '@/types';
 
+interface VideoModalData {
+  title: string;
+  views: string;
+  thumbnail: string;
+  telegramUrl: string;
+  videoUrl?: string;
+}
+
 interface ModalState {
-  type: 'TEST_DRIVE' | 'SHOWROOM_VISIT' | 'PROJECT_MATCHING' | 'B2B_CLUB' | 'KITCHEN_ESTIMATE' | 'QUICK_CONSULT' | 'SEARCH' | null;
+  type: 'TEST_DRIVE' | 'SHOWROOM_VISIT' | 'PROJECT_MATCHING' | 'B2B_CLUB' | 'KITCHEN_ESTIMATE' | 'QUICK_CONSULT' | 'SEARCH' | 'VIDEO_PREVIEW' | 'AUTH' | 'EQUIPMENT_SELECTION' | null;
   product?: ProductItem | null;
   preferredShowroom?: string;
+  videoData?: VideoModalData | null;
 }
 
 interface StoreContextType {
   // Modal state
   modal: ModalState;
-  openModal: (type: ModalState['type'], options?: { product?: ProductItem; preferredShowroom?: string }) => void;
+  openModal: (
+    type: ModalState['type'],
+    options?: { product?: ProductItem; preferredShowroom?: string; videoData?: VideoModalData }
+  ) => void;
   closeModal: () => void;
 
   // Cart state
@@ -57,12 +69,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const openModal = (
     type: ModalState['type'],
-    options?: { product?: ProductItem; preferredShowroom?: string }
+    options?: { product?: ProductItem; preferredShowroom?: string; videoData?: VideoModalData }
   ) => {
     setModal({
       type,
       product: options?.product || null,
       preferredShowroom: options?.preferredShowroom,
+      videoData: options?.videoData || null,
     });
   };
 

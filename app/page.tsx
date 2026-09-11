@@ -1,82 +1,37 @@
 import React from 'react';
-import { prisma } from '@/lib/prisma';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { BrandAtlas } from '@/components/sections/BrandAtlas';
-import { ActiveKitchenSection } from '@/components/sections/ActiveKitchenSection';
-import { MagnetCatalog } from '@/components/sections/MagnetCatalog';
-import { LookbookSection } from '@/components/sections/LookbookSection';
-import { KitchenModule } from '@/components/sections/KitchenModule';
-import { B2BClubSection } from '@/components/sections/B2BClubSection';
+import { ShowroomsFigmaSection } from '@/components/sections/ShowroomsFigmaSection';
+import { KeyDirectionsSection } from '@/components/sections/KeyDirectionsSection';
 import { ServiceContour } from '@/components/sections/ServiceContour';
-import { LiveContentWidget } from '@/components/sections/LiveContentWidget';
-import { ShowroomsSection } from '@/components/sections/ShowroomsSection';
-import { ShowroomGallerySection } from '@/components/sections/ShowroomGallerySection';
-import { ProductItem } from '@/types';
+import { TelegramLiveSection } from '@/components/sections/TelegramLiveSection';
+import { ShowroomMapSection } from '@/components/sections/ShowroomMapSection';
 
 export const dynamic = 'force-dynamic';
 
-export default async function HomePage() {
-  const dbProducts = await prisma.product.findMany({
-    orderBy: [{ isFeatured: 'desc' }, { price: 'desc' }],
-  });
-
-  const products: ProductItem[] = dbProducts.map((p) => ({
-    id: p.id,
-    sku: p.sku,
-    name: p.name,
-    slug: p.slug,
-    brand: p.brand,
-    category: p.category,
-    categoryType: p.categoryType as ProductItem['categoryType'],
-    physicalStatus: p.physicalStatus as ProductItem['physicalStatus'],
-    price: p.price,
-    oldPrice: p.oldPrice,
-    inStock: p.inStock,
-    stockCount: p.stockCount,
-    shortDesc: p.shortDesc,
-    description: p.description,
-    features: JSON.parse(p.featuresJson || '[]'),
-    dimensions: p.dimensions,
-    schematicPdfUrl: p.schematicPdfUrl,
-    images: JSON.parse(p.imagesJson || '[]'),
-    badge: p.badge,
-    isFeatured: p.isFeatured,
-  }));
-
+export default function HomePage() {
   return (
-    <div className="flex flex-col">
-      {/* 1. Hero Screen */}
+    <div className="flex flex-col bg-[#111315] min-h-screen">
+      {/* 1. Hero Section per Figma node 1:6 */}
       <HeroSection />
 
-      {/* 2. Brand Wall (Брендовый атлас) */}
+      {/* 2. Authorized Dealer Brand Wall per Figma node 1:7 */}
       <BrandAtlas />
 
-      {/* 3. УТП «Активная кухня и демонстрация технологий» */}
-      <ActiveKitchenSection />
+      {/* 3. Physical Spaces on Belinskogo per Figma node 1:72 */}
+      <ShowroomsFigmaSection />
 
-      {/* 4. Каталог-магнит (Гибридная модель O2O / E-commerce) */}
-      <MagnetCatalog products={products} />
+      {/* 4. Key Directions Collection per Figma node 1:159 */}
+      <KeyDirectionsSection />
 
-      {/* 5. Lookbook / Реализованные проекты с Hotspots */}
-      <LookbookSection />
-
-      {/* 6. Кросс-модуль «Кухни под ключ» */}
-      <KitchenModule />
-
-      {/* 7. B2B-блок «Клуб архитекторов и дизайнеров» */}
-      <B2BClubSection />
-
-      {/* 8. Сервисный контур */}
+      {/* 5. Premium Service Standard per Figma node 1:370 */}
       <ServiceContour />
 
-      {/* 9. Виджет Live-контента */}
-      <LiveContentWidget />
+      {/* 6. Telegram Live Channel Reviews per Figma node 1:423 */}
+      <TelegramLiveSection />
 
-      {/* 10. Презентация салонов на ул. Белинского */}
-      <ShowroomsSection />
-
-      {/* 11. Официальная фотогалерея флагманского салона на Белинского, 15 */}
-      <ShowroomGallerySection />
+      {/* 7. Showroom Map Section (Quiet Luxury Yandex Map) */}
+      <ShowroomMapSection />
     </div>
   );
 }
