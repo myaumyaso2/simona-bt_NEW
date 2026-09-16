@@ -12,22 +12,35 @@ import {
   SimonaIconUser,
 } from '@/components/brand/SimonaIcons';
 
-export function Header() {
-  const [isScrolled, setIsScrolled] = useState(false);
+interface HeaderProps {
+  isScrolled?: boolean;
+  onMobileMenuToggle?: (isOpen: boolean) => void;
+}
+
+export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: HeaderProps = {}) {
+  const [internalScrolled, setInternalScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { cartCount, setIsCartOpen, openModal } = useStore();
+  const { cartCount, setIsCartOpen, openModal, wishlist, compare } = useStore();
+
+  const isScrolled = propIsScrolled !== undefined ? propIsScrolled : internalScrolled;
 
   useEffect(() => {
+    if (propIsScrolled !== undefined) return;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setInternalScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [propIsScrolled]);
+
+  const handleMobileMenuToggle = (open: boolean) => {
+    setMobileMenuOpen(open);
+    onMobileMenuToggle?.(open);
+  };
 
   return (
     <header
-      className={`sticky top-0 z-40 transition-all duration-300 ${
+      className={`w-full z-40 transition-all duration-300 ${
         isScrolled
           ? 'bg-[#111315]/95 backdrop-blur-xl border-b border-[#2B313A] shadow-xl py-3.5'
           : 'bg-[#111315]/90 backdrop-blur-lg border-b border-[#2B313A]/70 py-4 sm:py-5'
@@ -109,14 +122,28 @@ export function Header() {
             <div className="hidden sm:flex items-center h-[38px] rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-[#3E3D40] transition-colors p-0.5">
               {/* Wishlist Button (Figma Node 1006:67) */}
               <button
-                onClick={() => alert('Избранное: список сохраненных приборов пуст')}
+                onClick={() => {
+                  if (wishlist.length === 0) {
+                    alert('Избранное: список сохраненных приборов пуст');
+                  } else {
+                    alert(`В избранном приборов: ${wishlist.length}`);
+                  }
+                }}
                 aria-label="Избранное"
                 title="Избранное"
                 className="h-full px-2.5 text-[#87888A] hover:text-white hover:bg-[#242A32] rounded-lg transition-all flex items-center space-x-1.5 group"
               >
-                <SimonaIconHeart className="w-4 h-4 group-hover:text-simona-teal transition-colors" />
-                <span className="text-[10px] font-semibold text-[#87888A] group-hover:text-simona-teal transition-colors">
-                  0
+                <SimonaIconHeart
+                  className={`w-4 h-4 transition-colors ${
+                    wishlist.length > 0 ? 'text-simona-teal' : 'group-hover:text-simona-teal'
+                  }`}
+                />
+                <span
+                  className={`text-[10px] font-semibold transition-colors ${
+                    wishlist.length > 0 ? 'text-simona-teal' : 'text-[#87888A] group-hover:text-simona-teal'
+                  }`}
+                >
+                  {wishlist.length}
                 </span>
               </button>
 
@@ -125,14 +152,28 @@ export function Header() {
 
               {/* Compare Button (Figma Node 1006:69) */}
               <button
-                onClick={() => alert('Сравнение: выберите модели в каталоге для сравнения характеристик')}
+                onClick={() => {
+                  if (compare.length === 0) {
+                    alert('Сравнение: выберите модели в каталоге для сравнения характеристик');
+                  } else {
+                    alert(`В сравнении приборов: ${compare.length}`);
+                  }
+                }}
                 aria-label="Сравнение"
                 title="Сравнение"
                 className="h-full px-2.5 text-[#87888A] hover:text-white hover:bg-[#242A32] rounded-lg transition-all flex items-center space-x-1.5 group"
               >
-                <SimonaIconCompare className="w-4 h-4 group-hover:text-simona-teal transition-colors" />
-                <span className="text-[10px] font-semibold text-[#87888A] group-hover:text-simona-teal transition-colors">
-                  0
+                <SimonaIconCompare
+                  className={`w-4 h-4 transition-colors ${
+                    compare.length > 0 ? 'text-simona-teal' : 'group-hover:text-simona-teal'
+                  }`}
+                />
+                <span
+                  className={`text-[10px] font-semibold transition-colors ${
+                    compare.length > 0 ? 'text-simona-teal' : 'text-[#87888A] group-hover:text-simona-teal'
+                  }`}
+                >
+                  {compare.length}
                 </span>
               </button>
             </div>
@@ -152,7 +193,7 @@ export function Header() {
 
             {/* Mobile hamburger */}
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={() => handleMobileMenuToggle(!mobileMenuOpen)}
               aria-label="Меню"
               className="lg:hidden p-2 sm:p-2.5 text-[#87888A] hover:text-white bg-[#1E2228] rounded-xl border border-[#2B313A] transition ml-0.5 sm:ml-1"
             >
@@ -169,7 +210,7 @@ export function Header() {
           <div className="flex items-center space-x-2 pt-1 pb-2 border-b border-[#2B313A]/60">
             <button
               onClick={() => {
-                setMobileMenuOpen(false);
+                handleMobileMenuToggle(false);
                 alert('Избранное: список сохраненных приборов пуст');
               }}
               className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded-xl bg-[#1E2228] border border-[#2B313A] text-xs text-[#D7D9DB] hover:text-white transition"
@@ -179,7 +220,7 @@ export function Header() {
             </button>
             <button
               onClick={() => {
-                setMobileMenuOpen(false);
+                handleMobileMenuToggle(false);
                 alert('Сравнение: выберите модели в каталоге для сравнения характеристик');
               }}
               className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded-xl bg-[#1E2228] border border-[#2B313A] text-xs text-[#D7D9DB] hover:text-white transition"
@@ -190,28 +231,28 @@ export function Header() {
           </div>
           <Link
             href="/catalog"
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={() => handleMobileMenuToggle(false)}
             className="block py-2 text-sm font-medium text-white border-b border-[#2B313A]"
           >
             Каталог техники (8 000+ SKU)
           </Link>
           <Link
             href="/catalog?promo=true"
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={() => handleMobileMenuToggle(false)}
             className="block py-2 text-sm font-medium text-[#D7D9DB] border-b border-[#2B313A]"
           >
             Акции и спецпредложения
           </Link>
           <Link
             href="#brands"
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={() => handleMobileMenuToggle(false)}
             className="block py-2 text-sm font-medium text-[#D7D9DB] border-b border-[#2B313A]"
           >
             Мировые бренды
           </Link>
           <button
             onClick={() => {
-              setMobileMenuOpen(false);
+              handleMobileMenuToggle(false);
               openModal('B2B_CLUB');
             }}
             className="block w-full text-left py-2 text-sm font-medium text-simona-teal border-b border-[#2B313A]"
@@ -220,7 +261,7 @@ export function Header() {
           </button>
           <button
             onClick={() => {
-              setMobileMenuOpen(false);
+              handleMobileMenuToggle(false);
               openModal('SHOWROOM_VISIT');
             }}
             className="w-full mt-3 py-2.5 rounded-xl bg-simona-teal text-white text-xs font-semibold tracking-wide text-center"

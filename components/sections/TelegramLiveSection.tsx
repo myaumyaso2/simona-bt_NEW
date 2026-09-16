@@ -5,6 +5,7 @@ import { Send, Play, Eye } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useStore } from '@/components/providers/StoreContext';
+import { PlexusConstellationBackground } from '@/components/backgrounds/PlexusConstellationBackground';
 
 const TELEGRAM_VIDEOS = [
   {
@@ -102,12 +103,15 @@ export function TelegramLiveSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-20 sm:py-24 bg-[#111315] border-t border-[#2B313A]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Main Box Container per Figma */}
+    <section ref={sectionRef} className="relative py-20 sm:py-24 bg-[#111315] border-t border-[#2B313A] overflow-hidden">
+      {/* Interactive Plexus Constellation Background */}
+      <PlexusConstellationBackground nodeCount={32} opacity={0.85} />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Main Box Container per Figma with Quiet Luxury Frosted Glass */}
         <div
           ref={containerRef}
-          className="rounded-3xl bg-[#16191D] border border-[#2B313A] p-8 sm:p-12 lg:p-14 shadow-2xl"
+          className="rounded-3xl bg-[#16191D]/90 backdrop-blur-xl border border-[#2B313A] p-8 sm:p-12 lg:p-14 shadow-2xl relative z-10"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             {/* Left Content (5 Cols) */}

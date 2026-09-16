@@ -27,7 +27,7 @@ export const BELINSKOGO_15_PHOTOS: ShowroomPhoto[] = [
     "subtitle": "Остров Miele & ASKO",
     "category": "ACTIVE_KITCHEN",
     "categoryLabel": "Активная кухня",
-    "tag": "🔥 Подключено к воде и газу",
+    "tag": "Подключено к воде и газу",
     "description": "Полностью функционирующий кухонный остров для персональных тест-драйвов и шеф-дегустаций."
   },
   {

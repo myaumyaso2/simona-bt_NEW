@@ -1,8 +1,11 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { SimonaIconPin, SimonaIconClock, SimonaIconPhoneSolid } from '@/components/brand/SimonaIcons';
 import { ExternalLink, Navigation } from 'lucide-react';
+import gsap from 'gsap';
+import { PlexusConstellationBackground } from '@/components/backgrounds/PlexusConstellationBackground';
 
 interface ShowroomPoint {
   id: string;
@@ -50,6 +53,9 @@ const BUILDING_CENTER: [number, number] = [56.310769, 44.001192];
 
 export function ShowroomMapSection() {
   const [activeId, setActiveId] = useState<string>('belinskogo-15');
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const cardBoxRef = useRef<HTMLDivElement>(null);
+  const cardContentRef = useRef<HTMLDivElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const singlePlacemarkRef = useRef<any>(null);
@@ -168,6 +174,15 @@ export function ShowroomMapSection() {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
+      if (cardBoxRef.current) {
+        gsap.killTweensOf(cardBoxRef.current);
+      }
+      if (cardContentRef.current) {
+        gsap.killTweensOf(cardContentRef.current);
+      }
+      if (sliderRef.current) {
+        gsap.killTweensOf(sliderRef.current);
+      }
       if (mapInstanceRef.current) {
         try {
           mapInstanceRef.current.destroy();
@@ -209,35 +224,110 @@ export function ShowroomMapSection() {
     animationFrameRef.current = requestAnimationFrame(step);
   };
 
-  // Handle active showroom change: smoothly glide single pointer across the building
+  // Handle active showroom change: smoothly glide single pointer across the building + animate card & slider
   const handleSelectShowroom = (id: string) => {
     if (id === activeId) return;
-    setActiveId(id);
+
+    // Direction: 1 if moving to Omoikiri (tab 2), -1 if moving to Flagman (tab 1)
+    const direction = id === 'belinskogo-11' ? 1 : -1;
+
+    // 1. Sliding pill animation (0 -> 100% or 100% -> 0)
+    if (sliderRef.current) {
+      gsap.to(sliderRef.current, {
+        xPercent: id === 'belinskogo-15' ? 0 : 100,
+        duration: 0.35,
+        ease: 'power2.out',
+      });
+    }
 
     const targetShowroom = SHOWROOMS.find((s) => s.id === id);
-    if (!targetShowroom) return;
+    if (targetShowroom) {
+      // Smoothly glide pointer from current coords to target entrance
+      animatePointerTo(currentCoordsRef.current, targetShowroom.coords);
 
-    // Smoothly glide pointer from current coords to target entrance
-    animatePointerTo(currentCoordsRef.current, targetShowroom.coords);
+      // Keep building framed in map center
+      if (mapInstanceRef.current) {
+        const isMobile = window.innerWidth < 1024;
+        const targetCenter: [number, number] = isMobile
+          ? [BUILDING_CENTER[0] - 0.0011, BUILDING_CENTER[1] + 0.0002]
+          : [BUILDING_CENTER[0], BUILDING_CENTER[1] - 0.0018];
 
-    // Keep building framed in map center
-    if (mapInstanceRef.current) {
-      const isMobile = window.innerWidth < 1024;
-      const targetCenter: [number, number] = isMobile
-        ? [BUILDING_CENTER[0] - 0.0011, BUILDING_CENTER[1] + 0.0002]
-        : [BUILDING_CENTER[0], BUILDING_CENTER[1] - 0.0018];
+        mapInstanceRef.current.panTo(targetCenter, {
+          flying: false,
+          duration: 700,
+        });
+      }
+    }
 
-      mapInstanceRef.current.panTo(targetCenter, {
-        flying: false,
-        duration: 700,
+    // Capture current card container height
+    const prevHeight = cardBoxRef.current ? cardBoxRef.current.offsetHeight : null;
+
+    // 2. Info card directional slide-crossfade + smooth height morph
+    if (cardContentRef.current) {
+      gsap.killTweensOf(cardContentRef.current);
+      if (cardBoxRef.current) gsap.killTweensOf(cardBoxRef.current);
+
+      gsap.to(cardContentRef.current, {
+        x: -direction * 18,
+        opacity: 0,
+        duration: 0.14,
+        ease: 'power1.in',
+        onComplete: () => {
+          // Temporarily freeze current height so React re-render doesn't cause an instant jump
+          if (cardBoxRef.current && prevHeight !== null) {
+            cardBoxRef.current.style.height = `${prevHeight}px`;
+          }
+
+          flushSync(() => {
+            setActiveId(id);
+          });
+
+          if (cardBoxRef.current && prevHeight !== null) {
+            // Measure new content natural height accurately
+            cardBoxRef.current.style.height = 'auto';
+            const targetHeight = cardBoxRef.current.offsetHeight;
+            cardBoxRef.current.style.height = `${prevHeight}px`;
+
+            // Animate card container height smoothly
+            gsap.fromTo(
+              cardBoxRef.current,
+              { height: prevHeight },
+              {
+                height: targetHeight,
+                duration: 0.35,
+                ease: 'power2.out',
+                onComplete: () => {
+                  if (cardBoxRef.current) {
+                    cardBoxRef.current.style.height = 'auto';
+                  }
+                },
+              }
+            );
+          }
+
+          if (cardContentRef.current) {
+            gsap.fromTo(
+              cardContentRef.current,
+              { x: direction * 18, opacity: 0 },
+              { x: 0, opacity: 1, duration: 0.35, ease: 'power2.out' }
+            );
+          }
+        },
       });
+    } else {
+      setActiveId(id);
     }
   };
 
   return (
     <section id="map" className="relative w-full bg-[#111315] py-16 lg:py-24 overflow-hidden">
+      {/* Interactive Plexus Constellation Background across header area */}
+      <div className="absolute inset-x-0 top-0 h-[400px] overflow-hidden pointer-events-none z-0">
+        <PlexusConstellationBackground nodeCount={28} maxDist={130} fadeBottom={true} opacity={0.8} />
+      </div>
+
       {/* Header of Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 sm:mb-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 sm:mb-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-lg bg-[#16191D] border border-[#2B313A] mb-3 shadow-md">
@@ -273,33 +363,38 @@ export function ShowroomMapSection() {
 
         {/* Floating Quiet Luxury Contact Card: Bottom on mobile, Center-left on desktop */}
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-end lg:justify-center pb-6 lg:pb-0 pointer-events-none">
-          <div className="w-full max-w-md bg-[#16191D]/90 backdrop-blur-xl border border-[#2B313A] rounded-2xl p-5 sm:p-7 shadow-2xl shadow-black/80 pointer-events-auto transition-all duration-300">
-            
-            {/* Pill Tabs Selector */}
-            <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#111315]/90 border border-[#2B313A]/80 rounded-xl mb-6">
-              {SHOWROOMS.map((s) => {
-                const isActive = s.id === activeId;
-                return (
-                  <button
-                    key={s.id}
-                    onClick={() => handleSelectShowroom(s.id)}
-                    className={`py-2.5 px-3 rounded-lg text-xs font-semibold tracking-wide transition-all duration-300 flex items-center justify-center space-x-1.5 ${
-                      isActive
-                        ? 'bg-gradient-to-r from-simona-teal-dark to-simona-teal text-white shadow-md shadow-simona-teal/20'
-                        : 'text-[#87888A] hover:text-white hover:bg-[#1E2228]'
-                    }`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white' : 'bg-transparent'}`} />
-                    <span className="truncate">
-                      {s.id === 'belinskogo-15' ? 'Белинского, 15' : 'Белинского, 11/66'}
-                    </span>
-                  </button>
-                );
-              })}
+          <div
+            ref={cardBoxRef}
+            className="w-full max-w-md sm:max-w-[480px] bg-[#16191D]/90 backdrop-blur-xl border border-[#2B313A] rounded-2xl p-5 sm:p-7 shadow-2xl shadow-black/80 pointer-events-auto overflow-hidden will-change-[height]"
+          >
+            {/* Showroom Tab Switcher (Quiet Luxury Sliding Pill) */}
+            <div className="relative flex w-full rounded-xl bg-[#111315] p-1 border border-[#2B313A] mb-6">
+              <div
+                ref={sliderRef}
+                className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm pointer-events-none will-change-transform"
+              />
+              <button
+                type="button"
+                onClick={() => handleSelectShowroom('belinskogo-15')}
+                className={`relative z-10 flex-1 py-2.5 px-2 sm:px-3 rounded-lg text-[11px] sm:text-xs font-semibold tracking-normal sm:tracking-wide transition-colors duration-300 text-center truncate cursor-pointer ${
+                  activeId === 'belinskogo-15' ? 'text-white' : 'text-[#87888A] hover:text-[#D7D9DB]'
+                }`}
+              >
+                <span className="hidden sm:inline">Флагман — </span>Белинского, 15
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSelectShowroom('belinskogo-11')}
+                className={`relative z-10 flex-1 py-2.5 px-2 sm:px-3 rounded-lg text-[11px] sm:text-xs font-semibold tracking-normal sm:tracking-wide transition-colors duration-300 text-center truncate cursor-pointer ${
+                  activeId === 'belinskogo-11' ? 'text-white' : 'text-[#87888A] hover:text-[#D7D9DB]'
+                }`}
+              >
+                <span className="hidden sm:inline">Omoikiri & Körting — </span><span className="sm:hidden">Белинского, </span>11/66
+              </button>
             </div>
 
             {/* Active Showroom Info */}
-            <div className="space-y-4">
+            <div ref={cardContentRef} className="space-y-4 will-change-transform">
               <div>
                 <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-simona-teal">
                   {activeShowroom.badge}

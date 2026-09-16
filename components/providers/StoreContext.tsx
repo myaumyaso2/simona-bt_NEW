@@ -31,12 +31,23 @@ interface StoreContextType {
   cart: CartItem[];
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
-  addToCart: (product: ProductItem, quantity?: number) => void;
+  addToCart: (product: ProductItem, quantity?: number, openDrawer?: boolean) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   cartTotal: number;
   cartCount: number;
+  isInCart: (productId: string) => boolean;
+
+  // Wishlist state
+  wishlist: string[];
+  toggleWishlist: (productId: string) => void;
+  isInWishlist: (productId: string) => boolean;
+
+  // Compare state
+  compare: string[];
+  toggleCompare: (productId: string) => void;
+  isInCompare: (productId: string) => boolean;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -45,16 +56,22 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [modal, setModal] = useState<ModalState>({ type: null });
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [wishlist, setWishlist] = useState<string[]>([]);
+  const [compare, setCompare] = useState<string[]>([]);
 
-  // Load cart from localStorage on mount
+  // Load cart, wishlist, compare from localStorage on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('simona_cart');
-      if (saved) {
-        setCart(JSON.parse(saved));
-      }
+      const savedCart = localStorage.getItem('simona_cart');
+      if (savedCart) setCart(JSON.parse(savedCart));
+
+      const savedWishlist = localStorage.getItem('simona_wishlist');
+      if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+
+      const savedCompare = localStorage.getItem('simona_compare');
+      if (savedCompare) setCompare(JSON.parse(savedCompare));
     } catch (e) {
-      console.error('Error loading cart:', e);
+      console.error('Error loading stored items:', e);
     }
   }, []);
 
@@ -66,6 +83,24 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       console.error('Error saving cart:', e);
     }
   }, [cart]);
+
+  // Save wishlist to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('simona_wishlist', JSON.stringify(wishlist));
+    } catch (e) {
+      console.error('Error saving wishlist:', e);
+    }
+  }, [wishlist]);
+
+  // Save compare to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('simona_compare', JSON.stringify(compare));
+    } catch (e) {
+      console.error('Error saving compare:', e);
+    }
+  }, [compare]);
 
   const openModal = (
     type: ModalState['type'],
@@ -83,7 +118,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setModal({ type: null, product: null });
   };
 
-  const addToCart = (product: ProductItem, quantity = 1) => {
+  const addToCart = (product: ProductItem, quantity = 1, openDrawer = true) => {
     setCart((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
       if (existing) {
@@ -95,7 +130,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       }
       return [...prev, { product, quantity }];
     });
-    setIsCartOpen(true);
+    if (openDrawer) {
+      setIsCartOpen(true);
+    }
   };
 
   const removeFromCart = (productId: string) => {
@@ -117,6 +154,24 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const clearCart = () => {
     setCart([]);
   };
+
+  const isInCart = (productId: string) => cart.some((item) => item.product.id === productId);
+
+  const toggleWishlist = (productId: string) => {
+    setWishlist((prev) =>
+      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
+    );
+  };
+
+  const isInWishlist = (productId: string) => wishlist.includes(productId);
+
+  const toggleCompare = (productId: string) => {
+    setCompare((prev) =>
+      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
+    );
+  };
+
+  const isInCompare = (productId: string) => compare.includes(productId);
 
   const cartTotal = cart.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -140,6 +195,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         clearCart,
         cartTotal,
         cartCount,
+        isInCart,
+        wishlist,
+        toggleWishlist,
+        isInWishlist,
+        compare,
+        toggleCompare,
+        isInCompare,
       }}
     >
       {children}

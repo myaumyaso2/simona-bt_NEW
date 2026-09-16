@@ -3,8 +3,7 @@ import { Montserrat } from 'next/font/google';
 import './globals.css';
 import { StoreProvider } from '@/components/providers/StoreContext';
 import { SmoothScrollProvider } from '@/components/providers/SmoothScrollProvider';
-import { UmbrellaBar } from '@/components/layout/UmbrellaBar';
-import { Header } from '@/components/layout/Header';
+import { HeaderContainer } from '@/components/layout/HeaderContainer';
 import { Footer } from '@/components/layout/Footer';
 import { GlobalModalContainer } from '@/components/modals/GlobalModalContainer';
 
@@ -39,8 +38,7 @@ export default function RootLayout({
       <body className="bg-[#111315] text-white font-sans min-h-screen flex flex-col antialiased selection:bg-simona-teal/30 selection:text-white">
         <SmoothScrollProvider>
           <StoreProvider>
-            <UmbrellaBar />
-            <Header />
+            <HeaderContainer />
             <main className="flex-1">{children}</main>
             <Footer />
             <GlobalModalContainer />

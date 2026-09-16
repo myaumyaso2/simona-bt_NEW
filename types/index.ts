@@ -1,6 +1,13 @@
 export type CategoryType = 'CATEGORY_A' | 'CATEGORY_B';
 
-export type PhysicalStatus = 'ACTIVE_KITCHEN' | 'EXHIBITION_15' | 'EXHIBITION_11' | 'ON_ORDER';
+export type PhysicalStatus =
+  | 'SHOWROOM'
+  | 'LOCAL_STOCK'
+  | 'REMOTE_STOCK'
+  | 'ON_ORDER'
+  | 'ACTIVE_KITCHEN'
+  | 'EXHIBITION_15'
+  | 'EXHIBITION_11';
 
 export interface ProductFeature {
   label: string;

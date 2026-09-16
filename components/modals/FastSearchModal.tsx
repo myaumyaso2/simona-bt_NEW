@@ -143,10 +143,10 @@ export function FastSearchModal() {
                           addToCart(product);
                           closeModal();
                         }}
-                        className="px-3 py-1.5 rounded-full bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-bold flex items-center shadow-xs"
+                        className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-simona-teal-dark to-simona-teal hover:to-simona-teal-light text-white text-xs font-semibold tracking-wide transition-all duration-300 shadow-md shadow-simona-teal/30 hover:shadow-simona-teal/50 hover:scale-[1.02] active:scale-98 flex items-center cursor-pointer"
                       >
-                        <SimonaIconCart className="w-3 h-3 mr-1" />
-                        В корзину
+                        <SimonaIconCart className="w-3 h-3 mr-1 flex-shrink-0" />
+                        <span>В корзину</span>
                       </button>
                     ) : product.physicalStatus === 'ACTIVE_KITCHEN' ? (
                       <button

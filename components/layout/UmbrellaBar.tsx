@@ -12,7 +12,7 @@ export function UmbrellaBar() {
   const kuhniUrl = process.env.NEXT_PUBLIC_KUHNI_URL || 'https://simona-kuhni.ru';
 
   return (
-    <div className="bg-[#0B0C0E] border-b border-[#2B313A] text-xs text-[#87888A] select-none z-50 relative">
+    <div className="bg-[#0B0C0E]/95 backdrop-blur-xl border-b border-[#2B313A] text-xs text-[#87888A] select-none z-50 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-9 flex items-center justify-between">
         {/* Umbrella Brand Switcher */}
         <div className="flex items-center space-x-3">

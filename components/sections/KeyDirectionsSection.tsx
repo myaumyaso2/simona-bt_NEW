@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, Plus } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { DeepParallaxBackground } from '@/components/backgrounds/DeepParallaxBackground';
 
 interface CategoryDirection {
   title: string;
@@ -179,9 +180,12 @@ export function KeyDirectionsSection() {
     <section
       id="catalog"
       ref={sectionRef}
-      className="py-20 sm:py-28 bg-[#111315] border-t border-[#2B313A]"
+      className="relative py-20 sm:py-28 bg-[#111315] border-t border-[#2B313A] overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Interactive Deep Parallax Watermarks Background */}
+      <DeepParallaxBackground />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header with Catalog Link */}
         <div
           ref={headerRef}

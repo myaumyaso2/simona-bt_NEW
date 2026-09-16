@@ -90,7 +90,7 @@ export function MagnetCatalog({ products }: MagnetCatalogProps) {
             }`}
           >
             <SimonaIconChef className="w-3.5 h-3.5 mr-1.5 text-amber-600" />
-            🔥 На «Активной кухне»
+            На «Активной кухне»
           </button>
 
           <button
@@ -102,7 +102,7 @@ export function MagnetCatalog({ products }: MagnetCatalogProps) {
             }`}
           >
             <MapPin className="w-3.5 h-3.5 mr-1.5" />
-            📍 В экспозиции (Белинского 15 & 11/66)
+            В экспозиции (Белинского 15 & 11/66)
           </button>
 
           <button

@@ -13,7 +13,7 @@ export function ShowroomGallerySection() {
 
   const categories = [
     { id: 'ALL', name: 'Все пространства' },
-    { id: 'ACTIVE_KITCHEN', name: '🔥 Активная кухня' },
+    { id: 'ACTIVE_KITCHEN', name: 'Активная кухня' },
     { id: 'BRANDS', name: 'Бренд-зоны (Miele, ASKO, SMEG)' },
     { id: 'ZONES', name: 'Зоны экспозиции & Сомелье' },
     { id: 'B2B', name: 'Лаунж для дизайнеров' },

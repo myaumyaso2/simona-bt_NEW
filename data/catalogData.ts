@@ -1,0 +1,245 @@
+import { ProductItem } from '@/types';
+
+export interface SubCategoryTag {
+  id: string;
+  name: string;
+  filterFn: (product: ProductItem) => boolean;
+}
+
+export const CATALOG_SUBCATEGORIES: SubCategoryTag[] = [
+  { id: 'all', name: 'Все модели', filterFn: () => true },
+  { id: 'steam', name: 'С функцией пара', filterFn: (p) => p.name.toLowerCase().includes('пар') || p.category.toLowerCase().includes('пар') || Boolean(p.description && p.description.toLowerCase().includes('пар')) },
+  { id: 'microwave', name: 'С СВЧ', filterFn: (p) => p.name.toLowerCase().includes('свч') || (p.shortDesc ? p.shortDesc.toLowerCase().includes('свч') : false) },
+  { id: 'compact-45', name: 'Компактные 45 см', filterFn: (p) => Boolean(p.dimensions && p.dimensions.includes('45')) || p.name.includes('45') },
+  { id: 'standard-60', name: 'Стандартные 60 см', filterFn: (p) => Boolean(p.dimensions && (p.dimensions.includes('60') || p.dimensions.includes('595'))) || p.name.includes('60') },
+  { id: 'wide-90', name: 'Широкие 90 см', filterFn: (p) => Boolean(p.dimensions && p.dimensions.includes('90')) || p.name.includes('90') },
+  { id: 'pyrolysis', name: 'Пиролитическая очистка', filterFn: (p) => Boolean(p.description && p.description.toLowerCase().includes('пиролиз')) || Boolean(p.shortDesc && p.shortDesc.toLowerCase().includes('пиролиз')) },
+];
+
+export const CATALOG_PRODUCTS: ProductItem[] = [
+  // 1. Miele DGC 7860 Obsidian Black (Exact from Figma)
+  {
+    id: 'prod-figma-1',
+    sku: 'DGC 7860',
+    name: 'Miele DGC 7860 Obsidian Black',
+    slug: 'miele-dgc-7860-obsidian-black',
+    brand: 'Miele',
+    category: 'Духовой шкаф с паром',
+    categoryType: 'CATEGORY_B',
+    physicalStatus: 'SHOWROOM',
+    price: 489900,
+    oldPrice: 539000,
+    inStock: true,
+    stockCount: 1,
+    shortDesc: '60 см • 68 л • Пиролиз • M Chef • Wi-Fi',
+    description: 'Флагманский комбинированный духовой шкаф с подключением к водопроводу, беспроводным термощупом и камерой в рабочей камере. Представлен на экспозиции салона СИМОНА на Белинского, 15.',
+    dimensions: '595 × 596 × 568 мм (60 см)',
+    schematicPdfUrl: '/schematics/miele-dgc7860.pdf',
+    images: [
+      'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=1000&q=80',
+    ],
+    badge: 'На витрине',
+    isFeatured: true,
+  },
+
+  // 2. ASKO OP8664S CleanSteel (Exact from Figma)
+  {
+    id: 'prod-figma-2',
+    sku: 'OP8664S',
+    name: 'ASKO OP8664S CleanSteel',
+    slug: 'asko-op8664s-cleansteel',
+    brand: 'ASKO',
+    category: 'Паровой духовой шкаф',
+    categoryType: 'CATEGORY_B',
+    physicalStatus: 'SHOWROOM',
+    price: 312000,
+    oldPrice: null,
+    inStock: true,
+    stockCount: 2,
+    shortDesc: '60 см • 72 л • Пар • Гриль • SteelTouch',
+    description: 'Паровой шкаф ASKO премиальной серии Elements. Сенсорный дисплей SteelTouch, чистый пар PureSteam и пиролитическая самоочистка. Выставлен в экспозиции салона СИМОНА на ул. Белинского, 15.',
+    dimensions: '595 × 595 × 546 мм (60 см)',
+    schematicPdfUrl: '/schematics/asko-op8664s.pdf',
+    images: [
+      'https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=1000&q=80',
+    ],
+    badge: 'На витрине',
+    isFeatured: true,
+  },
+
+  // 3. Bertazzoni F6011MODVTNE Nero (Exact from Figma)
+  {
+    id: 'prod-figma-3',
+    sku: 'F6011MODVTNE',
+    name: 'Bertazzoni F6011MODVTNE Nero',
+    slug: 'bertazzoni-f6011modvtne-nero',
+    brand: 'Bertazzoni',
+    category: 'Многофункциональный шкаф',
+    categoryType: 'CATEGORY_B',
+    physicalStatus: 'LOCAL_STOCK',
+    price: 274500,
+    oldPrice: 298000,
+    inStock: true,
+    stockCount: 5,
+    shortDesc: '60 см • 76 л • 11 режимов • Пиролиз',
+    description: 'Итальянский шедевр Modern Series в матовом черном исполнении Nero. 11 профессиональных режимов приготовления, телескопические направляющие и пиролиз. В наличии на складе в Нижнем Новгороде.',
+    dimensions: '592 × 598 × 550 мм (60 см)',
+    schematicPdfUrl: '/schematics/bertazzoni-f6011.pdf',
+    images: [
+      'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?auto=format&fit=crop&w=1000&q=80',
+    ],
+    badge: 'На складе',
+    isFeatured: false,
+  },
+
+  // 4. Miele H 7464 BP Grafitschwarz (Exact from Figma)
+  {
+    id: 'prod-figma-4',
+    sku: 'H 7464 BP',
+    name: 'Miele H 7464 BP Grafitschwarz',
+    slug: 'miele-h-7464-bp-grafitschwarz',
+    brand: 'Miele',
+    category: 'Духовой шкаф',
+    categoryType: 'CATEGORY_B',
+    physicalStatus: 'SHOWROOM',
+    price: 389900,
+    oldPrice: null,
+    inStock: true,
+    stockCount: 2,
+    shortDesc: '60 см • 76 л • Пиролиз • DirectSensor',
+    description: 'Духовой шкаф Miele в эксклюзивном оттенке «Графитовый серый» без ручки (Touch2Open). Пиролиз, автоматические программы и термощуп. Доступен для визуальной оценки в салоне на Белинского, 15.',
+    dimensions: '596 × 595 × 569 мм (60 см)',
+    schematicPdfUrl: '/schematics/miele-h7464.pdf',
+    images: [
+      'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=1000&q=80',
+    ],
+    badge: 'На витрине',
+    isFeatured: true,
+  },
+
+  // 5. SMEG SF6604VCNE Nero (Exact from Figma)
+  {
+    id: 'prod-figma-5',
+    sku: 'SF6604VCNE',
+    name: 'SMEG SF6604VCNE Nero',
+    slug: 'smeg-sf6604vcne-nero',
+    brand: 'SMEG',
+    category: 'Паровой комби-шкаф',
+    categoryType: 'CATEGORY_B',
+    physicalStatus: 'REMOTE_STOCK',
+    price: 258000,
+    oldPrice: 279000,
+    inStock: true,
+    stockCount: 1,
+    shortDesc: '60 см • 70 л • Пар + СВЧ • Пиролиз',
+    description: 'Премиальная линия Dolce Stil Novo от итальянского дома SMEG. Медное или черное обрамление Eclipse Glass, комбинированные режимы пара и микроволн. Поставка с центрального склада в РФ.',
+    dimensions: '592 × 597 × 548 мм (60 см)',
+    schematicPdfUrl: '/schematics/smeg-sf6604.pdf',
+    images: [
+      'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80',
+    ],
+    badge: 'На удаленном складе',
+    isFeatured: true,
+  },
+
+  // 6. ASKO OCS8664S CombiSteam (Exact from Figma)
+  {
+    id: 'prod-figma-6',
+    sku: 'OCS8664S',
+    name: 'ASKO OCS8664S CombiSteam',
+    slug: 'asko-ocs8664s-combisteam',
+    brand: 'ASKO',
+    category: 'Паровой духовой шкаф',
+    categoryType: 'CATEGORY_B',
+    physicalStatus: 'ON_ORDER',
+    price: 341000,
+    oldPrice: null,
+    inStock: true,
+    stockCount: 4,
+    shortDesc: '60 см • 72 л • Пар • СВЧ • Wi-Fi',
+    description: 'Многофункциональный паровой шкаф ASKO серии Craft со скандинавским стальным фасадом. Режим приготовления сувид и автоматическая система подачи пара. Поставка под заказ со склада фабрики.',
+    dimensions: '595 × 595 × 546 мм (60 см)',
+    schematicPdfUrl: '/schematics/asko-ocs8664s.pdf',
+    images: [
+      'https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=1000&q=80',
+    ],
+    badge: 'Под заказ',
+    isFeatured: false,
+  },
+
+  // 7. Miele DGC 7440 Compact 45 cm (Compact model)
+  {
+    id: 'prod-7',
+    sku: 'DGC 7440',
+    name: 'Miele DGC 7440 Compact Brilliant White',
+    slug: 'miele-dgc-7440-compact-white',
+    brand: 'Miele',
+    category: 'Компактный паровой шкаф',
+    categoryType: 'CATEGORY_B',
+    physicalStatus: 'SHOWROOM',
+    price: 395000,
+    oldPrice: 425000,
+    inStock: true,
+    stockCount: 1,
+    shortDesc: '45 см • 48 л • Пар DualSteam • DirectSensor',
+    description: 'Компактная комби-пароварка 45 см в белоснежном стекле Brilliant White. Идеальна для установки в кухонную колонну парой с кофемашиной. В экспозиции на Белинского, 15.',
+    dimensions: '455 × 595 × 568 мм (45 см)',
+    schematicPdfUrl: '/schematics/miele-dgc7440.pdf',
+    images: [
+      'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=1000&q=80',
+    ],
+    badge: 'На витрине',
+    isFeatured: true,
+  },
+
+  // 8. Bertazzoni F90PRO1XT 90 cm (Wide 90 cm model)
+  {
+    id: 'prod-8',
+    sku: 'F90PRO1XT',
+    name: 'Bertazzoni Professional F90PRO1XT Stainless Steel',
+    slug: 'bertazzoni-f90pro1xt-90cm',
+    brand: 'Bertazzoni',
+    category: 'Широкий духовой шкаф 90 см',
+    categoryType: 'CATEGORY_B',
+    physicalStatus: 'REMOTE_STOCK',
+    price: 498000,
+    oldPrice: null,
+    inStock: true,
+    stockCount: 2,
+    shortDesc: '90 см • 100 л • 11 функций • Двойной конвектор',
+    description: 'Профессиональный духовой шкаф увеличенной ширины 90 см из аутентичной нержавеющей стали. Позволяет готовить крупную дичь и выпекать одновременно на нескольких уровнях. Центральный склад.',
+    dimensions: '595 × 895 × 570 мм (90 см)',
+    schematicPdfUrl: '/schematics/bertazzoni-f90.pdf',
+    images: [
+      'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?auto=format&fit=crop&w=1000&q=80',
+    ],
+    badge: 'На удаленном складе',
+    isFeatured: false,
+  },
+
+  // 9. OMOIKIRI & KÖRTING 11/66 Showroom model
+  {
+    id: 'prod-9',
+    sku: 'OKB 9102 CS GB',
+    name: 'KÖRTING OKB 9102 CS GB Steam SteamPro',
+    slug: 'korting-okb-9102-cs-gb',
+    brand: 'Omoikiri',
+    category: 'Духовой шкаф с паром',
+    categoryType: 'CATEGORY_B',
+    physicalStatus: 'LOCAL_STOCK',
+    price: 189900,
+    oldPrice: 215000,
+    inStock: true,
+    stockCount: 2,
+    shortDesc: '60 см • 72 л • Парогенератор SteamPro • Сенсор',
+    description: 'Духовой шкаф с функцией пара и термощупом. В наличии на нижегородском складе СИМОНА.',
+    dimensions: '595 × 595 × 565 мм (60 см)',
+    schematicPdfUrl: '/schematics/korting-okb9102.pdf',
+    images: [
+      'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=1000&q=80',
+    ],
+    badge: 'На складе',
+    isFeatured: true,
+  },
+];

@@ -112,10 +112,10 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => addToCart(product)}
-                className="py-2.5 px-4 rounded-full bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-bold tracking-wide transition-all flex items-center justify-center col-span-2 shadow-md shadow-simona-teal/20 active:scale-98"
+                className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-simona-teal-dark to-simona-teal hover:to-simona-teal-light text-white text-xs font-semibold tracking-wide transition-all duration-300 flex items-center justify-center col-span-2 shadow-lg shadow-simona-teal/30 hover:shadow-simona-teal/50 hover:scale-[1.02] active:scale-98 cursor-pointer"
               >
-                <SimonaIconCart className="w-3.5 h-3.5 mr-1.5" />
-                Добавить в корзину
+                <SimonaIconCart className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
+                <span>В корзину</span>
               </button>
             </div>
           ) : product.physicalStatus === 'ACTIVE_KITCHEN' ? (

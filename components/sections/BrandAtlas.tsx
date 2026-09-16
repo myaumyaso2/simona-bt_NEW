@@ -4,8 +4,9 @@ import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { PlexusConstellationBackground } from '@/components/backgrounds/PlexusConstellationBackground';
 
-interface BrandItem {
+export interface BrandItem {
   name: string;
   country: string;
   badge: string;
@@ -13,7 +14,7 @@ interface BrandItem {
   slug: string;
 }
 
-const LUXURY_BRANDS: BrandItem[] = [
+export const LUXURY_BRANDS: BrandItem[] = [
   {
     name: 'Miele',
     country: 'Германия',
@@ -96,21 +97,19 @@ function BrandCardItem({ brand }: { brand: BrandItem }) {
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
 
-    // Subtle 3D magnetic tilt physics (Quiet Luxury ~4-5 deg max)
     gsap.to(cardRef.current, {
-      rotateY: x * 0.06,
-      rotateX: -y * 0.06,
-      transformPerspective: 800,
-      duration: 0.3,
+      rotateY: x * 0.05,
+      rotateX: -y * 0.05,
+      transformPerspective: 900,
+      duration: 0.25,
       ease: 'power2.out',
     });
 
-    // Move sheen reflection towards cursor
     if (sheenRef.current) {
       gsap.to(sheenRef.current, {
-        opacity: 0.18,
-        x: (e.clientX - rect.left) - 80,
-        y: (e.clientY - rect.top) - 80,
+        opacity: 0.22,
+        x: e.clientX - rect.left - 80,
+        y: e.clientY - rect.top - 80,
         duration: 0.2,
       });
     }
@@ -139,15 +138,13 @@ function BrandCardItem({ brand }: { brand: BrandItem }) {
       href={`/catalog?brand=${brand.slug}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="brand-card group relative overflow-hidden flex flex-col items-center justify-center p-5 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 hover:bg-[#1E2228] transition-colors duration-300 min-h-[105px] text-center will-change-transform shadow-md"
+      className="brand-card group relative overflow-hidden flex flex-col items-center justify-center p-5 rounded-xl bg-[#16191D]/90 backdrop-blur-md border border-[#2B313A]/90 hover:border-simona-teal/70 hover:bg-[#1E2228] transition-all duration-300 min-h-[108px] text-center will-change-transform shadow-lg shadow-black/40"
       style={{ transformStyle: 'preserve-3d' }}
     >
-      {/* Dynamic Cursor Sheen */}
       <div
         ref={sheenRef}
-        className="pointer-events-none absolute w-40 h-40 rounded-full bg-[radial-gradient(circle,rgba(0,151,156,0.35)_0%,transparent_70%)] opacity-0 -translate-x-1/2 -translate-y-1/2"
+        className="pointer-events-none absolute w-44 h-44 rounded-full bg-[radial-gradient(circle,rgba(0,181,186,0.35)_0%,transparent_70%)] opacity-0 -translate-x-1/2 -translate-y-1/2"
       />
-
       <span className="font-montserrat text-lg font-bold text-white group-hover:text-simona-teal transition-colors tracking-wide relative z-10">
         {brand.name}
       </span>
@@ -168,11 +165,10 @@ export function BrandAtlas() {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      // Staggered wave on scroll into view
       if (titleRef.current) {
         gsap.fromTo(
           titleRef.current,
-          { y: 20, opacity: 0 },
+          { y: 25, opacity: 0 },
           {
             y: 0,
             opacity: 1,
@@ -190,13 +186,13 @@ export function BrandAtlas() {
         const cards = gridRef.current.querySelectorAll('.brand-card');
         gsap.fromTo(
           cards,
-          { y: 35, opacity: 0, scale: 0.95 },
+          { y: 30, opacity: 0, scale: 0.96 },
           {
             y: 0,
             opacity: 1,
             scale: 1,
-            duration: 0.65,
-            stagger: 0.05,
+            duration: 0.6,
+            stagger: 0.04,
             ease: 'power2.out',
             scrollTrigger: {
               trigger: gridRef.current,
@@ -214,20 +210,34 @@ export function BrandAtlas() {
     <section
       id="brands"
       ref={sectionRef}
-      className="py-16 sm:py-20 bg-[#111315] border-t border-[#2B313A]/60"
+      className="relative py-20 sm:py-24 bg-[#111315] border-t border-[#2B313A]/70 overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Title */}
-        <div ref={titleRef} className="text-center mb-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#87888A]">
+      {/* Interactive Plexus Constellation Background */}
+      <PlexusConstellationBackground nodeCount={38} maxDist={145} mouseRadius={220} />
+
+      {/* Foreground Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pointer-events-none">
+        {/* Section Header */}
+        <div ref={titleRef} className="text-center mb-10 sm:mb-12">
+          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#16191D]/90 border border-simona-teal/40 backdrop-blur-md mb-4 shadow-md">
+            <span className="w-2 h-2 rounded-full bg-simona-teal animate-pulse" />
+            <span className="text-xs font-semibold text-simona-teal uppercase tracking-widest">
+              Официальный дилер
+            </span>
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-tight font-montserrat">
             Авторизованный дилер мировых брендов
+          </h2>
+          <p className="text-xs sm:text-sm text-[#87888A] mt-2.5 max-w-xl mx-auto leading-relaxed">
+            Прямые поставки оригинальной техники из Германии, Швеции, Италии и Японии с официальной гарантией производителя и сертифицированным сервисом.
           </p>
         </div>
 
-        {/* 2x5 Grid */}
+        {/* 10 Brands Grid */}
         <div
           ref={gridRef}
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3.5 sm:gap-4"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 pointer-events-auto"
         >
           {LUXURY_BRANDS.map((brand) => (
             <BrandCardItem key={brand.slug} brand={brand} />
