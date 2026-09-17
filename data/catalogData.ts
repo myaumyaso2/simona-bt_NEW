@@ -17,11 +17,11 @@ export const CATALOG_SUBCATEGORIES: SubCategoryTag[] = [
 ];
 
 export const CATALOG_PRODUCTS: ProductItem[] = [
-  // 1. Miele DGC 7860 Obsidian Black (Exact from Figma)
+  // 1. Miele DGC 7860 Obsidian Black (Flagship reference from Figma Make)
   {
     id: 'prod-figma-1',
     sku: 'DGC 7860',
-    name: 'Miele DGC 7860 Obsidian Black',
+    name: 'Комбинированный духовой шкаф с паром Miele DGC 7860 Obsidian Black',
     slug: 'miele-dgc-7860-obsidian-black',
     brand: 'Miele',
     category: 'Духовой шкаф с паром',
@@ -31,16 +31,108 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     oldPrice: 539000,
     inStock: true,
     stockCount: 1,
-    shortDesc: '60 см • 68 л • Пиролиз • M Chef • Wi-Fi',
-    description: 'Флагманский комбинированный духовой шкаф с подключением к водопроводу, беспроводным термощупом и камерой в рабочей камере. Представлен на экспозиции салона СИМОНА на Белинского, 15.',
-    dimensions: '595 × 596 × 568 мм (60 см)',
+    rating: 4.9,
+    reviewsCount: 28,
+    shortDesc: '60 см • 68 л • Пар + СВЧ + Пиролиз • M Touch • Wi-Fi',
+    description: 'Флагманский комбинированный духовой шкаф Miele Generation 7000 с внешним парогенератором DualSteam, встроенной HD-камерой FoodView в рабочей камере и пиролитической самоочисткой. Представлен в экспозиции флагманского салона СИМОНА на ул. Белинского, 15.',
+    dimensions: '596 × 595 × 568 мм (ниша 590-595 × 560-568 × 550 мм)',
     schematicPdfUrl: '/schematics/miele-dgc7860.pdf',
+    schematicDwgUrl: '/schematics/miele-dgc7860.dwg',
+    manualUrl: '/manuals/miele-dgc7860-ru.pdf',
     images: [
-      'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80',
     ],
     badge: 'На витрине',
     isFeatured: true,
+    colors: [
+      { id: 'obsidian', name: 'Obsidian Black (Черный обсидиан)', colorHex: '#0E0F12', isAvailable: true },
+      { id: 'cleansteel', name: 'CleanSteel (Нержавеющая сталь)', colorHex: '#9BA1A6', isAvailable: true },
+      { id: 'graphite', name: 'Graphite Grey (Графит)', colorHex: '#3E3D40', isAvailable: true },
+    ],
+    technologies: [
+      {
+        title: 'DualSteam: Точная подача пара',
+        subtitle: 'Внешний парогенератор',
+        description: 'Равномерное распределение пара за 40 секунд, сохранение клеточной структуры и микроэлементов продуктов на уровне ресторанной гастрономии.',
+        imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        title: 'Встроенная HD-камера FoodView',
+        subtitle: 'Интеллектуальный контроль',
+        description: 'Визуальный контроль процесса приготовления в рабочей камере в режиме реального времени через мобильное приложение Miele@mobile.',
+        imageUrl: 'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=800&q=80',
+      },
+      {
+        title: 'Пиролиз и покрытие PerfectClean',
+        subtitle: 'Безупречная самоочистка',
+        description: 'Термолиз любых загрязнений при 480°C и запатентованная антипригарная эмаль PerfectClean. Уборка сводится к протиранию влажной салфеткой.',
+        imageUrl: 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=80',
+      },
+    ],
+    specGroups: [
+      {
+        groupName: 'Габариты и конструкция',
+        items: [
+          { label: 'Тип монтажа', value: 'Встраиваемый в колонну или под столешницу' },
+          { label: 'Габариты прибора (ВхШхГ)', value: '596 × 595 × 568 мм' },
+          { label: 'Размеры ниши для встройки', value: '590-595 × 560-568 × 550 мм' },
+          { label: 'Полезный объем рабочей камеры', value: '68 литров' },
+          { label: 'Количество уровней установки', value: '4 с направляющими FlexiClip' },
+          { label: 'Масса нетто', value: '46.4 кг' },
+        ],
+      },
+      {
+        groupName: 'Функции и подключение',
+        items: [
+          { label: 'Диапазон температур', value: '30°C – 250°C' },
+          { label: 'Режимы приготовления', value: '24 автопрограммы, СВЧ, конвекция + пар' },
+          { label: 'Мощность подключения', value: '3.5 кВт (220-240 В, 16 А)' },
+          { label: 'Тип управления', value: 'Сенсорный цветной дисплей M Touch' },
+          { label: 'Сетевые возможности', value: 'Wi-Fi (Miele@home)' },
+          { label: 'Страна производства', value: 'Германия' },
+        ],
+      },
+    ],
+    expertVerdict: {
+      expertName: 'Михаил Семенов',
+      expertRole: 'Ведущий технический специалист салона «СИМОНА»',
+      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      title: 'Прецизионная инженерия пара Miele',
+      quote: 'DGC 7860 — один из самых сбалансированных комби-приборов в линейке Generation 7000. Внешний парогенератор DualSteam полностью исключает образование накипи внутри рабочей камеры, а точность беспроводного термощупа до 1 градуса позволяет готовить сложные ресторанные блюда без риска температурной ошибки.',
+      scores: [
+        { label: 'Качество сборки', score: 5.0 },
+        { label: 'Точность датчиков', score: 5.0 },
+        { label: 'Надежность узлов', score: 4.9 },
+      ],
+    },
+    reviews: [
+      {
+        id: 'rev-1',
+        author: 'Елена В.',
+        verifiedPurchase: true,
+        location: 'ЖК «Дворянский», Нижний Новгород',
+        rating: 5,
+        date: '14 февраля 2026',
+        text: 'Установили в колонну вместе с кофемашиной Miele в ЖК «Дворянский». Черное стекло Obsidian выглядит монолитно. Функция пара великолепно раскрывает домашнюю выпечку и деликатную рыбу.',
+        photos: [
+          'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=500&q=80',
+          'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=500&q=80',
+        ],
+      },
+      {
+        id: 'rev-2',
+        author: 'Михаил К.',
+        verifiedPurchase: true,
+        location: 'Архитектурное бюро «Среда»',
+        rating: 5,
+        date: '28 января 2026',
+        text: 'Регулярно закладываю эту модель в проекты для частных заказчиков. Безупречная геометрия встройки вровень с фасадами кухонь, а инженеры СИМОНЫ подключили и откалибровали все день в день.',
+      },
+    ],
   },
 
   // 2. ASKO OP8664S CleanSteel (Exact from Figma)
@@ -243,3 +335,91 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     isFeatured: true,
   },
 ];
+
+export interface BundleItem {
+  id: string;
+  sku: string;
+  name: string;
+  category: string;
+  price: number;
+  imageUrl: string;
+  isMain?: boolean;
+}
+
+export interface AccessoryItem {
+  id: string;
+  sku: string;
+  name: string;
+  category: string;
+  price: number;
+  imageUrl: string;
+  badge?: string;
+}
+
+export const MIELE_SUITE_BUNDLE: BundleItem[] = [
+  {
+    id: 'bundle-oven',
+    sku: 'DGC 7860',
+    name: 'Духовой шкаф с паром Miele DGC 7860 Obsidian Black',
+    category: 'Духовой шкаф',
+    price: 489900,
+    imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80',
+    isMain: true,
+  },
+  {
+    id: 'bundle-coffee',
+    sku: 'CVA 7845',
+    name: 'Встраиваемая кофемашина Miele CVA 7845 Obsidian Black',
+    category: 'Кофемашина',
+    price: 429900,
+    imageUrl: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80',
+    isMain: false,
+  },
+  {
+    id: 'bundle-drawer',
+    sku: 'ESW 7010',
+    name: 'Подогреватель посуды Miele ESW 7010 Obsidian Black',
+    category: 'Подогреватель посуды',
+    price: 149900,
+    imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80',
+    isMain: false,
+  },
+];
+
+export const MIELE_CARE_ACCESSORIES: AccessoryItem[] = [
+  {
+    id: 'acc-1',
+    sku: 'HFC 70',
+    name: 'Противень с покрытием PerfectClean',
+    category: 'Оригинальный аксессуар',
+    price: 18900,
+    imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80',
+    badge: 'Рекомендация Miele',
+  },
+  {
+    id: 'acc-2',
+    sku: 'Wireless Probe',
+    name: 'Беспроводной пищевой термощуп Miele',
+    category: 'Высокоточный датчик',
+    price: 14200,
+    imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    id: 'acc-3',
+    sku: 'Descaling Tabs',
+    name: 'Таблетки от накипи для пароварок Miele',
+    category: 'Фирменная химия',
+    price: 3490,
+    imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80',
+    badge: 'Хит продаж',
+  },
+  {
+    id: 'acc-4',
+    sku: 'DGClean',
+    name: 'Очиститель рабочей камеры DGClean Miele',
+    category: 'Фирменный уход',
+    price: 2890,
+    imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80',
+  },
+];
+

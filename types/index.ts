@@ -14,6 +14,46 @@ export interface ProductFeature {
   value: string;
 }
 
+export interface ProductTechnology {
+  title: string;
+  subtitle: string;
+  description: string;
+  imageUrl: string;
+}
+
+export interface ProductColorOption {
+  id: string;
+  name: string;
+  colorHex: string;
+  slug?: string;
+  isAvailable?: boolean;
+}
+
+export interface ProductSpecGroup {
+  groupName: string;
+  items: { label: string; value: string }[];
+}
+
+export interface ProductReview {
+  id: string;
+  author: string;
+  verifiedPurchase: boolean;
+  location?: string;
+  rating: number;
+  date: string;
+  text: string;
+  photos?: string[];
+}
+
+export interface ProductExpertVerdict {
+  expertName: string;
+  expertRole: string;
+  avatarUrl: string;
+  title: string;
+  quote: string;
+  scores: { label: string; score: number }[];
+}
+
 export interface ProductItem {
   id: string;
   sku: string;
@@ -33,10 +73,19 @@ export interface ProductItem {
   featuresJson?: string;
   dimensions?: string | null;
   schematicPdfUrl?: string | null;
+  schematicDwgUrl?: string | null;
+  manualUrl?: string | null;
   images?: string[];
   imagesJson?: string;
   badge?: string | null;
   isFeatured?: boolean;
+  colors?: ProductColorOption[];
+  technologies?: ProductTechnology[];
+  specGroups?: ProductSpecGroup[];
+  expertVerdict?: ProductExpertVerdict;
+  reviews?: ProductReview[];
+  rating?: number;
+  reviewsCount?: number;
 }
 
 export interface CartItem {

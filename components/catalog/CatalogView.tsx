@@ -5,8 +5,9 @@ import { motion } from 'framer-motion';
 import { CATALOG_PRODUCTS, CATALOG_SUBCATEGORIES } from '@/data/catalogData';
 import { CatalogHero, PhysicalTabType } from './CatalogHero';
 import { CatalogSidebar, FilterState } from './CatalogSidebar';
-import { CatalogToolbar, SortOption } from './CatalogToolbar';
+import { CatalogToolbar, SortOption, ViewMode } from './CatalogToolbar';
 import { LuxuryProductCard } from './LuxuryProductCard';
+import { LuxuryProductListCard } from './LuxuryProductListCard';
 import { CatalogPagination } from './CatalogPagination';
 import { CatalogServiceContour } from './CatalogServiceContour';
 import { MobileFilterDrawer } from './MobileFilterDrawer';
@@ -14,8 +15,8 @@ import { MobileFilterDrawer } from './MobileFilterDrawer';
 export function CatalogView() {
   const [activeSubcategory, setActiveSubcategory] = useState<string>('all');
   const [activePhysicalTab, setActivePhysicalTab] = useState<PhysicalTabType>('ALL');
-  const [sort, setSort] = useState<SortOption>('showroom_first');
-  const [columns, setColumns] = useState<3 | 4>(3);
+  const [sort, setSort] = useState<SortOption>('popular');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
@@ -125,21 +126,8 @@ export function CatalogView() {
 
       return true;
     }).sort((a, b) => {
-      if (sort === 'showroom_first') {
-        const rank = (status: string) => {
-          if (
-            status === 'SHOWROOM' ||
-            status === 'ACTIVE_KITCHEN' ||
-            status === 'EXHIBITION_15' ||
-            status === 'EXHIBITION_11'
-          ) {
-            return 1;
-          }
-          if (status === 'LOCAL_STOCK') return 2;
-          if (status === 'REMOTE_STOCK') return 3;
-          return 4;
-        };
-        return rank(a.physicalStatus) - rank(b.physicalStatus);
+      if (sort === 'popular') {
+        return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
       }
       if (sort === 'price_asc') {
         return a.price - b.price;
@@ -147,8 +135,8 @@ export function CatalogView() {
       if (sort === 'price_desc') {
         return b.price - a.price;
       }
-      if (sort === 'popular') {
-        return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
+      if (sort === 'newest') {
+        return b.id.localeCompare(a.id);
       }
       return 0;
     });
@@ -207,25 +195,31 @@ export function CatalogView() {
               onRemoveColor={() => handleFilterChange({ selectedColor: null })}
               sort={sort}
               onSortChange={setSort}
-              columns={columns}
-              onColumnsChange={setColumns}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
               onOpenMobileFilters={() => setIsMobileFiltersOpen(true)}
             />
 
-            {/* Product Cards Grid */}
+            {/* Product Cards: Grid or List */}
             {filteredProducts.length > 0 ? (
               <motion.div
-                key={`${activePhysicalTab}-${activeSubcategory}-${sort}-${columns}`}
+                key={`${activePhysicalTab}-${activeSubcategory}-${sort}-${viewMode}`}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
-                className={`grid grid-cols-1 sm:grid-cols-2 ${
-                  columns === 4 ? 'xl:grid-cols-4' : 'lg:grid-cols-3'
-                } gap-5`}
+                className={
+                  viewMode === 'grid'
+                    ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5'
+                    : 'flex flex-col space-y-4'
+                }
               >
-                {filteredProducts.map((product) => (
-                  <LuxuryProductCard key={product.id} product={product} />
-                ))}
+                {filteredProducts.map((product) =>
+                  viewMode === 'grid' ? (
+                    <LuxuryProductCard key={product.id} product={product} />
+                  ) : (
+                    <LuxuryProductListCard key={product.id} product={product} />
+                  )
+                )}
               </motion.div>
             ) : (
               <div className="py-20 text-center rounded-2xl bg-[#16191D] border border-[#2B313A] p-8">

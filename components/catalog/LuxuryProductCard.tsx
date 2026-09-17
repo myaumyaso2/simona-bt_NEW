@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { ProductItem } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
@@ -43,7 +44,10 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
     <div className="group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 transition-all duration-300 shadow-xl flex flex-col justify-between">
       <div>
         {/* Top Media Area */}
-        <div className="relative aspect-[4/3] bg-[#1E2228] rounded-xl overflow-hidden flex items-center justify-center border border-[#2B313A]/50">
+        <Link
+          href={`/product/${product.slug}`}
+          className="block relative aspect-[4/3] bg-[#1E2228] rounded-xl overflow-hidden flex items-center justify-center border border-[#2B313A]/50"
+        >
           {/* Badges Stack (Top-Left): Availability Status + Brand Tag */}
           <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1.5 max-w-[85%]">
             {product.physicalStatus === 'SHOWROOM' ||
@@ -80,7 +84,7 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
             className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
           />
-        </div>
+        </Link>
 
         {/* Content Area */}
         <div className="mt-3.5">
@@ -93,9 +97,11 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
           </div>
 
           {/* Product Name */}
-          <h3 className="text-[15px] font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors line-clamp-2 leading-snug">
-            {product.name}
-          </h3>
+          <Link href={`/product/${product.slug}`} className="block">
+            <h3 className="text-[15px] font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors line-clamp-2 leading-snug">
+              {product.name}
+            </h3>
+          </Link>
 
           {/* Short Specs Row */}
           {product.shortDesc && (
