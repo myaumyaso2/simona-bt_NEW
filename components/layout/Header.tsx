@@ -78,7 +78,7 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
               <ChevronDown className="w-3.5 h-3.5 text-[#87888A] group-hover:text-white transition-transform" />
             </Link>
             <Link 
-              href="/catalog?promo=true" 
+              href="/promos" 
               className="hover:text-white transition-colors"
             >
               Акции
@@ -237,7 +237,7 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
             Каталог техники (8 000+ SKU)
           </Link>
           <Link
-            href="/catalog?promo=true"
+            href="/promos"
             onClick={() => handleMobileMenuToggle(false)}
             className="block py-2 text-sm font-medium text-[#D7D9DB] border-b border-[#2B313A]"
           >

@@ -9,6 +9,7 @@ import {
   SimonaIconCart,
   SimonaIconHeart,
   SimonaIconCompare,
+  SimonaIconPercent,
 } from '@/components/brand/SimonaIcons';
 
 interface LuxuryProductCardProps {
@@ -76,6 +77,16 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
               {product.brand}
             </span>
           </div>
+
+          {/* Wine Promo Badge (Top-Right) per AGENTS.md 8.2 */}
+          {product.oldPrice && (
+            <div className="absolute top-2.5 right-2.5 z-10">
+              <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-simona-wine text-white border border-simona-wine-light/50 backdrop-blur-md shadow-sm">
+                <SimonaIconPercent className="w-3 h-3 text-white" />
+                <span>АКЦИЯ</span>
+              </span>
+            </div>
+          )}
 
           {/* Product Image */}
           <img

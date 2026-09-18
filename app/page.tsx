@@ -1,5 +1,6 @@
 import React from 'react';
 import { HeroSection } from '@/components/sections/HeroSection';
+import { ManufacturerPromosSection } from '@/components/sections/ManufacturerPromosSection';
 import { BrandAtlas } from '@/components/sections/BrandAtlas';
 import { ShowroomsFigmaSection } from '@/components/sections/ShowroomsFigmaSection';
 import { KeyDirectionsSection } from '@/components/sections/KeyDirectionsSection';
@@ -12,25 +13,28 @@ export const dynamic = 'force-dynamic';
 export default function HomePage() {
   return (
     <div className="flex flex-col bg-[#111315] min-h-screen">
-      {/* 1. Hero Section per Figma node 1:6 */}
+      {/* 1. Hero Screen per AGENTS.md 8.1 */}
       <HeroSection />
 
-      {/* 2. Authorized Dealer Brand Wall per Figma node 1:7 */}
+      {/* 2. Акции производителей (ManufacturerPromosSection) per AGENTS.md 8.1 */}
+      <ManufacturerPromosSection />
+
+      {/* 3. Authorized Dealer Brand Wall per AGENTS.md 8.1 */}
       <BrandAtlas />
 
-      {/* 3. Physical Spaces on Belinskogo per Figma node 1:72 */}
+      {/* 4. Физические шоурумы на Белинского per AGENTS.md 8.1 */}
       <ShowroomsFigmaSection />
 
-      {/* 4. Key Directions Collection per Figma node 1:159 */}
+      {/* 5. Каталог-магнит по ключевым направлениям per AGENTS.md 8.1 */}
       <KeyDirectionsSection />
 
-      {/* 5. Premium Service Standard per Figma node 1:370 */}
+      {/* 6. Премиальный сервисный стандарт per AGENTS.md 8.1 */}
       <ServiceContour />
 
-      {/* 6. Telegram Live Channel Reviews per Figma node 1:423 */}
+      {/* 7. Telegram Live-контент per AGENTS.md 8.1 */}
       <TelegramLiveSection />
 
-      {/* 7. Showroom Map Section (Quiet Luxury Yandex Map) */}
+      {/* 8. Схема проезда (Яндекс.Карта с Luxury Dark Shader) per AGENTS.md 8.1 */}
       <ShowroomMapSection />
     </div>
   );

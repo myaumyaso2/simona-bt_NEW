@@ -124,3 +124,25 @@ export type LeadType =
   | 'KITCHEN_ESTIMATE'
   | 'QUICK_CONSULT'
   | 'CART_ORDER';
+
+export type PromoBenefitType = 'DISCOUNT' | 'GIFT' | 'SPECIAL_PRICE' | 'EXTENDED_WARRANTY';
+
+export interface ManufacturerPromo {
+  id: string;
+  slug: string;
+  brand: string;
+  brandCountry?: string;
+  title: string;
+  subtitle: string;
+  badgeText: string;
+  benefitType: PromoBenefitType;
+  discountAmount?: string;
+  endDate: string;
+  shortDescription: string;
+  fullDescription: string;
+  conditions: string[];
+  bannerUrl: string;
+  participatingProductSlugs?: string[];
+  categoryNames?: string[];
+  isFeatured?: boolean;
+}
