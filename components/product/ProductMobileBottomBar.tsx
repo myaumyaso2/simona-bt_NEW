@@ -35,7 +35,7 @@ export function ProductMobileBottomBar({ product }: ProductMobileBottomBarProps)
       <div className="flex items-center gap-2">
         <button
           onClick={() => toggleWishlist(product.id)}
-          className={`w-10 h-10 rounded-full flex items-center justify-center border transition-colors ${
+          className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-colors ${
             inWishlist
               ? 'bg-simona-wine/30 border-simona-wine text-simona-wine'
               : 'bg-[#1E2228] border-[#2B313A] text-[#D7D9DB]'
@@ -49,7 +49,7 @@ export function ProductMobileBottomBar({ product }: ProductMobileBottomBarProps)
 
         <button
           onClick={handleAddToCart}
-          className="h-10 px-5 rounded-full bg-simona-teal hover:bg-simona-teal-light text-white font-bold text-xs tracking-wide transition-colors flex items-center gap-2 shadow-md cursor-pointer"
+          className="h-10 px-5 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white font-bold text-xs tracking-wide transition-colors flex items-center gap-2 shadow-md cursor-pointer"
         >
           <SimonaIconCart className="w-3.5 h-3.5" />
           <span>В корзину</span>

@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { ProductItem } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
-import { Truck, Store, Calendar, Star, Check } from 'lucide-react';
+import { Truck, Store, Calendar, Star, Check, ArrowRight } from 'lucide-react';
 import { SimonaIconCart } from '@/components/brand/SimonaIcons';
+import { getPromosForProduct, getPromosForCategory } from '@/data/promosData';
 
 interface ProductBuyBoxProps {
   product: ProductItem;
@@ -24,6 +26,11 @@ export function ProductBuyBox({
     product.colors?.[0]?.id || 'obsidian'
   );
   const [isAddedAnimation, setIsAddedAnimation] = useState(false);
+
+  const productPromos = getPromosForProduct(product);
+  const activePromo = productPromos[0];
+  const categoryPromos = getPromosForCategory(product.category);
+  const categoryPromo = !activePromo ? categoryPromos[0] : null;
 
   const colors = product.colors || [
     { id: 'obsidian', name: 'Obsidian Black (Черный обсидиан)', colorHex: '#0E0F12', isAvailable: true },
@@ -163,15 +170,80 @@ export function ProductBuyBox({
         </div>
       </div>
 
+      {/* 5.1. Accent Wine Manufacturer Promo Module per AGENTS.md 8.3 & Grill-Me */}
+      {activePromo ? (
+        <div className="rounded-xl border border-simona-wine/60 bg-simona-wine/10 p-4 sm:p-4.5 flex flex-col gap-2.5 shadow-lg relative overflow-hidden transition-all duration-300">
+          {/* Subtle glow background */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-simona-wine/15 rounded-full blur-2xl pointer-events-none" />
+
+          {/* Top row: Badge and End Date */}
+          <div className="flex items-center justify-between gap-2">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-simona-wine/25 text-white shadow-sm border border-simona-wine/50 backdrop-blur-md">
+              <span>
+                {activePromo.badgeText} ({activePromo.brand})
+              </span>
+            </span>
+            <div className="flex items-center gap-1.5 text-[11px] text-simona-wine-light font-medium">
+              <Calendar className="w-3 h-3 shrink-0" />
+              <span>до {activePromo.endDate}</span>
+            </div>
+          </div>
+
+          {/* Promo Title */}
+          <div className="text-sm font-montserrat font-bold text-white leading-snug">
+            {activePromo.title}
+          </div>
+
+          {/* Short terms */}
+          <p className="text-xs text-[#D7D9DB] leading-relaxed line-clamp-2">
+            {activePromo.shortDescription}
+          </p>
+
+          {/* Modal trigger button */}
+          <div className="pt-1 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => openModal('PROMO_TERMS', { promoData: activePromo })}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-simona-wine-light transition-colors group cursor-pointer"
+            >
+              <span className="underline decoration-simona-wine/60 underline-offset-4">
+                Подробнее об акции и подарках
+              </span>
+              <ArrowRight className="w-3.5 h-3.5 text-simona-wine-light group-hover:translate-x-0.5 transition-transform" />
+            </button>
+          </div>
+        </div>
+      ) : categoryPromo ? (
+        /* Contextual Category Promo Link when item itself is not in promo */
+        <div className="rounded-xl border border-simona-wine/30 bg-simona-wine/5 p-3 sm:p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs shadow-sm">
+          <div className="flex items-center gap-2 text-[#D7D9DB]">
+            <span className="w-1.5 h-1.5 rounded-full bg-simona-wine shrink-0" />
+            <span>
+              Для категории <strong className="text-white font-semibold">{product.category}</strong> действуют акции:{' '}
+              <strong className="text-simona-wine-light">
+                {categoryPromo.badgeText} ({categoryPromo.brand})
+              </strong>
+            </span>
+          </div>
+          <Link
+            href={`/catalog?promo=${encodeURIComponent(categoryPromo.slug)}`}
+            className="inline-flex items-center gap-1 text-simona-wine-light hover:text-white font-semibold whitespace-nowrap transition-colors group shrink-0"
+          >
+            <span>Смотреть все товары по акции</span>
+            <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        </div>
+      ) : null}
+
       {/* 6. Action Buttons: Quantity + Add To Cart + Buy 1-Click */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
           {/* Quantity Selector */}
-          <div className="flex items-center bg-[#1E2228] border border-[#2B313A] rounded-full px-2 py-1 h-12">
+          <div className="flex items-center bg-[#1E2228] border border-[#2B313A] rounded-xl px-2 py-1 h-12">
             <button
               onClick={handleDecrement}
               disabled={quantity <= 1}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[#87888A] hover:text-white disabled:opacity-30 cursor-pointer font-bold transition-colors"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#87888A] hover:text-white disabled:opacity-30 cursor-pointer font-bold transition-colors"
             >
               −
             </button>
@@ -181,7 +253,7 @@ export function ProductBuyBox({
             <button
               onClick={handleIncrement}
               disabled={quantity >= 10}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[#87888A] hover:text-white disabled:opacity-30 cursor-pointer font-bold transition-colors"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#87888A] hover:text-white disabled:opacity-30 cursor-pointer font-bold transition-colors"
             >
               +
             </button>
@@ -190,7 +262,7 @@ export function ProductBuyBox({
           {/* Primary CTA: Add To Cart */}
           <button
             onClick={handleAddToCart}
-            className={`flex-1 h-12 rounded-full font-bold text-sm tracking-wide text-white transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-teal-950/40 ${
+            className={`flex-1 h-12 rounded-xl font-bold text-sm tracking-wide text-white transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-teal-950/40 ${
               isAddedAnimation
                 ? 'bg-emerald-600 scale-[0.98]'
                 : 'bg-simona-teal hover:bg-simona-teal-light active:scale-[0.98]'
@@ -213,7 +285,7 @@ export function ProductBuyBox({
         {/* Secondary CTA: 1-Click Buy */}
         <button
           onClick={onOpenOneClickBuy}
-          className="w-full h-11 rounded-full bg-transparent hover:bg-white/5 border border-[#2B313A] hover:border-white/30 text-white font-medium text-xs tracking-wider transition-all duration-200 cursor-pointer"
+          className="w-full h-11 rounded-xl bg-transparent hover:bg-white/5 border border-[#2B313A] hover:border-white/30 text-white font-medium text-xs tracking-wider transition-all duration-200 cursor-pointer"
         >
           Купить в 1 клик
         </button>

@@ -190,7 +190,7 @@ export function ProductTabsSection({
               <a
                 href={product.schematicPdfUrl}
                 download
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
               >
                 <Download className="w-3.5 h-3.5 text-simona-teal" />
                 <span>Скачать паспорт модели (PDF)</span>
@@ -311,7 +311,7 @@ export function ProductTabsSection({
                 <a
                   href="/schematics/miele-dgc7860.pdf"
                   download
-                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
+                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
                 >
                   <Download className="w-4 h-4 text-simona-teal" />
                   <span>Схема встройки (PDF, 2.4 МБ)</span>
@@ -320,7 +320,7 @@ export function ProductTabsSection({
                 <a
                   href="/schematics/miele-dgc7860.dwg"
                   download
-                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
+                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
                 >
                   <Box className="w-4 h-4 text-simona-teal" />
                   <span>3D CAD / DWG модель</span>
@@ -329,7 +329,7 @@ export function ProductTabsSection({
                 <a
                   href="/manuals/miele-dgc7860-ru.pdf"
                   download
-                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
+                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
                 >
                   <FileText className="w-4 h-4 text-simona-teal" />
                   <span>Инструкция по эксплуатации</span>
@@ -458,7 +458,7 @@ export function ProductTabsSection({
               <button
                 onClick={handleAddBundleToCart}
                 disabled={selectedBundleIds.length === 0}
-                className="w-full h-12 rounded-full bg-simona-teal hover:bg-simona-teal-light text-white font-bold text-xs tracking-wide transition-all duration-200 cursor-pointer shadow-lg shadow-teal-950/40 disabled:opacity-40"
+                className="w-full h-12 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white font-bold text-xs tracking-wide transition-all duration-200 cursor-pointer shadow-lg shadow-teal-950/40 disabled:opacity-40"
               >
                 Купить комплект — {formatPrice(finalBundleTotal)}
               </button>
@@ -506,7 +506,7 @@ export function ProductTabsSection({
                     </span>
                     <button
                       onClick={() => handleAddAccessory(acc)}
-                      className="px-3.5 py-1.5 rounded-full bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+                      className="px-3.5 py-1.5 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
                     >
                       <SimonaIconCart className="w-3 h-3" />
                       <span>В корзину</span>

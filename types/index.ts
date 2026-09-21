@@ -86,6 +86,7 @@ export interface ProductItem {
   reviews?: ProductReview[];
   rating?: number;
   reviewsCount?: number;
+  promoSlugs?: string[];
 }
 
 export interface CartItem {

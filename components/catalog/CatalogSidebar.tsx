@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Search, Check } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
+import { MANUFACTURER_PROMOS } from '@/data/promosData';
 
 const accordionTransition = {
   duration: 0.3,
@@ -11,6 +12,7 @@ const accordionTransition = {
 };
 
 export interface FilterState {
+  selectedPromos: string[];
   selectedBrands: string[];
   priceMin: number;
   priceMax: number;
@@ -24,6 +26,7 @@ interface CatalogSidebarProps {
   onFilterChange: (newFilters: Partial<FilterState>) => void;
   onResetFilters: () => void;
   brandCounts?: Record<string, number>;
+  promoCounts?: Record<string, number>;
 }
 
 const ALL_BRANDS = [
@@ -50,12 +53,27 @@ export function CatalogSidebar({
   onFilterChange,
   onResetFilters,
   brandCounts = {},
+  promoCounts = {},
 }: CatalogSidebarProps) {
+  const [promoOpen, setPromoOpen] = useState(true);
   const [brandSearch, setBrandSearch] = useState('');
   const [brandOpen, setBrandOpen] = useState(true);
   const [priceOpen, setPriceOpen] = useState(true);
   const [locationOpen, setLocationOpen] = useState(true);
   const [specsOpen, setSpecsOpen] = useState(true);
+
+  // Zero Dead Ends: only display promos with matching products in current category
+  const activePromos = MANUFACTURER_PROMOS.filter((promo) => {
+    const count = promoCounts[promo.slug] ?? 0;
+    return count > 0;
+  });
+
+  const togglePromo = (promoSlug: string) => {
+    const next = filters.selectedPromos.includes(promoSlug)
+      ? filters.selectedPromos.filter((s) => s !== promoSlug)
+      : [...filters.selectedPromos, promoSlug];
+    onFilterChange({ selectedPromos: next });
+  };
 
   const filteredBrands = ALL_BRANDS.filter((b) =>
     b.name.toLowerCase().includes(brandSearch.toLowerCase().trim())
@@ -89,6 +107,87 @@ export function CatalogSidebar({
           Сбросить все
         </button>
       </div>
+
+      {/* 0. АКЦИИ ПРОИЗВОДИТЕЛЕЙ (1-е место над брендами) */}
+      {activePromos.length > 0 && (
+        <div className="border-b border-[#2B313A]/60 pb-4">
+          <button
+            onClick={() => setPromoOpen(!promoOpen)}
+            className="w-full flex items-center justify-between text-sm font-semibold text-white py-1 group cursor-pointer transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-white group-hover:text-simona-wine-light transition-colors">
+                Акции
+              </span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-simona-wine/25 text-white border border-simona-wine/50 font-mono font-bold">
+                {activePromos.length}
+              </span>
+            </div>
+            <ChevronDown
+              className={`w-4 h-4 transition-all duration-300 ${
+                promoOpen
+                  ? 'rotate-180 text-simona-wine-light'
+                  : 'text-[#87888A] group-hover:text-simona-wine-light'
+              }`}
+            />
+          </button>
+
+          <AnimatePresence initial={false}>
+            {promoOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={accordionTransition}
+                className="overflow-hidden"
+              >
+                <div className="pt-3 space-y-2">
+                  {activePromos.map((promo) => {
+                    const isChecked = filters.selectedPromos.includes(promo.slug);
+                    const count = promoCounts[promo.slug] ?? 0;
+                    return (
+                      <label
+                        key={promo.id}
+                        onClick={() => togglePromo(promo.slug)}
+                        className="flex items-start justify-between text-xs cursor-pointer group/item py-1 px-1.5 rounded-lg hover:bg-white/[0.02] transition-colors"
+                      >
+                        <div className="flex items-start space-x-2.5 min-w-0 pr-2">
+                          <div
+                            className={`w-4 h-4 rounded-[4px] border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                              isChecked
+                                ? 'bg-simona-wine border-simona-wine text-white shadow-sm'
+                                : 'bg-[#1E2228] border-[#2B313A] group-hover/item:border-simona-wine/60'
+                            }`}
+                          >
+                            {isChecked && <Check className="w-3 h-3 stroke-[2.5]" />}
+                          </div>
+                          <div className="flex flex-col">
+                            <span
+                              className={`transition-colors leading-tight ${
+                                isChecked
+                                  ? 'text-white font-semibold'
+                                  : 'text-[#D7D9DB] group-hover/item:text-white'
+                              }`}
+                            >
+                              {promo.brand}: {promo.badgeText}
+                            </span>
+                            <span className="text-[10px] text-[#87888A] line-clamp-1 mt-0.5">
+                              {promo.title}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-[11px] text-[#87888A] font-mono shrink-0 pt-0.5">
+                          ({count})
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
 
       {/* 1. БРЕНД (Accordion with Search) */}
       <div className="border-b border-[#2B313A]/60 pb-4">

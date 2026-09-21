@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronRight, CheckCircle2, Phone, MapPin, Calendar, Clock } from 'lucide-react';
 import {
-  SimonaIconPercent,
   SimonaIconClock,
   SimonaIconPin,
   SimonaIconGuarantee,
@@ -68,16 +67,15 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
           <div className="max-w-3xl">
             {/* Badges Stack */}
             <div className="flex flex-wrap items-center gap-2.5 mb-5">
-              <span className="px-3 py-1 rounded-full bg-[#16191D] border border-[#2B313A] text-xs font-semibold text-white uppercase tracking-wider">
+              <span className="px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] text-xs font-semibold text-white uppercase tracking-wider">
                 {promo.brand} {promo.brandCountry ? `(${promo.brandCountry})` : ''}
               </span>
 
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-simona-wine text-white text-xs font-semibold shadow-lg shadow-simona-wine/35 border border-simona-wine-light/50">
-                <SimonaIconPercent className="w-3.5 h-3.5 text-white" />
+              <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-simona-wine/25 text-white text-xs font-semibold border border-simona-wine/50 backdrop-blur-md shadow-sm">
                 <span>{promo.badgeText}</span>
               </div>
 
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#16191D] border border-[#2B313A] text-xs text-[#D7D9DB]">
+              <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] text-xs text-[#D7D9DB]">
                 <SimonaIconClock className="w-3.5 h-3.5 text-simona-wine-light" />
                 <span>до {promo.endDate}</span>
               </div>
@@ -97,7 +95,6 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
                 onClick={() => openModal('EQUIPMENT_SELECTION')}
                 className="px-6 py-3.5 rounded-xl bg-simona-wine hover:bg-simona-wine-hover text-white text-sm font-semibold transition-all shadow-lg shadow-simona-wine/25 border border-simona-wine-light/50 flex items-center space-x-2 cursor-pointer"
               >
-                <SimonaIconPercent className="w-4 h-4 text-white" />
                 <span>Зафиксировать условия акции</span>
               </button>
 
@@ -133,7 +130,7 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
             {/* Official Conditions Checklist */}
             <div className="rounded-2xl border border-[#2B313A] bg-[#16191D] p-6 sm:p-8">
               <div className="flex items-center space-x-2 text-simona-wine-light text-xs font-semibold uppercase tracking-wider mb-3">
-                <SimonaIconPercent className="w-4 h-4 text-simona-wine-light" />
+                <span className="w-1.5 h-1.5 rounded-full bg-simona-wine" />
                 <span>Условия участия и правила акции</span>
               </div>
               <h2 className="text-xl font-semibold text-white tracking-tight mb-6">

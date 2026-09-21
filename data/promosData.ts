@@ -1,4 +1,4 @@
-import { ManufacturerPromo } from '@/types';
+import { ManufacturerPromo, ProductItem } from '@/types';
 
 export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   {
@@ -183,3 +183,40 @@ export function getFeaturedPromos(): ManufacturerPromo[] {
 export function getPromoBySlug(slug: string): ManufacturerPromo | undefined {
   return MANUFACTURER_PROMOS.find((p) => p.slug === slug);
 }
+
+export function getPromosForProduct(product: ProductItem): ManufacturerPromo[] {
+  return MANUFACTURER_PROMOS.filter(
+    (promo) =>
+      promo.participatingProductSlugs?.includes(product.slug) ||
+      (product.promoSlugs && product.promoSlugs.includes(promo.slug))
+  );
+}
+
+export function isProductInPromo(product: ProductItem, promoSlug: string): boolean {
+  return (
+    Boolean(product.promoSlugs?.includes(promoSlug)) ||
+    MANUFACTURER_PROMOS.some(
+      (p) => p.slug === promoSlug && p.participatingProductSlugs?.includes(product.slug)
+    )
+  );
+}
+
+export function getPromosForCategory(categoryName: string): ManufacturerPromo[] {
+  if (!categoryName) return [];
+  const norm = categoryName.toLowerCase();
+  return MANUFACTURER_PROMOS.filter((promo) =>
+    promo.categoryNames?.some((c) => {
+      const cNorm = c.toLowerCase();
+      return (
+        norm.includes(cNorm) ||
+        cNorm.includes(norm) ||
+        (norm.includes('духов') && cNorm.includes('духов')) ||
+        (norm.includes('паров') && cNorm.includes('паров')) ||
+        (norm.includes('мойк') && cNorm.includes('мойк')) ||
+        (norm.includes('вытяжк') && cNorm.includes('вытяжк')) ||
+        (norm.includes('винн') && cNorm.includes('винн'))
+      );
+    })
+  );
+}
+

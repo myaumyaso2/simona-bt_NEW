@@ -85,7 +85,7 @@ export function OneClickBuyModal({
                 </p>
                 <button
                   onClick={handleReset}
-                  className="mt-6 px-6 py-2.5 rounded-full bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-colors cursor-pointer"
+                  className="mt-6 px-6 py-2.5 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-colors cursor-pointer"
                 >
                   Вернуться к товару
                 </button>
@@ -161,7 +161,7 @@ export function OneClickBuyModal({
                   <button
                     type="submit"
                     disabled={isLoading || !phone}
-                    className="w-full h-12 mt-2 rounded-full bg-simona-teal hover:bg-simona-teal-light text-white font-bold text-xs tracking-wide transition-all duration-200 cursor-pointer disabled:opacity-50 shadow-lg shadow-teal-950/40"
+                    className="w-full h-12 mt-2 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white font-bold text-xs tracking-wide transition-all duration-200 cursor-pointer disabled:opacity-50 shadow-lg shadow-teal-950/40"
                   >
                     {isLoading ? 'Оформление...' : 'Оформить заказ в 1 клик'}
                   </button>

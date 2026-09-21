@@ -12,6 +12,7 @@ interface MobileFilterDrawerProps {
   onResetFilters: () => void;
   totalFilteredCount: number;
   brandCounts?: Record<string, number>;
+  promoCounts?: Record<string, number>;
 }
 
 export function MobileFilterDrawer({
@@ -22,6 +23,7 @@ export function MobileFilterDrawer({
   onResetFilters,
   totalFilteredCount,
   brandCounts,
+  promoCounts,
 }: MobileFilterDrawerProps) {
   if (!isOpen) return null;
 
@@ -56,6 +58,7 @@ export function MobileFilterDrawer({
             onFilterChange={onFilterChange}
             onResetFilters={onResetFilters}
             brandCounts={brandCounts}
+            promoCounts={promoCounts}
           />
         </div>
 

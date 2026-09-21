@@ -73,14 +73,14 @@ export function ShowroomVisitModal() {
             </p>
             <button
               onClick={closeModal}
-              className="mt-6 px-6 py-2.5 rounded-full bg-[#16181B] hover:bg-zinc-800 text-white text-xs font-semibold uppercase tracking-wider transition shadow-sm"
+              className="mt-6 px-6 py-2.5 rounded-xl bg-[#16181B] hover:bg-zinc-800 text-white text-xs font-semibold uppercase tracking-wider transition shadow-sm"
             >
               Закрыть
             </button>
           </div>
         ) : (
           <div>
-            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-simona-teal/10 text-simona-teal border border-simona-teal/25 text-xs font-bold mb-3">
+            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-md bg-simona-teal/10 text-simona-teal border border-simona-teal/25 text-xs font-bold mb-3">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Персональная консультация с экспертом</span>
             </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { ProductItem, CartItem } from '@/types';
+import { ProductItem, CartItem, ManufacturerPromo } from '@/types';
 
 interface VideoModalData {
   title: string;
@@ -12,10 +12,23 @@ interface VideoModalData {
 }
 
 interface ModalState {
-  type: 'TEST_DRIVE' | 'SHOWROOM_VISIT' | 'PROJECT_MATCHING' | 'B2B_CLUB' | 'KITCHEN_ESTIMATE' | 'QUICK_CONSULT' | 'SEARCH' | 'VIDEO_PREVIEW' | 'AUTH' | 'EQUIPMENT_SELECTION' | null;
+  type:
+    | 'TEST_DRIVE'
+    | 'SHOWROOM_VISIT'
+    | 'PROJECT_MATCHING'
+    | 'B2B_CLUB'
+    | 'KITCHEN_ESTIMATE'
+    | 'QUICK_CONSULT'
+    | 'SEARCH'
+    | 'VIDEO_PREVIEW'
+    | 'AUTH'
+    | 'EQUIPMENT_SELECTION'
+    | 'PROMO_TERMS'
+    | null;
   product?: ProductItem | null;
   preferredShowroom?: string;
   videoData?: VideoModalData | null;
+  promoData?: ManufacturerPromo | null;
 }
 
 interface StoreContextType {
@@ -23,7 +36,12 @@ interface StoreContextType {
   modal: ModalState;
   openModal: (
     type: ModalState['type'],
-    options?: { product?: ProductItem; preferredShowroom?: string; videoData?: VideoModalData }
+    options?: {
+      product?: ProductItem;
+      preferredShowroom?: string;
+      videoData?: VideoModalData;
+      promoData?: ManufacturerPromo;
+    }
   ) => void;
   closeModal: () => void;
 
@@ -102,20 +120,35 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     }
   }, [compare]);
 
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    setTimeout(() => {
+      setToastMessage((cur) => (cur === message ? null : cur));
+    }, 4500);
+  };
+
   const openModal = (
     type: ModalState['type'],
-    options?: { product?: ProductItem; preferredShowroom?: string; videoData?: VideoModalData }
+    options?: {
+      product?: ProductItem;
+      preferredShowroom?: string;
+      videoData?: VideoModalData;
+      promoData?: ManufacturerPromo;
+    }
   ) => {
     setModal({
       type,
       product: options?.product || null,
       preferredShowroom: options?.preferredShowroom,
       videoData: options?.videoData || null,
+      promoData: options?.promoData || null,
     });
   };
 
   const closeModal = () => {
-    setModal({ type: null, product: null });
+    setModal({ type: null, product: null, promoData: null });
   };
 
   const addToCart = (product: ProductItem, quantity = 1, openDrawer = true) => {
@@ -166,9 +199,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const isInWishlist = (productId: string) => wishlist.includes(productId);
 
   const toggleCompare = (productId: string) => {
-    setCompare((prev) =>
-      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
-    );
+    setCompare((prev) => {
+      if (prev.includes(productId)) {
+        return prev.filter((id) => id !== productId);
+      }
+      if (prev.length >= 4) {
+        showToast('В сравнении может быть не более 4 приборов. Удалите один из них, чтобы добавить новый.');
+        return prev;
+      }
+      return [...prev, productId];
+    });
   };
 
   const isInCompare = (productId: string) => compare.includes(productId);
@@ -205,6 +245,21 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-[100] max-w-md bg-[#16191D] border border-simona-wine/80 text-white p-4 rounded-xl shadow-2xl backdrop-blur-xl flex items-start gap-3 transition-all duration-300 animate-in fade-in slide-in-from-bottom-3">
+          <div className="w-2 h-2 rounded-full bg-simona-wine mt-1.5 shrink-0 animate-pulse" />
+          <div className="text-xs sm:text-sm font-medium leading-relaxed">
+            {toastMessage}
+          </div>
+          <button
+            onClick={() => setToastMessage(null)}
+            className="text-[#87888A] hover:text-white transition-colors ml-auto text-xs shrink-0"
+            aria-label="Закрыть уведомление"
+          >
+            ✕
+          </button>
+        </div>
+      )}
     </StoreContext.Provider>
   );
 }

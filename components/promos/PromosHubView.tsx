@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronRight, ArrowRight } from 'lucide-react';
 import {
-  SimonaIconPercent,
   SimonaIconClock,
   SimonaIconPin,
   SimonaIconGuarantee,
@@ -61,8 +60,7 @@ export function PromosHubView() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-simona-wine/10 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center max-w-3xl">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-simona-wine/15 border border-simona-wine/30 text-simona-wine-light text-xs font-semibold uppercase tracking-wider mb-4">
-            <SimonaIconPercent className="w-3.5 h-3.5 text-simona-wine-light" />
+          <div className="inline-flex items-center px-3 py-1 rounded-md bg-simona-wine/25 border border-simona-wine/50 text-white text-xs font-semibold uppercase tracking-wider mb-4 backdrop-blur-md">
             <span>Официальные программы выгоды</span>
           </div>
 
@@ -189,12 +187,11 @@ function PromoHubCard({ promo }: { promo: ManufacturerPromo }) {
         <div className="absolute inset-0 bg-gradient-to-t from-[#16191D] via-[#16191D]/40 to-transparent" />
 
         <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
-          <span className="px-3 py-1 rounded-full bg-[#111315]/85 backdrop-blur-md border border-[#2B313A] text-xs font-semibold text-white uppercase tracking-wider shadow-sm">
+          <span className="px-2.5 py-1 rounded-md bg-[#111315]/85 backdrop-blur-md border border-[#2B313A] text-xs font-semibold text-white uppercase tracking-wider shadow-sm">
             {promo.brand}
           </span>
 
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-simona-wine text-white text-xs font-semibold shadow-lg shadow-simona-wine/40 border border-simona-wine-light/50">
-            <SimonaIconPercent className="w-3.5 h-3.5 text-white" />
+          <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-simona-wine/25 text-white text-xs font-semibold shadow-sm border border-simona-wine/50 backdrop-blur-md">
             <span>{promo.badgeText}</span>
           </div>
         </div>

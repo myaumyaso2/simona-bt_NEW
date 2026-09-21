@@ -68,14 +68,14 @@ export function B2BLeadModal() {
             </p>
             <button
               onClick={closeModal}
-              className="mt-6 px-6 py-2.5 rounded-full bg-[#16181B] hover:bg-zinc-800 text-white text-xs font-semibold uppercase tracking-wider transition shadow-sm"
+              className="mt-6 px-6 py-2.5 rounded-xl bg-[#16181B] hover:bg-zinc-800 text-white text-xs font-semibold uppercase tracking-wider transition shadow-sm"
             >
               Закрыть
             </button>
           </div>
         ) : (
           <div>
-            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-simona-wine/10 text-simona-wine border border-simona-wine/25 text-xs font-bold mb-3">
+            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-md bg-simona-wine/10 text-simona-wine border border-simona-wine/25 text-xs font-bold mb-3">
               <Award className="w-3.5 h-3.5" />
               <span>Клуб архитекторов и дизайнеров</span>
             </div>
@@ -165,7 +165,7 @@ export function B2BLeadModal() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-full bg-simona-wine hover:bg-simona-wine-hover disabled:opacity-50 text-white font-bold uppercase tracking-wider transition shadow-lg shadow-simona-wine/25 active:scale-98"
+                className="w-full py-3.5 rounded-xl bg-simona-wine hover:bg-simona-wine-hover disabled:opacity-50 text-white font-bold uppercase tracking-wider transition shadow-lg shadow-simona-wine/25 active:scale-98"
               >
                 {loading ? 'Отправка...' : 'Отправить проект на расчет'}
               </button>

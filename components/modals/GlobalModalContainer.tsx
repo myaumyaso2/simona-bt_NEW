@@ -11,6 +11,7 @@ import { CartDrawer } from '@/components/modals/CartDrawer';
 import { VideoPreviewModal } from '@/components/modals/VideoPreviewModal';
 import { AuthModal } from '@/components/modals/AuthModal';
 import { EquipmentSelectionModal } from '@/components/modals/EquipmentSelectionModal';
+import { PromoTermsModal } from '@/components/modals/PromoTermsModal';
 import { LiveChatWidget } from '@/components/chat/LiveChatWidget';
 
 export function GlobalModalContainer() {
@@ -26,6 +27,7 @@ export function GlobalModalContainer() {
       <VideoPreviewModal />
       <AuthModal />
       <EquipmentSelectionModal />
+      <PromoTermsModal />
       <LiveChatWidget />
     </>
   );

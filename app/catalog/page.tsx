@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { CatalogView } from '@/components/catalog/CatalogView';
 
@@ -16,5 +16,9 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default function CatalogPage() {
-  return <CatalogView />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#111315]" />}>
+      <CatalogView />
+    </Suspense>
+  );
 }

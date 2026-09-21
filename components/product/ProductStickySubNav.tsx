@@ -89,7 +89,7 @@ export function ProductStickySubNav({
 
           <button
             onClick={handleQuickAdd}
-            className="h-8 px-4 rounded-full bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
+            className="h-8 px-4 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
           >
             <SimonaIconCart className="w-3 h-3 text-white" />
             <span>В корзину</span>

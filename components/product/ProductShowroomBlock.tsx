@@ -91,7 +91,7 @@ export function ProductShowroomBlock({ product }: ProductShowroomBlockProps) {
             {/* Action Button */}
             <button
               onClick={handleOpenShowroomModal}
-              className="w-full h-12 rounded-full bg-simona-teal hover:bg-simona-teal-light text-white font-bold text-xs tracking-wide transition-all duration-200 cursor-pointer shadow-lg shadow-teal-950/40"
+              className="w-full h-12 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white font-bold text-xs tracking-wide transition-all duration-200 cursor-pointer shadow-lg shadow-teal-950/40"
             >
               Забронировать индивидуальный визит с экспертом
             </button>

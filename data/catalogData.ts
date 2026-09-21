@@ -48,6 +48,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     ],
     badge: 'На витрине',
     isFeatured: true,
+    promoSlugs: ['miele-generation-7000-benefit'],
     colors: [
       { id: 'obsidian', name: 'Obsidian Black (Черный обсидиан)', colorHex: '#0E0F12', isAvailable: true },
       { id: 'cleansteel', name: 'CleanSteel (Нержавеющая сталь)', colorHex: '#9BA1A6', isAvailable: true },
@@ -208,6 +209,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     ],
     badge: 'На витрине',
     isFeatured: true,
+    promoSlugs: ['miele-generation-7000-benefit'],
   },
 
   // 5. SMEG SF6604VCNE Nero (Exact from Figma)
@@ -233,6 +235,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     ],
     badge: 'На удаленном складе',
     isFeatured: true,
+    promoSlugs: ['smeg-design-duet-benefit'],
   },
 
   // 6. ASKO OCS8664S CombiSteam (Exact from Figma)
@@ -258,6 +261,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     ],
     badge: 'Под заказ',
     isFeatured: false,
+    promoSlugs: ['asko-scandinavian-care-gift'],
   },
 
   // 7. Miele DGC 7440 Compact 45 cm (Compact model)
@@ -283,6 +287,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     ],
     badge: 'На витрине',
     isFeatured: true,
+    promoSlugs: ['miele-generation-7000-benefit'],
   },
 
   // 8. Bertazzoni F90PRO1XT 90 cm (Wide 90 cm model)
@@ -333,7 +338,9 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     ],
     badge: 'На складе',
     isFeatured: true,
+    promoSlugs: ['omoikiri-washing-zone-set'],
   },
+
 ];
 
 export interface BundleItem {

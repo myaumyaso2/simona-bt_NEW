@@ -1,15 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ProductItem } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
+import { getPromosForProduct } from '@/data/promosData';
 import {
   SimonaIconCart,
   SimonaIconHeart,
   SimonaIconCompare,
-  SimonaIconPercent,
 } from '@/components/brand/SimonaIcons';
 
 interface LuxuryProductCardProps {
@@ -18,6 +19,7 @@ interface LuxuryProductCardProps {
 
 export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
   const {
+    openModal,
     addToCart,
     setIsCartOpen,
     isInCart,
@@ -30,6 +32,10 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
   const inCart = isInCart(product.id);
   const inWishlist = isInWishlist(product.id);
   const inCompare = isInCompare(product.id);
+
+  const productPromos = getPromosForProduct(product);
+  const activePromo = productPromos[0];
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   const images = Array.isArray(product.images)
     ? product.images
@@ -78,13 +84,62 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
             </span>
           </div>
 
-          {/* Wine Promo Badge (Top-Right) per AGENTS.md 8.2 */}
-          {product.oldPrice && (
-            <div className="absolute top-2.5 right-2.5 z-10">
-              <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-simona-wine text-white border border-simona-wine-light/50 backdrop-blur-md shadow-sm">
-                <SimonaIconPercent className="w-3 h-3 text-white" />
+          {/* Wine Promo Badge (Top-Right) with Interactive Tooltip per AGENTS.md 8.2 & Grill-Me */}
+          {(activePromo || product.oldPrice) && (
+            <div
+              className="absolute top-2.5 right-2.5 z-20"
+              onMouseEnter={() => setIsTooltipOpen(true)}
+              onMouseLeave={() => setIsTooltipOpen(false)}
+            >
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (activePromo) {
+                    openModal('PROMO_TERMS', { promoData: activePromo });
+                  }
+                }}
+                className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-simona-wine/25 hover:bg-simona-wine/40 text-white border border-simona-wine/50 backdrop-blur-md shadow-sm transition-all duration-200 cursor-pointer transform hover:scale-105"
+                title={activePromo ? 'Нажмите для подробных условий акции' : 'Спецпредложение'}
+              >
                 <span>АКЦИЯ</span>
-              </span>
+              </button>
+
+              {/* Interactive Tooltip on Hover */}
+              {activePromo && (
+                <AnimatePresence>
+                  {isTooltipOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                      transition={{ duration: 0.18, ease: 'easeOut' }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openModal('PROMO_TERMS', { promoData: activePromo });
+                      }}
+                      className="absolute right-0 top-full mt-2 w-64 p-3 rounded-xl bg-[#16191D] border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl z-30 cursor-pointer text-left"
+                    >
+                      <div className="flex items-center justify-between text-[10px] text-simona-wine-light font-semibold mb-1">
+                        <span>{activePromo.badgeText}</span>
+                        <span>до {activePromo.endDate}</span>
+                      </div>
+                      <div className="text-xs font-montserrat font-bold text-white leading-tight mb-1 line-clamp-2">
+                        {activePromo.title}
+                      </div>
+                      <p className="text-[11px] text-[#D7D9DB] line-clamp-2 leading-relaxed">
+                        {activePromo.shortDescription}
+                      </p>
+                      <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-simona-teal font-medium">
+                        <span>Узнать подробности</span>
+                        <span className="text-white text-xs">→</span>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              )}
             </div>
           )}
 

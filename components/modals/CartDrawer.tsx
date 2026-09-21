@@ -73,7 +73,7 @@ export function CartDrawer() {
                     setOrderSuccess(null);
                     setIsCartOpen(false);
                   }}
-                  className="px-6 py-2.5 rounded-full bg-[#16181B] hover:bg-zinc-800 text-white text-xs font-semibold uppercase tracking-wider shadow-sm"
+                  className="px-6 py-2.5 rounded-xl bg-[#16181B] hover:bg-zinc-800 text-white text-xs font-semibold uppercase tracking-wider shadow-sm"
                 >
                   Продолжить покупки
                 </button>
@@ -249,7 +249,7 @@ export function CartDrawer() {
                 type="submit"
                 form="cart-form"
                 disabled={loading}
-                className="w-full py-4 rounded-full bg-simona-teal hover:bg-simona-teal-hover text-white font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-simona-teal/25 flex items-center justify-center active:scale-98"
+                className="w-full py-4 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-simona-teal/25 flex items-center justify-center active:scale-98"
               >
                 <CreditCard className="w-4 h-4 mr-2" />
                 {loading ? 'Формирование чека...' : 'Оформить и оплатить (ЮKassa / СБП)'}
