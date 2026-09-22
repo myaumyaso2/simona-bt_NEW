@@ -12,6 +12,7 @@ import {
 import { MANUFACTURER_PROMOS } from '@/data/promosData';
 import { ManufacturerPromo, PromoBenefitType } from '@/types';
 import { useStore } from '@/components/providers/StoreContext';
+import { SectionBadge } from '@/components/ui/SectionBadge';
 
 const BRAND_FILTERS = [
   'Все бренды',
@@ -57,20 +58,22 @@ export function PromosHubView() {
       {/* 2. Hero Header */}
       <div className="relative border-b border-[#2B313A] py-14 sm:py-20 overflow-hidden">
         {/* Glow wine sphere */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-simona-wine/10 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[600px] h-[300px] bg-simona-wine/10 rounded-full blur-[140px] pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center max-w-3xl">
-          <div className="inline-flex items-center px-3 py-1 rounded-md bg-simona-wine/25 border border-simona-wine/50 text-white text-xs font-semibold uppercase tracking-wider mb-4 backdrop-blur-md">
-            <span>Официальные программы выгоды</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-3xl text-left">
+            <SectionBadge variant="wine" className="mb-4">
+              Официальные программы выгоды
+            </SectionBadge>
+
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
+              Акции производителей бытовой техники
+            </h1>
+
+            <p className="text-sm sm:text-base text-[#87888A] mt-4 leading-relaxed max-w-2xl">
+              Специальные предложения, комплекты со скидкой, подарки и продленная гарантия от официальных европейских брендов в салонах «СИМОНА» на ул. Белинского, 15 и 11/66.
+            </p>
           </div>
-
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
-            Акции производителей бытовой техники
-          </h1>
-
-          <p className="text-sm sm:text-base text-[#87888A] mt-4 leading-relaxed">
-            Специальные предложения, комплекты со скидкой, подарки и продленная гарантия от официальных европейских брендов в салонах «СИМОНА» на ул. Белинского, 15 и 11/66.
-          </p>
         </div>
       </div>
 

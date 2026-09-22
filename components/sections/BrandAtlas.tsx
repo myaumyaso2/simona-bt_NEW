@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import { SectionBadge } from '@/components/ui/SectionBadge';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { PlexusConstellationBackground } from '@/components/backgrounds/PlexusConstellationBackground';
@@ -217,21 +219,33 @@ export function BrandAtlas() {
 
       {/* Foreground Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pointer-events-none">
-        {/* Section Header */}
-        <div ref={titleRef} className="text-center mb-10 sm:mb-12">
-          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#16191D]/90 border border-simona-teal/40 backdrop-blur-md mb-4 shadow-md">
-            <span className="w-2 h-2 rounded-full bg-simona-teal animate-pulse" />
-            <span className="text-xs font-semibold text-simona-teal uppercase tracking-widest">
+        {/* Section Header: Asymmetrical Split-Header */}
+        <div
+          ref={titleRef}
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-12 pointer-events-auto"
+        >
+          <div className="max-w-2xl text-left">
+            <SectionBadge variant="teal" className="mb-3.5">
               Официальный дилер
-            </span>
+            </SectionBadge>
+
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-tight font-montserrat">
+              Авторизованный дилер мировых брендов
+            </h2>
+            <p className="text-xs sm:text-sm text-[#87888A] mt-2.5 max-w-xl leading-relaxed">
+              Прямые поставки оригинальной техники из Германии, Швеции, Италии и Японии с официальной гарантией производителя и сертифицированным сервисом.
+            </p>
           </div>
 
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-tight font-montserrat">
-            Авторизованный дилер мировых брендов
-          </h2>
-          <p className="text-xs sm:text-sm text-[#87888A] mt-2.5 max-w-xl mx-auto leading-relaxed">
-            Прямые поставки оригинальной техники из Германии, Швеции, Италии и Японии с официальной гарантией производителя и сертифицированным сервисом.
-          </p>
+          <div className="shrink-0 self-start md:self-end">
+            <Link
+              href="/catalog"
+              className="group inline-flex items-center space-x-2 text-xs sm:text-sm font-medium text-[#D7D9DB] hover:text-white transition-colors"
+            >
+              <span>Смотреть брендовые коллекции</span>
+              <ArrowRight className="w-4 h-4 text-simona-teal group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
         </div>
 
         {/* 10 Brands Grid */}

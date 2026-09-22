@@ -69,32 +69,43 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-7 text-sm font-medium text-[#D7D9DB]">
+          <nav className="hidden lg:flex items-center space-x-6 text-xs font-semibold uppercase tracking-wider text-[#D7D9DB]">
             <Link 
               href="/catalog" 
-              className="hover:text-white transition-colors flex items-center space-x-1 group"
+              className="hover:text-white transition-colors"
             >
-              <span>Каталог</span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#87888A] group-hover:text-white transition-transform" />
+              Каталог
             </Link>
             <Link 
               href="/promos" 
-              className="hover:text-white transition-colors"
+              className="hover:text-white transition-colors text-simona-wine hover:text-simona-wine-hover"
             >
               Акции
             </Link>
             <Link 
-              href="#brands" 
+              href="/brands" 
               className="hover:text-white transition-colors"
             >
               Бренды
             </Link>
-            <button 
-              onClick={() => openModal('B2B_CLUB')}
-              className="hover:text-white transition-colors text-left"
+            <Link 
+              href="/designers" 
+              className="hover:text-white transition-colors"
             >
               Дизайнерам
-            </button>
+            </Link>
+            <Link 
+              href="/showrooms" 
+              className="hover:text-white transition-colors"
+            >
+              Салоны
+            </Link>
+            <Link 
+              href="/services" 
+              className="hover:text-white transition-colors"
+            >
+              Сервис
+            </Link>
           </nav>
 
           {/* Right Action Icons */}
@@ -108,27 +119,21 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
               <Search className="w-4 h-4" />
             </button>
 
-            {/* User Auth / Personal Account Button (Figma Node 4344:77) */}
-            <button
-              onClick={() => openModal('AUTH')}
+            {/* User Auth / Personal Account Link */}
+            <Link
+              href="/profile"
               aria-label="Личный кабинет"
               title="Личный кабинет"
               className="p-2 sm:p-2.5 text-[#87888A] hover:text-white bg-[#1E2228] hover:bg-[#242A32] rounded-xl border border-[#2B313A] hover:border-simona-teal/50 transition flex items-center justify-center group"
             >
               <SimonaIconUser className="w-4 h-4 group-hover:text-simona-teal transition-colors" />
-            </button>
+            </Link>
 
             {/* Paired Wishlist + Compare Block (Split-Pill Container) */}
             <div className="hidden sm:flex items-center h-[38px] rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-[#3E3D40] transition-colors p-0.5">
-              {/* Wishlist Button (Figma Node 1006:67) */}
-              <button
-                onClick={() => {
-                  if (wishlist.length === 0) {
-                    alert('Избранное: список сохраненных приборов пуст');
-                  } else {
-                    alert(`В избранном приборов: ${wishlist.length}`);
-                  }
-                }}
+              {/* Wishlist Link */}
+              <Link
+                href="/profile?tab=wishlist"
                 aria-label="Избранное"
                 title="Избранное"
                 className="h-full px-2.5 text-[#87888A] hover:text-white hover:bg-[#242A32] rounded-lg transition-all flex items-center space-x-1.5 group"
@@ -145,20 +150,14 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
                 >
                   {wishlist.length}
                 </span>
-              </button>
+              </Link>
 
               {/* Subtle vertical divider */}
               <div className="w-px h-3.5 bg-[#2B313A]" />
 
-              {/* Compare Button (Figma Node 1006:69) */}
-              <button
-                onClick={() => {
-                  if (compare.length === 0) {
-                    alert('Сравнение: выберите модели в каталоге для сравнения характеристик');
-                  } else {
-                    alert(`В сравнении приборов: ${compare.length}`);
-                  }
-                }}
+              {/* Compare Link */}
+              <Link
+                href="/compare"
                 aria-label="Сравнение"
                 title="Сравнение"
                 className="h-full px-2.5 text-[#87888A] hover:text-white hover:bg-[#242A32] rounded-lg transition-all flex items-center space-x-1.5 group"
@@ -175,7 +174,7 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
                 >
                   {compare.length}
                 </span>
-              </button>
+              </Link>
             </div>
 
             {/* Cart Button (Figma Node 1006:61) */}
@@ -208,26 +207,22 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
         <div className="lg:hidden bg-[#16191D] border-b border-[#2B313A] px-4 pt-3 pb-6 space-y-3 animate-fade-in mt-3">
           {/* Quick Wishlist & Compare in Mobile Menu */}
           <div className="flex items-center space-x-2 pt-1 pb-2 border-b border-[#2B313A]/60">
-            <button
-              onClick={() => {
-                handleMobileMenuToggle(false);
-                alert('Избранное: список сохраненных приборов пуст');
-              }}
+            <Link
+              href="/profile?tab=wishlist"
+              onClick={() => handleMobileMenuToggle(false)}
               className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded-xl bg-[#1E2228] border border-[#2B313A] text-xs text-[#D7D9DB] hover:text-white transition"
             >
               <SimonaIconHeart className="w-4 h-4 text-simona-teal" />
-              <span>Избранное (0)</span>
-            </button>
-            <button
-              onClick={() => {
-                handleMobileMenuToggle(false);
-                alert('Сравнение: выберите модели в каталоге для сравнения характеристик');
-              }}
+              <span>Избранное ({wishlist.length})</span>
+            </Link>
+            <Link
+              href="/compare"
+              onClick={() => handleMobileMenuToggle(false)}
               className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded-xl bg-[#1E2228] border border-[#2B313A] text-xs text-[#D7D9DB] hover:text-white transition"
             >
               <SimonaIconCompare className="w-4 h-4 text-simona-teal" />
-              <span>Сравнение (0)</span>
-            </button>
+              <span>Сравнение ({compare.length})</span>
+            </Link>
           </div>
           <Link
             href="/catalog"
@@ -239,35 +234,52 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
           <Link
             href="/promos"
             onClick={() => handleMobileMenuToggle(false)}
-            className="block py-2 text-sm font-medium text-[#D7D9DB] border-b border-[#2B313A]"
+            className="block py-2 text-sm font-medium text-simona-wine border-b border-[#2B313A]"
           >
-            Акции и спецпредложения
+            Акции производителей
           </Link>
           <Link
-            href="#brands"
+            href="/brands"
             onClick={() => handleMobileMenuToggle(false)}
             className="block py-2 text-sm font-medium text-[#D7D9DB] border-b border-[#2B313A]"
           >
             Мировые бренды
           </Link>
-          <button
-            onClick={() => {
-              handleMobileMenuToggle(false);
-              openModal('B2B_CLUB');
-            }}
-            className="block w-full text-left py-2 text-sm font-medium text-simona-teal border-b border-[#2B313A]"
+          <Link
+            href="/designers"
+            onClick={() => handleMobileMenuToggle(false)}
+            className="block py-2 text-sm font-medium text-[#D7D9DB] border-b border-[#2B313A]"
           >
             Клуб архитекторов и дизайнеров
-          </button>
-          <button
-            onClick={() => {
-              handleMobileMenuToggle(false);
-              openModal('SHOWROOM_VISIT');
-            }}
-            className="w-full mt-3 py-2.5 rounded-xl bg-simona-teal text-white text-xs font-semibold tracking-wide text-center"
+          </Link>
+          <Link
+            href="/showrooms"
+            onClick={() => handleMobileMenuToggle(false)}
+            className="block py-2 text-sm font-medium text-[#D7D9DB] border-b border-[#2B313A]"
+          >
+            Шоурумы и Активная кухня
+          </Link>
+          <Link
+            href="/services"
+            onClick={() => handleMobileMenuToggle(false)}
+            className="block py-2 text-sm font-medium text-[#D7D9DB] border-b border-[#2B313A]"
+          >
+            Премиальный сервис и монтаж
+          </Link>
+          <Link
+            href="/profile"
+            onClick={() => handleMobileMenuToggle(false)}
+            className="block py-2 text-sm font-medium text-simona-teal border-b border-[#2B313A]"
+          >
+            Личный кабинет клиента
+          </Link>
+          <Link
+            href="/showrooms#booking"
+            onClick={() => handleMobileMenuToggle(false)}
+            className="block w-full mt-3 py-2.5 rounded-xl bg-simona-teal text-white text-xs font-semibold tracking-wide text-center"
           >
             Записаться на визит в салон
-          </button>
+          </Link>
         </div>
       )}
     </header>

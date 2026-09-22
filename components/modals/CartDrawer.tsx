@@ -1,33 +1,79 @@
-'use client';
-
 import React, { useState } from 'react';
-import { X, Trash2, Plus, Minus, ShoppingBag, ShieldCheck, CreditCard, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { X, Trash2, Plus, Minus, ShoppingBag, ShieldCheck, CreditCard, ArrowRight, CheckCircle2, Store, Truck, Package } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
+import { useAnalyticsData } from '@/lib/analytics/utm';
 import { formatPrice } from '@/lib/utils';
+import { trackEcommercePurchase, trackGoal } from '@/lib/analytics/tracker';
 
 export function CartDrawer() {
+  const router = useRouter();
+  const analyticsData = useAnalyticsData();
   const { isCartOpen, setIsCartOpen, cart, updateQuantity, removeFromCart, clearCart, cartTotal } = useStore();
-  const [deliveryType, setDeliveryType] = useState<'PICKUP_15' | 'PICKUP_11' | 'WHITE_GLOVE_DELIVERY'>('PICKUP_15');
+  const [deliveryType, setDeliveryType] = useState<'PICKUP_WAREHOUSE_KOMINTERNA' | 'PICKUP_BELINSKOGO_15' | 'WHITE_GLOVE_DELIVERY'>('PICKUP_WAREHOUSE_KOMINTERNA');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
+  const [showQuickForm, setShowQuickForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
 
   if (!isCartOpen) return null;
 
-  const handleCheckout = async (e: React.FormEvent) => {
+  const handleGoToCheckout = () => {
+    setIsCartOpen(false);
+    router.push('/checkout');
+  };
+
+  const handleQuickCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Simulate /api/orders & YooKassa redirect creation
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      const orderNumber = `SIM-${Math.floor(100000 + Math.random() * 900000)}`;
-      setOrderSuccess(orderNumber);
+      const payload = {
+        customerName: name,
+        customerPhone: phone,
+        deliveryType,
+        deliveryAddress: deliveryType === 'WHITE_GLOVE_DELIVERY' ? address : null,
+        paymentMethod: 'IN_SALON',
+        items: cart.map((item) => ({
+          productId: item.product.id,
+          sku: item.product.sku,
+          name: item.product.name,
+          price: item.product.price,
+          quantity: item.quantity,
+          brand: item.product.brand,
+          image: item.product.images?.[0] || null,
+        })),
+        ...analyticsData,
+      };
+
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Ошибка при сохранении заказа');
+      setOrderSuccess(data.orderNumber);
+      trackEcommercePurchase({
+        id: data.orderNumber,
+        revenue: cartTotal,
+        products: cart.map(i => ({
+          id: i.product.sku || i.product.id,
+          name: i.product.name,
+          price: i.product.price,
+          brand: i.product.brand || 'СИМОНА',
+          category: i.product.category,
+          quantity: i.quantity,
+        })),
+      });
+      trackGoal('ORDER_CONFIRMED', { orderNumber: data.orderNumber, total: cartTotal });
       clearCart();
     } catch (e) {
       console.error(e);
+      alert('Не удалось оформить заказ. Пожалуйста, воспользуйтесь полной страницей оформления.');
     } finally {
       setLoading(false);
     }
@@ -146,118 +192,135 @@ export function CartDrawer() {
                   ))}
                 </div>
 
-                {/* Checkout Form */}
-                <form onSubmit={handleCheckout} id="cart-form" className="space-y-4 pt-4 border-t border-black/[0.06] text-xs">
-                  <div>
-                    <label className="block text-[#3E3D40] mb-1.5 font-semibold">Способ получения</label>
-                    <div className="space-y-2">
-                      <label className="flex items-center p-2.5 rounded-xl bg-[#F8F9FA] border border-black/[0.06] cursor-pointer hover:border-simona-teal">
-                        <input
-                          type="radio"
-                          name="delivery"
-                          checked={deliveryType === 'PICKUP_15'}
-                          onChange={() => setDeliveryType('PICKUP_15')}
-                          className="text-simona-teal focus:ring-0 mr-2.5"
-                        />
-                        <div>
-                          <span className="text-[#16181B] font-semibold">Самовывоз: Белинского, 15</span>
-                          <span className="block text-[10px] text-[#87888A]">Флагман СИМОНА • Бесплатно</span>
+                {/* Quick 1-click Order Accordion */}
+                <div className="pt-3 border-t border-black/[0.06]">
+                  <button
+                    type="button"
+                    onClick={() => setShowQuickForm(!showQuickForm)}
+                    className="w-full flex items-center justify-between text-xs font-semibold text-simona-teal hover:text-simona-teal-hover py-1"
+                  >
+                    <span>{showQuickForm ? 'Скрыть быстрый заказ' : '⚡ Оформить быстрый заказ в 1 клик'}</span>
+                    <span className="text-[10px] text-[#87888A] font-normal">{showQuickForm ? '▲' : '▼'}</span>
+                  </button>
+
+                  {showQuickForm && (
+                    <form onSubmit={handleQuickCheckout} id="quick-cart-form" className="space-y-3 pt-3 text-xs">
+                      <div>
+                        <label className="block text-[#3E3D40] mb-1.5 font-semibold text-[11px]">Способ получения</label>
+                        <div className="space-y-1.5">
+                          <label className="flex items-center p-2 rounded-xl bg-[#F8F9FA] border border-black/[0.06] cursor-pointer hover:border-simona-teal">
+                            <input
+                              type="radio"
+                              name="delivery"
+                              checked={deliveryType === 'PICKUP_WAREHOUSE_KOMINTERNA'}
+                              onChange={() => setDeliveryType('PICKUP_WAREHOUSE_KOMINTERNA')}
+                              className="text-simona-teal focus:ring-0 mr-2"
+                            />
+                            <div>
+                              <span className="text-[#16181B] font-semibold text-[11px]">Самовывоз: Склад (Коминтерна, 27)</span>
+                              <span className="block text-[9px] text-[#87888A]">Терминал выдачи крупной техники • Бесплатно</span>
+                            </div>
+                          </label>
+
+                          <label className="flex items-center p-2 rounded-xl bg-[#F8F9FA] border border-black/[0.06] cursor-pointer hover:border-simona-teal">
+                            <input
+                              type="radio"
+                              name="delivery"
+                              checked={deliveryType === 'PICKUP_BELINSKOGO_15'}
+                              onChange={() => setDeliveryType('PICKUP_BELINSKOGO_15')}
+                              className="text-simona-teal focus:ring-0 mr-2"
+                            />
+                            <div>
+                              <span className="text-[#16181B] font-semibold text-[11px]">Самовывоз: Салон (Белинского, 15)</span>
+                              <span className="block text-[9px] text-[#87888A]">Экспресс-выдача малой техники • Бесплатно</span>
+                            </div>
+                          </label>
+
+                          <label className="flex items-center p-2 rounded-xl bg-[#F8F9FA] border border-black/[0.06] cursor-pointer hover:border-simona-teal">
+                            <input
+                              type="radio"
+                              name="delivery"
+                              checked={deliveryType === 'WHITE_GLOVE_DELIVERY'}
+                              onChange={() => setDeliveryType('WHITE_GLOVE_DELIVERY')}
+                              className="text-simona-teal focus:ring-0 mr-2"
+                            />
+                            <div>
+                              <span className="text-[#16181B] font-semibold text-[11px]">Доставка в белых перчатках</span>
+                              <span className="block text-[9px] text-[#87888A]">По Нижнему Новгороду и области</span>
+                            </div>
+                          </label>
                         </div>
-                      </label>
+                      </div>
 
-                      <label className="flex items-center p-2.5 rounded-xl bg-[#F8F9FA] border border-black/[0.06] cursor-pointer hover:border-simona-teal">
+                      <div>
                         <input
-                          type="radio"
-                          name="delivery"
-                          checked={deliveryType === 'PICKUP_11'}
-                          onChange={() => setDeliveryType('PICKUP_11')}
-                          className="text-simona-teal focus:ring-0 mr-2.5"
+                          type="text"
+                          required
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="Ваше имя *"
+                          className="w-full px-3 py-2 rounded-xl bg-[#F8F9FA] border border-black/[0.08] text-[#16181B] text-xs focus:outline-none focus:border-simona-teal focus:bg-white"
                         />
-                        <div>
-                          <span className="text-[#16181B] font-semibold">Самовывоз: Белинского, 11/66</span>
-                          <span className="block text-[10px] text-[#87888A]">Салон OMOIKIRI • Бесплатно</span>
-                        </div>
-                      </label>
+                      </div>
 
-                      <label className="flex items-center p-2.5 rounded-xl bg-[#F8F9FA] border border-black/[0.06] cursor-pointer hover:border-simona-teal">
+                      <div>
                         <input
-                          type="radio"
-                          name="delivery"
-                          checked={deliveryType === 'WHITE_GLOVE_DELIVERY'}
-                          onChange={() => setDeliveryType('WHITE_GLOVE_DELIVERY')}
-                          className="text-simona-teal focus:ring-0 mr-2.5"
+                          type="tel"
+                          required
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          placeholder="Телефон для подтверждения *"
+                          className="w-full px-3 py-2 rounded-xl bg-[#F8F9FA] border border-black/[0.08] text-[#16181B] text-xs focus:outline-none focus:border-simona-teal focus:bg-white"
                         />
+                      </div>
+
+                      {deliveryType === 'WHITE_GLOVE_DELIVERY' && (
                         <div>
-                          <span className="text-[#16181B] font-semibold">Доставка в белых перчатках</span>
-                          <span className="block text-[10px] text-[#87888A]">По Нижнему Новгороду и области</span>
+                          <input
+                            type="text"
+                            required
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            placeholder="Адрес доставки (улица, дом, квартира)"
+                            className="w-full px-3 py-2 rounded-xl bg-[#F8F9FA] border border-black/[0.08] text-[#16181B] text-xs focus:outline-none focus:border-simona-teal focus:bg-white"
+                          />
                         </div>
-                      </label>
-                    </div>
-                  </div>
+                      )}
 
-                  <div>
-                    <label className="block text-[#3E3D40] mb-1 font-semibold">Имя покупателя *</label>
-                    <input
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Ольга"
-                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] border border-black/[0.08] text-[#16181B] focus:outline-none focus:border-simona-teal focus:bg-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[#3E3D40] mb-1 font-semibold">Телефон для подтверждения *</label>
-                    <input
-                      type="tel"
-                      required
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+7 (900) 000-00-00"
-                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] border border-black/[0.08] text-[#16181B] focus:outline-none focus:border-simona-teal focus:bg-white"
-                    />
-                  </div>
-
-                  {deliveryType === 'WHITE_GLOVE_DELIVERY' && (
-                    <div>
-                      <label className="block text-[#3E3D40] mb-1 font-semibold">Адрес доставки</label>
-                      <input
-                        type="text"
-                        required
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        placeholder="Улица, дом, квартира"
-                        className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] border border-black/[0.08] text-[#16181B] focus:outline-none focus:border-simona-teal focus:bg-white"
-                      />
-                    </div>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-2.5 rounded-xl bg-[#16181B] hover:bg-zinc-800 text-white text-xs font-semibold uppercase tracking-wider transition flex items-center justify-center space-x-2"
+                      >
+                        <span>{loading ? 'Отправка...' : 'Подтвердить быстрый заказ'}</span>
+                      </button>
+                    </form>
                   )}
-                </form>
+                </div>
               </div>
             )}
           </div>
 
-          {/* Footer with Payment summary */}
+          {/* Footer with Payment summary & Direct Checkout Button */}
           {cart.length > 0 && !orderSuccess && (
-            <div className="p-5 border-t border-black/[0.06] bg-[#F8F9FA] space-y-4">
+            <div className="p-5 border-t border-black/[0.06] bg-[#F8F9FA] space-y-3">
               <div className="flex items-baseline justify-between">
                 <span className="text-xs text-[#6E7074] font-medium">Итого к оплате:</span>
                 <span className="text-2xl font-montserrat font-bold text-[#16181B]">{formatPrice(cartTotal)}</span>
               </div>
 
               <button
-                type="submit"
-                form="cart-form"
-                disabled={loading}
-                className="w-full py-4 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-simona-teal/25 flex items-center justify-center active:scale-98"
+                type="button"
+                onClick={handleGoToCheckout}
+                className="w-full py-4 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-simona-teal/25 flex items-center justify-center space-x-2 active:scale-98"
               >
-                <CreditCard className="w-4 h-4 mr-2" />
-                {loading ? 'Формирование чека...' : 'Оформить и оплатить (ЮKassa / СБП)'}
+                <span>Перейти к оформлению заказа</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
 
               <div className="flex items-center justify-center space-x-2 text-[10px] text-[#87888A]">
                 <ShieldCheck className="w-3.5 h-3.5 text-simona-teal" />
-                <span>Безопасная оплата • Фискальный чек по 54-ФЗ</span>
+                <span>Оплата в салоне • Онлайн картой • Безналичный расчет B2B</span>
               </div>
             </div>
           )}

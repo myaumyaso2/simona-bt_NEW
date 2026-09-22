@@ -7,6 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
 import { SimonaIconConsultation, SimonaIconMark } from '@/components/brand/SimonaIcons';
+import { SectionBadge } from '@/components/ui/SectionBadge';
 import { HeroBackgroundSlider } from './HeroBackgroundSlider';
 
 const HERO_DESKTOP_SLIDES = [
@@ -137,15 +138,13 @@ export function HeroSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-auto">
         <div ref={contentParallaxRef} className="max-w-3xl">
           {/* Partner Badge */}
-          <div
+          <SectionBadge
             ref={badgeRef}
-            className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg bg-[#16191D]/90 border border-[#2B313A] backdrop-blur-md mb-6 sm:mb-8 shadow-lg shadow-black/40"
+            variant="teal"
+            className="mb-6 sm:mb-8"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-simona-teal shadow-[0_0_8px_rgba(0,151,156,0.8)]" />
-            <span className="text-[10px] sm:text-[11px] font-semibold tracking-[0.12em] uppercase text-[#D7D9DB]">
-              Официальный партнер Miele · ASKO · Liebherr · SMEG · OMOIKIRI
-            </span>
-          </div>
+            Официальный партнер Miele · ASKO · Liebherr · SMEG · OMOIKIRI
+          </SectionBadge>
 
           {/* Heading H1 */}
           <h1

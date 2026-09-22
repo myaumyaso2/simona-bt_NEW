@@ -9,7 +9,7 @@ datasource db {
 
 model Product {
   id              String   @id @default(cuid())
-  sku             String   @unique
+  sku             String
   name            String
   slug            String   @unique
   brand           String
@@ -20,6 +20,13 @@ model Product {
   oldPrice        Float?
   inStock         Boolean  @default(false)
   stockCount      Int      @default(0)
+  stockKominterna Int      @default(0)            // Центральный склад (ул. Коминтерна, 27)
+  stockBelinskogo15 Int    @default(0)            // Флагманский салон (ул. Белинского, 15)
+  stockRemote     Int      @default(0)            // Удаленные склады дистрибьюторов
+  deliveryDays    Int      @default(1)
+  oneCGuid        String?                         // Идентификатор номенклатуры 1С
+  oldUrl          String?                         // Старый URL UMI.CMS
+  color           String?
   shortDesc       String?
   description     String
   featuresJson    String   @default("[]") // Array of { label: string, value: string }
@@ -30,6 +37,10 @@ model Product {
   isFeatured      Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([sku])
+  @@index([brand])
+  @@index([category])
 }
 
 model Lead {
@@ -49,6 +60,10 @@ model Lead {
   utmSource         String?
   utmMedium         String?
   utmCampaign       String?
+  utmContent        String?
+  utmTerm           String?
+  ymClientId        String?
+  yclid             String?
   pageUrl           String?
   status            String   @default("NEW")
   asanaTaskId       String?
@@ -61,15 +76,35 @@ model Order {
   customerName    String
   customerPhone   String
   customerEmail   String?
-  deliveryType    String   @default("PICKUP_15") // PICKUP_15, PICKUP_11, WHITE_GLOVE_DELIVERY
+  deliveryType    String   @default("PICKUP_WAREHOUSE_KOMINTERNA") // PICKUP_WAREHOUSE_KOMINTERNA, PICKUP_BELINSKOGO_15, WHITE_GLOVE_DELIVERY
   deliveryAddress String?
+  deliveryDate    String?
+  deliveryComment String?
   totalAmount     Float
+  status          String   @default("NEW")     // NEW, CONFIRMED, PAID, READY_FOR_PICKUP, DELIVERED, CANCELLED
   paymentStatus   String   @default("PENDING") // PENDING, PAID, CANCELLED
+  paymentMethod   String   @default("IN_SALON") // IN_SALON, CARD_ONLINE, ON_RECEIPT, B2B_INVOICE
   paymentId       String?
-  itemsJson       String   // Array of { productId, sku, name, price, quantity }
+  itemsJson       String   // Array of { productId, sku, name, price, quantity, brand, image }
+  ymClientId      String?
+  yclid           String?
+  utmSource       String?
+  utmMedium       String?
+  utmCampaign     String?
+  utmContent      String?
+  utmTerm         String?
   oneCSynced      Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model Redirect301 {
+  id        String   @id @default(cuid())
+  oldPath   String   @unique
+  newPath   String
+  createdAt DateTime @default(now())
+
+  @@index([oldPath])
 }
 
 model ChatMessage {

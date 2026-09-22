@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
 
   let results: any[] = [];
   try {
-    results = await prisma.product.findMany({
+    const dbItems = await prisma.product.findMany({
       where: {
         OR: [
           { name: { contains: query } },
@@ -79,6 +79,16 @@ export async function GET(req: NextRequest) {
         ],
       },
       take: 20,
+    });
+    results = dbItems.map((item) => {
+      let images: string[] = [];
+      try {
+        images = JSON.parse(item.imagesJson || '[]');
+      } catch {}
+      return {
+        ...item,
+        images,
+      };
     });
   } catch {
     results = [];

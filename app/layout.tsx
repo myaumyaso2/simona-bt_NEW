@@ -6,6 +6,8 @@ import { SmoothScrollProvider } from '@/components/providers/SmoothScrollProvide
 import { HeaderContainer } from '@/components/layout/HeaderContainer';
 import { Footer } from '@/components/layout/Footer';
 import { GlobalModalContainer } from '@/components/modals/GlobalModalContainer';
+import { YandexMetrika } from '@/components/analytics/YandexMetrika';
+import { SchemaOrgStore } from '@/components/seo/SchemaOrgStore';
 
 const montserrat = Montserrat({
   subsets: ['latin', 'cyrillic'],
@@ -39,6 +41,8 @@ export default function RootLayout({
   return (
     <html lang="ru" className={montserrat.variable}>
       <body className="bg-[#111315] text-white font-sans min-h-screen flex flex-col antialiased selection:bg-simona-teal/30 selection:text-white">
+        <YandexMetrika />
+        <SchemaOrgStore />
         <SmoothScrollProvider>
           <StoreProvider>
             <HeaderContainer />

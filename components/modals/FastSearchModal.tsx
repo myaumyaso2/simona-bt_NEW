@@ -62,9 +62,9 @@ export function FastSearchModal() {
     }
   };
 
-  if (modal.type !== 'SEARCH') return null;
-
   useEffect(() => {
+    if (modal.type !== 'SEARCH') return;
+
     const fetchResults = async () => {
       setLoading(true);
       try {
@@ -80,7 +80,9 @@ export function FastSearchModal() {
 
     const timer = setTimeout(fetchResults, 150);
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, modal.type]);
+
+  if (modal.type !== 'SEARCH') return null;
 
   const handleSelectHistory = (term: string) => {
     setQuery(term);

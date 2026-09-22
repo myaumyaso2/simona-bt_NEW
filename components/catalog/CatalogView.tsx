@@ -12,11 +12,20 @@ import { CatalogToolbar, SortOption, ViewMode } from './CatalogToolbar';
 import { LuxuryProductCard } from './LuxuryProductCard';
 import { LuxuryProductListCard } from './LuxuryProductListCard';
 import { CatalogPagination } from './CatalogPagination';
+import { ProductItem } from '@/types';
 import { CatalogServiceContour } from './CatalogServiceContour';
 import { MobileFilterDrawer } from './MobileFilterDrawer';
 
-export function CatalogView() {
+interface CatalogViewProps {
+  initialProducts?: ProductItem[];
+  totalCount?: number;
+}
+
+export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = {}) {
   const searchParams = useSearchParams();
+  const rawProducts = useMemo(() => {
+    return initialProducts && initialProducts.length > 0 ? initialProducts : CATALOG_PRODUCTS;
+  }, [initialProducts]);
   const [activeSubcategory, setActiveSubcategory] = useState<string>('all');
   const [activePhysicalTab, setActivePhysicalTab] = useState<PhysicalTabType>('ALL');
   const [sort, setSort] = useState<SortOption>('popular');
@@ -69,7 +78,7 @@ export function CatalogView() {
   const promoCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     MANUFACTURER_PROMOS.forEach((promo) => {
-      const count = CATALOG_PRODUCTS.filter((product) => {
+      const count = rawProducts.filter((product) => {
         // Physical Tab Filter
         if (activePhysicalTab !== 'ALL') {
           if (activePhysicalTab === 'SHOWROOM') {
@@ -95,11 +104,11 @@ export function CatalogView() {
       counts[promo.slug] = count;
     });
     return counts;
-  }, [activePhysicalTab, activeSubcategory]);
+  }, [rawProducts, activePhysicalTab, activeSubcategory]);
 
   // Real-time dynamic filtering
   const filteredProducts = useMemo(() => {
-    return CATALOG_PRODUCTS.filter((product) => {
+    return rawProducts.filter((product) => {
       // 0. Promo Filter (OR logic: product participates in ANY of the selected promos)
       if (filters.selectedPromos.length > 0) {
         const matchesPromo = filters.selectedPromos.some((promoSlug) =>
@@ -197,16 +206,16 @@ export function CatalogView() {
       }
       return 0;
     });
-  }, [activePhysicalTab, activeSubcategory, filters, sort]);
+  }, [rawProducts, activePhysicalTab, activeSubcategory, filters, sort]);
 
   // Brand count calculation for the sidebar
   const brandCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    CATALOG_PRODUCTS.forEach((p) => {
+    rawProducts.forEach((p) => {
       counts[p.brand] = (counts[p.brand] || 0) + 1;
     });
     return counts;
-  }, []);
+  }, [rawProducts]);
 
   return (
     <div className="bg-[#111315] min-h-screen text-white">
@@ -222,7 +231,7 @@ export function CatalogView() {
           setActivePhysicalTab(tab);
           setCurrentPage(1);
         }}
-        totalCount={420}
+        totalCount={totalCount ?? filteredProducts.length}
       />
 
       {/* 2. Main Catalog Workspace: Split-Layout */}
@@ -340,7 +349,7 @@ export function CatalogView() {
             <CatalogPagination
               currentPage={currentPage}
               totalPages={18}
-              totalItems={420}
+              totalItems={totalCount ?? filteredProducts.length}
               shownItems={Math.min(24, Math.max(filteredProducts.length, 6))}
               onPageChange={setCurrentPage}
               onLoadMore={() => alert('Загружена следующая порция моделей каталога')}

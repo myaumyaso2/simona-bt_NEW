@@ -5,6 +5,7 @@ import { Send, Play, Eye } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useStore } from '@/components/providers/StoreContext';
+import { SectionBadge } from '@/components/ui/SectionBadge';
 import { PlexusConstellationBackground } from '@/components/backgrounds/PlexusConstellationBackground';
 
 const TELEGRAM_VIDEOS = [
@@ -116,9 +117,9 @@ export function TelegramLiveSection() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             {/* Left Content (5 Cols) */}
             <div ref={leftRef} className="lg:col-span-5 space-y-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-simona-teal">
+              <SectionBadge variant="teal">
                 Live из салонов «СИМОНА»
-              </p>
+              </SectionBadge>
 
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-montserrat font-bold text-white tracking-tight leading-snug">
                 Следите за обзорами новинок в Telegram

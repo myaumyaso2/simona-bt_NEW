@@ -3,6 +3,8 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SimonaIconPhoneSolid } from '@/components/brand/SimonaIcons';
+import { SectionBadge } from '@/components/ui/SectionBadge';
 
 const SERVICES = [
   {
@@ -117,14 +119,33 @@ export function ServiceContour() {
       className="py-20 sm:py-28 bg-[#16191D] border-t border-[#2B313A]"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header per Figma node 1:371 */}
-        <div ref={headerRef} className="text-center max-w-3xl mx-auto mb-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-simona-teal mb-3">
-            Премиальный сервисный стандарт
-          </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-semibold text-white tracking-tight">
-            Забота о вашем комфорте на каждом этапе
-          </h2>
+        {/* Section Header: Asymmetrical Split-Header */}
+        <div
+          ref={headerRef}
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16"
+        >
+          <div className="max-w-2xl text-left">
+            <SectionBadge variant="teal" className="mb-3.5">
+              Премиальный сервисный стандарт
+            </SectionBadge>
+
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-montserrat font-semibold text-white tracking-tight">
+              Забота о вашем комфорте на каждом этапе
+            </h2>
+            <p className="mt-2.5 text-xs sm:text-sm text-[#87888A] leading-relaxed max-w-xl">
+              Сопровождаем покупку от выверки технических схем с производителями кухонь до бережной доставки и фирменного шеф-монтажа.
+            </p>
+          </div>
+
+          <div className="shrink-0 self-start md:self-end">
+            <a
+              href="tel:+78314237600"
+              className="inline-flex items-center space-x-2 text-xs sm:text-sm font-medium text-[#D7D9DB] hover:text-white transition-colors py-2.5 px-4 rounded-xl bg-[#111315] border border-[#2B313A] hover:border-simona-teal/50 shadow-sm"
+            >
+              <SimonaIconPhoneSolid className="w-3.5 h-3.5 text-simona-teal" />
+              <span>Служба заботы: (831) 423 76 00</span>
+            </a>
+          </div>
         </div>
 
         {/* 3 Columns Cards Grid per Figma node 1:379 */}

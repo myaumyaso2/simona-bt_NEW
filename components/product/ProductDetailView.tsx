@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ProductItem } from '@/types';
+import { trackEcommerceDetail } from '@/lib/analytics/tracker';
 import { ProductHeroGallery } from './ProductHeroGallery';
 import { ProductBuyBox } from './ProductBuyBox';
 import { ProductStickySubNav } from './ProductStickySubNav';
@@ -20,6 +21,10 @@ interface ProductDetailViewProps {
 export function ProductDetailView({ product }: ProductDetailViewProps) {
   const [activeTab, setActiveTab] = useState('about');
   const [isOneClickBuyOpen, setIsOneClickBuyOpen] = useState(false);
+
+  useEffect(() => {
+    trackEcommerceDetail(product);
+  }, [product]);
 
   const handleNavigateToTab = (tabId: string) => {
     setActiveTab(tabId);

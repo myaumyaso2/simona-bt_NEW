@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { CatalogView } from '@/components/catalog/CatalogView';
+import { getCatalogProducts } from '@/lib/products';
 
 export const metadata: Metadata = {
   title: 'Каталог духовых шкафов и пароварок | СИМОНА — Премиальная бытовая техника',
@@ -15,10 +16,12 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default function CatalogPage() {
+export default async function CatalogPage() {
+  const { products, total } = await getCatalogProducts({ limit: 48 });
+
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#111315]" />}>
-      <CatalogView />
+      <CatalogView initialProducts={products} totalCount={total} />
     </Suspense>
   );
 }

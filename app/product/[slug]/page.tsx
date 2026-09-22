@@ -1,8 +1,10 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { CATALOG_PRODUCTS } from '@/data/catalogData';
+import { getProductBySlug } from '@/lib/products';
 import { ProductDetailView } from '@/components/product/ProductDetailView';
+import { SchemaOrgProduct } from '@/components/seo/SchemaOrgProduct';
+import { SchemaOrgBreadcrumbs } from '@/components/seo/SchemaOrgBreadcrumbs';
 
 interface ProductPageProps {
   params: {
@@ -13,9 +15,7 @@ interface ProductPageProps {
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
-  const product =
-    CATALOG_PRODUCTS.find((p) => p.slug === params.slug) ||
-    CATALOG_PRODUCTS[0];
+  const product = await getProductBySlug(params.slug);
 
   if (!product) {
     return {
@@ -23,34 +23,40 @@ export async function generateMetadata({
     };
   }
 
+  const firstImage = product.images && product.images.length > 0 ? product.images[0] : '';
+
   return {
     title: `${product.name} — купить в Нижнем Новгороде | СИМОНА`,
-    description: `${product.description} Доставка по Нижнему Новгороду в белых перчатках, официальная гарантия, экспозиция в салоне на ул. Белинского, 15.`,
+    description: `${product.description.slice(0, 160)}. Официальная гарантия, экспозиция в салоне «СИМОНА» на ул. Белинского, 15, доставка по Нижнему Новгороду.`,
     openGraph: {
       title: `${product.name} | СИМОНА`,
-      description: product.description,
-      images: product.images && product.images.length > 0 ? [product.images[0]] : [],
+      description: product.description.slice(0, 200),
+      images: firstImage ? [firstImage] : [],
     },
   };
 }
 
-export async function generateStaticParams() {
-  return CATALOG_PRODUCTS.map((product) => ({
-    slug: product.slug,
-  }));
-}
-
 export const dynamic = 'force-dynamic';
 
-export default function ProductPage({ params }: ProductPageProps) {
-  const product =
-    CATALOG_PRODUCTS.find((p) => p.slug === params.slug) ||
-    CATALOG_PRODUCTS.find((p) => p.slug.includes(params.slug)) ||
-    CATALOG_PRODUCTS[0];
+export default async function ProductPage({ params }: ProductPageProps) {
+  const product = await getProductBySlug(params.slug);
 
   if (!product) {
     notFound();
   }
 
-  return <ProductDetailView product={product} />;
+  const breadcrumbs = [
+    { name: 'Главная', url: '/' },
+    { name: 'Каталог', url: '/catalog' },
+    { name: product.category, url: '/catalog' },
+    { name: product.name, url: `/product/${product.slug}` },
+  ];
+
+  return (
+    <>
+      <SchemaOrgProduct product={product} />
+      <SchemaOrgBreadcrumbs items={breadcrumbs} />
+      <ProductDetailView product={product} />
+    </>
+  );
 }

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, Plus } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SectionBadge } from '@/components/ui/SectionBadge';
 import { DeepParallaxBackground } from '@/components/backgrounds/DeepParallaxBackground';
 
 interface CategoryDirection {
@@ -191,10 +192,10 @@ export function KeyDirectionsSection() {
           ref={headerRef}
           className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6"
         >
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-simona-teal mb-3">
+          <div className="max-w-2xl text-left">
+            <SectionBadge variant="teal" className="mb-3.5">
               Каталог премиальной техники
-            </p>
+            </SectionBadge>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-semibold text-white tracking-tight">
               Ключевые направления коллекции
             </h2>

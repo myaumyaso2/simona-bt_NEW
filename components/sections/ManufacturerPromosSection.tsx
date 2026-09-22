@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { SimonaIconClock } from '@/components/brand/SimonaIcons';
+import { SectionBadge } from '@/components/ui/SectionBadge';
 import { MANUFACTURER_PROMOS, getFeaturedPromos } from '@/data/promosData';
 import { ManufacturerPromo } from '@/types';
 
@@ -81,9 +82,9 @@ export function ManufacturerPromosSection() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-12">
           <div>
             {/* Wine Accent Badge */}
-            <div className="inline-flex items-center px-3 py-1 rounded-md bg-simona-wine/25 border border-simona-wine/50 text-white text-xs font-semibold uppercase tracking-wider mb-3.5 backdrop-blur-md">
-              <span>Спецпредложения и выгода</span>
-            </div>
+            <SectionBadge variant="wine" className="mb-3.5">
+              Спецпредложения и выгода
+            </SectionBadge>
 
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-tight">
               Акции европейских производителей

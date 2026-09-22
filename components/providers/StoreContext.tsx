@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ProductItem, CartItem, ManufacturerPromo } from '@/types';
+import { trackEcommerceAddToCart, trackEcommerceRemoveFromCart } from '@/lib/analytics/tracker';
 
 interface VideoModalData {
   title: string;
@@ -152,6 +153,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addToCart = (product: ProductItem, quantity = 1, openDrawer = true) => {
+    trackEcommerceAddToCart(product, quantity);
     setCart((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
       if (existing) {
@@ -169,7 +171,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeFromCart = (productId: string) => {
-    setCart((prev) => prev.filter((item) => item.product.id !== productId));
+    setCart((prev) => {
+      const existing = prev.find((item) => item.product.id === productId);
+      if (existing) {
+        trackEcommerceRemoveFromCart(existing.product, existing.quantity);
+      }
+      return prev.filter((item) => item.product.id !== productId);
+    });
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
