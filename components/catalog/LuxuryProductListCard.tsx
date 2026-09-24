@@ -12,6 +12,7 @@ import {
   SimonaIconHeart,
   SimonaIconCompare,
 } from '@/components/brand/SimonaIcons';
+import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
 
 interface LuxuryProductListCardProps {
   product: ProductItem;
@@ -119,6 +120,13 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
 
   const specs = getProductSpecs(product);
 
+  const discountBadge = getDiscountBadgeInfo(product);
+  const showPromoBadge = Boolean(activePromo || discountBadge);
+  const badgeText = discountBadge ? discountBadge.text : 'АКЦИЯ';
+  const badgeClass = discountBadge
+    ? discountBadge.className
+    : 'bg-simona-wine/25 hover:bg-simona-wine/40 text-white border-simona-wine/50';
+
   return (
     <div className="group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 sm:p-5 transition-all duration-300 shadow-xl flex flex-col sm:flex-row gap-5 items-stretch">
       {/* 1. Left Media Area: Compact Square 220x220px */}
@@ -156,8 +164,8 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
           </span>
         </div>
 
-        {/* Wine Promo Badge (Top-Right) with Interactive Tooltip */}
-        {(activePromo || product.oldPrice) && (
+        {/* Promo / Discount Badge (Top-Right) per user rules & AGENTS.md */}
+        {showPromoBadge && (
           <div
             className="absolute top-2.5 right-2.5 z-20"
             onMouseEnter={() => setIsTooltipOpen(true)}
@@ -172,10 +180,10 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
                   openModal('PROMO_TERMS', { promoData: activePromo });
                 }
               }}
-              className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-simona-wine/25 hover:bg-simona-wine/40 text-white border border-simona-wine/50 backdrop-blur-md shadow-sm transition-all duration-200 cursor-pointer transform hover:scale-105"
-              title={activePromo ? 'Нажмите для подробных условий акции' : 'Спецпредложение'}
+              className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold border backdrop-blur-md shadow-sm transition-all duration-200 cursor-pointer transform hover:scale-105 ${badgeClass}`}
+              title={activePromo ? 'Нажмите для подробных условий акции' : 'Скидка'}
             >
-              <span>АКЦИЯ</span>
+              <span>{badgeText}</span>
             </button>
 
             {/* Interactive Tooltip */}

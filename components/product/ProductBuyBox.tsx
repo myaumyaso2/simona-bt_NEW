@@ -8,6 +8,7 @@ import { useStore } from '@/components/providers/StoreContext';
 import { Truck, Store, Calendar, Star, Check, ArrowRight } from 'lucide-react';
 import { SimonaIconCart } from '@/components/brand/SimonaIcons';
 import { getPromosForProduct, getPromosForCategory } from '@/data/promosData';
+import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
 
 interface ProductBuyBoxProps {
   product: ProductItem;
@@ -158,11 +159,27 @@ export function ProductBuyBox({
             )}
           </div>
 
-          {savings > 0 && (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-simona-wine text-white shadow-sm">
-              Выгода {formatPrice(savings)}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {(() => {
+              const discountBadge = getDiscountBadgeInfo(product);
+              if (discountBadge) {
+                return (
+                  <span
+                    className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border shadow-sm ${discountBadge.className}`}
+                  >
+                    {discountBadge.text}
+                  </span>
+                );
+              }
+              return null;
+            })()}
+
+            {savings > 0 && (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-simona-wine text-white shadow-sm">
+                Выгода {formatPrice(savings)}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="text-xs text-simona-teal font-medium mt-1">
