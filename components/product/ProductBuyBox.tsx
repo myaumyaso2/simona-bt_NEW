@@ -5,8 +5,15 @@ import Link from 'next/link';
 import { ProductItem } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
-import { Truck, Store, Calendar, Star, Check, ArrowRight } from 'lucide-react';
-import { SimonaIconCart } from '@/components/brand/SimonaIcons';
+import { ArrowRight } from 'lucide-react';
+import {
+  SimonaIconCart,
+  SimonaIconDelivery,
+  SimonaIconPin,
+  SimonaIconClock,
+  SimonaIconStar,
+  SimonaIconCheck,
+} from '@/components/brand/SimonaIcons';
 import { getPromosForProduct, getPromosForCategory } from '@/data/promosData';
 import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
 
@@ -76,7 +83,7 @@ export function ProductBuyBox({
 
         <div className="flex flex-wrap items-center gap-2 mt-2.5 text-xs text-[#87888A]">
           <div className="flex items-center gap-1 text-[#D4AF37] font-semibold">
-            <Star className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]" />
+            <SimonaIconStar className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]" />
             <span>4.9 / 5.0</span>
           </div>
           <span>•</span>
@@ -201,7 +208,7 @@ export function ProductBuyBox({
               </span>
             </span>
             <div className="flex items-center gap-1.5 text-[11px] text-simona-wine-light font-medium">
-              <Calendar className="w-3 h-3 shrink-0" />
+              <SimonaIconClock className="w-3 h-3 shrink-0" />
               <span>до {activePromo.endDate}</span>
             </div>
           </div>
@@ -287,7 +294,7 @@ export function ProductBuyBox({
           >
             {isAddedAnimation ? (
               <>
-                <Check className="w-4 h-4 text-white" />
+                <SimonaIconCheck className="w-4 h-4 text-white" />
                 <span>Добавлено в корзину</span>
               </>
             ) : (
@@ -312,7 +319,7 @@ export function ProductBuyBox({
       <div className="pt-3 border-t border-[#2B313A]/70 flex flex-col gap-2.5 text-xs">
         {/* Delivery Row */}
         <div className="flex items-start gap-2.5 text-[#D7D9DB]">
-          <Truck className="w-4 h-4 text-[#87888A] shrink-0 mt-0.5" />
+          <SimonaIconDelivery className="w-4 h-4 text-[#87888A] shrink-0 mt-0.5" />
           <div>
             <span className="text-[#87888A]">Доставка по Нижнему Новгороду: </span>
             <span className="text-white font-medium">Завтра, бесплатно</span>{' '}
@@ -322,7 +329,7 @@ export function ProductBuyBox({
 
         {/* Pickup Row */}
         <div className="flex items-start gap-2.5 text-emerald-400">
-          <Store className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+          <SimonaIconPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
           <div>
             <span className="text-[#87888A]">Самовывоз: </span>
             <span className="font-semibold text-emerald-400">Сегодня</span>{' '}
@@ -332,7 +339,7 @@ export function ProductBuyBox({
 
         {/* Showroom Consultation Appointment */}
         <div className="flex items-start gap-2.5 text-simona-teal">
-          <Calendar className="w-4 h-4 text-simona-teal shrink-0 mt-0.5" />
+          <SimonaIconClock className="w-4 h-4 text-simona-teal shrink-0 mt-0.5" />
           <div>
             <span className="text-[#87888A]">Консультация в салоне: </span>
             <span className="text-white">Модель представлена в экспозиции — </span>

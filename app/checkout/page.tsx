@@ -13,15 +13,13 @@ import {
   SimonaIconGuarantee,
   SimonaIconCart,
   SimonaIconClock,
+  SimonaIconBuilding,
+  SimonaIconCheckCircle,
 } from '@/components/brand/SimonaIcons';
 import {
-  ShieldCheck,
   CreditCard,
-  Building,
-  Store,
   Wallet,
   ArrowLeft,
-  CheckCircle2,
   AlertCircle,
 } from 'lucide-react';
 
@@ -210,7 +208,7 @@ export default function CheckoutPage() {
               {/* 1. Contacts */}
               <div className="p-6 rounded-2xl bg-[#16191D] border border-[#2B313A]">
                 <div className="flex items-center space-x-2.5 mb-4">
-                  <span className="w-6 h-6 rounded-lg bg-simona-teal/20 text-simona-teal text-xs font-bold flex items-center justify-center">
+                  <span className="w-6 h-6 rounded-md bg-simona-teal/20 text-simona-teal text-xs font-bold flex items-center justify-center">
                     1
                   </span>
                   <h2 className="text-sm font-bold text-white uppercase tracking-wider">
@@ -265,7 +263,7 @@ export default function CheckoutPage() {
               {/* 2. Delivery & Pickup Method */}
               <div className="p-6 rounded-2xl bg-[#16191D] border border-[#2B313A]">
                 <div className="flex items-center space-x-2.5 mb-4">
-                  <span className="w-6 h-6 rounded-lg bg-simona-teal/20 text-simona-teal text-xs font-bold flex items-center justify-center">
+                  <span className="w-6 h-6 rounded-md bg-simona-teal/20 text-simona-teal text-xs font-bold flex items-center justify-center">
                     2
                   </span>
                   <h2 className="text-sm font-bold text-white uppercase tracking-wider">
@@ -479,7 +477,7 @@ export default function CheckoutPage() {
               {/* 3. Payment Method (Incorporating User Review Comments!) */}
               <div className="p-6 rounded-2xl bg-[#16191D] border border-[#2B313A]">
                 <div className="flex items-center space-x-2.5 mb-4">
-                  <span className="w-6 h-6 rounded-lg bg-simona-teal/20 text-simona-teal text-xs font-bold flex items-center justify-center">
+                  <span className="w-6 h-6 rounded-md bg-simona-teal/20 text-simona-teal text-xs font-bold flex items-center justify-center">
                     3
                   </span>
                   <h2 className="text-sm font-bold text-white uppercase tracking-wider">
@@ -507,7 +505,7 @@ export default function CheckoutPage() {
                       />
                       <div>
                         <div className="flex items-center space-x-1.5">
-                          <Store className="w-4 h-4 text-simona-teal" />
+                          <SimonaIconBuilding className="w-4 h-4 text-simona-teal" />
                           <span className="text-xs font-bold text-white">В салоне СИМОНА</span>
                         </div>
                         <p className="text-[11px] text-[#87888A] mt-1">
@@ -594,7 +592,7 @@ export default function CheckoutPage() {
                       />
                       <div>
                         <div className="flex items-center space-x-1.5">
-                          <Building className="w-4 h-4 text-simona-teal" />
+                          <SimonaIconBuilding className="w-4 h-4 text-simona-teal" />
                           <span className="text-xs font-bold text-white">Счет для юрлиц (B2B)</span>
                         </div>
                         <p className="text-[11px] text-[#87888A] mt-1">
@@ -652,7 +650,7 @@ export default function CheckoutPage() {
                       className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-[#1E2228] border border-[#2B313A]/60"
                     >
                       <div className="flex items-center space-x-3 min-w-0">
-                        <div className="w-12 h-12 rounded-lg bg-[#16191D] p-1 shrink-0 flex items-center justify-center border border-[#2B313A]">
+                        <div className="w-12 h-12 rounded-md bg-[#16191D] p-1 shrink-0 flex items-center justify-center border border-[#2B313A]">
                           <img
                             src={item.product.images?.[0] || ''}
                             alt={item.product.name}
@@ -707,11 +705,11 @@ export default function CheckoutPage() {
                 {/* Trust Badges */}
                 <div className="space-y-2 pt-3 text-[11px] text-[#87888A]">
                   <div className="flex items-center space-x-2">
-                    <ShieldCheck className="w-3.5 h-3.5 text-simona-teal shrink-0" />
+                    <SimonaIconGuarantee className="w-3.5 h-3.5 text-simona-teal shrink-0" />
                     <span>Официальная гарантия и сертификаты производителей</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-simona-teal shrink-0" />
+                    <SimonaIconCheckCircle className="w-3.5 h-3.5 text-simona-teal shrink-0" />
                     <span>Безопасная обработка данных в соответствии с 152-ФЗ</span>
                   </div>
                 </div>

@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, Trash2, Plus, Minus, ShoppingBag, ShieldCheck, CreditCard, ArrowRight, CheckCircle2, Store, Truck, Package } from 'lucide-react';
+import { X, Plus, Minus, ArrowRight } from 'lucide-react';
+import {
+  SimonaIconCart,
+  SimonaIconTrash,
+  SimonaIconGuarantee,
+  SimonaIconCheckCircle,
+} from '@/components/brand/SimonaIcons';
 import { useStore } from '@/components/providers/StoreContext';
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { formatPrice } from '@/lib/utils';
@@ -92,12 +98,12 @@ export function CartDrawer() {
           {/* Header */}
           <div className="p-5 border-b border-black/[0.06] flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <ShoppingBag className="w-5 h-5 text-simona-teal" />
+              <SimonaIconCart className="w-5 h-5 text-simona-teal" />
               <h3 className="text-lg font-montserrat font-bold text-[#16181B]">Корзина (Категория А)</h3>
             </div>
             <button
               onClick={() => setIsCartOpen(false)}
-              className="p-1.5 text-[#87888A] hover:text-[#16181B] rounded-full hover:bg-zinc-100 transition"
+              className="w-9 h-9 rounded-xl border border-black/[0.08] text-[#87888A] hover:text-[#16181B] flex items-center justify-center hover:bg-zinc-100 transition cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -107,8 +113,8 @@ export function CartDrawer() {
           <div className="flex-1 overflow-y-auto p-5">
             {orderSuccess ? (
               <div className="text-center py-12">
-                <div className="w-16 h-16 rounded-full bg-simona-teal/10 text-simona-teal flex items-center justify-center mx-auto mb-4 border border-simona-teal/30">
-                  <CheckCircle2 className="w-8 h-8" />
+                <div className="w-16 h-16 rounded-2xl bg-simona-teal/10 text-simona-teal flex items-center justify-center mx-auto mb-4 border border-simona-teal/30">
+                  <SimonaIconCheckCircle className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-montserrat font-bold text-[#16181B] mb-2">Заказ №{orderSuccess} оформлен!</h3>
                 <p className="text-xs text-[#6E7074] font-normal max-w-xs mx-auto leading-relaxed mb-6">
@@ -126,7 +132,7 @@ export function CartDrawer() {
               </div>
             ) : cart.length === 0 ? (
               <div className="text-center py-16">
-                <ShoppingBag className="w-12 h-12 text-[#87888A] mx-auto mb-3" />
+                <SimonaIconCart className="w-12 h-12 text-[#87888A] mx-auto mb-3" />
                 <p className="text-sm text-[#3E3D40] font-bold">Ваша корзина пуста</p>
                 <p className="text-xs text-[#6E7074] mt-1">
                   Добавьте малую технику SMEG, аксессуары OMOIKIRI или фирменную химию Miele.
@@ -152,7 +158,7 @@ export function CartDrawer() {
                                 : ''
                             }
                             alt={product.name}
-                            className="w-full h-full object-cover rounded-lg"
+                            className="w-full h-full object-cover rounded-md"
                           />
                         </div>
                         <div className="min-w-0">
@@ -165,17 +171,17 @@ export function CartDrawer() {
 
                       {/* Quantity & Delete */}
                       <div className="flex items-center space-x-2 shrink-0">
-                        <div className="flex items-center bg-white rounded-lg p-0.5 border border-black/[0.08] shadow-xs">
+                        <div className="flex items-center bg-white rounded-xl p-0.5 border border-black/[0.08] shadow-xs">
                           <button
                             onClick={() => updateQuantity(product.id, quantity - 1)}
-                            className="p-1 text-[#87888A] hover:text-[#16181B]"
+                            className="p-1 text-[#87888A] hover:text-[#16181B] cursor-pointer"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
                           <span className="px-2 text-xs font-bold text-[#16181B]">{quantity}</span>
                           <button
                             onClick={() => updateQuantity(product.id, quantity + 1)}
-                            className="p-1 text-[#87888A] hover:text-[#16181B]"
+                            className="p-1 text-[#87888A] hover:text-[#16181B] cursor-pointer"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -183,9 +189,9 @@ export function CartDrawer() {
 
                         <button
                           onClick={() => removeFromCart(product.id)}
-                          className="p-1 text-[#87888A] hover:text-red-500 transition"
+                          className="p-1 text-[#87888A] hover:text-red-500 transition cursor-pointer"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <SimonaIconTrash className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -319,7 +325,7 @@ export function CartDrawer() {
               </button>
 
               <div className="flex items-center justify-center space-x-2 text-[10px] text-[#87888A]">
-                <ShieldCheck className="w-3.5 h-3.5 text-simona-teal" />
+                <SimonaIconGuarantee className="w-3.5 h-3.5 text-simona-teal" />
                 <span>Оплата в салоне • Онлайн картой • Безналичный расчет B2B</span>
               </div>
             </div>

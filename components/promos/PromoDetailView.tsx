@@ -3,12 +3,14 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronRight, CheckCircle2, Phone, MapPin, Calendar, Clock } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import {
   SimonaIconClock,
   SimonaIconPin,
   SimonaIconGuarantee,
   SimonaIconConsultation,
+  SimonaIconCheckCircle,
+  SimonaIconPhoneSolid,
 } from '@/components/brand/SimonaIcons';
 import { ManufacturerPromo, ProductItem } from '@/types';
 import { CATALOG_PRODUCTS } from '@/data/catalogData';
@@ -140,7 +142,7 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
               <ul className="space-y-3.5">
                 {promo.conditions.map((cond, idx) => (
                   <li key={idx} className="flex items-start space-x-3 text-sm text-[#D7D9DB]">
-                    <CheckCircle2 className="w-5 h-5 text-simona-wine-light shrink-0 mt-0.5" />
+                    <SimonaIconCheckCircle className="w-5 h-5 text-simona-wine-light shrink-0 mt-0.5" />
                     <span>{cond}</span>
                   </li>
                 ))}
@@ -229,13 +231,13 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
 
                 <div className="mt-5 pt-4 border-t border-[#2B313A] text-xs space-y-2">
                   <div className="flex items-center space-x-2 text-[#D7D9DB]">
-                    <Phone className="w-3.5 h-3.5 text-simona-teal" />
+                    <SimonaIconPhoneSolid className="w-3.5 h-3.5 text-simona-teal" />
                     <a href="tel:+78314237600" className="hover:text-white font-medium">
                       +7 (831) 423-76-00
                     </a>
                   </div>
                   <div className="flex items-start space-x-2 text-[#87888A]">
-                    <Clock className="w-3.5 h-3.5 text-simona-teal shrink-0 mt-0.5" />
+                    <SimonaIconClock className="w-3.5 h-3.5 text-simona-teal shrink-0 mt-0.5" />
                     <span>Ежедневно с 10:00 до 20:00</span>
                   </div>
                 </div>

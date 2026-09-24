@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { X, Search, Clock, Trash2, ArrowRight } from 'lucide-react';
+import { X, ArrowRight } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { ProductItem } from '@/types';
 import { formatPrice, PHYSICAL_STATUS_CONFIG } from '@/lib/utils';
@@ -11,6 +11,9 @@ import { getPromosForProduct } from '@/data/promosData';
 import {
   SimonaIconCart,
   SimonaIconChef,
+  SimonaIconSearch,
+  SimonaIconClock,
+  SimonaIconTrash,
 } from '@/components/brand/SimonaIcons';
 
 const HISTORY_KEY = 'simona_search_history';
@@ -117,7 +120,7 @@ export function FastSearchModal() {
 
         {/* 1. Search Header */}
         <div className="p-4 sm:p-5 border-b border-[#2B313A] flex items-center gap-3 bg-[#16191D]">
-          <Search className="w-5 h-5 text-simona-teal shrink-0" />
+          <SimonaIconSearch className="w-5 h-5 text-simona-teal shrink-0" />
           <input
             type="text"
             autoFocus
@@ -141,7 +144,7 @@ export function FastSearchModal() {
           )}
           <button
             onClick={closeModal}
-            className="p-1.5 text-[#87888A] hover:text-white rounded-full hover:bg-white/10 transition cursor-pointer"
+            className="w-9 h-9 rounded-xl border border-[#2B313A] text-[#87888A] hover:text-white hover:bg-white/10 flex items-center justify-center transition cursor-pointer"
             aria-label="Закрыть поиск"
           >
             <X className="w-5 h-5" />
@@ -156,14 +159,14 @@ export function FastSearchModal() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs text-[#87888A]">
                   <div className="flex items-center gap-1.5 font-medium">
-                    <Clock className="w-3.5 h-3.5 text-simona-teal" />
+                    <SimonaIconClock className="w-3.5 h-3.5 text-simona-teal" />
                     <span>История поиска</span>
                   </div>
                   <button
                     onClick={clearHistory}
                     className="inline-flex items-center gap-1 text-[11px] text-[#87888A] hover:text-simona-wine-light transition-colors cursor-pointer"
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <SimonaIconTrash className="w-3 h-3" />
                     <span>Очистить всё</span>
                   </button>
                 </div>
@@ -174,7 +177,7 @@ export function FastSearchModal() {
                       onClick={() => handleSelectHistory(item)}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1E2228] hover:bg-[#282E37] border border-[#2B313A] text-xs text-[#D7D9DB] hover:text-white transition-all cursor-pointer shadow-sm"
                     >
-                      <Search className="w-3 h-3 text-[#87888A]" />
+                      <SimonaIconSearch className="w-3 h-3 text-[#87888A]" />
                       <span>{item}</span>
                     </button>
                   ))}
@@ -193,7 +196,7 @@ export function FastSearchModal() {
                     <button
                       key={b}
                       onClick={() => handleSelectHistory(b)}
-                      className="px-3 py-1 rounded-lg bg-[#1E2228] hover:bg-simona-teal/20 hover:border-simona-teal text-[#D7D9DB] hover:text-white border border-[#2B313A] font-semibold transition shrink-0 cursor-pointer"
+                      className="px-3 py-1 rounded-xl bg-[#1E2228] hover:bg-simona-teal/20 hover:border-simona-teal text-[#D7D9DB] hover:text-white border border-[#2B313A] font-semibold transition shrink-0 cursor-pointer"
                     >
                       {b}
                     </button>
@@ -255,7 +258,7 @@ export function FastSearchModal() {
                             : 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=400&q=80'
                         }
                         alt={product.name}
-                        className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform"
+                        className="w-full h-full object-cover rounded-md group-hover:scale-105 transition-transform"
                         loading="lazy"
                       />
                     </div>

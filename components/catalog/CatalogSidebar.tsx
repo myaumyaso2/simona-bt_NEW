@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Search, Check } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { MANUFACTURER_PROMOS } from '@/data/promosData';
+import { SimonaIconSearch, SimonaIconCheck } from '@/components/brand/SimonaIcons';
 
 const accordionTransition = {
   duration: 0.3,
@@ -159,7 +160,7 @@ export function CatalogSidebar({
                                 : 'bg-[#1E2228] border-[#2B313A] group-hover/item:border-simona-wine/60'
                             }`}
                           >
-                            {isChecked && <Check className="w-3 h-3 stroke-[2.5]" />}
+                            {isChecked && <SimonaIconCheck className="w-3 h-3 stroke-[2.5]" />}
                           </div>
                           <div className="flex flex-col">
                             <span
@@ -224,7 +225,7 @@ export function CatalogSidebar({
                     onChange={(e) => setBrandSearch(e.target.value)}
                     className="w-full bg-[#1E2228] border border-[#2B313A] rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-[#87888A] focus:outline-none focus:border-simona-teal transition-colors"
                   />
-                  <Search className="w-3.5 h-3.5 text-[#87888A] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <SimonaIconSearch className="w-3.5 h-3.5 text-[#87888A] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
 
                 {/* Brand Checkboxes */}
@@ -246,7 +247,7 @@ export function CatalogSidebar({
                                 : 'bg-[#1E2228] border-[#2B313A] group-hover/item:border-simona-teal/60'
                             }`}
                           >
-                            {isChecked && <Check className="w-3 h-3 stroke-[2.5]" />}
+                            {isChecked && <SimonaIconCheck className="w-3 h-3 stroke-[2.5]" />}
                           </div>
                           <span
                             className={`transition-colors ${
@@ -387,7 +388,7 @@ export function CatalogSidebar({
                               : 'bg-[#1E2228] border-[#2B313A] group-hover/item:border-simona-teal/60'
                           }`}
                         >
-                          {isChecked && <Check className="w-3 h-3 stroke-[2.5]" />}
+                          {isChecked && <SimonaIconCheck className="w-3 h-3 stroke-[2.5]" />}
                         </div>
                         <span
                           className={`text-[11.5px] leading-tight transition-colors ${
@@ -445,7 +446,7 @@ export function CatalogSidebar({
                           onClick={() =>
                             onFilterChange({ selectedWidth: isSelected ? null : width })
                           }
-                          className={`py-1.5 text-xs rounded-lg font-medium transition-all ${
+                          className={`py-1.5 text-xs rounded-xl font-medium transition-all cursor-pointer ${
                             isSelected
                               ? 'bg-simona-teal text-white shadow-sm border border-simona-teal'
                               : 'bg-[#1E2228] text-[#D7D9DB] border border-[#2B313A] hover:border-simona-teal/40'

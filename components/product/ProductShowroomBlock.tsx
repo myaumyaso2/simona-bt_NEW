@@ -3,7 +3,8 @@
 import React from 'react';
 import { useStore } from '@/components/providers/StoreContext';
 import { ProductItem } from '@/types';
-import { Play, MapPin, Clock, Car } from 'lucide-react';
+import { Play } from 'lucide-react';
+import { SimonaIconPin, SimonaIconClock, SimonaIconCar } from '@/components/brand/SimonaIcons';
 
 interface ProductShowroomBlockProps {
   product: ProductItem;
@@ -42,13 +43,13 @@ export function ProductShowroomBlock({ product }: ProductShowroomBlockProps) {
           {/* Video Play Overlay */}
           <button
             onClick={handleOpenVideo}
-            className="absolute inset-0 m-auto w-16 h-16 rounded-full bg-simona-teal/90 hover:bg-simona-teal text-white flex items-center justify-center shadow-2xl backdrop-blur-md transition-all duration-300 hover:scale-110 cursor-pointer"
+            className="absolute inset-0 m-auto w-14 h-14 rounded-xl bg-simona-teal/90 hover:bg-simona-teal text-white flex items-center justify-center shadow-2xl backdrop-blur-md transition-all duration-300 hover:scale-105 cursor-pointer"
             title="Смотреть видеоэкскурсию"
           >
             <Play className="w-6 h-6 fill-current translate-x-0.5" />
           </button>
 
-          <div className="absolute bottom-4 left-6 text-xs text-[#D7D9DB] font-medium bg-black/60 px-3 py-1.5 rounded-lg backdrop-blur-md border border-white/10">
+          <div className="absolute bottom-4 left-6 text-xs text-[#D7D9DB] font-medium bg-black/60 px-3 py-1.5 rounded-md backdrop-blur-md border border-white/10">
             Видеоэкскурсия по монобрендовой экспозиции Miele
           </div>
         </div>
@@ -73,17 +74,17 @@ export function ProductShowroomBlock({ product }: ProductShowroomBlockProps) {
             {/* Showroom Details Badges */}
             <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-4 flex flex-col gap-2 text-xs text-[#D7D9DB]">
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-simona-teal shrink-0" />
+                <SimonaIconPin className="w-4 h-4 text-simona-teal shrink-0" />
                 <span className="font-semibold text-white">
                   Нижний Новгород, ул. Белинского, 15
                 </span>
               </div>
               <div className="flex items-center gap-2 text-[#87888A]">
-                <Clock className="w-4 h-4 shrink-0" />
+                <SimonaIconClock className="w-4 h-4 shrink-0" />
                 <span>Ежедневно с 10:00 до 20:00</span>
               </div>
               <div className="flex items-center gap-2 text-[#87888A]">
-                <Car className="w-4 h-4 shrink-0" />
+                <SimonaIconCar className="w-4 h-4 shrink-0" />
                 <span>Выделенная охраняемая парковка для клиентов</span>
               </div>
             </div>

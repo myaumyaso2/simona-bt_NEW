@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Sparkles, MapPin, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, AlertCircle } from 'lucide-react';
+import { SimonaIconSparkles, SimonaIconCheckCircle } from '@/components/brand/SimonaIcons';
 import { useStore } from '@/components/providers/StoreContext';
 
 export function ShowroomVisitModal() {
@@ -56,7 +57,7 @@ export function ShowroomVisitModal() {
       <div className="relative w-full max-w-lg rounded-3xl bg-white border border-black/[0.08] shadow-2xl p-6 sm:p-8 text-[#16181B]">
         <button
           onClick={closeModal}
-          className="absolute top-5 right-5 p-2 text-[#87888A] hover:text-[#16181B] rounded-full hover:bg-zinc-100 transition"
+          className="absolute top-5 right-5 w-9 h-9 rounded-xl border border-black/[0.08] text-[#87888A] hover:text-[#16181B] hover:bg-zinc-100 flex items-center justify-center transition cursor-pointer"
           aria-label="Закрыть"
         >
           <X className="w-5 h-5" />
@@ -64,8 +65,8 @@ export function ShowroomVisitModal() {
 
         {success ? (
           <div className="text-center py-8">
-            <div className="w-16 h-16 rounded-full bg-simona-teal/10 text-simona-teal flex items-center justify-center mx-auto mb-4 border border-simona-teal/30">
-              <CheckCircle2 className="w-8 h-8" />
+            <div className="w-16 h-16 rounded-2xl bg-simona-teal/10 text-simona-teal flex items-center justify-center mx-auto mb-4 border border-simona-teal/30">
+              <SimonaIconCheckCircle className="w-8 h-8" />
             </div>
             <h3 className="text-2xl font-montserrat font-bold text-[#16181B] mb-2">Визит забронирован!</h3>
             <p className="text-sm text-[#6E7074] font-normal max-w-sm mx-auto leading-relaxed">
@@ -73,7 +74,7 @@ export function ShowroomVisitModal() {
             </p>
             <button
               onClick={closeModal}
-              className="mt-6 px-6 py-2.5 rounded-xl bg-[#16181B] hover:bg-zinc-800 text-white text-xs font-semibold uppercase tracking-wider transition shadow-sm"
+              className="mt-6 px-6 py-2.5 rounded-xl bg-[#16181B] hover:bg-zinc-800 text-white text-xs font-semibold uppercase tracking-wider transition shadow-sm cursor-pointer"
             >
               Закрыть
             </button>
@@ -81,7 +82,7 @@ export function ShowroomVisitModal() {
         ) : (
           <div>
             <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-md bg-simona-teal/10 text-simona-teal border border-simona-teal/25 text-xs font-bold mb-3">
-              <Sparkles className="w-3.5 h-3.5" />
+              <SimonaIconSparkles className="w-3.5 h-3.5" />
               <span>Персональная консультация с экспертом</span>
             </div>
 

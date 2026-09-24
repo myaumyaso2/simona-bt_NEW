@@ -10,11 +10,10 @@ import {
   SimonaIconClock,
   SimonaIconPhoneSolid,
   SimonaIconCart,
+  SimonaIconCheckCircle,
+  SimonaIconPackage,
 } from '@/components/brand/SimonaIcons';
 import {
-  CheckCircle2,
-  Package,
-  Calendar,
   CreditCard,
   Building,
   Store,
@@ -22,7 +21,6 @@ import {
   ArrowRight,
   UserCheck,
   FileText,
-  MapPin,
 } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { trackEcommercePurchase, trackGoal } from '@/lib/analytics/tracker';
@@ -144,7 +142,7 @@ function CheckoutSuccessContent() {
           {/* Main heading */}
           <div className="flex items-start space-x-4 mb-6">
             <div className="w-12 h-12 rounded-xl bg-simona-teal/10 border border-simona-teal/30 text-simona-teal flex items-center justify-center shrink-0 mt-1">
-              <CheckCircle2 className="w-7 h-7" />
+              <SimonaIconCheckCircle className="w-7 h-7" />
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
@@ -166,7 +164,7 @@ function CheckoutSuccessContent() {
             {/* Delivery Info */}
             <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-5">
               <div className="flex items-center space-x-2 text-simona-teal mb-3">
-                <Package className="w-4 h-4" />
+                <SimonaIconPackage className="w-4 h-4" />
                 <span className="text-xs font-semibold uppercase tracking-wider text-white">
                   Получение заказа
                 </span>
@@ -175,7 +173,7 @@ function CheckoutSuccessContent() {
               <p className="text-xs text-[#87888A] mb-2">{delInfo.address}</p>
               <div className="text-[11px] text-[#87888A] space-y-1 mb-3">
                 <div className="flex items-center space-x-1.5 text-zinc-300">
-                  <Calendar className="w-3.5 h-3.5 text-simona-teal" />
+                  <SimonaIconClock className="w-3.5 h-3.5 text-simona-teal" />
                   <span>{delInfo.schedule}</span>
                 </div>
               </div>
@@ -188,7 +186,7 @@ function CheckoutSuccessContent() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center space-x-1.5 text-xs text-simona-teal hover:underline mt-3"
                 >
-                  <MapPin className="w-3.5 h-3.5" />
+                  <SimonaIconPin className="w-3.5 h-3.5" />
                   <span>Открыть на Яндекс.Картах</span>
                 </a>
               )}

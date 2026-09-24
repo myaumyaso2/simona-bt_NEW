@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Award, Upload, CheckCircle2, AlertCircle, FileText } from 'lucide-react';
+import { X, Award, Upload, AlertCircle } from 'lucide-react';
+import { SimonaIconCheckCircle } from '@/components/brand/SimonaIcons';
 import { useStore } from '@/components/providers/StoreContext';
 
 export function B2BLeadModal() {
@@ -51,7 +52,7 @@ export function B2BLeadModal() {
       <div className="relative w-full max-w-lg rounded-3xl bg-white border border-black/[0.08] shadow-2xl p-6 sm:p-8 text-[#16181B]">
         <button
           onClick={closeModal}
-          className="absolute top-5 right-5 p-2 text-[#87888A] hover:text-[#16181B] rounded-full hover:bg-zinc-100 transition"
+          className="absolute top-5 right-5 w-9 h-9 rounded-xl border border-black/[0.08] text-[#87888A] hover:text-[#16181B] hover:bg-zinc-100 flex items-center justify-center transition cursor-pointer"
           aria-label="Закрыть"
         >
           <X className="w-5 h-5" />
@@ -59,8 +60,8 @@ export function B2BLeadModal() {
 
         {success ? (
           <div className="text-center py-8">
-            <div className="w-16 h-16 rounded-full bg-simona-wine/10 text-simona-wine flex items-center justify-center mx-auto mb-4 border border-simona-wine/30">
-              <CheckCircle2 className="w-8 h-8" />
+            <div className="w-16 h-16 rounded-2xl bg-simona-wine/10 text-simona-wine flex items-center justify-center mx-auto mb-4 border border-simona-wine/30">
+              <SimonaIconCheckCircle className="w-8 h-8" />
             </div>
             <h3 className="text-2xl font-montserrat font-bold text-[#16181B] mb-2">Проект принят на расчет!</h3>
             <p className="text-sm text-[#6E7074] font-normal max-w-sm mx-auto leading-relaxed">
@@ -68,7 +69,7 @@ export function B2BLeadModal() {
             </p>
             <button
               onClick={closeModal}
-              className="mt-6 px-6 py-2.5 rounded-xl bg-[#16181B] hover:bg-zinc-800 text-white text-xs font-semibold uppercase tracking-wider transition shadow-sm"
+              className="mt-6 px-6 py-2.5 rounded-xl bg-[#16181B] hover:bg-zinc-800 text-white text-xs font-semibold uppercase tracking-wider transition shadow-sm cursor-pointer"
             >
               Закрыть
             </button>

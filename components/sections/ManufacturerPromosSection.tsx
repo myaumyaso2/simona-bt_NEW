@@ -110,7 +110,7 @@ export function ManufacturerPromosSection() {
                 onClick={prevSlide}
                 disabled={currentIndex === 0}
                 aria-label="Предыдущие акции"
-                className="w-10 h-10 rounded-full border border-[#2B313A] bg-[#16191D] text-[#87888A] hover:text-white hover:border-simona-wine/60 hover:bg-[#1E2228] transition-all flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                className="w-11 h-11 rounded-xl border border-[#2B313A] bg-[#16191D] text-[#87888A] hover:text-white hover:border-simona-wine/60 hover:bg-[#1E2228] transition-all flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -118,7 +118,7 @@ export function ManufacturerPromosSection() {
                 onClick={nextSlide}
                 disabled={currentIndex >= maxIndex}
                 aria-label="Следующие акции"
-                className="w-10 h-10 rounded-full border border-[#2B313A] bg-[#16191D] text-[#87888A] hover:text-white hover:border-simona-wine/60 hover:bg-[#1E2228] transition-all flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                className="w-11 h-11 rounded-xl border border-[#2B313A] bg-[#16191D] text-[#87888A] hover:text-white hover:border-simona-wine/60 hover:bg-[#1E2228] transition-all flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -161,9 +161,9 @@ export function ManufacturerPromosSection() {
             </span>
           </div>
 
-          <div className="w-full sm:w-64 h-1 bg-[#1E2228] rounded-full overflow-hidden">
+          <div className="w-full sm:w-64 h-1.5 bg-[#1E2228] rounded-md overflow-hidden">
             <div
-              className="h-full bg-simona-wine transition-all duration-300 rounded-full"
+              className="h-full bg-simona-wine transition-all duration-300 rounded-md"
               style={{ width: `${Math.max(15, progressPercentage)}%` }}
             />
           </div>

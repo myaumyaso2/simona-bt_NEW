@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import { ProductItem } from '@/types';
 import { ProductCard } from '@/components/catalog/ProductCard';
-import { MapPin, Package, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
-import { SimonaIconChef, SimonaIconCart, SimonaIconFilter } from '@/components/brand/SimonaIcons';
+import { SimonaIconChef, SimonaIconCart, SimonaIconFilter, SimonaIconPin, SimonaIconPackage } from '@/components/brand/SimonaIcons';
+import { SectionBadge } from '@/components/ui/SectionBadge';
 
 interface MagnetCatalogProps {
   products: ProductItem[];
@@ -47,12 +48,12 @@ export function MagnetCatalog({ products }: MagnetCatalogProps) {
       <SimonaPatternOverlay variant="subtle" opacity={0.03} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Section Header */}
+        {/* Section Header: Left-Aligned Split Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-          <div>
-            <div className="text-xs font-bold uppercase tracking-[0.2em] text-simona-teal mb-3">
+          <div className="text-left">
+            <SectionBadge variant="teal" className="mb-3.5">
               Селективная витрина салонов
-            </div>
+            </SectionBadge>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-bold text-[#16181B] tracking-tight">
               Каталог-магнит
             </h2>
@@ -60,7 +61,7 @@ export function MagnetCatalog({ products }: MagnetCatalogProps) {
           <div className="mt-4 md:mt-0 flex items-center space-x-3">
             <button
               onClick={() => openModal('SEARCH')}
-              className="px-4 py-2.5 rounded-full bg-white hover:bg-zinc-50 text-[#16181B] text-xs font-semibold border border-black/[0.08] hover:border-simona-teal transition flex items-center shadow-sm active:scale-98"
+              className="px-5 py-2.5 rounded-xl bg-white hover:bg-zinc-50 text-[#16181B] text-xs font-semibold border border-black/[0.08] hover:border-simona-teal transition flex items-center shadow-sm active:scale-98 cursor-pointer"
             >
               <SimonaIconFilter className="w-3.5 h-3.5 mr-2 text-simona-teal" />
               Расширенный поиск 8 000+ позиций
@@ -72,7 +73,7 @@ export function MagnetCatalog({ products }: MagnetCatalogProps) {
         <div className="flex items-center space-x-2 overflow-x-auto pb-4 mb-6 border-b border-black/[0.06] no-scrollbar">
           <button
             onClick={() => setActiveFilter('ALL')}
-            className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               activeFilter === 'ALL'
                 ? 'bg-[#16181B] text-white shadow-md'
                 : 'bg-[#F2F3F4] text-[#6E7074] hover:text-[#16181B] hover:bg-zinc-200/80 border border-black/[0.04]'
@@ -83,7 +84,7 @@ export function MagnetCatalog({ products }: MagnetCatalogProps) {
 
           <button
             onClick={() => setActiveFilter('ACTIVE_KITCHEN')}
-            className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center cursor-pointer ${
               activeFilter === 'ACTIVE_KITCHEN'
                 ? 'bg-amber-500 text-zinc-950 font-bold shadow-md shadow-amber-500/20'
                 : 'bg-amber-50 text-amber-800 hover:bg-amber-100/80 border border-amber-500/25'
@@ -95,19 +96,19 @@ export function MagnetCatalog({ products }: MagnetCatalogProps) {
 
           <button
             onClick={() => setActiveFilter('EXHIBITION')}
-            className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center cursor-pointer ${
               activeFilter === 'EXHIBITION'
                 ? 'bg-simona-teal text-white shadow-md shadow-simona-teal/20'
                 : 'bg-simona-teal/10 text-simona-teal hover:bg-simona-teal/15 border border-simona-teal/25'
             }`}
           >
-            <MapPin className="w-3.5 h-3.5 mr-1.5" />
+            <SimonaIconPin className="w-3.5 h-3.5 mr-1.5" />
             В экспозиции (Белинского 15 & 11/66)
           </button>
 
           <button
             onClick={() => setActiveFilter('ECOM')}
-            className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center cursor-pointer ${
               activeFilter === 'ECOM'
                 ? 'bg-[#16181B] text-white shadow-md'
                 : 'bg-[#F2F3F4] text-[#6E7074] hover:text-[#16181B] hover:bg-zinc-200/80 border border-black/[0.04]'
@@ -119,13 +120,13 @@ export function MagnetCatalog({ products }: MagnetCatalogProps) {
 
           <button
             onClick={() => setActiveFilter('ON_ORDER')}
-            className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center cursor-pointer ${
               activeFilter === 'ON_ORDER'
                 ? 'bg-[#16181B] text-white shadow-md'
                 : 'bg-[#F2F3F4] text-[#6E7074] hover:text-[#16181B] hover:bg-zinc-200/80 border border-black/[0.04]'
             }`}
           >
-            <Package className="w-3.5 h-3.5 mr-1.5 text-[#87888A]" />
+            <SimonaIconPackage className="w-3.5 h-3.5 mr-1.5 text-[#87888A]" />
             Под заказ со склада
           </button>
         </div>
@@ -139,7 +140,7 @@ export function MagnetCatalog({ products }: MagnetCatalogProps) {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`px-3.5 py-1.5 rounded-full whitespace-nowrap transition-all font-medium ${
+              className={`px-3.5 py-1.5 rounded-xl whitespace-nowrap transition-all font-medium cursor-pointer ${
                 activeCategory === cat.id
                   ? 'bg-[#16181B] text-white font-semibold shadow-sm'
                   : 'bg-[#F8F9FA] text-[#6E7074] hover:text-[#16181B] border border-black/[0.06] hover:bg-zinc-200/60'
@@ -152,14 +153,14 @@ export function MagnetCatalog({ products }: MagnetCatalogProps) {
 
         {/* Products Grid */}
         {filteredProducts.length === 0 ? (
-          <div className="p-12 text-center rounded-3xl bg-[#F8F9FA] border border-black/[0.06]">
+          <div className="p-12 text-center rounded-2xl bg-[#F8F9FA] border border-black/[0.06]">
             <p className="text-[#6E7074] text-sm">В этой выборке нет товаров.</p>
             <button
               onClick={() => {
                 setActiveFilter('ALL');
                 setActiveCategory('ALL');
               }}
-              className="mt-4 px-5 py-2 rounded-full bg-[#16181B] text-white text-xs hover:bg-zinc-800 transition shadow-sm"
+              className="mt-4 px-5 py-2.5 rounded-xl bg-[#16181B] text-white text-xs hover:bg-zinc-800 transition shadow-sm cursor-pointer"
             >
               Сбросить фильтры
             </button>
@@ -175,7 +176,7 @@ export function MagnetCatalog({ products }: MagnetCatalogProps) {
         {/* Bottom Banner: 8000 SKU CTA in Light Double-Bezel */}
         <div className="mt-20 p-1.5 rounded-[2rem] bg-black/[0.02] ring-1 ring-black/[0.06] shadow-lg">
           <div className="p-8 sm:p-10 rounded-[calc(2rem-6px)] bg-[#F8F9FA] shadow-sm border border-black/[0.04] flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="max-w-xl">
+            <div className="max-w-xl text-left">
               <h3 className="text-2xl font-montserrat font-bold text-[#16181B]">
                 Ищете конкретную модель или артикул из коллекций 2026 года?
               </h3>
@@ -186,10 +187,10 @@ export function MagnetCatalog({ products }: MagnetCatalogProps) {
             <div className="shrink-0 w-full sm:w-auto">
               <button
                 onClick={() => openModal('PROJECT_MATCHING')}
-                className="w-full sm:w-auto pl-7 pr-2 py-2 rounded-full bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wider uppercase transition-all shadow-lg shadow-simona-teal/20 flex items-center justify-between group active:scale-98"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wider uppercase transition-all shadow-lg shadow-simona-teal/20 flex items-center justify-between sm:justify-center group active:scale-98 cursor-pointer"
               >
-                <span className="mr-3">Запросить подбор по спецификации</span>
-                <span className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                <span>Запросить подбор по спецификации</span>
+                <span className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center ml-3 group-hover:translate-x-0.5 transition-transform">
                   <Sparkles className="w-4 h-4 text-white" />
                 </span>
               </button>

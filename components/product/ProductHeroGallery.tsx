@@ -4,8 +4,14 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProductItem } from '@/types';
 import { useStore } from '@/components/providers/StoreContext';
-import { SimonaIconHeart, SimonaIconCompare } from '@/components/brand/SimonaIcons';
-import { Share2, Maximize2, Check, ShieldCheck } from 'lucide-react';
+import {
+  SimonaIconHeart,
+  SimonaIconCompare,
+  SimonaIconGuarantee,
+  SimonaIconCheck,
+  SimonaIconShare,
+} from '@/components/brand/SimonaIcons';
+import { Maximize2 } from 'lucide-react';
 
 interface ProductHeroGalleryProps {
   product: ProductItem;
@@ -84,7 +90,7 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
 
           {/* Badge 3: Official Manufacturer Warranty */}
           <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-white/10 text-white/90 border border-white/15 backdrop-blur-md shadow-sm">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#D7D9DB]" />
+            <SimonaIconGuarantee className="w-3.5 h-3.5 text-[#D7D9DB]" />
             <span>Гарантия производителя 2 года</span>
           </div>
         </div>
@@ -126,12 +132,12 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
             className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#111315]/80 backdrop-blur-md border border-[#2B313A] text-[#D7D9DB] hover:text-white hover:border-[#87888A] transition-all duration-200 cursor-pointer shadow-md relative"
           >
             {copied ? (
-              <Check className="w-4 h-4 text-emerald-400" />
+              <SimonaIconCheck className="w-4 h-4 text-emerald-400" />
             ) : (
-              <Share2 className="w-4 h-4" />
+              <SimonaIconShare className="w-4 h-4" />
             )}
             {copied && (
-              <span className="absolute -left-20 top-2 px-2 py-0.5 rounded bg-[#16191D] border border-[#2B313A] text-[10px] text-white">
+              <span className="absolute -left-20 top-2 px-2 py-0.5 rounded-md bg-[#16191D] border border-[#2B313A] text-[10px] text-white">
                 Скопировано
               </span>
             )}
@@ -160,7 +166,7 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
         {/* Bottom-Right 360 / Interior Badge */}
         <button
           onClick={() => setIsZoomed(true)}
-          className="absolute bottom-4 right-4 z-20 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#111315]/85 backdrop-blur-md border border-[#2B313A] text-xs text-[#D7D9DB] hover:text-white hover:border-simona-teal transition-all duration-200 cursor-pointer shadow-md"
+          className="absolute bottom-4 right-4 z-20 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#111315]/85 backdrop-blur-md border border-[#2B313A] text-xs text-[#D7D9DB] hover:text-white hover:border-simona-teal transition-all duration-200 cursor-pointer shadow-md"
         >
           <Maximize2 className="w-3.5 h-3.5 text-simona-teal" />
           <span>360° / Фото в интерьере</span>
@@ -183,7 +189,7 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
               />
               <button
                 onClick={() => setIsZoomed(false)}
-                className="absolute top-6 right-6 text-white bg-[#1E2228] border border-[#2B313A] rounded-full p-2.5 hover:border-white transition-colors"
+                className="absolute top-6 right-6 text-white bg-[#1E2228] border border-[#2B313A] rounded-xl w-10 h-10 flex items-center justify-center hover:border-white transition-colors cursor-pointer"
               >
                 ✕
               </button>

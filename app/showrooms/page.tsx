@@ -10,19 +10,17 @@ import {
   SimonaIconGuarantee,
   SimonaIconChef,
   SimonaIconStar,
+  SimonaIconSparkles,
+  SimonaIconCheckCircle,
+  SimonaIconBuilding,
 } from '@/components/brand/SimonaIcons';
 import {
   Calendar,
-  Clock,
-  MapPin,
-  CheckCircle2,
   Coffee,
-  Sparkles,
   ArrowRight,
   ShieldCheck,
   Send,
   Navigation,
-  Building,
 } from 'lucide-react';
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { trackGoal } from '@/lib/analytics/tracker';
@@ -149,11 +147,11 @@ export default function ShowroomsPage() {
                     <span>Лаундж для архитекторов</span>
                   </div>
                   <div className="bg-[#1E2228] p-2.5 rounded-xl border border-[#2B313A] flex items-center space-x-2">
-                    <Sparkles className="w-4 h-4 text-simona-teal" />
+                    <SimonaIconSparkles className="w-4 h-4 text-simona-teal" />
                     <span>Miele, ASKO, SMEG</span>
                   </div>
                   <div className="bg-[#1E2228] p-2.5 rounded-xl border border-[#2B313A] flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal" />
+                    <SimonaIconCheckCircle className="w-4 h-4 text-simona-teal" />
                     <span>Экспресс-выдача</span>
                   </div>
                 </div>
@@ -230,7 +228,7 @@ export default function ShowroomsPage() {
           <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="space-y-2 text-left">
               <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-md bg-[#1E2228] border border-[#2B313A] text-xs font-semibold text-zinc-300">
-                <Building className="w-3.5 h-3.5 text-simona-teal" />
+                <SimonaIconBuilding className="w-3.5 h-3.5 text-simona-teal" />
                 <span>Основной логистический узел</span>
               </div>
               <h3 className="text-xl font-montserrat font-bold text-white">
@@ -298,8 +296,8 @@ export default function ShowroomsPage() {
 
             {success ? (
               <div className="bg-[#1E2228] border border-simona-teal/40 rounded-2xl p-8 text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-simona-teal/10 border border-simona-teal/30 text-simona-teal flex items-center justify-center mx-auto">
-                  <CheckCircle2 className="w-8 h-8" />
+                <div className="w-16 h-16 rounded-2xl bg-simona-teal/10 border border-simona-teal/30 text-simona-teal flex items-center justify-center mx-auto">
+                  <SimonaIconCheckCircle className="w-8 h-8" />
                 </div>
                 <h3 className="text-xl font-montserrat font-bold text-white">Визит успешно забронирован!</h3>
                 <p className="text-xs text-[#87888A] max-w-md mx-auto leading-relaxed">

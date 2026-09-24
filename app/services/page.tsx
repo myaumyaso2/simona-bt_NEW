@@ -10,20 +10,17 @@ import {
   SimonaIconClock,
   SimonaIconPhoneSolid,
   SimonaIconStar,
+  SimonaIconCheck,
+  SimonaIconCheckCircle,
+  SimonaIconBuilding,
 } from '@/components/brand/SimonaIcons';
 import {
-  Truck,
   Wrench,
-  Warehouse,
   Ruler,
-  ShieldCheck,
-  CheckCircle2,
   Calendar,
   Send,
   ArrowRight,
   Sparkles,
-  Layers,
-  PhoneCall,
 } from 'lucide-react';
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { trackGoal } from '@/lib/analytics/tracker';
@@ -119,15 +116,15 @@ export default function ServicesPage() {
                 </p>
                 <ul className="space-y-2 text-xs text-zinc-300">
                   <li className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal shrink-0" />
+                    <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
                     <span>Бесплатно при сумме заказа от 50 000 ₽ по Нижнему Новгороду</span>
                   </li>
                   <li className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal shrink-0" />
+                    <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
                     <span>Согласование точного 2-часового окна прибытия</span>
                   </li>
                   <li className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal shrink-0" />
+                    <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
                     <span>Подъем на любой этаж на грузовом или пассажирском лифте</span>
                   </li>
                 </ul>
@@ -151,15 +148,15 @@ export default function ServicesPage() {
                 </p>
                 <ul className="space-y-2 text-xs text-zinc-300">
                   <li className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal shrink-0" />
+                    <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
                     <span>Сохранение полной фабричной гарантии производителя</span>
                   </li>
                   <li className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal shrink-0" />
+                    <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
                     <span>Дополнительная гарантия 2 года на выполненные монтажные работы</span>
                   </li>
                   <li className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal shrink-0" />
+                    <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
                     <span>Подключение посудомоек с защитой AquaStop и гидроизоляцией</span>
                   </li>
                 </ul>
@@ -173,7 +170,7 @@ export default function ServicesPage() {
             <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:border-simona-teal/50 transition shadow-xl">
               <div>
                 <div className="w-12 h-12 rounded-xl bg-simona-teal/10 border border-simona-teal/30 text-simona-teal flex items-center justify-center mb-4">
-                  <Warehouse className="w-6 h-6" />
+                  <SimonaIconBuilding className="w-6 h-6" />
                 </div>
                 <h3 className="text-xl font-montserrat font-bold text-white mb-2">
                   Бесплатное хранение до 6 месяцев
@@ -183,15 +180,15 @@ export default function ServicesPage() {
                 </p>
                 <ul className="space-y-2 text-xs text-zinc-300">
                   <li className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal shrink-0" />
+                    <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
                     <span>Фиксация цены приборов от скачков курсов валют</span>
                   </li>
                   <li className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal shrink-0" />
+                    <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
                     <span>Круглосуточная охрана, видеонаблюдение и температурный режим</span>
                   </li>
                   <li className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal shrink-0" />
+                    <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
                     <span>Доставка на объект по вашему первому звонку</span>
                   </li>
                 </ul>
@@ -215,15 +212,15 @@ export default function ServicesPage() {
                 </p>
                 <ul className="space-y-2 text-xs text-zinc-300">
                   <li className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal shrink-0" />
+                    <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
                     <span>Формирование технического листа ТЗ для кухонной фабрики</span>
                   </li>
                   <li className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal shrink-0" />
+                    <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
                     <span>Проверка правильности вывода фаз для индукционных панелей</span>
                   </li>
                   <li className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal shrink-0" />
+                    <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
                     <span>Расчет сопротивления вентканалов для вытяжек</span>
                   </li>
                 </ul>
@@ -250,8 +247,8 @@ export default function ServicesPage() {
 
             {success ? (
               <div className="bg-[#1E2228] border border-simona-teal/40 rounded-2xl p-8 text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-simona-teal/10 border border-simona-teal/30 text-simona-teal flex items-center justify-center mx-auto">
-                  <CheckCircle2 className="w-8 h-8" />
+                <div className="w-16 h-16 rounded-2xl bg-simona-teal/10 border border-simona-teal/30 text-simona-teal flex items-center justify-center mx-auto">
+                  <SimonaIconCheckCircle className="w-8 h-8" />
                 </div>
                 <h3 className="text-xl font-montserrat font-bold text-white">Заявка успешно принята!</h3>
                 <p className="text-xs text-[#87888A] max-w-md mx-auto leading-relaxed">
@@ -364,7 +361,7 @@ export default function ServicesPage() {
         <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-simona-teal/10 text-simona-teal flex items-center justify-center shrink-0">
-              <PhoneCall className="w-5 h-5" />
+              <SimonaIconPhoneSolid className="w-5 h-5" />
             </div>
             <div>
               <span className="font-semibold text-white block">Прямой диспетчер сервисной службы</span>

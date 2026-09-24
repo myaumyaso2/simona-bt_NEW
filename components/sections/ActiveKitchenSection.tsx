@@ -51,7 +51,7 @@ export function ActiveKitchenSection() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                 {/* Floating Badge */}
-                <div className="absolute top-4 left-4 px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-amber-500/30 text-amber-700 text-xs font-bold flex items-center shadow-md">
+                <div className="absolute top-4 left-4 px-3.5 py-1.5 rounded-md bg-white/95 backdrop-blur-md border border-amber-500/30 text-amber-700 text-xs font-bold flex items-center shadow-md">
                   <Flame className="w-3.5 h-3.5 mr-1.5 text-amber-500 animate-pulse" />
                   ул. Белинского, 15 • Гастрономический салон
                 </div>
@@ -61,7 +61,7 @@ export function ActiveKitchenSection() {
                   <div className="text-xs text-simona-teal font-bold uppercase tracking-wider mb-1">
                     Шеф-тест-драйв до покупки
                   </div>
-                  <div className="text-[#16181B] text-sm sm:text-base font-montserrat font-medium italic leading-relaxed">
+                  <div className="text-[#16181B] text-sm sm:text-base font-montserrat font-medium leading-relaxed">
                     «Вы не просто выбираете прибор по каталогу — вы готовите на нем сами вместе с шеф-экспертом СИМОНА»
                   </div>
                 </div>
@@ -71,7 +71,7 @@ export function ActiveKitchenSection() {
 
           {/* Right Column: Copy and Features */}
           <div className="lg:col-span-6">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-800 text-xs font-bold mb-4">
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-800 text-xs font-bold mb-4">
               <Flame className="w-3.5 h-3.5 text-amber-600" />
               <span>Действующее кулинарное пространство</span>
             </div>
@@ -104,21 +104,21 @@ export function ActiveKitchenSection() {
               ))}
             </div>
 
-            {/* Action buttons: Button-in-Button */}
+            {/* Action buttons: Strictly rounded-xl */}
             <div className="mt-9 flex flex-col sm:flex-row items-center gap-4">
               <button
                 onClick={() => openModal('TEST_DRIVE')}
-                className="w-full sm:w-auto pl-7 pr-2 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs tracking-wider uppercase transition-all shadow-lg shadow-amber-500/20 flex items-center justify-between group active:scale-98"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs tracking-wider uppercase transition-all shadow-lg shadow-amber-500/20 flex items-center justify-between sm:justify-center group active:scale-98 cursor-pointer"
               >
-                <span className="mr-3">Записаться на тест-драйв</span>
-                <span className="w-9 h-9 rounded-full bg-black/15 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <span>Записаться на тест-драйв</span>
+                <span className="w-8 h-8 rounded-lg bg-black/10 flex items-center justify-center ml-3 group-hover:scale-105 transition-transform">
                   <Calendar className="w-4 h-4 text-zinc-950" />
                 </span>
               </button>
 
               <button
                 onClick={() => openModal('SHOWROOM_VISIT', { preferredShowroom: 'Белинского, 15' })}
-                className="w-full sm:w-auto pl-6 pr-4 py-2.5 rounded-full bg-white hover:bg-zinc-50 text-[#16181B] text-xs font-semibold tracking-wide transition border border-black/[0.08] shadow-sm flex items-center justify-center active:scale-98"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white hover:bg-zinc-50 text-[#16181B] text-xs font-semibold tracking-wide transition border border-black/[0.08] shadow-sm flex items-center justify-center active:scale-98 cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5 mr-2 text-simona-teal" />
                 О салоне на Белинского, 15

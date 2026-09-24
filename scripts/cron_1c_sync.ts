@@ -6,7 +6,7 @@ import { syncFastStock, syncFullCatalog } from '../lib/sync/oneCSyncService';
 const INCOMING_DIR = '/var/www/simona-bt.ru/data/www/simona-bt.ru/159.253.20.27';
 const BACKUP_DIR = path.join(process.cwd(), 'storage', 'sync_backups');
 const LOG_FILE = path.join(process.cwd(), 'storage', 'logs', '1c_sync.log');
-const LOCK_FILE = '/tmp/simona_1c_sync.lock';
+const LOCK_FILE = '/tmp/simona_1c_sync.pid';
 
 function log(message: string) {
   const timestamp = new Date().toISOString();

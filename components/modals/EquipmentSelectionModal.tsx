@@ -1,9 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, CheckCircle2, Home, Sparkles } from 'lucide-react';
+import { X, Home } from 'lucide-react';
+import {
+  SimonaIconConsultation,
+  SimonaIconMax,
+  SimonaIconCheckCircle,
+  SimonaIconSparkles,
+} from '@/components/brand/SimonaIcons';
 import { useStore } from '@/components/providers/StoreContext';
-import { SimonaIconConsultation, SimonaIconMax } from '@/components/brand/SimonaIcons';
 
 export function EquipmentSelectionModal() {
   const { modal, closeModal } = useStore();
@@ -92,11 +97,11 @@ export function EquipmentSelectionModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-xl rounded-2xl bg-[#16191D] border border-[#2B313A] shadow-2xl p-5 sm:p-7 text-white my-auto max-h-[92vh] overflow-y-auto">
+      <div className="relative w-full max-w-xl rounded-3xl bg-[#16191D] border border-[#2B313A] shadow-2xl p-5 sm:p-7 text-white my-auto max-h-[92vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 text-[#87888A] hover:text-white rounded-xl hover:bg-[#1E2228] transition z-10"
+          className="absolute top-4 right-4 sm:top-5 sm:right-5 w-9 h-9 text-[#87888A] hover:text-white rounded-xl border border-[#2B313A] hover:bg-[#1E2228] flex items-center justify-center transition z-10 cursor-pointer"
           aria-label="Закрыть"
         >
           <X className="w-5 h-5" />
@@ -104,8 +109,8 @@ export function EquipmentSelectionModal() {
 
         {success ? (
           <div className="text-center py-8 sm:py-12">
-            <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-simona-teal/15 border border-simona-teal/30 flex items-center justify-center text-simona-teal">
-              <CheckCircle2 className="w-8 h-8" />
+            <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-simona-teal/15 border border-simona-teal/30 flex items-center justify-center text-simona-teal">
+              <SimonaIconCheckCircle className="w-8 h-8" />
             </div>
             <h3 className="text-2xl font-montserrat font-bold text-white mb-3">
               Заявка на подбор принята!
@@ -115,7 +120,7 @@ export function EquipmentSelectionModal() {
             </p>
             <button
               onClick={handleClose}
-              className="px-8 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-sm font-semibold transition"
+              className="px-8 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-sm font-semibold transition cursor-pointer"
             >
               Отлично, понятно
             </button>
@@ -152,7 +157,7 @@ export function EquipmentSelectionModal() {
                   href="https://t.me/SimonaExpert?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5.%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D0%BF%D0%BE%D0%B4%D0%B1%D0%BE%D1%80%20%D1%82%D0%B5%D1%85%D0%BD%D0%B8%D0%BA%D0%B8"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-[#2AABEE] hover:bg-[#2296d2] text-white text-xs sm:text-sm font-semibold transition space-x-2 shadow-md hover:shadow-lg hover:shadow-[#2AABEE]/25"
+                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-[#2AABEE] hover:bg-[#2296d2] text-white text-xs sm:text-sm font-semibold transition space-x-2 shadow-md hover:shadow-lg hover:shadow-[#2AABEE]/25 cursor-pointer"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="12" fill="#2AABEE" />
@@ -169,7 +174,7 @@ export function EquipmentSelectionModal() {
                   href="https://max.ru/u/f9LHodD0cOIuy7am7AqiTUQzRCTzos1MKUnVod70alUJhmKBTjkjQi7MYf4"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-[#5C3BFE] hover:bg-[#4B2BE8] text-white text-xs sm:text-sm font-semibold transition space-x-2 shadow-md hover:shadow-lg hover:shadow-[#5C3BFE]/25"
+                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-[#5C3BFE] hover:bg-[#4B2BE8] text-white text-xs sm:text-sm font-semibold transition space-x-2 shadow-md hover:shadow-lg hover:shadow-[#5C3BFE]/25 cursor-pointer"
                 >
                   <SimonaIconMax className="w-4 h-4" />
                   <span>Написать в MAX</span>
@@ -200,7 +205,7 @@ export function EquipmentSelectionModal() {
               >
                 <div className="flex items-center space-x-3">
                   <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                    className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors ${
                       needHomeVisit
                         ? 'bg-simona-teal text-white'
                         : 'bg-[#111315] text-[#87888A]'
@@ -345,7 +350,7 @@ export function EquipmentSelectionModal() {
               </div>
 
               {error && (
-                <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs">
+                <div className="p-3 rounded-md bg-red-500/10 border border-red-500/30 text-red-400 text-xs">
                   {error}
                 </div>
               )}
@@ -354,14 +359,14 @@ export function EquipmentSelectionModal() {
               <button
                 type="submit"
                 disabled={loading || !agree}
-                className="w-full py-3.5 sm:py-4 rounded-xl bg-gradient-to-r from-simona-teal-dark to-simona-teal hover:to-simona-teal-light text-white text-sm font-semibold tracking-wide transition-all duration-300 shadow-lg shadow-simona-teal/25 hover:shadow-simona-teal/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="w-full py-3.5 sm:py-4 rounded-xl bg-gradient-to-r from-simona-teal-dark to-simona-teal hover:to-simona-teal-light text-white text-sm font-semibold tracking-wide transition-all duration-300 shadow-lg shadow-simona-teal/25 hover:shadow-simona-teal/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 cursor-pointer"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
                     <span>Отправить заявку эксперту</span>
-                    <Sparkles className="w-4 h-4" />
+                    <SimonaIconSparkles className="w-4 h-4" />
                   </>
                 )}
               </button>

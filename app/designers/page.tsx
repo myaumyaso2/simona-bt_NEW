@@ -10,20 +10,17 @@ import {
   SimonaIconPercent,
   SimonaIconPhoneSolid,
   SimonaIconStar,
+  SimonaIconBuilding,
+  SimonaIconFile,
+  SimonaIconCheckCircle,
 } from '@/components/brand/SimonaIcons';
 import {
   Briefcase,
-  CheckCircle2,
-  FileCheck,
-  Download,
-  Warehouse,
   Coffee,
   Wrench,
-  ShieldCheck,
   Send,
   Layers,
   ArrowRight,
-  Sparkles,
 } from 'lucide-react';
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { trackGoal } from '@/lib/analytics/tracker';
@@ -186,7 +183,7 @@ export default function DesignersPage() {
             <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 flex flex-col justify-between hover:border-simona-teal/50 transition shadow-md">
               <div>
                 <div className="w-12 h-12 rounded-xl bg-simona-teal/10 border border-simona-teal/20 text-simona-teal flex items-center justify-center mb-4">
-                  <FileCheck className="w-6 h-6" />
+                  <SimonaIconFile className="w-6 h-6" />
                 </div>
                 <h3 className="text-base font-semibold text-white mb-2">Инженерный аудит чертежей</h3>
                 <p className="text-xs text-[#87888A] leading-relaxed">
@@ -202,7 +199,7 @@ export default function DesignersPage() {
             <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 flex flex-col justify-between hover:border-simona-teal/50 transition shadow-md">
               <div>
                 <div className="w-12 h-12 rounded-xl bg-simona-teal/10 border border-simona-teal/20 text-simona-teal flex items-center justify-center mb-4">
-                  <Warehouse className="w-6 h-6" />
+                  <SimonaIconBuilding className="w-6 h-6" />
                 </div>
                 <h3 className="text-base font-semibold text-white mb-2">Бесплатный резерв и хранение</h3>
                 <p className="text-xs text-[#87888A] leading-relaxed">
@@ -279,8 +276,8 @@ export default function DesignersPage() {
 
             {success ? (
               <div className="bg-[#1E2228] border border-simona-teal/40 rounded-2xl p-8 text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-simona-teal/10 border border-simona-teal/30 text-simona-teal flex items-center justify-center mx-auto">
-                  <CheckCircle2 className="w-8 h-8" />
+                <div className="w-16 h-16 rounded-2xl bg-simona-teal/10 border border-simona-teal/30 text-simona-teal flex items-center justify-center mx-auto">
+                  <SimonaIconCheckCircle className="w-8 h-8" />
                 </div>
                 <h3 className="text-xl font-montserrat font-bold text-white">Проект принят в расчет!</h3>
                 <p className="text-xs text-[#87888A] max-w-md mx-auto leading-relaxed">
@@ -288,7 +285,7 @@ export default function DesignersPage() {
                 </p>
                 <button
                   onClick={() => setSuccess(false)}
-                  className="px-6 py-2.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold uppercase tracking-wider"
+                  className="px-6 py-2.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold uppercase tracking-wider cursor-pointer"
                 >
                   Отправить еще один проект
                 </button>
@@ -364,7 +361,7 @@ export default function DesignersPage() {
                         type="button"
                         key={brand}
                         onClick={() => toggleBrand(brand)}
-                        className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition ${
+                        className={`px-3 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
                           selectedBrands.includes(brand)
                             ? 'bg-simona-teal text-white border-simona-teal'
                             : 'bg-[#1E2228] text-[#87888A] border-[#2B313A] hover:text-white'

@@ -101,18 +101,18 @@ export function OrderOnlineBanner() {
                         alt=""
                         className="absolute inset-0 w-full h-full object-cover opacity-60"
                       />
-                      <span className="relative z-10 text-[9px] font-bold text-white bg-black/60 px-1.5 py-0.5 rounded w-fit">
+                      <span className="relative z-10 text-[9px] font-bold text-white bg-black/60 px-1.5 py-0.5 rounded-md w-fit">
                         Активная кухня
                       </span>
                     </div>
 
                     <div className="space-y-1.5">
-                      <div className="h-2 bg-[#2B313A] rounded w-3/4" />
-                      <div className="h-2 bg-[#2B313A]/60 rounded w-1/2" />
+                      <div className="h-2 bg-[#2B313A] rounded-md w-3/4" />
+                      <div className="h-2 bg-[#2B313A]/60 rounded-md w-1/2" />
                     </div>
                   </div>
 
-                  <div className="w-full py-2 rounded-lg bg-simona-teal text-white text-[10px] font-bold text-center uppercase tracking-wider shadow-md">
+                  <div className="w-full py-2 rounded-md bg-simona-teal text-white text-[10px] font-bold text-center uppercase tracking-wider shadow-md">
                     Каталог 8 000+ SKU
                   </div>
                 </div>

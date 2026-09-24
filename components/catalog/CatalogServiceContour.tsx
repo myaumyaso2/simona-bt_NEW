@@ -1,36 +1,41 @@
 'use client';
 
 import React from 'react';
-import { Wrench, Building2, UtensilsCrossed, Compass } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
+import {
+  SimonaIconGuarantee,
+  SimonaIconBuilding,
+  SimonaIconChef,
+  SimonaIconConsultation,
+} from '@/components/brand/SimonaIcons';
 
 const SERVICES = [
   {
     num: '01',
     title: 'Шеф-монтаж и подключение',
     desc: 'Официальная авторизация брендов, инсталляция строго по заводским регламентам. Сохранение полной гарантии производителя.',
-    icon: Wrench,
+    icon: SimonaIconGuarantee,
     action: null,
   },
   {
     num: '02',
     title: 'Хранение до конца ремонта',
     desc: 'Бесплатный охраняемый климатический склад до 6 месяцев. Резервируйте технику по фиксированной цене уже сейчас.',
-    icon: Building2,
+    icon: SimonaIconBuilding,
     action: null,
   },
   {
     num: '03',
     title: 'Активная кухня на Белинского',
     desc: 'Гастрономический тест-драйв техники с бренд-шефом. Убедитесь в работе прибора перед покупкой.',
-    icon: UtensilsCrossed,
+    icon: SimonaIconChef,
     action: 'TEST_DRIVE' as const,
   },
   {
     num: '04',
     title: 'Клуб архитекторов и дизайнеров',
     desc: 'Спецификации в DWG/PDF за 24 часа, защита проектов, персональный менеджер и специальные условия.',
-    icon: Compass,
+    icon: SimonaIconConsultation,
     action: 'B2B_CLUB' as const,
   },
 ];
@@ -73,7 +78,7 @@ export function CatalogServiceContour() {
                   </p>
                 </div>
 
-                <div className="w-10 h-0.5 bg-simona-teal/40 mt-5 rounded-full" />
+                <div className="w-10 h-0.5 bg-simona-teal/40 mt-5 rounded-md" />
               </div>
             );
           })}

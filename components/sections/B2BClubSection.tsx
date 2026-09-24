@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Briefcase, Clock, Upload, Sparkles } from 'lucide-react';
+import { Briefcase, Upload, Sparkles } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
 import { SectionBadge } from '@/components/ui/SectionBadge';
-import { SimonaIconPercent, SimonaIconStar, SimonaIconGuarantee, SimonaIconTag } from '@/components/brand/SimonaIcons';
+import { SimonaIconPercent, SimonaIconStar, SimonaIconGuarantee, SimonaIconTag, SimonaIconClock } from '@/components/brand/SimonaIcons';
 
 const B2B_BENEFITS = [
   {
@@ -14,7 +14,7 @@ const B2B_BENEFITS = [
     desc: 'Прозрачная и официальная система агентских выплат по всем европейским брендам без задержек.',
   },
   {
-    icon: Clock,
+    icon: SimonaIconClock,
     title: 'Технический расчет за 24 часа',
     desc: 'Наши инженеры проверят все схемы встройки, зазоры, вентиляционные каналы и электровыводы.',
   },
@@ -93,15 +93,15 @@ export function B2BClubSection() {
 
                 <button
                   onClick={() => openModal('B2B_CLUB')}
-                  className="w-full pl-7 pr-2 py-2 rounded-full bg-simona-wine hover:bg-simona-wine-hover text-white font-semibold text-xs uppercase tracking-wider transition-all shadow-lg shadow-simona-wine/25 flex items-center justify-between group mb-4 active:scale-98"
+                  className="w-full px-6 py-3.5 rounded-xl bg-simona-wine hover:bg-simona-wine-hover text-white font-semibold text-xs uppercase tracking-wider transition-all shadow-lg shadow-simona-wine/25 flex items-center justify-between group mb-4 active:scale-98 cursor-pointer"
                 >
-                  <span className="mr-3">Загрузить дизайн-проект</span>
-                  <span className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center group-hover:-translate-y-0.5 transition-transform">
+                  <span>Загрузить дизайн-проект</span>
+                  <span className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center group-hover:-translate-y-0.5 transition-transform">
                     <Upload className="w-4 h-4 text-white" />
                   </span>
                 </button>
 
-                <div className="text-center">
+                <div className="text-left sm:text-center">
                   <span className="text-[11px] text-[#87888A]">
                     или свяжитесь с B2B-куратором напрямую:{' '}
                     <a href="tel:+78312170015" className="text-[#16181B] hover:text-simona-teal font-semibold">

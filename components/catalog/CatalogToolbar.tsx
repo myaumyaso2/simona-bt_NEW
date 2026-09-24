@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
-import { X, SlidersHorizontal, ChevronDown, Check } from 'lucide-react';
+import { X, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FilterState } from './CatalogSidebar';
+import { SimonaIconFilter, SimonaIconCheck } from '@/components/brand/SimonaIcons';
 
 export type SortOption = 'popular' | 'price_asc' | 'price_desc' | 'newest';
 export type ViewMode = 'grid' | 'list';
@@ -100,12 +101,12 @@ export function CatalogToolbar({
         {/* Mobile Filter Button */}
         <button
           onClick={onOpenMobileFilters}
-          className="lg:hidden inline-flex items-center px-3.5 py-2 rounded-xl bg-[#16191D] border border-[#2B313A] text-xs font-semibold text-white hover:border-simona-teal transition active:scale-95"
+          className="lg:hidden inline-flex items-center px-3.5 py-2 rounded-xl bg-[#16191D] border border-[#2B313A] text-xs font-semibold text-white hover:border-simona-teal transition active:scale-95 cursor-pointer"
         >
-          <SlidersHorizontal className="w-3.5 h-3.5 mr-2 text-simona-teal" />
+          <SimonaIconFilter className="w-3.5 h-3.5 mr-2 text-simona-teal" />
           Фильтры
           {filters.selectedBrands.length > 0 && (
-            <span className="ml-1.5 px-1.5 py-0.2 bg-simona-teal text-white rounded-full text-[10px]">
+            <span className="ml-1.5 px-1.5 py-0.2 bg-simona-teal text-white rounded-md text-[10px]">
               {filters.selectedBrands.length}
             </span>
           )}
@@ -116,7 +117,7 @@ export function CatalogToolbar({
           <button
             key={brand}
             onClick={() => onRemoveBrand(brand)}
-            className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group"
+            className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group cursor-pointer"
           >
             <span>{brand}</span>
             <X className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
@@ -126,7 +127,7 @@ export function CatalogToolbar({
         {filters.selectedWidth && (
           <button
             onClick={onRemoveWidth}
-            className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group"
+            className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group cursor-pointer"
           >
             <span>{filters.selectedWidth}</span>
             <X className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
@@ -136,7 +137,7 @@ export function CatalogToolbar({
         {filters.selectedColor && (
           <button
             onClick={onRemoveColor}
-            className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group"
+            className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group cursor-pointer"
           >
             <span>Цвет отделки</span>
             <X className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
@@ -199,7 +200,7 @@ export function CatalogToolbar({
                       >
                         <span>{option.label}</span>
                         {isSelected && (
-                          <Check className="w-3.5 h-3.5 text-simona-teal shrink-0 ml-2" />
+                          <SimonaIconCheck className="w-3.5 h-3.5 text-simona-teal shrink-0 ml-2" />
                         )}
                       </button>
                     );

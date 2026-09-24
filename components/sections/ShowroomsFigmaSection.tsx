@@ -4,9 +4,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  MapPin,
-  Clock,
-  Phone,
   ArrowUpRight,
   ChevronLeft,
   ChevronRight,
@@ -16,6 +13,11 @@ import {
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SectionBadge } from '@/components/ui/SectionBadge';
+import {
+  SimonaIconPin,
+  SimonaIconClock,
+  SimonaIconPhoneSolid,
+} from '@/components/brand/SimonaIcons';
 
 interface ShowroomPhoto {
   id: string;
@@ -582,7 +584,7 @@ export function ShowroomsFigmaSection() {
 
                 {/* Number Badge at Top Left */}
                 <div className="absolute top-4 left-4 pointer-events-none z-10">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-[#111315]/80 backdrop-blur-md border border-white/10 text-[11px] font-bold text-simona-teal tracking-wider">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-[#111315]/80 backdrop-blur-md border border-white/10 text-[11px] font-bold text-simona-teal tracking-wider">
                     {item.number}
                   </span>
                 </div>
@@ -629,8 +631,8 @@ export function ShowroomsFigmaSection() {
             rel="noopener noreferrer"
             className="flex items-center space-x-3.5 group text-xs text-[#D7D9DB] hover:text-white transition-colors p-4 sm:px-6 lg:px-8"
           >
-            <div className="w-8 h-8 rounded-lg bg-[#111315] border border-[#2B313A] text-simona-teal flex items-center justify-center shrink-0 group-hover:border-simona-teal/50 group-hover:bg-[#16191D] transition-all">
-              <MapPin className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-[#111315] border border-[#2B313A] text-simona-teal flex items-center justify-center shrink-0 group-hover:border-simona-teal/50 group-hover:bg-[#16191D] transition-all">
+              <SimonaIconPin className="w-4 h-4" />
             </div>
             <div>
               <div className="text-[10px] uppercase font-semibold text-[#87888A] tracking-wider mb-0.5">
@@ -645,8 +647,8 @@ export function ShowroomsFigmaSection() {
 
           {/* 2. Hours */}
           <div className="flex items-center space-x-3.5 text-xs text-[#D7D9DB] p-4 sm:px-6 lg:px-8">
-            <div className="w-8 h-8 rounded-lg bg-[#111315] border border-[#2B313A] text-simona-teal flex items-center justify-center shrink-0">
-              <Clock className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-[#111315] border border-[#2B313A] text-simona-teal flex items-center justify-center shrink-0">
+              <SimonaIconClock className="w-4 h-4" />
             </div>
             <div>
               <div className="text-[10px] uppercase font-semibold text-[#87888A] tracking-wider mb-0.5">
@@ -661,8 +663,8 @@ export function ShowroomsFigmaSection() {
             href={`tel:${currentShowroom.phoneRaw}`}
             className="flex items-center space-x-3.5 group text-xs text-[#D7D9DB] hover:text-white transition-colors p-4 sm:px-6 lg:px-8"
           >
-            <div className="w-8 h-8 rounded-lg bg-[#111315] border border-[#2B313A] text-simona-teal flex items-center justify-center shrink-0 group-hover:border-simona-teal/50 group-hover:bg-[#16191D] transition-all">
-              <Phone className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-[#111315] border border-[#2B313A] text-simona-teal flex items-center justify-center shrink-0 group-hover:border-simona-teal/50 group-hover:bg-[#16191D] transition-all">
+              <SimonaIconPhoneSolid className="w-3.5 h-3.5" />
             </div>
             <div>
               <div className="text-[10px] uppercase font-semibold text-[#87888A] tracking-wider mb-0.5">
@@ -777,7 +779,7 @@ export function ShowroomsFigmaSection() {
                         goToPrevPhoto();
                       }}
                       aria-label="Предыдущее фото"
-                      className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/15 text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md z-20"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-xl bg-black/60 hover:bg-black/90 border border-white/15 text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md z-20"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
@@ -787,7 +789,7 @@ export function ShowroomsFigmaSection() {
                         goToNextPhoto();
                       }}
                       aria-label="Следующее фото"
-                      className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/15 text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md z-20"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-xl bg-black/60 hover:bg-black/90 border border-white/15 text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md z-20"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>

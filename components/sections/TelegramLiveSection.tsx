@@ -170,7 +170,7 @@ export function TelegramLiveSection() {
 
                     {/* Play Button */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-10 h-10 rounded-full bg-black/60 group-hover:bg-simona-teal border border-white/20 text-white flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-md">
+                      <div className="w-11 h-11 rounded-xl bg-black/60 group-hover:bg-simona-teal border border-white/20 text-white flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-md">
                         <Play className="w-4 h-4 ml-0.5 fill-white" />
                       </div>
                     </div>

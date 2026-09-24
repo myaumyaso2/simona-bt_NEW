@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProductItem } from '@/types';
 import { formatPrice } from '@/lib/utils';
-import { X, CheckCircle, ShieldCheck } from 'lucide-react';
+import { X } from 'lucide-react';
+import { SimonaIconCheckCircle, SimonaIconGuarantee } from '@/components/brand/SimonaIcons';
 
 interface OneClickBuyModalProps {
   isOpen: boolean;
@@ -67,15 +68,15 @@ export function OneClickBuyModal({
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+              className="absolute top-5 right-5 w-9 h-9 rounded-xl bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
 
             {isSubmitted ? (
               <div className="flex flex-col items-center text-center py-6">
-                <div className="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4">
-                  <CheckCircle className="w-8 h-8" />
+                <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4">
+                  <SimonaIconCheckCircle className="w-8 h-8" />
                 </div>
                 <h3 className="text-xl font-bold text-white">
                   Заказ успешно оформлен
@@ -109,7 +110,7 @@ export function OneClickBuyModal({
                   <img
                     src={thumbnail}
                     alt={product.name}
-                    className="w-14 h-14 object-cover rounded-lg bg-[#111315] border border-[#2B313A]"
+                    className="w-14 h-14 object-cover rounded-md bg-[#111315] border border-[#2B313A]"
                   />
                   <div className="flex-1 min-w-0">
                     <span className="text-[10px] text-[#87888A] font-mono uppercase">
@@ -154,7 +155,7 @@ export function OneClickBuyModal({
                   </div>
 
                   <div className="flex items-center gap-2 text-[11px] text-[#87888A] pt-1">
-                    <ShieldCheck className="w-4 h-4 text-simona-teal shrink-0" />
+                    <SimonaIconGuarantee className="w-4 h-4 text-simona-teal shrink-0" />
                     <span>Официальная гарантия производителя Miele 2 года</span>
                   </div>
 

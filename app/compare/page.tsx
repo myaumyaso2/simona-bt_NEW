@@ -9,16 +9,13 @@ import {
   SimonaIconCart,
   SimonaIconHeart,
   SimonaIconGuarantee,
+  SimonaIconDownload,
+  SimonaIconCheck,
 } from '@/components/brand/SimonaIcons';
 import {
   X,
   Plus,
   ArrowRight,
-  Check,
-  Minus,
-  Sparkles,
-  Download,
-  Package,
 } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { ProductItem } from '@/types';
@@ -117,7 +114,7 @@ export default function ComparePage() {
         {/* Empty State */}
         {products.length === 0 ? (
           <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-12 text-center max-w-2xl mx-auto space-y-4">
-            <div className="w-16 h-16 rounded-full bg-simona-teal/10 border border-simona-teal/20 text-simona-teal flex items-center justify-center mx-auto">
+            <div className="w-16 h-16 rounded-2xl bg-simona-teal/10 border border-simona-teal/20 text-simona-teal flex items-center justify-center mx-auto">
               <SimonaIconCompare className="w-8 h-8" />
             </div>
             <h2 className="text-xl font-montserrat font-bold text-white">
@@ -157,7 +154,7 @@ export default function ComparePage() {
                     {/* Delete button */}
                     <button
                       onClick={() => toggleCompare(item.id)}
-                      className="absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-[#1E2228] text-[#87888A] hover:text-red-400 transition"
+                      className="absolute top-2.5 right-2.5 w-8 h-8 rounded-xl bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-red-400 flex items-center justify-center transition cursor-pointer"
                       title="Удалить из сравнения"
                     >
                       <X className="w-4 h-4" />
@@ -255,7 +252,7 @@ export default function ComparePage() {
                         rel="noopener noreferrer"
                         className="inline-flex items-center space-x-1 text-[11px] text-simona-teal hover:underline"
                       >
-                        <Download className="w-3.5 h-3.5" />
+                        <SimonaIconDownload className="w-3.5 h-3.5" />
                         <span>Чертеж ниши (PDF)</span>
                       </a>
                     </div>
@@ -273,7 +270,7 @@ export default function ComparePage() {
                         <div key={p.id} className="text-white">
                           {val === 'Да' || val === 'Есть' ? (
                             <span className="text-emerald-400 font-semibold flex items-center space-x-1">
-                              <Check className="w-3.5 h-3.5" />
+                              <SimonaIconCheck className="w-3.5 h-3.5" />
                               <span>{val}</span>
                             </span>
                           ) : val === 'Нет' ? (

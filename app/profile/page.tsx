@@ -12,25 +12,21 @@ import {
   SimonaIconClock,
   SimonaIconPercent,
   SimonaIconPhoneSolid,
+  SimonaIconCheckCircle,
+  SimonaIconBuilding,
+  SimonaIconPackage,
+  SimonaIconSearch,
 } from '@/components/brand/SimonaIcons';
 import {
-  Package,
   User,
   MapPin,
   Calendar,
   CreditCard,
   ArrowRight,
   FileText,
-  CheckCircle2,
-  Clock,
-  Sparkles,
-  Search,
-  Building,
-  Store,
   Truck,
   ExternalLink,
   ChevronRight,
-  ShieldCheck,
   Briefcase,
   AlertCircle,
 } from 'lucide-react';
@@ -158,14 +154,14 @@ function ProfileContent() {
       case 'DELIVERED':
         return (
           <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">
-            <CheckCircle2 className="w-3.5 h-3.5" />
+            <SimonaIconCheckCircle className="w-3.5 h-3.5" />
             <span>Выполнен</span>
           </span>
         );
       case 'READY_FOR_PICKUP':
         return (
           <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-simona-teal/15 text-simona-teal border border-simona-teal/30 text-xs font-semibold">
-            <Store className="w-3.5 h-3.5" />
+            <SimonaIconBuilding className="w-3.5 h-3.5" />
             <span>Готов к выдаче</span>
           </span>
         );
@@ -173,7 +169,7 @@ function ProfileContent() {
       case 'PAID':
         return (
           <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-blue-500/15 text-blue-400 border border-blue-500/20 text-xs font-semibold">
-            <Clock className="w-3.5 h-3.5" />
+            <SimonaIconClock className="w-3.5 h-3.5" />
             <span>Подтвержден</span>
           </span>
         );
@@ -181,7 +177,7 @@ function ProfileContent() {
       default:
         return (
           <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/20 text-xs font-semibold">
-            <Clock className="w-3.5 h-3.5" />
+            <SimonaIconClock className="w-3.5 h-3.5" />
             <span>В обработке</span>
           </span>
         );
@@ -233,7 +229,7 @@ function ProfileContent() {
 
           {/* User Monogram & Quick Badge */}
           <div className="flex items-center space-x-3 bg-[#16191D] border border-[#2B313A] px-4 py-3 rounded-xl shrink-0">
-            <div className="w-10 h-10 rounded-lg bg-simona-teal/20 border border-simona-teal/40 text-simona-teal flex items-center justify-center font-bold font-montserrat text-sm">
+            <div className="w-10 h-10 rounded-xl bg-simona-teal/20 border border-simona-teal/40 text-simona-teal flex items-center justify-center font-bold font-montserrat text-sm">
               {clientName.split(' ').map((n) => n[0]).join('').slice(0, 2) || 'ОН'}
             </div>
             <div>
@@ -256,7 +252,7 @@ function ProfileContent() {
                 : 'bg-[#16191D] text-[#87888A] hover:text-white border border-[#2B313A]'
             }`}
           >
-            <Package className="w-4 h-4" />
+            <SimonaIconPackage className="w-4 h-4" />
             <span>Мои заказы ({orders.length})</span>
           </button>
 
@@ -330,7 +326,7 @@ function ProfileContent() {
                   type="submit"
                   className="px-4 py-2.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold transition shrink-0"
                 >
-                  <Search className="w-4 h-4" />
+                  <SimonaIconSearch className="w-4 h-4" />
                 </button>
               </form>
             </div>
@@ -340,7 +336,7 @@ function ProfileContent() {
               <div className="text-center py-16 text-xs text-[#87888A]">Загрузка истории заказов...</div>
             ) : orders.length === 0 ? (
               <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-12 text-center">
-                <Package className="w-12 h-12 text-[#87888A] mx-auto mb-4" />
+                <SimonaIconPackage className="w-12 h-12 text-[#87888A] mx-auto mb-4" />
                 <h3 className="text-base font-semibold text-white mb-1">У вас пока нет оформленных заказов</h3>
                 <p className="text-xs text-[#87888A] max-w-md mx-auto mb-6">
                   Выберите бытовую технику из каталога или оформите индивидуальный подбор со специалистом.
@@ -391,7 +387,7 @@ function ProfileContent() {
                         <div key={idx} className="flex items-center justify-between py-2 border-b border-[#2B313A]/30 last:border-0 text-xs">
                           <div className="flex items-center space-x-3 min-w-0">
                             {item.image && (
-                              <div className="w-10 h-10 rounded-lg bg-[#1E2228] border border-[#2B313A] overflow-hidden shrink-0">
+                              <div className="w-10 h-10 rounded-md bg-[#1E2228] border border-[#2B313A] overflow-hidden shrink-0">
                                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                               </div>
                             )}
@@ -461,7 +457,7 @@ function ProfileContent() {
                         />
                         <button
                           onClick={() => toggleWishlist(item.id)}
-                          className="absolute top-2.5 right-2.5 p-2 rounded-lg bg-black/60 text-white/80 hover:text-red-400 hover:bg-black/80 transition"
+                          className="absolute top-2.5 right-2.5 w-8 h-8 rounded-xl bg-black/60 border border-white/10 flex items-center justify-center text-white/80 hover:text-red-400 hover:bg-black/80 transition"
                           title="Удалить из избранного"
                         >
                           ✕
@@ -570,7 +566,7 @@ function ProfileContent() {
                 </button>
                 {isSaved && (
                   <span className="text-xs text-emerald-400 flex items-center space-x-1">
-                    <CheckCircle2 className="w-4 h-4" />
+                    <SimonaIconCheckCircle className="w-4 h-4" />
                     <span>Данные успешно обновлены</span>
                   </span>
                 )}
@@ -598,7 +594,7 @@ function ProfileContent() {
                 </div>
 
                 <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-4 flex items-center space-x-4">
-                  <div className="w-12 h-12 rounded-full bg-simona-teal/20 text-simona-teal flex items-center justify-center font-bold text-lg font-montserrat">
+                  <div className="w-12 h-12 rounded-xl bg-simona-teal/20 text-simona-teal flex items-center justify-center font-bold text-lg font-montserrat">
                     20%
                   </div>
                   <div className="text-xs">

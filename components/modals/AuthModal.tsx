@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, CheckCircle2, ArrowRight } from 'lucide-react';
+import { X, ArrowRight } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
-import { SimonaIconUser } from '@/components/brand/SimonaIcons';
+import { SimonaIconUser, SimonaIconCheckCircle } from '@/components/brand/SimonaIcons';
 
 export function AuthModal() {
   const { modal, closeModal, openModal } = useStore();
@@ -45,10 +45,10 @@ export function AuthModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-md rounded-2xl bg-[#16191D] border border-[#2B313A] shadow-2xl p-6 sm:p-8 text-white">
+      <div className="relative w-full max-w-md rounded-3xl bg-[#16191D] border border-[#2B313A] shadow-2xl p-6 sm:p-8 text-white">
         <button
           onClick={handleClose}
-          className="absolute top-5 right-5 p-2 text-[#87888A] hover:text-white rounded-xl hover:bg-[#1E2228] transition"
+          className="absolute top-5 right-5 w-9 h-9 text-[#87888A] hover:text-white rounded-xl border border-[#2B313A] hover:bg-[#1E2228] flex items-center justify-center transition cursor-pointer"
           aria-label="Закрыть"
         >
           <X className="w-5 h-5" />
@@ -56,8 +56,8 @@ export function AuthModal() {
 
         {success ? (
           <div className="text-center py-6">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-simona-teal/15 border border-simona-teal/30 flex items-center justify-center text-simona-teal">
-              <CheckCircle2 className="w-7 h-7" />
+            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-simona-teal/15 border border-simona-teal/30 flex items-center justify-center text-simona-teal">
+              <SimonaIconCheckCircle className="w-7 h-7" />
             </div>
             <h3 className="text-lg font-semibold tracking-tight text-white mb-2">
               Добро пожаловать в СИМОНА

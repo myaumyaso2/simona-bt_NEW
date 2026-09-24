@@ -29,7 +29,7 @@ export function VideoPreviewModal() {
           </div>
           <button
             onClick={closeModal}
-            className="p-1.5 rounded-lg text-[#87888A] hover:text-white hover:bg-white/10 transition-colors"
+            className="w-9 h-9 rounded-xl border border-[#2B313A] text-[#87888A] hover:text-white hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer"
             aria-label="Закрыть"
           >
             <X className="w-5 h-5" />
@@ -51,10 +51,10 @@ export function VideoPreviewModal() {
             rel="noopener noreferrer"
             className="relative z-10 flex flex-col items-center justify-center space-y-3 cursor-pointer group/btn"
           >
-            <div className="w-16 h-16 rounded-full bg-simona-teal/90 group-hover/btn:bg-simona-teal text-white flex items-center justify-center shadow-lg shadow-simona-teal/30 group-hover/btn:scale-110 transition-all duration-300">
+            <div className="w-16 h-16 rounded-xl bg-simona-teal/90 group-hover/btn:bg-simona-teal text-white flex items-center justify-center shadow-lg shadow-simona-teal/30 group-hover/btn:scale-105 transition-all duration-300">
               <Play className="w-7 h-7 ml-1 fill-white" />
             </div>
-            <span className="px-4 py-1.5 rounded-lg bg-black/60 backdrop-blur-md text-xs font-medium text-white border border-white/20">
+            <span className="px-4 py-1.5 rounded-md bg-black/60 backdrop-blur-md text-xs font-medium text-white border border-white/20">
               Смотреть полный обзор в Telegram
             </span>
           </a>

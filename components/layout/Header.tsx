@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaLogo } from '@/components/brand/SimonaLogo';
 import {
@@ -10,6 +10,7 @@ import {
   SimonaIconHeart,
   SimonaIconCompare,
   SimonaIconUser,
+  SimonaIconSearch,
 } from '@/components/brand/SimonaIcons';
 
 interface HeaderProps {
@@ -63,7 +64,7 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
               aria-label="Поиск по каталогу"
               className="hidden md:flex items-center space-x-2.5 px-3.5 py-2 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 transition-all cursor-pointer w-64 lg:w-72 text-[#87888A] hover:text-[#D7D9DB]"
             >
-              <Search className="w-4 h-4 text-[#87888A] shrink-0" />
+              <SimonaIconSearch className="w-4 h-4 text-[#87888A] shrink-0" />
               <span className="text-xs truncate">Поиск прибора или артикула...</span>
             </div>
           </div>
@@ -116,7 +117,7 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
               aria-label="Поиск"
               className="md:hidden p-2 text-[#87888A] hover:text-white bg-[#1E2228] rounded-xl border border-[#2B313A] transition"
             >
-              <Search className="w-4 h-4" />
+              <SimonaIconSearch className="w-4 h-4" />
             </button>
 
             {/* User Auth / Personal Account Link */}

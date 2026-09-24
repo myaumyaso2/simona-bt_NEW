@@ -12,17 +12,19 @@ import {
 import { formatPrice } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
 import {
-  Download,
-  Box,
-  FileText,
-  Star,
-  Check,
   Plus,
   Equal,
-  Sparkles,
   ChevronDown,
 } from 'lucide-react';
-import { SimonaIconCart } from '@/components/brand/SimonaIcons';
+import {
+  SimonaIconCart,
+  SimonaIconDownload,
+  SimonaIconPackage,
+  SimonaIconFile,
+  SimonaIconStar,
+  SimonaIconCheck,
+  SimonaIconSparkles,
+} from '@/components/brand/SimonaIcons';
 
 interface ProductTabsSectionProps {
   product: ProductItem;
@@ -192,7 +194,7 @@ export function ProductTabsSection({
                 download
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
               >
-                <Download className="w-3.5 h-3.5 text-simona-teal" />
+                <SimonaIconDownload className="w-3.5 h-3.5 text-simona-teal" />
                 <span>Скачать паспорт модели (PDF)</span>
               </a>
             )}
@@ -295,7 +297,7 @@ export function ProductTabsSection({
             {/* Right: Actions and Info */}
             <div className="w-full lg:w-1/2 flex flex-col gap-5">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-simona-teal/15 border border-simona-teal/30 text-simona-teal text-xs font-semibold w-fit">
-                <Sparkles className="w-3.5 h-3.5" />
+                <SimonaIconSparkles className="w-3.5 h-3.5" />
                 <span>Сертифицированные файлы Miele</span>
               </div>
 
@@ -313,7 +315,7 @@ export function ProductTabsSection({
                   download
                   className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
                 >
-                  <Download className="w-4 h-4 text-simona-teal" />
+                  <SimonaIconDownload className="w-4 h-4 text-simona-teal" />
                   <span>Схема встройки (PDF, 2.4 МБ)</span>
                 </a>
 
@@ -322,7 +324,7 @@ export function ProductTabsSection({
                   download
                   className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
                 >
-                  <Box className="w-4 h-4 text-simona-teal" />
+                  <SimonaIconPackage className="w-4 h-4 text-simona-teal" />
                   <span>3D CAD / DWG модель</span>
                 </a>
 
@@ -331,7 +333,7 @@ export function ProductTabsSection({
                   download
                   className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
                 >
-                  <FileText className="w-4 h-4 text-simona-teal" />
+                  <SimonaIconFile className="w-4 h-4 text-simona-teal" />
                   <span>Инструкция по эксплуатации</span>
                 </a>
               </div>
@@ -352,7 +354,7 @@ export function ProductTabsSection({
         >
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-simona-teal/15 border border-simona-teal/30 text-simona-teal text-xs font-semibold w-fit mb-2">
-              <Sparkles className="w-3.5 h-3.5" />
+              <SimonaIconSparkles className="w-3.5 h-3.5" />
               <span>Выгода 10% на комплект</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white">
@@ -387,10 +389,10 @@ export function ProductTabsSection({
                               : 'border-[#87888A] bg-transparent'
                           }`}
                         >
-                          {isChecked && <Check className="w-3.5 h-3.5" />}
+                          {isChecked && <SimonaIconCheck className="w-3.5 h-3.5" />}
                         </div>
                         {item.isMain && (
-                          <span className="text-[10px] font-semibold text-simona-teal bg-simona-teal/15 px-2 py-0.5 rounded">
+                          <span className="text-[10px] font-semibold text-simona-teal bg-simona-teal/15 px-2 py-0.5 rounded-md">
                             Текущий прибор
                           </span>
                         )}
@@ -480,7 +482,7 @@ export function ProductTabsSection({
                   <div>
                     <div className="h-36 w-full rounded-xl bg-[#1E2228] overflow-hidden mb-3 flex items-center justify-center p-3 relative">
                       {acc.badge && (
-                        <span className="absolute top-2 left-2 text-[10px] font-semibold text-simona-teal bg-simona-teal/20 px-2 py-0.5 rounded">
+                        <span className="absolute top-2 left-2 text-[10px] font-semibold text-simona-teal bg-simona-teal/20 px-2 py-0.5 rounded-md">
                           {acc.badge}
                         </span>
                       )}
@@ -576,7 +578,7 @@ export function ProductTabsSection({
                     >
                       <span className="text-[#87888A]">{score.label}</span>
                       <div className="flex items-center gap-1.5 font-bold text-white">
-                        <Star className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]" />
+                        <SimonaIconStar className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]" />
                         <span>{score.score.toFixed(1)}</span>
                       </div>
                     </div>
@@ -599,7 +601,7 @@ export function ProductTabsSection({
                           {review.author}
                         </span>
                         {review.verifiedPurchase && (
-                          <span className="text-[10px] text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded">
+                          <span className="text-[10px] text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-md">
                             Проверенный покупатель
                           </span>
                         )}
@@ -613,7 +615,7 @@ export function ProductTabsSection({
 
                     <div className="flex items-center gap-1 text-[#D4AF37]">
                       {[...Array(review.rating)].map((_, i) => (
-                        <Star
+                        <SimonaIconStar
                           key={i}
                           className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]"
                         />
@@ -632,7 +634,7 @@ export function ProductTabsSection({
                           key={pIdx}
                           src={photo}
                           alt="Фото в интерьере"
-                          className="w-16 h-16 rounded-lg object-cover border border-[#2B313A]"
+                          className="w-16 h-16 rounded-md object-cover border border-[#2B313A]"
                         />
                       ))}
                     </div>

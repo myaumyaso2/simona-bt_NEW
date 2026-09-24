@@ -4,13 +4,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SectionBadge } from '@/components/ui/SectionBadge';
 import {
-  SimonaIconPin,
-  SimonaIconGuarantee,
-  SimonaIconCart,
-  SimonaIconHeart,
-  SimonaIconCompare,
+  SimonaIconCheckCircle,
+  SimonaIconPackage,
 } from '@/components/brand/SimonaIcons';
-import { ArrowLeft, ArrowRight, Globe2, ShieldCheck, CheckCircle2, Package } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { formatPrismaProduct } from '@/lib/products';
 import { formatPrice } from '@/lib/utils';
@@ -251,7 +248,7 @@ export default async function BrandDetailPage({ params }: BrandPageProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-12 pt-8 border-t border-[#2B313A]">
             {brandInfo.advantages.map((adv, idx) => (
               <div key={idx} className="bg-[#1E2228]/50 p-4 rounded-xl border border-[#2B313A]/50">
-                <CheckCircle2 className="w-5 h-5 text-simona-teal mb-2" />
+                <SimonaIconCheckCircle className="w-5 h-5 text-simona-teal mb-2" />
                 <p className="text-xs text-zinc-300 leading-relaxed font-medium">{adv}</p>
               </div>
             ))}
@@ -279,7 +276,7 @@ export default async function BrandDetailPage({ params }: BrandPageProps) {
 
           {products.length === 0 ? (
             <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-12 text-center">
-              <Package className="w-12 h-12 text-[#87888A] mx-auto mb-3" />
+              <SimonaIconPackage className="w-12 h-12 text-[#87888A] mx-auto mb-3" />
               <h3 className="text-base font-semibold text-white mb-1">
                 Приборы {brandInfo.name} доступны под заказ со склада
               </h3>

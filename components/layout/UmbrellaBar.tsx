@@ -16,7 +16,7 @@ export function UmbrellaBar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-9 flex items-center justify-between">
         {/* Umbrella Brand Switcher */}
         <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-[#1E2228] border border-[#2B313A]/60">
+          <div className="flex items-center space-x-1.5 px-3 py-1 rounded-md bg-[#1E2228] border border-[#2B313A]/60">
             <span className="w-1.5 h-1.5 rounded-full bg-simona-teal shadow-[0_0_8px_rgba(0,151,156,0.6)]"></span>
             <span className="text-white text-[11px] font-semibold tracking-wide">Бытовая техника</span>
           </div>

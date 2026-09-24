@@ -2,13 +2,8 @@ import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SectionBadge } from '@/components/ui/SectionBadge';
-import {
-  SimonaIconPin,
-  SimonaIconGuarantee,
-  SimonaIconStar,
-  SimonaIconChef,
-} from '@/components/brand/SimonaIcons';
-import { ArrowRight, Sparkles, MapPin, Globe2, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { SimonaIconPin } from '@/components/brand/SimonaIcons';
+import { ArrowRight, Globe2 } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 
 export const metadata: Metadata = {

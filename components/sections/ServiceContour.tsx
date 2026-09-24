@@ -172,8 +172,8 @@ export function ServiceContour() {
                 </p>
               </div>
 
-              <div className="w-16 h-1 bg-[#2B313A] rounded-full overflow-hidden">
-                <div className="service-line h-full w-full bg-gradient-to-r from-simona-teal to-simona-teal-light rounded-full will-change-transform shadow-[0_0_8px_rgba(0,151,156,0.6)]" />
+              <div className="w-16 h-1 bg-[#2B313A] rounded-md overflow-hidden">
+                <div className="service-line h-full w-full bg-gradient-to-r from-simona-teal to-simona-teal-light rounded-md will-change-transform shadow-[0_0_8px_rgba(0,151,156,0.6)]" />
               </div>
             </div>
           ))}

@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { X, Calendar, CheckCircle2, ArrowRight } from 'lucide-react';
+import { X, ArrowRight } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
-import { SimonaIconConsultation } from '@/components/brand/SimonaIcons';
+import { SimonaIconConsultation, SimonaIconClock, SimonaIconCheckCircle } from '@/components/brand/SimonaIcons';
 
 export function PromoTermsModal() {
   const { modal, closeModal, openModal } = useStore();
@@ -59,14 +59,14 @@ export function PromoTermsModal() {
             </h2>
 
             <div className="flex items-center gap-2 text-xs text-simona-wine-light font-medium">
-              <Calendar className="w-3.5 h-3.5 shrink-0" />
+              <SimonaIconClock className="w-3.5 h-3.5 shrink-0" />
               <span>Действует до {promo.endDate}</span>
             </div>
           </div>
 
           <button
             onClick={closeModal}
-            className="p-2 text-[#87888A] hover:text-white rounded-full hover:bg-white/10 transition-colors shrink-0"
+            className="w-9 h-9 rounded-xl border border-white/10 text-[#87888A] hover:text-white hover:bg-white/10 flex items-center justify-center transition-colors shrink-0 cursor-pointer"
             aria-label="Закрыть окно"
           >
             <X className="w-5 h-5" />
@@ -97,7 +97,7 @@ export function PromoTermsModal() {
                     key={idx}
                     className="flex items-start gap-2.5 text-xs text-[#D7D9DB]"
                   >
-                    <CheckCircle2 className="w-4 h-4 text-simona-teal shrink-0 mt-0.5" />
+                    <SimonaIconCheckCircle className="w-4 h-4 text-simona-teal shrink-0 mt-0.5" />
                     <span>{condition}</span>
                   </div>
                 ))}
