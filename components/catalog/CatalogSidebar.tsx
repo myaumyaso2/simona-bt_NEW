@@ -95,7 +95,10 @@ export function CatalogSidebar({
   };
 
   return (
-    <aside className="w-full lg:w-[300px] shrink-0 bg-[#16191D] rounded-2xl p-5 border border-[#2B313A] space-y-6 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto simona-sidebar-scrollbar">
+    <aside
+      data-lenis-prevent="true"
+      className="w-full lg:w-[300px] shrink-0 bg-[#16191D] rounded-2xl p-5 border border-[#2B313A] space-y-6 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto simona-sidebar-scrollbar overscroll-contain scroll-smooth"
+    >
       {/* Top Header */}
       <div className="flex items-center justify-between pb-3 border-b border-[#2B313A]">
         <h3 className="text-base font-montserrat font-bold text-white tracking-tight">
@@ -303,6 +306,7 @@ export function CatalogSidebar({
                       type="number"
                       value={filters.priceMin}
                       onChange={(e) => onFilterChange({ priceMin: Number(e.target.value) || 0 })}
+                      onWheel={(e) => (e.target as HTMLInputElement).blur()}
                       className="w-full bg-[#1E2228] border border-[#2B313A] rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-simona-teal font-mono"
                     />
                   </div>
@@ -314,6 +318,7 @@ export function CatalogSidebar({
                       type="number"
                       value={filters.priceMax}
                       onChange={(e) => onFilterChange({ priceMax: Number(e.target.value) || 900000 })}
+                      onWheel={(e) => (e.target as HTMLInputElement).blur()}
                       className="w-full bg-[#1E2228] border border-[#2B313A] rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-simona-teal font-mono"
                     />
                   </div>

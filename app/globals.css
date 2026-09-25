@@ -126,6 +126,8 @@ body {
 .simona-sidebar-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: #2B313A transparent;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
 }
 
 .simona-sidebar-scrollbar::-webkit-scrollbar {
