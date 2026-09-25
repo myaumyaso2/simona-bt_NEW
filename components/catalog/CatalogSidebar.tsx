@@ -95,7 +95,7 @@ export function CatalogSidebar({
   };
 
   return (
-    <aside className="w-full lg:w-[300px] shrink-0 bg-[#16191D] rounded-2xl p-5 border border-[#2B313A] space-y-6">
+    <aside className="w-full lg:w-[300px] shrink-0 bg-[#16191D] rounded-2xl p-5 border border-[#2B313A] space-y-6 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto simona-sidebar-scrollbar">
       {/* Top Header */}
       <div className="flex items-center justify-between pb-3 border-b border-[#2B313A]">
         <h3 className="text-base font-montserrat font-bold text-white tracking-tight">
