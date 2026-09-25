@@ -14,6 +14,75 @@ import {
 } from '@/components/brand/SimonaIcons';
 import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
 
+function getProductChips(product: ProductItem): string[] {
+  const chips: string[] = [];
+
+  // 1. Width
+  let width = '';
+  if (product.dimensions) {
+    if (product.dimensions.includes('45') || product.name.includes('45')) width = '45 см';
+    else if (product.dimensions.includes('90') || product.name.includes('90')) width = '90 см';
+    else if (
+      product.dimensions.includes('60') ||
+      product.dimensions.includes('595') ||
+      product.dimensions.includes('596')
+    ) {
+      width = '60 см';
+    }
+  } else if (product.name.includes('45')) {
+    width = '45 см';
+  } else if (product.name.includes('90')) {
+    width = '90 см';
+  } else if (product.name.includes('60')) {
+    width = '60 см';
+  }
+  if (width) chips.push(width);
+
+  // 2. Volume
+  const desc = (product.shortDesc || '') + ' ' + (product.description || '');
+  const volMatch = desc.match(/(\d+)\s*л\b/i);
+  if (volMatch) {
+    chips.push(`${volMatch[1]} л`);
+  }
+
+  // 3. Key Technology / Cleaning
+  if (desc.toLowerCase().includes('пиролиз') || desc.toLowerCase().includes('пиролитическ')) {
+    chips.push('Пиролиз');
+  } else if (desc.toLowerCase().includes('катализ') || desc.toLowerCase().includes('каталитическ')) {
+    chips.push('Катализ');
+  } else if (desc.toLowerCase().includes('пар') || product.name.toLowerCase().includes('пар')) {
+    chips.push('Пар');
+  } else if (desc.toLowerCase().includes('свч') || product.name.toLowerCase().includes('свч')) {
+    chips.push('СВЧ');
+  }
+
+  // 4. Country of Brand
+  const brand = (product.brand || '').toLowerCase();
+  let country = '';
+  if (brand.includes('miele')) country = 'Германия';
+  else if (brand.includes('asko')) country = 'Словения';
+  else if (brand.includes('bertazzoni')) country = 'Италия';
+  else if (brand.includes('smeg')) country = 'Италия';
+  else if (brand.includes('körting') || brand.includes('korting')) country = 'Италия';
+  else if (brand.includes('liebherr')) country = 'Германия';
+  else if (brand.includes('falmec')) country = 'Италия';
+  else if (brand.includes('vard')) country = 'Турция';
+  else if (brand.includes('omoikiri')) country = 'Япония';
+  if (country) chips.push(country);
+
+  // Fallback: If less than 2 chips, pull from features if available
+  if (chips.length < 2 && product.features && product.features.length > 0) {
+    for (const f of product.features) {
+      if (chips.length >= 4) break;
+      if (f.value && !chips.includes(f.value)) {
+        chips.push(f.value);
+      }
+    }
+  }
+
+  return chips.slice(0, 4);
+}
+
 interface LuxuryProductCardProps {
   product: ProductItem;
 }
@@ -54,6 +123,72 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
   const badgeClass = discountBadge
     ? discountBadge.className
     : 'bg-simona-wine/25 hover:bg-simona-wine/40 text-white border-simona-wine/50';
+
+  const chips = getProductChips(product);
+
+  const renderActionButtons = () => (
+    <div className="flex items-center gap-2 w-full">
+      {/* Main Cart / Buy Button */}
+      {inCart ? (
+        <button
+          onClick={() => setIsCartOpen(true)}
+          className="flex-1 h-10 px-3.5 rounded-xl bg-gradient-to-r from-simona-teal-dark to-simona-teal hover:to-simona-teal-light text-white text-xs font-semibold tracking-wide transition-all duration-300 shadow-lg shadow-simona-teal/30 hover:shadow-simona-teal/50 hover:scale-[1.02] active:scale-98 flex items-center justify-center cursor-pointer"
+        >
+          <SimonaIconCart className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
+          <span>В корзину</span>
+        </button>
+      ) : (
+        <button
+          onClick={() => addToCart(product, 1, false)}
+          className="flex-1 h-10 px-3.5 rounded-xl bg-[#16191D] hover:bg-[#1E2228] border border-simona-teal text-white text-xs font-bold tracking-wide transition-all duration-300 shadow-md shadow-simona-teal/10 hover:shadow-simona-teal/20 hover:scale-[1.02] active:scale-98 flex items-center justify-center cursor-pointer"
+        >
+          <SimonaIconCart className="w-3.5 h-3.5 mr-1.5 flex-shrink-0 text-simona-teal" />
+          <span>Купить</span>
+        </button>
+      )}
+
+      {/* Wishlist Button */}
+      <button
+        onClick={() => toggleWishlist(product.id)}
+        aria-label={inWishlist ? 'Удалить из избранного' : 'Добавить в избранное'}
+        title={inWishlist ? 'В избранном' : 'В избранное'}
+        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0 cursor-pointer ${
+          inWishlist
+            ? 'bg-simona-teal border border-simona-teal text-white shadow-md shadow-simona-teal/20'
+            : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal/50 hover:bg-[#242A32]'
+        }`}
+      >
+        <SimonaIconHeart className="w-4 h-4" />
+      </button>
+
+      {/* Compare Button */}
+      <button
+        onClick={() => toggleCompare(product.id)}
+        aria-label={inCompare ? 'Удалить из сравнения' : 'Добавить в сравнение'}
+        title={inCompare ? 'В сравнении' : 'В сравнение'}
+        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0 cursor-pointer ${
+          inCompare
+            ? 'bg-simona-teal border border-simona-teal text-white shadow-md shadow-simona-teal/20'
+            : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal/50 hover:bg-[#242A32]'
+        }`}
+      >
+        <SimonaIconCompare className="w-4 h-4" />
+      </button>
+    </div>
+  );
+
+  const renderChips = () => (
+    <div className="flex items-center gap-1.5 overflow-hidden w-full">
+      {chips.map((chip, idx) => (
+        <span
+          key={idx}
+          className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#1E2228] text-[#D7D9DB] border border-[#2B313A] shrink-0"
+        >
+          {chip}
+        </span>
+      ))}
+    </div>
+  );
 
   return (
     <div className="group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 transition-all duration-300 shadow-xl flex flex-col justify-between">
@@ -176,13 +311,6 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
               {product.name}
             </h3>
           </Link>
-
-          {/* Short Specs Row */}
-          {product.shortDesc && (
-            <p className="mt-1.5 text-xs text-[#87888A] font-normal line-clamp-1">
-              {product.shortDesc}
-            </p>
-          )}
         </div>
       </div>
 
@@ -201,54 +329,34 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
           </div>
         </div>
 
-        {/* Action Row: [Купить / В корзину] (flex-1) + [В избранное] + [В сравнение] */}
-        <div className="flex items-center gap-2 mt-3">
-          {/* Main Cart / Buy Button */}
-          {inCart ? (
-            <button
-              onClick={() => setIsCartOpen(true)}
-              className="flex-1 h-10 px-3.5 rounded-xl bg-gradient-to-r from-simona-teal-dark to-simona-teal hover:to-simona-teal-light text-white text-xs font-semibold tracking-wide transition-all duration-300 shadow-lg shadow-simona-teal/30 hover:shadow-simona-teal/50 hover:scale-[1.02] active:scale-98 flex items-center justify-center cursor-pointer"
-            >
-              <SimonaIconCart className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
-              <span>В корзину</span>
-            </button>
-          ) : (
-            <button
-              onClick={() => addToCart(product, 1, false)}
-              className="flex-1 h-10 px-3.5 rounded-xl bg-[#16191D] hover:bg-[#1E2228] border border-simona-teal text-white text-xs font-bold tracking-wide transition-all duration-300 shadow-md shadow-simona-teal/10 hover:shadow-simona-teal/20 hover:scale-[1.02] active:scale-98 flex items-center justify-center cursor-pointer"
-            >
-              <SimonaIconCart className="w-3.5 h-3.5 mr-1.5 flex-shrink-0 text-simona-teal" />
-              <span>Купить</span>
-            </button>
-          )}
+        {/* Action / Specs Slot */}
+        <div className="mt-3">
+          {/* Desktop (lg:): Elevator animation or fixed buttons if inCart */}
+          <div className="hidden lg:block">
+            {inCart ? (
+              <div className="h-10 flex items-center">
+                {renderActionButtons()}
+              </div>
+            ) : (
+              <div className="relative h-10 overflow-hidden rounded-xl">
+                {/* STATE A: Chips (Visible in Rest, Slides UP on hover) */}
+                <div className="absolute inset-0 flex items-center transition-all duration-300 ease-out transform group-hover:-translate-y-full group-hover:opacity-0 pointer-events-auto group-hover:pointer-events-none">
+                  {renderChips()}
+                </div>
 
-          {/* Wishlist Button */}
-          <button
-            onClick={() => toggleWishlist(product.id)}
-            aria-label={inWishlist ? 'Удалить из избранного' : 'Добавить в избранное'}
-            title={inWishlist ? 'В избранном' : 'В избранное'}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0 cursor-pointer ${
-              inWishlist
-                ? 'bg-simona-teal border border-simona-teal text-white shadow-md shadow-simona-teal/20'
-                : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal/50 hover:bg-[#242A32]'
-            }`}
-          >
-            <SimonaIconHeart className="w-4 h-4" />
-          </button>
+                {/* STATE B: Action Buttons (Hidden below, Slides UP into view on hover) */}
+                <div className="absolute inset-0 flex items-center transition-all duration-300 ease-out transform translate-y-full opacity-0 pointer-events-none group-hover:translate-y-0 group-hover:opacity-100 group-hover:pointer-events-auto">
+                  {renderActionButtons()}
+                </div>
+              </div>
+            )}
+          </div>
 
-          {/* Compare Button */}
-          <button
-            onClick={() => toggleCompare(product.id)}
-            aria-label={inCompare ? 'Удалить из сравнения' : 'Добавить в сравнение'}
-            title={inCompare ? 'В сравнении' : 'В сравнение'}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0 cursor-pointer ${
-              inCompare
-                ? 'bg-simona-teal border border-simona-teal text-white shadow-md shadow-simona-teal/20'
-                : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal/50 hover:bg-[#242A32]'
-            }`}
-          >
-            <SimonaIconCompare className="w-4 h-4" />
-          </button>
+          {/* Mobile & Tablet (< lg): Chips + Buttons always visible */}
+          <div className="lg:hidden space-y-2.5">
+            <div>{renderChips()}</div>
+            <div>{renderActionButtons()}</div>
+          </div>
         </div>
       </div>
     </div>
