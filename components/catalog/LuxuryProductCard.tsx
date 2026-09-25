@@ -149,6 +149,7 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
   const inCart = isInCart(product.id);
   const inWishlist = isInWishlist(product.id);
   const inCompare = isInCompare(product.id);
+  const isActionsFixed = inCart || inWishlist || inCompare;
 
   const productPromos = getPromosForProduct(product);
   const activePromo = productPromos[0];
@@ -378,9 +379,9 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
 
         {/* Action / Specs Slot */}
         <div className="mt-3">
-          {/* Desktop (lg:): Elevator animation or fixed buttons if inCart */}
+          {/* Desktop (lg:): Elevator animation or fixed buttons if isActionsFixed */}
           <div className="hidden lg:block">
-            {inCart ? (
+            {isActionsFixed ? (
               <div className="h-10 flex items-center">
                 {renderActionButtons()}
               </div>
