@@ -16,8 +16,11 @@ import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
 
 function getProductChips(product: ProductItem): string[] {
   const chips: string[] = [];
+  const desc = (product.shortDesc || '') + ' ' + (product.description || '');
+  const descLower = desc.toLowerCase();
+  const nameLower = product.name.toLowerCase();
 
-  // 1. Width
+  // 1. Width (Ширина)
   let width = '';
   if (product.dimensions) {
     if (product.dimensions.includes('45') || product.name.includes('45')) width = '45 см';
@@ -28,35 +31,55 @@ function getProductChips(product: ProductItem): string[] {
       product.dimensions.includes('596')
     ) {
       width = '60 см';
+    } else {
+      const dimMatch = product.dimensions.match(/(\d{2,3})\s*(?:см|мм)/i);
+      if (dimMatch) {
+        const val = parseInt(dimMatch[1], 10);
+        width = val > 100 ? `${Math.round(val / 10)} см` : `${val} см`;
+      }
     }
-  } else if (product.name.includes('45')) {
-    width = '45 см';
-  } else if (product.name.includes('90')) {
-    width = '90 см';
-  } else if (product.name.includes('60')) {
-    width = '60 см';
-  }
-  if (width) chips.push(width);
+  } else if (product.name.includes('45')) width = '45 см';
+  else if (product.name.includes('90')) width = '90 см';
+  else if (product.name.includes('60')) width = '60 см';
 
-  // 2. Volume
-  const desc = (product.shortDesc || '') + ' ' + (product.description || '');
-  const volMatch = desc.match(/(\d+)\s*л\b/i);
+  // 2. Volume (Объем)
+  let volume = '';
+  const volMatch = desc.match(/(\d{2,3})\s*л\b/i);
   if (volMatch) {
-    chips.push(`${volMatch[1]} л`);
+    volume = `${volMatch[1]} л`;
   }
 
   // 3. Key Technology / Cleaning
-  if (desc.toLowerCase().includes('пиролиз') || desc.toLowerCase().includes('пиролитическ')) {
-    chips.push('Пиролиз');
-  } else if (desc.toLowerCase().includes('катализ') || desc.toLowerCase().includes('каталитическ')) {
-    chips.push('Катализ');
-  } else if (desc.toLowerCase().includes('пар') || product.name.toLowerCase().includes('пар')) {
-    chips.push('Пар');
-  } else if (desc.toLowerCase().includes('свч') || product.name.toLowerCase().includes('свч')) {
-    chips.push('СВЧ');
+  let tech = '';
+  if (descLower.includes('пиролиз') || descLower.includes('пиролитическ')) {
+    tech = 'Пиролиз';
+  } else if (descLower.includes('катализ') || descLower.includes('каталитическ')) {
+    tech = 'Катализ';
+  } else if (descLower.includes('пар') || nameLower.includes('пар')) {
+    tech = 'Пар';
+  } else if (descLower.includes('свч') || nameLower.includes('свч')) {
+    tech = 'СВЧ';
+  } else if (descLower.includes('индукц') || nameLower.includes('индукц')) {
+    tech = 'Индукция';
+  } else if (descLower.includes('nofrost') || descLower.includes('no frost') || descLower.includes('ноу фрост')) {
+    tech = 'NoFrost';
   }
 
-  // 4. Country of Brand
+  // 4. Color (Цвет отделки)
+  let color = '';
+  if (product.colors && product.colors.length > 0) {
+    color = product.colors[0].name.split('(')[0].trim();
+  } else if (nameLower.includes('obsidian black') || nameLower.includes('черный') || descLower.includes('черный обсидиан')) {
+    color = 'Черный';
+  } else if (nameLower.includes('белый') || descLower.includes('белый')) {
+    color = 'Белый';
+  } else if (nameLower.includes('нерж') || descLower.includes('нержавеющ')) {
+    color = 'Нерж. сталь';
+  } else if (nameLower.includes('графит') || descLower.includes('графит')) {
+    color = 'Графит';
+  }
+
+  // 5. Country of Brand
   const brand = (product.brand || '').toLowerCase();
   let country = '';
   if (brand.includes('miele')) country = 'Германия';
@@ -68,19 +91,43 @@ function getProductChips(product: ProductItem): string[] {
   else if (brand.includes('falmec')) country = 'Италия';
   else if (brand.includes('vard')) country = 'Турция';
   else if (brand.includes('omoikiri')) country = 'Япония';
-  if (country) chips.push(country);
 
-  // Fallback: If less than 2 chips, pull from features if available
-  if (chips.length < 2 && product.features && product.features.length > 0) {
+  // Prioritized placement: Width -> Volume -> Key Technology -> Color -> Country
+  if (width) chips.push(width);
+  if (volume && chips.length < 3) chips.push(volume);
+  if (tech && chips.length < 3) chips.push(tech);
+  if (color && chips.length < 3) chips.push(color);
+  if (country && chips.length < 3) chips.push(country);
+
+  // Fallback from features with strict filtering (exclude warranties, IDs, months)
+  if (chips.length < 3 && product.features && product.features.length > 0) {
     for (const f of product.features) {
-      if (chips.length >= 4) break;
-      if (f.value && !chips.includes(f.value)) {
-        chips.push(f.value);
+      if (chips.length >= 3) break;
+      const val = (f.value || '').trim();
+      const lbl = (f.label || '').toLowerCase();
+      const valLower = val.toLowerCase();
+
+      if (
+        !val ||
+        val.length > 15 ||
+        lbl.includes('гарант') ||
+        lbl.includes('срок') ||
+        lbl.includes('код') ||
+        lbl.includes('арт') ||
+        lbl.includes('вес') ||
+        valLower.includes('месяц') ||
+        valLower.includes('мес') ||
+        valLower.includes('год') ||
+        valLower.includes('лет') ||
+        chips.some((c) => c.toLowerCase() === valLower)
+      ) {
+        continue;
       }
+      chips.push(val);
     }
   }
 
-  return chips.slice(0, 4);
+  return chips.slice(0, 3);
 }
 
 interface LuxuryProductCardProps {
