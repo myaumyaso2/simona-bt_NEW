@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export interface CatalogMegaMenuProps {
   isOpen: boolean;
@@ -217,23 +218,37 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* МАТОВЫЙ БЭКДРОП */}
-      <div
-        onClick={onClose}
-        className="fixed inset-0 bg-[#050608]/75 backdrop-blur-md z-40 transition-opacity duration-300"
-        aria-hidden="true"
-      />
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* МАТОВЫЙ БЭКДРОП С ПЛАВНЫМ FADE */}
+          <motion.div
+            key="catalog-mega-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+            onClick={onClose}
+            className="fixed inset-0 bg-[#050608]/75 backdrop-blur-md z-40"
+            aria-hidden="true"
+          />
 
-      {/* ВЫПАДАЮЩЕЕ ПОЛОТНО ПОД ШАПКОЙ (HEADER-ANCHORED) */}
-      <div
-        ref={menuRef}
-        className="absolute top-full left-0 right-0 z-50 bg-[#14171B] border-b border-[#2B313A] shadow-[0_24px_50px_rgba(0,0,0,0.85)] animate-in fade-in slide-in-from-top-2 duration-200"
-      >
-        {/* BRAND BAR STRIP (РАВНОМЕРНО РАСПРЕДЕЛЕННЫЕ КЛЮЧЕВЫЕ БРЕНДЫ) */}
+          {/* ВЫПАДАЮЩЕЕ ПОЛОТНО ПОД ШАПКОЙ (HEADER-ANCHORED QUIET LUXURY SLIDE & FADE) */}
+          <motion.div
+            key="catalog-mega-dropdown"
+            ref={menuRef}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{
+              opacity: 0,
+              y: -8,
+              transition: { duration: 0.18, ease: [0.4, 0, 1, 1] },
+            }}
+            transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute top-full left-0 right-0 z-50 bg-[#14171B] border-b border-[#2B313A] shadow-[0_24px_50px_rgba(0,0,0,0.85)]"
+          >
+            {/* BRAND BAR STRIP (РАВНОМЕРНО РАСПРЕДЕЛЕННЫЕ КЛЮЧЕВЫЕ БРЕНДЫ) */}
         <div className="bg-[#111316] border-b border-[#2B313A] px-4 sm:px-8 py-2.5 flex items-center justify-between gap-3 sm:gap-4">
           <div className="flex-1 flex items-center justify-between gap-2 overflow-x-auto no-scrollbar py-0.5">
             {BRAND_BAR_ITEMS.map((brand) => (
@@ -319,7 +334,9 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
+  )}
+</AnimatePresence>
   );
 }
