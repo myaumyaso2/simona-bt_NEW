@@ -1,0 +1,370 @@
+'use client';
+
+import React, { useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { useStore } from '@/components/providers/StoreContext';
+
+export interface CatalogMegaMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+interface SubcategoryItem {
+  name: string;
+  href: string;
+}
+
+interface CategoryGroup {
+  title: string;
+  href?: string;
+  items: SubcategoryItem[];
+  subtitle?: string;
+}
+
+interface ColumnStructure {
+  id: string;
+  groups: CategoryGroup[];
+}
+
+const BRAND_BAR_ITEMS = [
+  { name: 'MIELE', href: '/brands/miele' },
+  { name: 'ASKO', href: '/brands/asko' },
+  { name: 'LIEBHERR', href: '/brands/liebherr' },
+  { name: 'SMEG', href: '/brands/smeg' },
+  { name: 'OMOIKIRI', href: '/brands/omoikiri' },
+  { name: 'BERTAZZONI', href: '/brands/bertazzoni' },
+  { name: 'FALMEC', href: '/brands/falmec' },
+  { name: 'VARD', href: '/brands/vard' },
+];
+
+/**
+ * 100% точные разделы и категории со старого сайта СИМОНА
+ * с исправлением ошибки в блоке «Аксессуары для бытовой техники».
+ */
+const CATALOG_COLUMNS: ColumnStructure[] = [
+  // КОЛОНКА 1: ВСТРАИВАЕМАЯ ТЕХНИКА
+  {
+    id: 'col-builtin',
+    groups: [
+      {
+        title: 'Встраиваемая техника',
+        href: '/catalog?section=builtin',
+        items: [
+          { name: 'Варочные панели', href: '/catalog?category=Варочные+панели' },
+          { name: 'Духовые шкафы', href: '/catalog?category=Встраиваемые+духовые+шкафы' },
+          { name: 'Вытяжки', href: '/catalog?category=Вытяжки' },
+          { name: 'Посудомоечные машины (встраиваемые)', href: '/catalog?category=Встраиваемые+посудомоечные+машины' },
+          { name: 'Микроволновые печи (встраиваемые)', href: '/catalog?category=Встраиваемые+микроволновые+печи' },
+          { name: 'Кофемашины (встраиваемые)', href: '/catalog?category=Встраиваемые+кофемашины' },
+          { name: 'Стиральные машины (встраиваемые)', href: '/catalog?category=Встраиваемые+стиральные+машины' },
+          { name: 'Холодильники (встраиваемые)', href: '/catalog?category=Встраиваемые+холодильники' },
+          { name: 'Измельчители пищевых отходов', href: '/catalog?category=Измельчители+пищевых+отходов' },
+          { name: 'Сортеры (ведра)', href: '/catalog?category=Сортеры+(ведра)' },
+          { name: 'Пароварки (встраиваемые)', href: '/catalog?category=Пароварки+(встраиваемые)' },
+          { name: 'Подогреватели посуды', href: '/catalog?category=Подогреватели+посуды' },
+          { name: 'Вакууматоры (встраиваемые)', href: '/catalog?category=Встраиваемые+вакууматоры' },
+          { name: 'Винные шкафы (встраиваемые)', href: '/catalog?category=Встраиваемые+винные+шкафы' },
+        ],
+      },
+    ],
+  },
+
+  // КОЛОНКА 2: КРУПНАЯ БЫТОВАЯ ТЕХНИКА & КЛИМАТИЧЕСКАЯ ТЕХНИКА
+  {
+    id: 'col-major-climate',
+    groups: [
+      {
+        title: 'Крупная бытовая техника',
+        href: '/catalog?section=major',
+        items: [
+          { name: 'Стиральные машины', href: '/catalog?category=Стиральные+машины' },
+          { name: 'Холодильники', href: '/catalog?category=Холодильники+отдельностоящие' },
+          { name: 'Плиты', href: '/catalog?category=Плиты' },
+          { name: 'Посудомоечные машины', href: '/catalog?category=Посудомоечные+машины' },
+          { name: 'Сушильные машины', href: '/catalog?category=Сушильные+машины+для+белья' },
+          { name: 'Микроволновые печи', href: '/catalog?category=Микроволновые+печи' },
+          { name: 'Гладильные системы', href: '/catalog?category=Гладильные+системы' },
+          { name: 'Винные шкафы', href: '/catalog?category=Винные+шкафы' },
+        ],
+      },
+      {
+        title: 'Климатическая техника',
+        href: '/catalog?section=climate',
+        items: [
+          { name: 'Водонагреватели', href: '/catalog?category=Водонагреватели' },
+          { name: 'Камины', href: '/catalog?category=Камины' },
+          { name: 'Кондиционеры', href: '/catalog?category=Кондиционеры' },
+          { name: 'Тепловая техника', href: '/catalog?category=Тепловая+техника' },
+          { name: 'Увлажнение и очистка воздуха', href: '/catalog?category=Увлажнение+и+очистка+воздуха' },
+        ],
+      },
+    ],
+  },
+
+  // КОЛОНКА 3: МОЙКИ И СМЕСИТЕЛИ & МАЛАЯ БЫТОВАЯ ТЕХНИКА
+  {
+    id: 'col-sinks-small',
+    groups: [
+      {
+        title: 'Мойки и смесители',
+        href: '/catalog?section=sinks',
+        items: [
+          { name: 'Мойки', href: '/catalog?category=Мойки+для+кухни' },
+          { name: 'Смесители', href: '/catalog?category=Смесители+для+кухни' },
+          { name: 'Врезные дозаторы для моющих средств', href: '/catalog?category=Врезные+дозаторы+для+моющих+средств' },
+        ],
+      },
+      {
+        title: 'Малая бытовая техника',
+        subtitle: 'Для кухни',
+        href: '/catalog?section=small-kitchen',
+        items: [
+          { name: 'Блендеры', href: '/catalog?category=Блендеры' },
+          { name: 'Кофеварки', href: '/catalog?category=Кофеварки' },
+          { name: 'Кофемашины', href: '/catalog?category=Кофемашины' },
+          { name: 'Кофе', href: '/catalog?category=Кофе' },
+          { name: 'Кухонные комбайны', href: '/catalog?category=Кухонные+комбайны' },
+          { name: 'Миксеры', href: '/catalog?category=Миксеры' },
+          { name: 'Мультиварки', href: '/catalog?category=Мультиварки' },
+          { name: 'Мясорубки', href: '/catalog?category=Мясорубки' },
+          { name: 'Соковыжималки', href: '/catalog?category=Соковыжималки' },
+          { name: 'Тостеры', href: '/catalog?category=Тостеры' },
+          { name: 'Чайники', href: '/catalog?category=Чайники' },
+          { name: 'Мини-печи', href: '/catalog?category=Мини-печи' },
+          { name: 'Вакууматоры', href: '/catalog?category=Вакууматоры' },
+          { name: 'Вспениватели молока', href: '/catalog?category=Вспениватели+молока' },
+          { name: 'Генераторы льда', href: '/catalog?category=Генераторы+льда' },
+          { name: 'Яйцеварки', href: '/catalog?category=Яйцеварки' },
+          { name: 'Прочая малая кухонная техника', href: '/catalog?category=Прочая+малая+кухонная+техника' },
+        ],
+      },
+      {
+        title: '',
+        subtitle: 'Для дома',
+        href: '/catalog?section=small-home',
+        items: [
+          { name: 'Весы', href: '/catalog?category=Весы' },
+          { name: 'Пылесосы', href: '/catalog?category=Пылесосы' },
+          { name: 'Утюги', href: '/catalog?category=Утюги' },
+          { name: 'Роботы для мойки окон', href: '/catalog?category=Роботы+для+мойки+окон' },
+        ],
+      },
+    ],
+  },
+
+  // КОЛОНКА 4: БОКАЛЫ И ПОСУДА, УХОД И АКСЕССУАРЫ
+  {
+    id: 'col-care-accessories',
+    groups: [
+      {
+        title: 'Бокалы и посуда',
+        href: '/catalog?section=tableware',
+        items: [
+          { name: 'Бокалы Riedel', href: '/catalog?category=Бокалы' },
+          { name: 'Декантеры Riedel', href: '/catalog?category=Декантеры' },
+          { name: 'Посуда', href: '/catalog?category=Посуда' },
+          { name: 'Кухонные принадлежности', href: '/catalog?category=Кухонные+принадлежности' },
+        ],
+      },
+      {
+        title: 'Средства по уходу за техникой',
+        href: '/catalog?section=care',
+        items: [
+          { name: 'Для чистки и ухода за бытовой техникой', href: '/catalog?category=Для+чистки+и+ухода+за+бытовой+техникой' },
+          { name: 'Для удаления накипи', href: '/catalog?category=Для+удаления+накипи' },
+          { name: 'Для стирки белья', href: '/catalog?category=Для+стирки+белья' },
+          { name: 'Для посуды', href: '/catalog?category=Для+посуды' },
+          { name: 'Ароматизаторы для бытовой техники', href: '/catalog?category=Ароматизаторы+для+бытовой+техники' },
+          { name: 'Салфетки для бытовой техники', href: '/catalog?category=Салфетки+для+бытовой+техники' },
+        ],
+      },
+      {
+        title: 'Аксессуары для бытовой техники',
+        href: '/catalog?section=accessories',
+        items: [
+          { name: 'Для вытяжек', href: '/catalog?category=Для+вытяжек' },
+          { name: 'Для пылесосов', href: '/catalog?category=Для+пылесосов' },
+          { name: 'Для моек', href: '/catalog?category=Для+моек' },
+          { name: 'Для варочных поверхностей', href: '/catalog?category=Для+варочных+поверхностей' },
+          { name: 'Для холодильников', href: '/catalog?category=Для+холодильников' },
+          { name: 'Для духовых шкафов и плит', href: '/catalog?category=Для+духовых+шкафов+и+плит' },
+          { name: 'Для стиральных и сушильных машин', href: '/catalog?category=Для+стиральных+и+сушильных+машин' },
+          { name: 'Для малой кухонной техники', href: '/catalog?category=Для+малой+кухонной+техники' },
+          { name: 'Для климатической техники', href: '/catalog?category=Для+климатической+техники' },
+          { name: 'Для посудомоечных машин', href: '/catalog?category=Для+посудомоечных+машин' },
+          { name: 'Для прочей малой бытовой техники', href: '/catalog?category=Для+прочей+малой+бытовой+техники' },
+          { name: 'Для кофемашин', href: '/catalog?category=Для+кофемашин' },
+          { name: 'Электротовары', href: '/catalog?category=Электротовары' },
+          { name: 'Для гладильных машин и систем', href: '/catalog?category=Для+гладильных+машин+и+систем' },
+        ],
+      },
+    ],
+  },
+];
+
+export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
+  const { openModal } = useStore();
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Закрытие по клавише Esc
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <>
+      {/* МАТОВЫЙ БЭКДРОП */}
+      <div
+        onClick={onClose}
+        className="fixed inset-0 bg-[#050608]/75 backdrop-blur-md z-40 transition-opacity duration-300"
+        aria-hidden="true"
+      />
+
+      {/* ВЫПАДАЮЩЕЕ ПОЛОТНО ПОД ШАПКОЙ (HEADER-ANCHORED) */}
+      <div
+        ref={menuRef}
+        className="absolute top-full left-0 right-0 z-50 bg-[#14171B] border-b border-[#2B313A] shadow-[0_24px_50px_rgba(0,0,0,0.85)] animate-in fade-in slide-in-from-top-2 duration-200"
+      >
+        {/* BRAND BAR STRIP */}
+        <div className="bg-[#111316] border-b border-[#2B313A] px-4 sm:px-8 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-0.5">
+            <Link
+              href="/promos"
+              onClick={onClose}
+              className="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white bg-simona-wine/25 border border-simona-wine/70 hover:bg-simona-wine hover:shadow-[0_0_14px_rgba(138,21,26,0.4)] transition-all whitespace-nowrap"
+            >
+              Акции брендов %
+            </Link>
+
+            {BRAND_BAR_ITEMS.map((brand) => (
+              <Link
+                key={brand.name}
+                href={brand.href}
+                onClick={onClose}
+                className="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal hover:text-simona-teal-light hover:shadow-[0_0_14px_rgba(0,151,156,0.35)] transition-all whitespace-nowrap"
+              >
+                {brand.name}
+              </Link>
+            ))}
+
+            <Link
+              href="/brands"
+              onClick={onClose}
+              className="text-xs font-semibold text-[#87888A] hover:text-white px-3 py-1.5 rounded-xl hover:bg-[#1E2228] transition-all whitespace-nowrap"
+            >
+              Все бренды →
+            </Link>
+          </div>
+
+          <button
+            onClick={onClose}
+            aria-label="Закрыть каталог (Esc)"
+            className="w-8 h-8 rounded-xl border border-[#2B313A] bg-[#1E2228] text-[#87888A] hover:text-white hover:border-simona-teal flex items-center justify-center transition-all shrink-0"
+          >
+            <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* 4 КОЛОНКИ САТАЛОГА (ТОЧНО ПО СКРИНШОТАМ СТАРОГО САЙТА) */}
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 py-6 max-h-[72vh] overflow-y-auto no-scrollbar">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7 lg:gap-8">
+            {CATALOG_COLUMNS.map((col) => (
+              <div key={col.id} className="flex flex-col gap-6">
+                {col.groups.map((group, groupIdx) => (
+                  <div key={groupIdx} className="flex flex-col gap-2.5">
+                    {group.title && (
+                      <div className="flex items-center justify-between pb-2 border-b border-[#2B313A]">
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-simona-teal shadow-[0_0_6px_rgba(0,151,156,0.6)]" />
+                          <Link
+                            href={group.href || '/catalog'}
+                            onClick={onClose}
+                            className="font-montserrat font-bold text-xs uppercase tracking-wider text-white hover:text-simona-teal transition-colors"
+                          >
+                            {group.title}
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+
+                    {group.subtitle && (
+                      <div className="text-[11px] font-bold text-[#87888A] uppercase tracking-wider px-1.5 pt-1">
+                        {group.subtitle}
+                      </div>
+                    )}
+
+                    <ul className="flex flex-col gap-1 list-none p-0 m-0">
+                      {group.items.map((item, itemIdx) => (
+                        <li key={itemIdx}>
+                          <Link
+                            href={item.href}
+                            onClick={onClose}
+                            className="group/link flex items-center justify-between text-xs text-[#D7D9DB] hover:text-white px-2 py-1 rounded-md hover:bg-simona-teal/[0.07] hover:translate-x-1 transition-all"
+                          >
+                            <span className="group-hover/link:text-white transition-colors">
+                              {item.name}
+                            </span>
+                            <span className="text-[11px] text-simona-teal opacity-0 -translate-x-1 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all">
+                              →
+                            </span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* СЕРВИСНЫЙ O2O-ФУТЕР */}
+        <div className="bg-[#0E1012] border-t border-[#2B313A] px-4 sm:px-8 py-3 flex flex-wrap items-center justify-between gap-4 text-xs">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => {
+                onClose();
+                openModal('EQUIPMENT_SELECTION');
+              }}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-[#D7D9DB] hover:text-white transition-all cursor-pointer font-medium"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-simona-teal shadow-[0_0_6px_rgba(0,151,156,0.8)]" />
+              <span>Подобрать комплект под дизайн-проект</span>
+            </button>
+
+            <Link
+              href="/promos"
+              onClick={onClose}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-wine text-[#D7D9DB] hover:text-white transition-all font-medium"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-simona-wine shadow-[0_0_6px_rgba(138,21,26,0.8)]" />
+              <span>Официальные акции европейских производителей</span>
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-3 text-[#87888A]">
+            <span>Консультация эксперта:</span>
+            <a
+              href="tel:+78314237600"
+              className="font-bold text-white hover:text-simona-teal transition-colors"
+            >
+              +7 (831) 423-76-00
+            </a>
+            <span className="hidden sm:inline">• Салон на ул. Белинского 15 (10:00–20:00)</span>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

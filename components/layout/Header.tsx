@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaLogo } from '@/components/brand/SimonaLogo';
+import { CatalogMegaMenu } from './CatalogMegaMenu';
 import {
   SimonaIconCart,
   SimonaIconHeart,
@@ -16,11 +18,18 @@ import {
 interface HeaderProps {
   isScrolled?: boolean;
   onMobileMenuToggle?: (isOpen: boolean) => void;
+  onCatalogMenuToggle?: (isOpen: boolean) => void;
 }
 
-export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: HeaderProps = {}) {
+export function Header({
+  isScrolled: propIsScrolled,
+  onMobileMenuToggle,
+  onCatalogMenuToggle,
+}: HeaderProps = {}) {
+  const pathname = usePathname();
   const [internalScrolled, setInternalScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [catalogMenuOpen, setCatalogMenuOpen] = useState(false);
   const { cartCount, setIsCartOpen, openModal, wishlist, compare } = useStore();
 
   const isScrolled = propIsScrolled !== undefined ? propIsScrolled : internalScrolled;
@@ -34,27 +43,80 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
     return () => window.removeEventListener('scroll', handleScroll);
   }, [propIsScrolled]);
 
+  // Close menus on route change
+  useEffect(() => {
+    setCatalogMenuOpen(false);
+    onCatalogMenuToggle?.(false);
+    setMobileMenuOpen(false);
+    onMobileMenuToggle?.(false);
+  }, [pathname]);
+
   const handleMobileMenuToggle = (open: boolean) => {
     setMobileMenuOpen(open);
     onMobileMenuToggle?.(open);
+    if (open && catalogMenuOpen) {
+      setCatalogMenuOpen(false);
+      onCatalogMenuToggle?.(false);
+    }
+  };
+
+  const handleCatalogMenuToggle = (open: boolean) => {
+    setCatalogMenuOpen(open);
+    onCatalogMenuToggle?.(open);
+    if (open && mobileMenuOpen) {
+      setMobileMenuOpen(false);
+      onMobileMenuToggle?.(false);
+    }
   };
 
   return (
     <header
-      className={`w-full z-40 transition-all duration-300 ${
+      className={`w-full relative z-40 transition-all duration-300 ${
         isScrolled
           ? 'bg-[#111315]/95 backdrop-blur-xl border-b border-[#2B313A] shadow-xl py-3.5'
           : 'bg-[#111315]/90 backdrop-blur-lg border-b border-[#2B313A]/70 py-4 sm:py-5'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-50">
         <div className="flex items-center justify-between gap-4">
           
-          {/* Brand Logo & Search */}
-          <div className="flex items-center space-x-5 lg:space-x-8">
+          {/* Brand Logo, Catalog Trigger & Search */}
+          <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-6">
             <Link href="/" className="group flex items-center shrink-0">
               <SimonaLogo variant="teal" descriptor="none" size="md" />
             </Link>
+
+            {/* Hausdorf-style Catalog Mega-Menu Trigger Button */}
+            <button
+              type="button"
+              onClick={() => handleCatalogMenuToggle(!catalogMenuOpen)}
+              aria-label="Каталог товаров"
+              aria-expanded={catalogMenuOpen}
+              className={`hidden md:flex items-center space-x-2.5 px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all duration-200 select-none shrink-0 ${
+                catalogMenuOpen
+                  ? 'bg-simona-teal text-white shadow-[0_0_18px_rgba(0,151,156,0.4)] border border-simona-teal'
+                  : 'bg-[#16191D] text-[#D7D9DB] hover:text-white border border-[#2B313A] hover:border-simona-teal/60'
+              }`}
+            >
+              <div className="w-3.5 h-2.5 relative flex flex-col justify-between">
+                <span
+                  className={`block h-0.5 w-full bg-current rounded-full transition-transform duration-200 ${
+                    catalogMenuOpen ? 'translate-y-[4px] rotate-45' : ''
+                  }`}
+                />
+                <span
+                  className={`block h-0.5 w-full bg-current rounded-full transition-opacity duration-200 ${
+                    catalogMenuOpen ? 'opacity-0' : 'opacity-100'
+                  }`}
+                />
+                <span
+                  className={`block h-0.5 w-full bg-current rounded-full transition-transform duration-200 ${
+                    catalogMenuOpen ? '-translate-y-[4px] -rotate-45' : ''
+                  }`}
+                />
+              </div>
+              <span>Каталог товаров</span>
+            </button>
 
             {/* Smart Search Bar */}
             <div
@@ -62,21 +124,15 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
               role="button"
               tabIndex={0}
               aria-label="Поиск по каталогу"
-              className="hidden md:flex items-center space-x-2.5 px-3.5 py-2 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 transition-all cursor-pointer w-64 lg:w-72 text-[#87888A] hover:text-[#D7D9DB]"
+              className="hidden lg:flex items-center space-x-2.5 px-3.5 py-2 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 transition-all cursor-pointer w-48 xl:w-60 text-[#87888A] hover:text-[#D7D9DB]"
             >
               <SimonaIconSearch className="w-4 h-4 text-[#87888A] shrink-0" />
-              <span className="text-xs truncate">Поиск прибора или артикула...</span>
+              <span className="text-xs truncate">Поиск прибора...</span>
             </div>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-6 text-xs font-semibold uppercase tracking-wider text-[#D7D9DB]">
-            <Link 
-              href="/catalog" 
-              className="hover:text-white transition-colors"
-            >
-              Каталог
-            </Link>
+          <nav className="hidden lg:flex items-center space-x-5 xl:space-x-6 text-xs font-semibold uppercase tracking-wider text-[#D7D9DB]">
             <Link 
               href="/promos" 
               className="hover:text-white transition-colors text-simona-wine hover:text-simona-wine-hover"
@@ -225,13 +281,29 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
               <span>Сравнение ({compare.length})</span>
             </Link>
           </div>
-          <Link
-            href="/catalog"
-            onClick={() => handleMobileMenuToggle(false)}
-            className="block py-2 text-sm font-medium text-white border-b border-[#2B313A]"
-          >
-            Каталог техники (8 000+ SKU)
-          </Link>
+          <div className="flex flex-col gap-1 border-b border-[#2B313A] pb-2">
+            <button
+              type="button"
+              onClick={() => {
+                handleMobileMenuToggle(false);
+                handleCatalogMenuToggle(true);
+              }}
+              className="w-full flex items-center justify-between py-2 text-sm font-semibold text-simona-teal hover:text-white transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <span className="text-base">☰</span>
+                <span>Каталог товаров (Все 8 разделов)</span>
+              </span>
+              <span className="text-xs text-[#87888A]">Открыть →</span>
+            </button>
+            <Link
+              href="/catalog"
+              onClick={() => handleMobileMenuToggle(false)}
+              className="text-xs text-[#87888A] hover:text-white pl-6 pb-1 transition-colors"
+            >
+              Перейти на общую страницу витрины (8 000+ SKU)
+            </Link>
+          </div>
           <Link
             href="/promos"
             onClick={() => handleMobileMenuToggle(false)}
@@ -283,6 +355,12 @@ export function Header({ isScrolled: propIsScrolled, onMobileMenuToggle }: Heade
           </Link>
         </div>
       )}
+
+      {/* Mega-Menu Dropdown (Header-Anchored, 100% genuine taxonomy) */}
+      <CatalogMegaMenu
+        isOpen={catalogMenuOpen}
+        onClose={() => handleCatalogMenuToggle(false)}
+      />
     </header>
   );
 }

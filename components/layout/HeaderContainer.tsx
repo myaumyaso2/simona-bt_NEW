@@ -8,6 +8,7 @@ export function HeaderContainer() {
   const [showUmbrella, setShowUmbrella] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCatalogMenuOpen, setIsCatalogMenuOpen] = useState(false);
 
   const lastScrollYRef = useRef(0);
   const turnPointRef = useRef(0);
@@ -32,8 +33,8 @@ export function HeaderContainer() {
         return;
       }
 
-      // If mobile menu is open, keep UmbrellaBar visible
-      if (isMobileMenuOpen) {
+      // If mobile menu or catalog mega-menu is open, keep UmbrellaBar visible
+      if (isMobileMenuOpen || isCatalogMenuOpen) {
         setShowUmbrella(true);
         lastScrollYRef.current = currentScrollY;
         return;
@@ -87,16 +88,20 @@ export function HeaderContainer() {
         lenis.off('scroll', lenisHandler);
       }
     };
-  }, [isMobileMenuOpen]);
+  }, [isMobileMenuOpen, isCatalogMenuOpen]);
 
   return (
     <div
       className={`sticky top-0 z-50 w-full transition-transform duration-300 ease-out will-change-transform ${
-        !showUmbrella ? '-translate-y-[36px]' : 'translate-y-0'
+        !showUmbrella ? '-translate-y-[36px]' : ''
       }`}
     >
       <UmbrellaBar />
-      <Header onMobileMenuToggle={setIsMobileMenuOpen} isScrolled={isScrolled} />
+      <Header
+        onMobileMenuToggle={setIsMobileMenuOpen}
+        onCatalogMenuToggle={setIsCatalogMenuOpen}
+        isScrolled={isScrolled}
+      />
     </div>
   );
 }
