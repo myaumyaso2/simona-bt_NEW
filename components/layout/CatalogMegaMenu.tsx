@@ -27,15 +27,15 @@ interface ColumnStructure {
 }
 
 const BRAND_BAR_ITEMS = [
-  { name: 'BOSCH', href: '/brands/bosch' },
-  { name: 'ASKO', href: '/brands/asko' },
-  { name: 'LIEBHERR', href: '/brands/liebherr' },
-  { name: 'SMEG', href: '/brands/smeg' },
-  { name: 'MIELE', href: '/brands/miele' },
-  { name: 'OMOIKIRI', href: '/brands/omoikiri' },
-  { name: 'ELICA', href: '/brands/elica' },
-  { name: 'MIDEA', href: '/brands/midea' },
-  { name: 'KÖRTING', href: '/brands/korting' },
+  { name: 'Bosch', href: '/brands/bosch' },
+  { name: 'Asko', href: '/brands/asko' },
+  { name: 'Liebherr', href: '/brands/liebherr' },
+  { name: 'Smeg', href: '/brands/smeg' },
+  { name: 'Miele', href: '/brands/miele' },
+  { name: 'Omoikiri', href: '/brands/omoikiri' },
+  { name: 'Elica', href: '/brands/elica' },
+  { name: 'Midea', href: '/brands/midea' },
+  { name: 'Körting', href: '/brands/korting' },
 ];
 
 /**
@@ -256,7 +256,7 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
                 key={brand.name}
                 href={brand.href}
                 onClick={onClose}
-                className="flex-1 min-w-[76px] sm:min-w-0 inline-flex items-center justify-center px-2 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal hover:text-simona-teal-light hover:shadow-[0_0_14px_rgba(0,151,156,0.35)] transition-all whitespace-nowrap text-center"
+                className="flex-1 min-w-[76px] sm:min-w-0 inline-flex items-center justify-center px-2 py-1.5 rounded-xl text-xs font-medium text-white bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal hover:text-simona-teal-light hover:shadow-[0_0_14px_rgba(0,151,156,0.35)] transition-all whitespace-nowrap text-center"
               >
                 {brand.name}
               </Link>
@@ -265,7 +265,7 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
             <Link
               href="/brands"
               onClick={onClose}
-              className="shrink-0 text-xs font-semibold text-[#87888A] hover:text-white px-3 py-1.5 rounded-xl hover:bg-[#1E2228] border border-transparent hover:border-[#2B313A] transition-all whitespace-nowrap"
+              className="shrink-0 text-xs font-medium text-[#87888A] hover:text-white px-3 py-1.5 rounded-xl hover:bg-[#1E2228] border border-transparent hover:border-[#2B313A] transition-all whitespace-nowrap"
             >
               Все бренды →
             </Link>
@@ -296,7 +296,7 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
                           <Link
                             href={group.href || '/catalog'}
                             onClick={onClose}
-                            className="font-montserrat font-bold text-xs uppercase tracking-wider text-white hover:text-simona-teal transition-colors"
+                            className="font-montserrat font-semibold text-xs text-white hover:text-simona-teal transition-colors"
                           >
                             {group.title}
                           </Link>
@@ -305,7 +305,7 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
                     )}
 
                     {group.subtitle && (
-                      <div className="text-[11px] font-bold text-[#87888A] uppercase tracking-wider px-1.5 pt-0.5">
+                      <div className="text-[11px] font-semibold text-[#87888A] px-1.5 pt-0.5">
                         {group.subtitle}
                       </div>
                     )}

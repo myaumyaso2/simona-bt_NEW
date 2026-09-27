@@ -8,6 +8,7 @@ const leadSchema = z.object({
     'SHOWROOM_VISIT',
     'PROJECT_MATCHING',
     'B2B_CLUB',
+    'B2B_OPT',
     'KITCHEN_ESTIMATE',
     'QUICK_CONSULT',
     'EQUIPMENT_SELECTION',

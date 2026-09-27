@@ -80,43 +80,11 @@ export function Header({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-50">
         <div className="flex items-center justify-between gap-4">
           
-          {/* Brand Logo, Catalog Trigger & Search */}
+          {/* Brand Logo & Search */}
           <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-6">
             <Link href="/" className="group flex items-center shrink-0">
               <SimonaLogo variant="teal" descriptor="none" size="md" />
             </Link>
-
-            {/* Hausdorf-style Catalog Mega-Menu Trigger Button */}
-            <button
-              type="button"
-              onClick={() => handleCatalogMenuToggle(!catalogMenuOpen)}
-              aria-label="Каталог товаров"
-              aria-expanded={catalogMenuOpen}
-              className={`hidden md:flex items-center space-x-2.5 px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all duration-200 select-none shrink-0 ${
-                catalogMenuOpen
-                  ? 'bg-simona-teal text-white shadow-[0_0_18px_rgba(0,151,156,0.4)] border border-simona-teal'
-                  : 'bg-[#16191D] text-[#D7D9DB] hover:text-white border border-[#2B313A] hover:border-simona-teal/60'
-              }`}
-            >
-              <div className="w-3.5 h-2.5 relative flex flex-col justify-between">
-                <span
-                  className={`block h-0.5 w-full bg-current rounded-full transition-transform duration-200 ${
-                    catalogMenuOpen ? 'translate-y-[4px] rotate-45' : ''
-                  }`}
-                />
-                <span
-                  className={`block h-0.5 w-full bg-current rounded-full transition-opacity duration-200 ${
-                    catalogMenuOpen ? 'opacity-0' : 'opacity-100'
-                  }`}
-                />
-                <span
-                  className={`block h-0.5 w-full bg-current rounded-full transition-transform duration-200 ${
-                    catalogMenuOpen ? '-translate-y-[4px] -rotate-45' : ''
-                  }`}
-                />
-              </div>
-              <span>Каталог товаров</span>
-            </button>
 
             {/* Smart Search Bar */}
             <div
@@ -131,37 +99,81 @@ export function Header({
             </div>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-5 xl:space-x-6 text-xs font-semibold uppercase tracking-wider text-[#D7D9DB]">
-            <Link 
-              href="/promos" 
-              className="hover:text-white transition-colors text-simona-wine hover:text-simona-wine-hover"
+          {/* Desktop Navigation (Human Case, Animated Underlines, Active States) */}
+          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 text-xs font-medium font-montserrat">
+            {/* 1. Каталог */}
+            <button
+              type="button"
+              onClick={() => handleCatalogMenuToggle(!catalogMenuOpen)}
+              aria-label="Каталог"
+              aria-expanded={catalogMenuOpen}
+              className={`relative py-1.5 transition-colors group select-none cursor-pointer ${
+                catalogMenuOpen || pathname?.startsWith('/catalog')
+                  ? 'text-white'
+                  : 'text-[#D7D9DB] hover:text-white'
+              }`}
             >
-              Акции
+              <span>Каталог</span>
+              <span
+                className={`absolute bottom-0 left-0 h-[2px] w-full bg-simona-teal transition-transform duration-300 origin-left ${
+                  catalogMenuOpen || pathname?.startsWith('/catalog')
+                    ? 'scale-x-100'
+                    : 'scale-x-0 group-hover:scale-x-100'
+                }`}
+              />
+            </button>
+
+            {/* 2. Акции (белый текст, винный ховер/актив) */}
+            <Link
+              href="/promos"
+              className="relative py-1.5 text-white transition-colors group select-none"
+            >
+              <span>Акции</span>
+              <span
+                className={`absolute bottom-0 left-0 h-[2px] w-full bg-simona-wine transition-transform duration-300 origin-left ${
+                  pathname?.startsWith('/promos')
+                    ? 'scale-x-100'
+                    : 'scale-x-0 group-hover:scale-x-100'
+                }`}
+              />
             </Link>
-            <Link 
-              href="/brands" 
-              className="hover:text-white transition-colors"
+
+            {/* 3. Дизайнерам */}
+            <Link
+              href="/designers"
+              className={`relative py-1.5 transition-colors group select-none ${
+                pathname?.startsWith('/designers')
+                  ? 'text-white'
+                  : 'text-[#D7D9DB] hover:text-white'
+              }`}
             >
-              Бренды
+              <span>Дизайнерам</span>
+              <span
+                className={`absolute bottom-0 left-0 h-[2px] w-full bg-simona-teal transition-transform duration-300 origin-left ${
+                  pathname?.startsWith('/designers')
+                    ? 'scale-x-100'
+                    : 'scale-x-0 group-hover:scale-x-100'
+                }`}
+              />
             </Link>
-            <Link 
-              href="/designers" 
-              className="hover:text-white transition-colors"
+
+            {/* 4. Опт */}
+            <Link
+              href="/opt"
+              className={`relative py-1.5 transition-colors group select-none ${
+                pathname?.startsWith('/opt')
+                  ? 'text-white'
+                  : 'text-[#D7D9DB] hover:text-white'
+              }`}
             >
-              Дизайнерам
-            </Link>
-            <Link 
-              href="/showrooms" 
-              className="hover:text-white transition-colors"
-            >
-              Салоны
-            </Link>
-            <Link 
-              href="/services" 
-              className="hover:text-white transition-colors"
-            >
-              Сервис
+              <span>Опт</span>
+              <span
+                className={`absolute bottom-0 left-0 h-[2px] w-full bg-simona-teal transition-transform duration-300 origin-left ${
+                  pathname?.startsWith('/opt')
+                    ? 'scale-x-100'
+                    : 'scale-x-0 group-hover:scale-x-100'
+                }`}
+              />
             </Link>
           </nav>
 
@@ -281,78 +293,72 @@ export function Header({
               <span>Сравнение ({compare.length})</span>
             </Link>
           </div>
-          <div className="flex flex-col gap-1 border-b border-[#2B313A] pb-2">
+          {/* Main 4 Navigation Links */}
+          <div className="flex flex-col gap-0.5 border-b border-[#2B313A] pb-2">
             <button
               type="button"
               onClick={() => {
                 handleMobileMenuToggle(false);
                 handleCatalogMenuToggle(true);
               }}
-              className="w-full flex items-center justify-between py-2 text-sm font-semibold text-simona-teal hover:text-white transition-colors"
+              className="w-full flex items-center justify-between py-2 text-sm font-medium text-[#D7D9DB] hover:text-white transition-colors"
             >
-              <span className="flex items-center gap-2">
-                <span className="text-base">☰</span>
-                <span>Каталог товаров (Все 8 разделов)</span>
-              </span>
-              <span className="text-xs text-[#87888A]">Открыть →</span>
+              <span>Каталог</span>
+              <span className="text-xs text-simona-teal">Все разделы →</span>
             </button>
             <Link
-              href="/catalog"
+              href="/promos"
               onClick={() => handleMobileMenuToggle(false)}
-              className="text-xs text-[#87888A] hover:text-white pl-6 pb-1 transition-colors"
+              className="flex items-center justify-between py-2 text-sm font-medium text-white hover:text-simona-wine transition-colors"
             >
-              Перейти на общую страницу витрины (8 000+ SKU)
+              <span>Акции</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-md bg-simona-wine/20 text-simona-wine border border-simona-wine/40">
+                Спецпредложения
+              </span>
+            </Link>
+            <Link
+              href="/designers"
+              onClick={() => handleMobileMenuToggle(false)}
+              className="py-2 text-sm font-medium text-[#D7D9DB] hover:text-white transition-colors"
+            >
+              Дизайнерам
+            </Link>
+            <Link
+              href="/opt"
+              onClick={() => handleMobileMenuToggle(false)}
+              className="py-2 text-sm font-medium text-[#D7D9DB] hover:text-white transition-colors"
+            >
+              Опт
             </Link>
           </div>
-          <Link
-            href="/promos"
-            onClick={() => handleMobileMenuToggle(false)}
-            className="block py-2 text-sm font-medium text-simona-wine border-b border-[#2B313A]"
-          >
-            Акции производителей
-          </Link>
-          <Link
-            href="/brands"
-            onClick={() => handleMobileMenuToggle(false)}
-            className="block py-2 text-sm font-medium text-[#D7D9DB] border-b border-[#2B313A]"
-          >
-            Мировые бренды
-          </Link>
-          <Link
-            href="/designers"
-            onClick={() => handleMobileMenuToggle(false)}
-            className="block py-2 text-sm font-medium text-[#D7D9DB] border-b border-[#2B313A]"
-          >
-            Клуб архитекторов и дизайнеров
-          </Link>
-          <Link
-            href="/showrooms"
-            onClick={() => handleMobileMenuToggle(false)}
-            className="block py-2 text-sm font-medium text-[#D7D9DB] border-b border-[#2B313A]"
-          >
-            Шоурумы и Активная кухня
-          </Link>
-          <Link
-            href="/services"
-            onClick={() => handleMobileMenuToggle(false)}
-            className="block py-2 text-sm font-medium text-[#D7D9DB] border-b border-[#2B313A]"
-          >
-            Премиальный сервис и монтаж
-          </Link>
-          <Link
-            href="/profile"
-            onClick={() => handleMobileMenuToggle(false)}
-            className="block py-2 text-sm font-medium text-simona-teal border-b border-[#2B313A]"
-          >
-            Личный кабинет клиента
-          </Link>
-          <Link
-            href="/showrooms#booking"
-            onClick={() => handleMobileMenuToggle(false)}
-            className="block w-full mt-3 py-2.5 rounded-xl bg-simona-teal text-white text-xs font-semibold tracking-wide text-center"
-          >
-            Записаться на визит в салон
-          </Link>
+
+          {/* Showroom Contacts & Booking Card */}
+          <div className="p-3.5 rounded-xl bg-[#1E2228] border border-[#2B313A] space-y-2.5 text-xs text-[#87888A]">
+            <div className="text-[11px] font-semibold text-[#D7D9DB]">Салоны в Нижнем Новгороде:</div>
+            <div className="space-y-1">
+              <div className="text-white flex items-center justify-between">
+                <span>ул. Белинского, 15</span>
+                <span className="text-[11px] text-[#87888A]">Флагман</span>
+              </div>
+              <div className="text-white flex items-center justify-between">
+                <span>ул. Белинского, 11/66</span>
+                <span className="text-[11px] text-[#87888A]">Omoikiri & Körting</span>
+              </div>
+            </div>
+            <div className="pt-1.5 border-t border-[#2B313A]/60 flex items-center justify-between">
+              <a href="tel:+78314237600" className="text-white font-medium hover:text-simona-teal transition-colors">
+                (831) 423 76 00
+              </a>
+              <span className="text-[11px]">Ежедневно 10:00 – 20:00</span>
+            </div>
+            <Link
+              href="/showrooms#booking"
+              onClick={() => handleMobileMenuToggle(false)}
+              className="block w-full mt-1.5 py-2 rounded-xl bg-simona-teal text-white text-xs font-semibold tracking-wide text-center hover:bg-simona-teal-hover transition-colors"
+            >
+              Записаться на визит в салон
+            </Link>
+          </div>
         </div>
       )}
 

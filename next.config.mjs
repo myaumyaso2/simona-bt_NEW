@@ -20,6 +20,25 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/optovyj_otdel',
+        destination: '/opt',
+        permanent: true,
+      },
+      {
+        source: '/optovyj_otdel/',
+        destination: '/opt',
+        permanent: true,
+      },
+      {
+        source: '/optovyj-otdel',
+        destination: '/opt',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

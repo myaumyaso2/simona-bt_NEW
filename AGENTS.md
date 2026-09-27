@@ -25,6 +25,7 @@
    - Строгая геометрия: кнопки и селекторы — **`rounded-xl` (12px)** (круглые `rounded-full` для действий категорически запрещены); ярлыки, бейджи и теги — **`rounded-md` (6px)**;
    - Стандартизированный бейдж/оверлайн `SectionBadge` с Soft Glow Pulse (`variant="teal"` и `variant="wine"`);
    - Стандарт выравнивания: **Unified Left-Aligned Standard** (все заголовки строго по левому краю `text-left`, асимметричный Split-Header, запрет центрирования `text-center`);
+   - Типографика без капса (**Anti-Caps / Human Typography Standard**): строгий запрет набора капсом (`uppercase`) для ссылок навигации, пунктов меню, кнопок действий, категорий каталога и названий брендов (только естественный регистр: «Каталог», «Акции», «Дизайнерам», «Опт», `Bosch`, `Asko`, `Smeg`, `Omoikiri`, `Miele`);
    - Иконографика: строгий запрет стоковых библиотек (Lucide, Heroicons, React-icons), единый векторный модуль `SimonaIcons.tsx` (Figma SVGs), иконка `SimonaIconPercent` — только для B2B;
    - Анимации: GSAP 3, Lenis Smooth Scroll (запрет браузерного `scroll-smooth`), Framer Motion;
    - Методологический словарь 24 дизайн-команд Impeccable (`/distill`, `/quieter`, `/bolder`, `/clarify`, `/harden`, `/polish` и др.) и принцип ограниченной верификации (Bounded Verification).
