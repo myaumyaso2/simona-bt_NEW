@@ -1,22 +1,12 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ProductItem } from '@/types';
 import { groupProductFeatures } from '@/lib/productFeatures';
-import {
-  MIELE_SUITE_BUNDLE,
-  MIELE_CARE_ACCESSORIES,
-  BundleItem,
-  AccessoryItem,
-} from '@/data/catalogData';
 import { formatPrice } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
-import {
-  Plus,
-  Equal,
-  ChevronDown,
-} from 'lucide-react';
+import { Plus } from 'lucide-react';
 import {
   SimonaIconCart,
   SimonaIconDownload,
@@ -26,7 +16,12 @@ import {
   SimonaIconCheck,
   SimonaIconSparkles,
   SimonaIconSearch,
+  SimonaIconGuarantee,
 } from '@/components/brand/SimonaIcons';
+import { SectionBadge } from '@/components/ui/SectionBadge';
+import { formatBrandName } from '@/lib/formatters';
+import { getProductBundle } from '@/lib/productBundles';
+import { AccessoryItem } from '@/data/catalogData';
 
 interface ProductTabsSectionProps {
   product: ProductItem;
@@ -39,14 +34,15 @@ export function ProductTabsSection({
   activeTab,
   onSelectTab,
 }: ProductTabsSectionProps) {
-  const { addToCart, setIsCartOpen } = useStore();
+  const { addToCart, setIsCartOpen, openModal } = useStore();
+
+  const brandFormatted = formatBrandName(product.brand);
+  const bundleResult = useMemo(() => getProductBundle(product), [product]);
 
   // Bundle selection state
-  const [selectedBundleIds, setSelectedBundleIds] = useState<string[]>([
-    'bundle-oven',
-    'bundle-coffee',
-    'bundle-drawer',
-  ]);
+  const [selectedBundleIds, setSelectedBundleIds] = useState<string[]>(
+    bundleResult.bundleItems.map((item) => item.id)
+  );
 
   const toggleBundleItem = (id: string) => {
     setSelectedBundleIds((prev) =>
@@ -57,15 +53,22 @@ export function ProductTabsSection({
   const [specQuery, setSpecQuery] = useState('');
 
   const computedSpecGroups = useMemo(() => {
-    let baseGroups = product.specGroups && product.specGroups.length > 0
-      ? product.specGroups
-      : groupProductFeatures(product.features || []);
+    let baseGroups =
+      product.specGroups && product.specGroups.length > 0
+        ? product.specGroups
+        : groupProductFeatures(product.features || []);
 
     // Also inject Dimensions & Warranty if not already in features
     if (product.dimensions) {
       const dimGroup = baseGroups.find((g) => g.groupName === 'Габариты и монтаж');
-      if (dimGroup && !dimGroup.items.some((i) => i.label.toLowerCase().includes('габарит'))) {
-        dimGroup.items.unshift({ label: 'Габариты (ВхШхГ)', value: product.dimensions });
+      if (
+        dimGroup &&
+        !dimGroup.items.some((i) => i.label.toLowerCase().includes('габарит'))
+      ) {
+        dimGroup.items.unshift({
+          label: 'Габариты (ВхШхГ)',
+          value: product.dimensions,
+        });
       }
     }
 
@@ -76,7 +79,8 @@ export function ProductTabsSection({
       .map((g) => ({
         ...g,
         items: g.items.filter(
-          (i) => i.label.toLowerCase().includes(q) || i.value.toLowerCase().includes(q)
+          (i) =>
+            i.label.toLowerCase().includes(q) || i.value.toLowerCase().includes(q)
         ),
       }))
       .filter((g) => g.items.length > 0);
@@ -87,18 +91,19 @@ export function ProductTabsSection({
   }, [computedSpecGroups]);
 
   // Bundle calculations
-  const bundleItems = MIELE_SUITE_BUNDLE;
-  const rawTotal = bundleItems
+  const rawTotal = bundleResult.bundleItems
     .filter((item) => selectedBundleIds.includes(item.id))
     .reduce((sum, item) => sum + item.price, 0);
 
-  const hasAllThree = selectedBundleIds.length === 3;
-  const bundleDiscountPercent = hasAllThree ? 0.1 : 0;
+  const hasAllItems =
+    bundleResult.bundleItems.length > 0 &&
+    selectedBundleIds.length === bundleResult.bundleItems.length;
+  const bundleDiscountPercent = hasAllItems ? 0.1 : 0;
   const discountAmount = Math.round(rawTotal * bundleDiscountPercent);
   const finalBundleTotal = rawTotal - discountAmount;
 
   const handleAddBundleToCart = () => {
-    bundleItems
+    bundleResult.bundleItems
       .filter((item) => selectedBundleIds.includes(item.id))
       .forEach((item) => {
         addToCart(
@@ -107,9 +112,9 @@ export function ProductTabsSection({
             sku: item.sku,
             name: item.name,
             slug: item.id,
-            brand: 'Miele',
+            brand: product.brand,
             category: item.category,
-            categoryType: 'CATEGORY_B',
+            categoryType: 'CATEGORY_A',
             physicalStatus: 'SHOWROOM',
             price: item.price,
             inStock: true,
@@ -131,9 +136,9 @@ export function ProductTabsSection({
         sku: acc.sku,
         name: acc.name,
         slug: acc.id,
-        brand: 'Miele',
+        brand: product.brand,
         category: acc.category,
-        categoryType: 'CATEGORY_A',
+        categoryType: 'CATEGORY_B',
         physicalStatus: 'LOCAL_STOCK',
         price: acc.price,
         inStock: true,
@@ -150,7 +155,7 @@ export function ProductTabsSection({
   return (
     <div className="w-full max-w-[1280px] mx-auto px-4 sm:px-6 py-10 sm:py-16">
       {/* ========================================================================= */}
-      {/* TAB 1: О ПРИБОРЕ И ТЕХНОЛОГИЯХ */}
+      {/* TAB 1: О ПРИБОРЕ И ТЕХНОЛОГИЯХ (Adaptive, Zero Dead Ends) */}
       {/* ========================================================================= */}
       {activeTab === 'about' && (
         <motion.div
@@ -159,46 +164,106 @@ export function ProductTabsSection({
           transition={{ duration: 0.3 }}
           className="flex flex-col gap-10"
         >
-          <div>
-            <span className="text-xs uppercase tracking-widest text-simona-teal font-semibold">
-              ИННОВАЦИИ GENERATION 7000
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white mt-1">
-              Инженерные технологии приготовления Miele
-            </h2>
-          </div>
+          {product.technologies && product.technologies.length > 0 ? (
+            <>
+              <div className="flex flex-col gap-2">
+                <SectionBadge text={`Инновации ${brandFormatted}`} />
+                <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
+                  Инженерные технологии {brandFormatted}
+                </h2>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(product.technologies || []).map((tech, idx) => (
-              <div
-                key={idx}
-                className="bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group"
-              >
-                <div className="h-52 w-full overflow-hidden bg-[#1E2228] relative">
-                  <img
-                    src={tech.imageUrl}
-                    alt={tech.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#16191D] via-transparent to-transparent opacity-80" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {product.technologies.map((tech, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group"
+                  >
+                    <div className="h-52 w-full overflow-hidden bg-[#1E2228] relative">
+                      <img
+                        src={tech.imageUrl}
+                        alt={tech.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#16191D] via-transparent to-transparent opacity-80" />
+                    </div>
+                    <div className="p-6 flex flex-col flex-1 justify-between">
+                      <div>
+                        <span className="text-[11px] font-mono text-[#87888A] uppercase tracking-wider">
+                          {tech.subtitle}
+                        </span>
+                        <h3 className="text-base font-bold text-white mt-1 group-hover:text-simona-teal transition-colors">
+                          {tech.title}
+                        </h3>
+                        <p className="mt-2.5 text-xs text-[#87888A] leading-relaxed">
+                          {tech.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            /* Zero Dead Ends: Rich editorial overview when no specific technologies array is supplied */
+            <div className="flex flex-col gap-8">
+              <div className="flex flex-col gap-2">
+                <SectionBadge text={`Обзор модели ${brandFormatted}`} />
+                <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
+                  Инженерия и дизайн {product.name}
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="lg:col-span-8 bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 sm:p-8 flex flex-col gap-5 shadow-lg">
+                  <h3 className="text-lg font-montserrat font-semibold text-white">
+                    Описание и особенности эксплуатации
+                  </h3>
+                  <p className="text-sm text-[#D7D9DB] leading-relaxed whitespace-pre-line">
+                    {product.description ||
+                      `${product.name} — премиальное решение от европейского производителя ${brandFormatted}. Прибор спроектирован с учетом строгих стандартов энергоэффективности, эргономики и надежности.`}
+                  </p>
+
+                  {product.shortDesc && (
+                    <div className="pt-4 border-t border-[#2B313A] flex flex-wrap items-center gap-3 text-xs text-simona-teal font-medium">
+                      <span>Ключевые преимущества:</span>
+                      <span className="text-white font-normal">{product.shortDesc}</span>
+                    </div>
+                  )}
                 </div>
-                <div className="p-6 flex flex-col flex-1 justify-between">
-                  <div>
-                    <span className="text-[11px] font-mono text-[#87888A] uppercase tracking-wider">
-                      {tech.subtitle}
-                    </span>
-                    <h3 className="text-base font-bold text-white mt-1 group-hover:text-simona-teal transition-colors">
-                      {tech.title}
-                    </h3>
-                    <p className="mt-2.5 text-xs text-[#87888A] leading-relaxed">
-                      {tech.description}
+
+                <div className="lg:col-span-4 flex flex-col gap-4">
+                  <div className="bg-[#1E2228] border border-[#2B313A] rounded-2xl p-6 flex flex-col gap-3">
+                    <div className="flex items-center gap-2 text-simona-teal text-xs font-semibold">
+                      <SimonaIconGuarantee className="w-4 h-4" />
+                      <span>Авторизованный партнер</span>
+                    </div>
+                    <p className="text-xs text-[#87888A] leading-relaxed">
+                      Сеть салонов «СИМОНА» является официальным партнером бренда {brandFormatted}. Все приборы сертифицированы для эксплуатации в РФ и обеспечены полной заводской гарантией.
                     </p>
+                  </div>
+
+                  <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 flex flex-col gap-3">
+                    <span className="text-xs text-white font-semibold">
+                      Нужна помощь с интеграцией в проект?
+                    </span>
+                    <p className="text-xs text-[#87888A] leading-relaxed">
+                      Инженеры салона выверят чертежи подключения и проконсультируют по требованиям к вентиляции и электрике.
+                    </p>
+                    <button
+                      onClick={() =>
+                        openModal('EQUIPMENT_SELECTION', { product })
+                      }
+                      className="w-full h-10 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-colors cursor-pointer mt-1"
+                    >
+                      Запросить консультацию инженера
+                    </button>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </motion.div>
       )}
 
@@ -213,18 +278,16 @@ export function ProductTabsSection({
           className="flex flex-col gap-8"
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#2B313A]">
-            <div>
+            <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
-                <span className="text-xs uppercase tracking-widest text-simona-teal font-semibold">
-                  ПОЛНЫЕ ТЕХНИЧЕСКИЕ ПАРАМЕТРЫ
-                </span>
+                <SectionBadge text="Полные технические параметры" />
                 {totalSpecCount > 0 && (
                   <span className="px-2 py-0.5 rounded-md bg-[#1E2228] border border-[#2B313A] text-[11px] font-mono text-[#87888A]">
                     {totalSpecCount} параметров
                   </span>
                 )}
               </div>
-              <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white mt-1">
+              <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
                 Технические характеристики
               </h2>
             </div>
@@ -290,7 +353,9 @@ export function ProductTabsSection({
                         </span>
                         <span className="grow border-b border-dotted border-[#2B313A] mx-2" />
                         <span className="text-white font-semibold text-right shrink-0 max-w-[55%]">
-                          {item.value}
+                          {item.label.toLowerCase().includes('бренд')
+                            ? formatBrandName(item.value)
+                            : item.value}
                         </span>
                       </div>
                     ))}
@@ -301,7 +366,9 @@ export function ProductTabsSection({
           ) : (
             <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-10 text-center flex flex-col items-center justify-center gap-3">
               <span className="text-sm text-[#87888A]">
-                {specQuery ? `По запросу «${specQuery}» ничего не найдено` : 'Характеристики не указаны'}
+                {specQuery
+                  ? `По запросу «${specQuery}» ничего не найдено`
+                  : 'Характеристики не указаны'}
               </span>
               {specQuery && (
                 <button
@@ -317,117 +384,101 @@ export function ProductTabsSection({
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 3: СХЕМЫ ВСТРОЙКИ (PDF/DWG) */}
+      {/* TAB 3: СХЕМЫ ВСТРОЙКИ (PDF/DWG) — Rendered only if files exist */}
       {/* ========================================================================= */}
-      {activeTab === 'schematics' && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="flex flex-col gap-8"
-        >
-          <div>
-            <span className="text-xs uppercase tracking-widest text-simona-teal font-semibold">
-              АРХИТЕКТУРНЫЕ ЧЕРТЕЖИ И ГЕОМЕТРИЯ
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white mt-1">
-              Схемы встройки и монтажные узлы
-            </h2>
-          </div>
-
-          <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-10 flex flex-col lg:flex-row items-center gap-10">
-            {/* Left: Blueprint Vector Graphic */}
-            <div className="w-full lg:w-1/2 bg-[#1E2228] border border-[#2B313A] rounded-2xl p-6 flex flex-col items-center justify-center relative overflow-hidden">
-              <div className="absolute top-3 left-3 text-[10px] font-mono text-[#87888A] uppercase">
-                ЧЕРТЕЖ: MIELE GENERATION 7000 (60 СМ)
-              </div>
-
-              {/* Minimal SVG architectural schematic */}
-              <div className="w-full max-w-sm py-4">
-                <svg viewBox="0 0 400 320" className="w-full h-auto text-simona-teal stroke-current fill-none">
-                  {/* Outer Niche outline */}
-                  <rect x="50" y="30" width="280" height="260" stroke="#2B313A" strokeWidth="2" strokeDasharray="4 4" />
-                  {/* Ventilation Airflow */}
-                  <path d="M 190 20 L 190 40 M 200 15 L 200 40 M 210 20 L 210 40" stroke="#00979C" strokeWidth="1.5" />
-                  <text x="220" y="25" fill="#00979C" fontSize="10" fontFamily="Montserrat">Вент. зазор 50 мм</text>
-
-                  {/* Appliance Body */}
-                  <rect x="65" y="45" width="250" height="235" stroke="#FFFFFF" strokeWidth="2" fill="#16191D" />
-                  {/* Cavity Glass */}
-                  <rect x="90" y="70" width="200" height="150" stroke="#00979C" strokeWidth="1.5" />
-                  {/* Control Panel Area */}
-                  <rect x="90" y="55" width="200" height="12" stroke="#87888A" strokeWidth="1" />
-                  
-                  {/* Dimension lines */}
-                  {/* Height */}
-                  <line x1="30" y1="45" x2="30" y2="280" stroke="#87888A" strokeWidth="1" />
-                  <line x1="25" y1="45" x2="35" y2="45" stroke="#87888A" strokeWidth="1" />
-                  <line x1="25" y1="280" x2="35" y2="280" stroke="#87888A" strokeWidth="1" />
-                  <text x="5" y="165" fill="#D7D9DB" fontSize="10" transform="rotate(-90 5 165)" fontFamily="Montserrat">596 мм</text>
-
-                  {/* Width */}
-                  <line x1="65" y1="295" x2="315" y2="295" stroke="#87888A" strokeWidth="1" />
-                  <line x1="65" y1="290" x2="65" y2="300" stroke="#87888A" strokeWidth="1" />
-                  <line x1="315" y1="290" x2="315" y2="300" stroke="#87888A" strokeWidth="1" />
-                  <text x="175" y="310" fill="#D7D9DB" fontSize="10" fontFamily="Montserrat">595 мм</text>
-                </svg>
-              </div>
-
-              <span className="text-[11px] text-[#87888A] mt-2">
-                Рекомендуемый проем ниши: 590–595 × 560–568 × 550 мм
-              </span>
+      {activeTab === 'schematics' &&
+        (product.schematicPdfUrl || product.schematicDwgUrl) && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex flex-col gap-8"
+          >
+            <div className="flex flex-col gap-2">
+              <SectionBadge text="Архитектурные чертежи и узлы" />
+              <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
+                Схемы встройки и монтажная документация {brandFormatted}
+              </h2>
             </div>
 
-            {/* Right: Actions and Info */}
-            <div className="w-full lg:w-1/2 flex flex-col gap-5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-simona-teal/15 border border-simona-teal/30 text-simona-teal text-xs font-semibold w-fit">
-                <SimonaIconSparkles className="w-3.5 h-3.5" />
-                <span>Сертифицированные файлы Miele</span>
+            <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-10 flex flex-col lg:flex-row items-center gap-10">
+              {/* Left: Dimension Blueprint Information */}
+              <div className="w-full lg:w-1/2 bg-[#1E2228] border border-[#2B313A] rounded-2xl p-6 flex flex-col items-center justify-center relative overflow-hidden">
+                <div className="w-full flex items-center justify-between text-[11px] font-mono text-[#87888A] mb-4 pb-2 border-b border-[#2B313A]">
+                  <span>ЧЕРТЕЖ: {product.name}</span>
+                  <span>АРТИКУЛ: {product.sku}</span>
+                </div>
+
+                <div className="w-full py-8 px-4 flex flex-col items-center justify-center text-center">
+                  <div className="w-20 h-20 rounded-2xl bg-simona-teal/10 border border-simona-teal/30 flex items-center justify-center mb-4">
+                    <SimonaIconFile className="w-10 h-10 text-simona-teal" />
+                  </div>
+                  <h4 className="text-base font-semibold text-white">
+                    Монтажные габариты
+                  </h4>
+                  <p className="text-sm text-simona-teal font-mono mt-1">
+                    {product.dimensions || 'Стандартные установочные размеры'}
+                  </p>
+                  <span className="text-xs text-[#87888A] mt-2 max-w-sm">
+                    Точные параметры ниши, вентиляционные зазоры и точки подвода коммуникаций зафиксированы в официальном техническом паспорте.
+                  </span>
+                </div>
               </div>
 
-              <h3 className="text-xl font-montserrat font-bold text-white">
-                Материалы для архитекторов, дизайнеров и инженеров
-              </h3>
+              {/* Right: Actions and Info */}
+              <div className="w-full lg:w-1/2 flex flex-col gap-5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-simona-teal/15 border border-simona-teal/30 text-simona-teal text-xs font-semibold w-fit">
+                  <SimonaIconSparkles className="w-3.5 h-3.5" />
+                  <span>Сертифицированная документация {brandFormatted}</span>
+                </div>
 
-              <p className="text-xs text-[#87888A] leading-relaxed">
-                Точные чертежи ниши встройки, точки подвода электричества и требования к вентиляционным зазорам. Готовые 3D-модели для интеграции в проекты 3ds Max, Archicad и AutoCAD.
-              </p>
+                <h3 className="text-xl font-montserrat font-bold text-white text-left">
+                  Материалы для архитекторов, дизайнеров и инженеров
+                </h3>
 
-              <div className="flex flex-col sm:flex-row flex-wrap gap-3 pt-2">
-                <a
-                  href="/schematics/miele-dgc7860.pdf"
-                  download
-                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
-                >
-                  <SimonaIconDownload className="w-4 h-4 text-simona-teal" />
-                  <span>Схема встройки (PDF, 2.4 МБ)</span>
-                </a>
+                <p className="text-xs text-[#87888A] leading-relaxed text-left">
+                  Официальные схемы ниши встройки, точки подвода коммуникаций и требования к вентиляционным зазорам для интеграции в дизайн-проекты.
+                </p>
 
-                <a
-                  href="/schematics/miele-dgc7860.dwg"
-                  download
-                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
-                >
-                  <SimonaIconPackage className="w-4 h-4 text-simona-teal" />
-                  <span>3D CAD / DWG модель</span>
-                </a>
+                <div className="flex flex-col sm:flex-row flex-wrap gap-3 pt-2">
+                  {product.schematicPdfUrl && (
+                    <a
+                      href={product.schematicPdfUrl}
+                      download
+                      className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
+                    >
+                      <SimonaIconDownload className="w-4 h-4 text-simona-teal" />
+                      <span>Схема встройки (PDF)</span>
+                    </a>
+                  )}
 
-                <a
-                  href="/manuals/miele-dgc7860-ru.pdf"
-                  download
-                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
-                >
-                  <SimonaIconFile className="w-4 h-4 text-simona-teal" />
-                  <span>Инструкция по эксплуатации</span>
-                </a>
+                  {product.schematicDwgUrl && (
+                    <a
+                      href={product.schematicDwgUrl}
+                      download
+                      className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
+                    >
+                      <SimonaIconPackage className="w-4 h-4 text-simona-teal" />
+                      <span>3D CAD / DWG модель</span>
+                    </a>
+                  )}
+
+                  <button
+                    onClick={() =>
+                      openModal('EQUIPMENT_SELECTION', { product })
+                    }
+                    className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    <span>Запросить выверку чертежей инженером</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
 
       {/* ========================================================================= */}
-      {/* TAB 4: КОМПЛЕКТ В ЕДИНОМ СТИЛЕ */}
+      {/* TAB 4: КОМПЛЕКТ В ЕДИНОМ СТИЛЕ (Smart Bundle / Concierge Fallback) */}
       {/* ========================================================================= */}
       {activeTab === 'bundle' && (
         <motion.div
@@ -436,303 +487,344 @@ export function ProductTabsSection({
           transition={{ duration: 0.3 }}
           className="flex flex-col gap-12"
         >
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-simona-teal/15 border border-simona-teal/30 text-simona-teal text-xs font-semibold w-fit mb-2">
-              <SimonaIconSparkles className="w-3.5 h-3.5" />
-              <span>Выгода 10% на комплект</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white">
-              Соберите дизайнерский комплект в единой отделке Obsidian Black
-            </h2>
-            <p className="text-xs text-[#87888A] mt-1">
-              Идеальное визуальное совпадение фасадов и бесшовный монтаж в колонну. При заказе 3 приборов предоставляется специальная скидка.
-            </p>
-          </div>
+          {bundleResult.hasBundle ? (
+            <>
+              <div className="flex flex-col gap-2">
+                <SectionBadge text="Дизайнерский комплект" />
+                <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
+                  {bundleResult.bundleTitle}
+                </h2>
+                <p className="text-xs text-[#87888A] text-left">
+                  {bundleResult.bundleSubtitle}
+                </p>
+              </div>
 
-          {/* Interactive Bundle Builder */}
-          <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-8 flex flex-col xl:flex-row items-center justify-between gap-6">
-            {/* Products Row */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 w-full xl:w-auto">
-              {bundleItems.map((item, index) => {
-                const isChecked = selectedBundleIds.includes(item.id);
-                return (
-                  <React.Fragment key={item.id}>
-                    <div
-                      onClick={() => toggleBundleItem(item.id)}
-                      className={`relative w-full sm:w-64 p-4 rounded-2xl bg-[#1E2228] border transition-all duration-200 cursor-pointer flex flex-col justify-between ${
-                        isChecked
-                          ? 'border-simona-teal shadow-lg shadow-teal-950/20'
-                          : 'border-[#2B313A] opacity-60 hover:opacity-100'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-3">
+              {/* Interactive Bundle Builder */}
+              <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-8 flex flex-col xl:flex-row items-center justify-between gap-6">
+                {/* Products Row */}
+                <div className="flex flex-col sm:flex-row items-center gap-4 w-full xl:w-auto">
+                  {bundleResult.bundleItems.map((item, index) => {
+                    const isChecked = selectedBundleIds.includes(item.id);
+                    return (
+                      <React.Fragment key={item.id}>
                         <div
-                          className={`w-5 h-5 rounded-md flex items-center justify-center border transition-colors ${
+                          onClick={() => toggleBundleItem(item.id)}
+                          className={`relative w-full sm:w-64 p-4 rounded-2xl bg-[#1E2228] border transition-all duration-200 cursor-pointer flex flex-col justify-between ${
                             isChecked
-                              ? 'bg-simona-teal border-simona-teal text-white'
-                              : 'border-[#87888A] bg-transparent'
+                              ? 'border-simona-teal shadow-lg shadow-teal-950/20'
+                              : 'border-[#2B313A] opacity-60 hover:opacity-100'
                           }`}
                         >
-                          {isChecked && <SimonaIconCheck className="w-3.5 h-3.5" />}
+                          <div className="flex items-center justify-between mb-3">
+                            <div
+                              className={`w-5 h-5 rounded-md flex items-center justify-center border transition-colors ${
+                                isChecked
+                                  ? 'bg-simona-teal border-simona-teal text-white'
+                                  : 'border-[#87888A] bg-transparent'
+                              }`}
+                            >
+                              {isChecked && (
+                                <SimonaIconCheck className="w-3.5 h-3.5" />
+                              )}
+                            </div>
+                            {item.isMain && (
+                              <span className="text-[10px] font-semibold text-simona-teal bg-simona-teal/15 px-2 py-0.5 rounded-md">
+                                Текущий прибор
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="h-32 w-full rounded-xl overflow-hidden bg-[#111315] mb-3 flex items-center justify-center">
+                            <img
+                              src={item.imageUrl}
+                              alt={item.name}
+                              className="max-h-full max-w-full object-contain p-2"
+                            />
+                          </div>
+
+                          <div>
+                            <span className="text-[10px] text-[#87888A] uppercase font-mono">
+                              {item.sku}
+                            </span>
+                            <h4 className="text-xs font-bold text-white line-clamp-2 mt-0.5">
+                              {item.name}
+                            </h4>
+                            <div className="text-sm font-extrabold text-white mt-2">
+                              {formatPrice(item.price)}
+                            </div>
+                          </div>
                         </div>
-                        {item.isMain && (
-                          <span className="text-[10px] font-semibold text-simona-teal bg-simona-teal/15 px-2 py-0.5 rounded-md">
-                            Текущий прибор
-                          </span>
+
+                        {index < bundleResult.bundleItems.length - 1 && (
+                          <div className="hidden sm:flex items-center justify-center text-[#87888A]">
+                            <Plus className="w-5 h-5" />
+                          </div>
                         )}
-                      </div>
-
-                      <div className="h-32 w-full rounded-xl overflow-hidden bg-[#111315] mb-3 flex items-center justify-center">
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                          className="max-h-full max-w-full object-contain p-2"
-                        />
-                      </div>
-
-                      <div>
-                        <span className="text-[10px] text-[#87888A] uppercase font-mono">
-                          {item.sku}
-                        </span>
-                        <h4 className="text-xs font-bold text-white line-clamp-2 mt-0.5">
-                          {item.name}
-                        </h4>
-                        <div className="text-sm font-extrabold text-white mt-2">
-                          {formatPrice(item.price)}
-                        </div>
-                      </div>
-                    </div>
-
-                    {index < bundleItems.length - 1 && (
-                      <div className="hidden sm:flex items-center justify-center text-[#87888A]">
-                        <Plus className="w-5 h-5" />
-                      </div>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </div>
-
-            {/* Bundle Checkout Box */}
-            <div className="w-full xl:w-80 bg-[#1E2228] border border-simona-teal/40 rounded-2xl p-6 flex flex-col gap-4 shrink-0">
-              <span className="text-xs text-[#87888A]">
-                Выбрано приборов: {selectedBundleIds.length} из 3
-              </span>
-
-              <div className="flex flex-col gap-1">
-                {hasAllThree && (
-                  <div className="flex items-baseline justify-between text-xs text-[#87888A]">
-                    <span>Цена без скидки:</span>
-                    <span className="line-through">{formatPrice(rawTotal)}</span>
-                  </div>
-                )}
-
-                <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-semibold text-white">Итого:</span>
-                  <span className="text-2xl font-montserrat font-extrabold text-white">
-                    {formatPrice(finalBundleTotal)}
-                  </span>
+                      </React.Fragment>
+                    );
+                  })}
                 </div>
 
-                {hasAllThree && (
-                  <div className="text-xs font-semibold text-simona-teal mt-1">
-                    Экономия: {formatPrice(discountAmount)} (-10%)
+                {/* Bundle Checkout Box */}
+                <div className="w-full xl:w-80 bg-[#1E2228] border border-simona-teal/40 rounded-2xl p-6 flex flex-col gap-4 shrink-0">
+                  <span className="text-xs text-[#87888A]">
+                    Выбрано приборов: {selectedBundleIds.length} из{' '}
+                    {bundleResult.bundleItems.length}
+                  </span>
+
+                  <div className="flex flex-col gap-1">
+                    {hasAllItems && (
+                      <div className="flex items-baseline justify-between text-xs text-[#87888A]">
+                        <span>Цена без скидки:</span>
+                        <span className="line-through">
+                          {formatPrice(rawTotal)}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-xs font-semibold text-white">
+                        Итого:
+                      </span>
+                      <span className="text-2xl font-montserrat font-extrabold text-white">
+                        {formatPrice(finalBundleTotal)}
+                      </span>
+                    </div>
+
+                    {hasAllItems && (
+                      <div className="text-xs font-semibold text-simona-teal mt-1">
+                        Экономия: {formatPrice(discountAmount)} (-10%)
+                      </div>
+                    )}
                   </div>
-                )}
+
+                  <button
+                    onClick={handleAddBundleToCart}
+                    disabled={selectedBundleIds.length === 0}
+                    className="w-full h-12 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white font-bold text-xs tracking-wide transition-all duration-200 cursor-pointer shadow-lg shadow-teal-950/40 disabled:opacity-40"
+                  >
+                    Купить комплект — {formatPrice(finalBundleTotal)}
+                  </button>
+                </div>
+              </div>
+
+              {/* Original Accessories Carousel (if supplied) */}
+              {bundleResult.accessories && bundleResult.accessories.length > 0 && (
+                <div className="flex flex-col gap-5 pt-6">
+                  <h3 className="text-xl font-montserrat font-bold text-white text-left">
+                    {bundleResult.accessoriesTitle}
+                  </h3>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    {bundleResult.accessories.map((acc) => (
+                      <div
+                        key={acc.id}
+                        className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-4 flex flex-col justify-between hover:border-simona-teal/50 transition-all duration-300 group"
+                      >
+                        <div>
+                          <div className="h-36 w-full rounded-xl bg-[#1E2228] overflow-hidden mb-3 flex items-center justify-center p-3 relative">
+                            {acc.badge && (
+                              <span className="absolute top-2 left-2 text-[10px] font-semibold text-simona-teal bg-simona-teal/20 px-2 py-0.5 rounded-md">
+                                {acc.badge}
+                              </span>
+                            )}
+                            <img
+                              src={acc.imageUrl}
+                              alt={acc.name}
+                              className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
+                            />
+                          </div>
+
+                          <span className="text-[10px] font-mono text-[#87888A]">
+                            Код товара: {acc.sku}
+                          </span>
+                          <h4 className="text-xs font-bold text-white line-clamp-2 mt-1">
+                            {acc.name}
+                          </h4>
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-[#2B313A] flex items-center justify-between">
+                          <span className="text-sm font-bold text-white">
+                            {formatPrice(acc.price)}
+                          </span>
+                          <button
+                            onClick={() => handleAddAccessory(acc)}
+                            className="px-3.5 py-1.5 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+                          >
+                            <SimonaIconCart className="w-3 h-3" />
+                            <span>В корзину</span>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            /* Premium Concierge fallback when brand has no pre-compiled suite */
+            <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-8 sm:p-12 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-xl">
+              <div className="flex flex-col gap-3 max-w-2xl">
+                <SectionBadge text={`Комплектация ${brandFormatted}`} />
+                <h3 className="text-2xl font-montserrat font-bold text-white text-left">
+                  {bundleResult.bundleTitle}
+                </h3>
+                <p className="text-xs sm:text-sm text-[#87888A] leading-relaxed text-left">
+                  Подберем духовой шкаф, варочную панель, вытяжку, винный шкаф и мойку в единой эстетической концепции бренда {brandFormatted} под габариты вашей кухни. Выверка монтажных схем и защита спецификации за 24 часа со специальной скидкой на комплект.
+                </p>
+                <div className="flex items-center gap-4 text-xs text-simona-teal font-medium mt-2">
+                  <span>• Скидка на комплект до 10%</span>
+                  <span>• 3D-модели и схемы для кухонщиков</span>
+                  <span>• Хранение до конца ремонта</span>
+                </div>
               </div>
 
               <button
-                onClick={handleAddBundleToCart}
-                disabled={selectedBundleIds.length === 0}
-                className="w-full h-12 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white font-bold text-xs tracking-wide transition-all duration-200 cursor-pointer shadow-lg shadow-teal-950/40 disabled:opacity-40"
+                onClick={() =>
+                  openModal('EQUIPMENT_SELECTION', { product })
+                }
+                className="w-full sm:w-auto px-8 h-12 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white font-bold text-xs tracking-wide transition-all duration-200 cursor-pointer shadow-lg shadow-teal-950/40 shrink-0"
               >
-                Купить комплект — {formatPrice(finalBundleTotal)}
+                Заказать подбор комплекта {brandFormatted}
               </button>
             </div>
-          </div>
-
-          {/* Original Accessories Carousel */}
-          <div className="flex flex-col gap-5 pt-6">
-            <h3 className="text-xl font-montserrat font-bold text-white">
-              Оригинальные аксессуары и средства Miele CareCollection
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {MIELE_CARE_ACCESSORIES.map((acc) => (
-                <div
-                  key={acc.id}
-                  className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-4 flex flex-col justify-between hover:border-simona-teal/50 transition-all duration-300 group"
-                >
-                  <div>
-                    <div className="h-36 w-full rounded-xl bg-[#1E2228] overflow-hidden mb-3 flex items-center justify-center p-3 relative">
-                      {acc.badge && (
-                        <span className="absolute top-2 left-2 text-[10px] font-semibold text-simona-teal bg-simona-teal/20 px-2 py-0.5 rounded-md">
-                          {acc.badge}
-                        </span>
-                      )}
-                      <img
-                        src={acc.imageUrl}
-                        alt={acc.name}
-                        className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                    </div>
-
-                    <span className="text-[10px] font-mono text-[#87888A]">
-                      Код товара: {acc.sku}
-                    </span>
-                    <h4 className="text-xs font-bold text-white line-clamp-2 mt-1">
-                      {acc.name}
-                    </h4>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-[#2B313A] flex items-center justify-between">
-                    <span className="text-sm font-bold text-white">
-                      {formatPrice(acc.price)}
-                    </span>
-                    <button
-                      onClick={() => handleAddAccessory(acc)}
-                      className="px-3.5 py-1.5 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
-                    >
-                      <SimonaIconCart className="w-3 h-3" />
-                      <span>В корзину</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          )}
         </motion.div>
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 5: ОТЗЫВЫ И ЭКСПЕРТИЗА */}
+      {/* TAB 5: ОТЗЫВЫ И ЭКСПЕРТИЗА — Rendered only if authentic reviews exist */}
       {/* ========================================================================= */}
-      {activeTab === 'reviews' && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="flex flex-col gap-10"
-        >
-          <div>
-            <span className="text-xs uppercase tracking-widest text-simona-teal font-semibold">
-              РЕАЛЬНЫЙ ОПЫТ ЭКСПЛУАТАЦИИ И ИНЖЕНЕРНЫЙ АНАЛИЗ
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white mt-1">
-              Оценки и отзывы владельцев (4.9 / 5.0)
-            </h2>
-          </div>
+      {activeTab === 'reviews' &&
+        product.reviews &&
+        product.reviews.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex flex-col gap-10"
+          >
+            <div className="flex flex-col gap-2">
+              <SectionBadge text="Опыт эксплуатации" />
+              <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
+                Оценки и отзывы владельцев ({product.rating || 5.0} / 5.0)
+              </h2>
+            </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Left: Certified Expert Verdict */}
-            {product.expertVerdict && (
-              <div className="lg:col-span-5 bg-[#16191D] border border-simona-teal/50 rounded-3xl p-6 sm:p-8 flex flex-col justify-between relative shadow-xl">
-                <div>
-                  <div className="flex items-center gap-3.5 mb-6">
-                    <img
-                      src={product.expertVerdict.avatarUrl}
-                      alt={product.expertVerdict.expertName}
-                      className="w-14 h-14 rounded-full object-cover border-2 border-simona-teal"
-                    />
-                    <div>
-                      <h4 className="text-sm font-bold text-white">
-                        {product.expertVerdict.expertName}
-                      </h4>
-                      <p className="text-xs text-[#87888A]">
-                        {product.expertVerdict.expertRole}
-                      </p>
-                    </div>
-                  </div>
-
-                  <h3 className="text-base font-bold text-white mb-2">
-                    {product.expertVerdict.title}
-                  </h3>
-
-                  <blockquote className="text-xs text-[#D7D9DB] italic leading-relaxed pl-3 border-l-2 border-simona-teal">
-                    "{product.expertVerdict.quote}"
-                  </blockquote>
-                </div>
-
-                <div className="mt-6 pt-5 border-t border-[#2B313A] flex flex-col gap-2.5">
-                  {product.expertVerdict.scores.map((score, sIdx) => (
-                    <div
-                      key={sIdx}
-                      className="flex items-center justify-between text-xs"
-                    >
-                      <span className="text-[#87888A]">{score.label}</span>
-                      <div className="flex items-center gap-1.5 font-bold text-white">
-                        <SimonaIconStar className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]" />
-                        <span>{score.score.toFixed(1)}</span>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Left: Certified Expert Verdict */}
+              {product.expertVerdict && (
+                <div className="lg:col-span-5 bg-[#16191D] border border-simona-teal/50 rounded-3xl p-6 sm:p-8 flex flex-col justify-between relative shadow-xl">
+                  <div>
+                    <div className="flex items-center gap-3.5 mb-6">
+                      <img
+                        src={product.expertVerdict.avatarUrl}
+                        alt={product.expertVerdict.expertName}
+                        className="w-14 h-14 rounded-full object-cover border-2 border-simona-teal"
+                      />
+                      <div>
+                        <h4 className="text-sm font-bold text-white">
+                          {product.expertVerdict.expertName}
+                        </h4>
+                        <p className="text-xs text-[#87888A]">
+                          {product.expertVerdict.expertRole}
+                        </p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
-            {/* Right: Customer Reviews */}
-            <div className="lg:col-span-7 flex flex-col gap-4">
-              {(product.reviews || []).map((review) => (
-                <div
-                  key={review.id}
-                  className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 flex flex-col gap-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-white">
-                          {review.author}
-                        </span>
-                        {review.verifiedPurchase && (
-                          <span className="text-[10px] text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-md">
-                            Проверенный покупатель
+                    <h3 className="text-base font-bold text-white mb-2">
+                      {product.expertVerdict.title}
+                    </h3>
+
+                    <blockquote className="text-xs text-[#D7D9DB] italic leading-relaxed pl-3 border-l-2 border-simona-teal">
+                      "{product.expertVerdict.quote}"
+                    </blockquote>
+                  </div>
+
+                  <div className="mt-6 pt-5 border-t border-[#2B313A] flex flex-col gap-2.5">
+                    {product.expertVerdict.scores.map((score, sIdx) => (
+                      <div
+                        key={sIdx}
+                        className="flex items-center justify-between text-xs"
+                      >
+                        <span className="text-[#87888A]">{score.label}</span>
+                        <div className="flex items-center gap-1.5 font-bold text-white">
+                          <SimonaIconStar className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]" />
+                          <span>{score.score.toFixed(1)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Right: Customer Reviews */}
+              <div
+                className={`${
+                  product.expertVerdict ? 'lg:col-span-7' : 'lg:col-span-12'
+                } flex flex-col gap-4`}
+              >
+                {product.reviews.map((review) => (
+                  <div
+                    key={review.id}
+                    className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 flex flex-col gap-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-white">
+                            {review.author}
                           </span>
+                          {review.verifiedPurchase && (
+                            <span className="text-[10px] text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-md">
+                              Проверенный покупатель
+                            </span>
+                          )}
+                        </div>
+                        {review.location && (
+                          <p className="text-[11px] text-[#87888A] mt-0.5">
+                            {review.location}
+                          </p>
                         )}
                       </div>
-                      {review.location && (
-                        <p className="text-[11px] text-[#87888A] mt-0.5">
-                          {review.location}
-                        </p>
-                      )}
+
+                      <div className="flex items-center gap-1 text-[#D4AF37]">
+                        {[...Array(review.rating)].map((_, i) => (
+                          <SimonaIconStar
+                            key={i}
+                            className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]"
+                          />
+                        ))}
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-1 text-[#D4AF37]">
-                      {[...Array(review.rating)].map((_, i) => (
-                        <SimonaIconStar
-                          key={i}
-                          className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]"
-                        />
-                      ))}
-                    </div>
+                    <p className="text-xs text-[#D7D9DB] leading-relaxed">
+                      {review.text}
+                    </p>
+
+                    {review.photos && review.photos.length > 0 && (
+                      <div className="flex items-center gap-2 pt-2">
+                        {review.photos.map((photo, pIdx) => (
+                          <img
+                            key={pIdx}
+                            src={photo}
+                            alt="Фото в интерьере"
+                            className="w-16 h-16 rounded-md object-cover border border-[#2B313A]"
+                          />
+                        ))}
+                      </div>
+                    )}
+
+                    <span className="text-[10px] text-[#87888A] pt-1">
+                      {review.date}
+                    </span>
                   </div>
-
-                  <p className="text-xs text-[#D7D9DB] leading-relaxed">
-                    {review.text}
-                  </p>
-
-                  {review.photos && review.photos.length > 0 && (
-                    <div className="flex items-center gap-2 pt-2">
-                      {review.photos.map((photo, pIdx) => (
-                        <img
-                          key={pIdx}
-                          src={photo}
-                          alt="Фото в интерьере"
-                          className="w-16 h-16 rounded-md object-cover border border-[#2B313A]"
-                        />
-                      ))}
-                    </div>
-                  )}
-
-                  <span className="text-[10px] text-[#87888A] pt-1">
-                    {review.date}
-                  </span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
     </div>
   );
 }

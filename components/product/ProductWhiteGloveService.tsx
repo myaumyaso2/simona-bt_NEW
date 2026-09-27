@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
+import { SectionBadge } from '@/components/ui/SectionBadge';
 
 const WHITE_GLOVE_SERVICES = [
   {
     num: '01',
-    title: 'Шеф-монтаж Miele',
-    desc: 'Официальная авторизация сервиса, строгое соблюдение заводских регламентов, сохранение полной гарантии производителя.',
+    title: 'Шеф-монтаж сертифицированными инженерами',
+    desc: 'Официальная авторизация сервиса, строгое соблюдение заводских регламентов европейских брендов, сохранение полной гарантии производителя.',
   },
   {
     num: '02',
@@ -28,11 +29,9 @@ const WHITE_GLOVE_SERVICES = [
 export function ProductWhiteGloveService() {
   return (
     <section className="w-full max-w-[1280px] mx-auto px-4 sm:px-6 py-16 border-t border-[#2B313A]">
-      <div className="flex flex-col gap-2 mb-10 text-center sm:text-left">
-        <span className="text-xs uppercase tracking-widest text-simona-teal font-semibold">
-          ПРЕМИАЛЬНЫЙ СЕРВИСНЫЙ КОНТУР
-        </span>
-        <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white">
+      <div className="flex flex-col gap-2 mb-10 text-left">
+        <SectionBadge text="Премиальный сервисный контур" />
+        <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
           Забота о вашем комфорте на каждом этапе
         </h2>
       </div>

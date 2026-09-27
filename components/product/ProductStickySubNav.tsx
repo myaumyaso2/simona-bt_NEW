@@ -1,23 +1,40 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ProductItem } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaIconCart } from '@/components/brand/SimonaIcons';
+import { formatBrandName } from '@/lib/formatters';
 
 export interface TabItem {
   id: string;
   label: string;
 }
 
-export const PRODUCT_TABS: TabItem[] = [
-  { id: 'about', label: 'О товаре и технологии' },
-  { id: 'specs', label: 'Характеристики' },
-  { id: 'schematics', label: 'Схемы встройки (PDF/DWG)' },
-  { id: 'bundle', label: 'Комплект в едином стиле' },
-  { id: 'reviews', label: 'Отзывы и экспертиза' },
-];
+export function getProductTabs(product: ProductItem): TabItem[] {
+  const tabs: TabItem[] = [
+    {
+      id: 'about',
+      label: product.technologies && product.technologies.length > 0 ? 'О технологиях' : 'О приборе',
+    },
+    { id: 'specs', label: 'Характеристики' },
+  ];
+
+  // Zero Dead Ends: Only render Schematics tab if actual files exist
+  if (product.schematicPdfUrl || product.schematicDwgUrl) {
+    tabs.push({ id: 'schematics', label: 'Схемы встройки (PDF/DWG)' });
+  }
+
+  tabs.push({ id: 'bundle', label: 'Комплект в едином стиле' });
+
+  // Zero Dead Ends & Absolute Zero: Only show reviews if authentic reviews exist
+  if (product.reviews && product.reviews.length > 0) {
+    tabs.push({ id: 'reviews', label: `Отзывы (${product.reviews.length})` });
+  }
+
+  return tabs;
+}
 
 interface ProductStickySubNavProps {
   product: ProductItem;
@@ -32,6 +49,8 @@ export function ProductStickySubNav({
 }: ProductStickySubNavProps) {
   const { addToCart, setIsCartOpen } = useStore();
 
+  const tabs = useMemo(() => getProductTabs(product), [product]);
+
   const handleQuickAdd = () => {
     addToCart(product, 1, false);
     setIsCartOpen(true);
@@ -43,11 +62,10 @@ export function ProductStickySubNav({
   return (
     <div className="sticky top-[76px] z-30 w-full bg-[#111315]/95 backdrop-blur-md border-y border-[#2B313A] shadow-md">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 flex items-center justify-between h-14 overflow-x-auto scrollbar-none">
-        {/* Navigation Tabs */}
+        {/* Navigation Tabs (Dynamic, Zero Dead Ends) */}
         <div className="flex items-center gap-6 sm:gap-8 h-full shrink-0">
-          {PRODUCT_TABS.map((tab) => {
+          {tabs.map((tab) => {
             const isActive = tab.id === activeTab;
-            const reviewCount = tab.id === 'reviews' ? ` (${product.reviewsCount || 28})` : '';
             return (
               <button
                 key={tab.id}
@@ -58,10 +76,7 @@ export function ProductStickySubNav({
                     : 'text-[#87888A] hover:text-[#D7D9DB]'
                 }`}
               >
-                <span>
-                  {tab.label}
-                  {reviewCount}
-                </span>
+                <span>{tab.label}</span>
                 {isActive && (
                   <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-simona-teal shadow-[0_-2px_8px_rgba(0,151,156,0.5)]" />
                 )}

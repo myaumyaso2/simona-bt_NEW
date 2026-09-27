@@ -12,12 +12,14 @@ import {
   SimonaIconShare,
 } from '@/components/brand/SimonaIcons';
 import { Maximize2 } from 'lucide-react';
+import { getProductO2OInfo } from '@/lib/productO2O';
 
 interface ProductHeroGalleryProps {
   product: ProductItem;
 }
 
 export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
+  const o2oInfo = getProductO2OInfo(product);
   const images = product.images && product.images.length > 0
     ? product.images
     : ['https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80'];
@@ -76,22 +78,28 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
       <div className="order-1 md:order-2 flex-1 relative h-[380px] sm:h-[480px] md:h-[580px] bg-[#1E2228] rounded-2xl border border-[#2B313A] overflow-hidden flex items-center justify-center p-4 select-none">
         {/* Top-Left Badges Stack (Strict Quiet Luxury, No emojis) */}
         <div className="absolute top-4 left-4 z-20 flex flex-col items-start gap-2 max-w-[85%]">
-          {/* Badge 1: Showroom Presence */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 backdrop-blur-md shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>В наличии: салон Белинского, 15</span>
-          </div>
-
-          {/* Badge 2: Exhibition Status */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-simona-teal/15 text-simona-teal border border-simona-teal/30 backdrop-blur-md shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-simona-teal" />
-            <span>В экспозиции флагманского зала</span>
-          </div>
+          {o2oInfo.inShowroomExposition ? (
+            <>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 backdrop-blur-md shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>В экспозиции: {o2oInfo.showroomAddress}</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-simona-teal/15 text-simona-teal border border-simona-teal/30 backdrop-blur-md shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-simona-teal" />
+                <span>Доступен для тест-драйва</span>
+              </div>
+            </>
+          ) : (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 backdrop-blur-md shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>{o2oInfo.statusBadge.text}</span>
+            </div>
+          )}
 
           {/* Badge 3: Official Manufacturer Warranty */}
           <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-white/10 text-white/90 border border-white/15 backdrop-blur-md shadow-sm">
             <SimonaIconGuarantee className="w-3.5 h-3.5 text-[#D7D9DB]" />
-            <span>Гарантия производителя 2 года</span>
+            <span>Официальная гарантия {o2oInfo.brandFormatted}</span>
           </div>
         </div>
 

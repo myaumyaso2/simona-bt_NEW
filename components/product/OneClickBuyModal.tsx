@@ -6,6 +6,7 @@ import { ProductItem } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { X } from 'lucide-react';
 import { SimonaIconCheckCircle, SimonaIconGuarantee } from '@/components/brand/SimonaIcons';
+import { formatBrandName } from '@/lib/formatters';
 
 interface OneClickBuyModalProps {
   isOpen: boolean;
@@ -156,7 +157,7 @@ export function OneClickBuyModal({
 
                   <div className="flex items-center gap-2 text-[11px] text-[#87888A] pt-1">
                     <SimonaIconGuarantee className="w-4 h-4 text-simona-teal shrink-0" />
-                    <span>Официальная гарантия производителя Miele 2 года</span>
+                    <span>Официальная гарантия производителя {formatBrandName(product.brand)} 2 года</span>
                   </div>
 
                   <button

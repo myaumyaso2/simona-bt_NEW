@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ProductItem } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaIconCart, SimonaIconHeart } from '@/components/brand/SimonaIcons';
+import { getProductO2OInfo } from '@/lib/productO2O';
 
 interface ProductMobileBottomBarProps {
   product: ProductItem;
@@ -13,11 +14,33 @@ interface ProductMobileBottomBarProps {
 export function ProductMobileBottomBar({ product }: ProductMobileBottomBarProps) {
   const { addToCart, setIsCartOpen, isInWishlist, toggleWishlist } = useStore();
   const inWishlist = isInWishlist(product.id);
+  const o2oInfo = useMemo(() => getProductO2OInfo(product), [product]);
 
   const handleAddToCart = () => {
     addToCart(product, 1, false);
     setIsCartOpen(true);
   };
+
+  const statusLabel = useMemo(() => {
+    switch (o2oInfo.physicalStatus) {
+      case 'SHOWROOM':
+        return '• В экспозиции в салоне';
+      case 'LOCAL_STOCK':
+        return '• На складе в НН (1–2 дня)';
+      case 'REMOTE_STOCK':
+        return '• Удаленный склад (3–7 дней)';
+      case 'ON_ORDER':
+      default:
+        return '• Фабричный заказ из Европы';
+    }
+  }, [o2oInfo.physicalStatus]);
+
+  const statusColor =
+    o2oInfo.physicalStatus === 'ON_ORDER'
+      ? 'text-[#D7D9DB]'
+      : o2oInfo.physicalStatus === 'REMOTE_STOCK'
+      ? 'text-simona-teal'
+      : 'text-emerald-400';
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#16191D]/95 backdrop-blur-lg border-t border-[#2B313A] px-4 py-3 flex items-center justify-between shadow-2xl safe-area-bottom">
@@ -26,8 +49,8 @@ export function ProductMobileBottomBar({ product }: ProductMobileBottomBarProps)
         <span className="text-base font-montserrat font-extrabold text-white">
           {formatPrice(product.price)}
         </span>
-        <span className="text-[10px] font-semibold text-emerald-400">
-          • В наличии в салоне
+        <span className={`text-[10px] font-semibold ${statusColor}`}>
+          {statusLabel}
         </span>
       </div>
 
