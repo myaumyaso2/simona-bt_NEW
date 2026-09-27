@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { MANUFACTURER_PROMOS } from '@/data/promosData';
 import { SimonaIconSearch, SimonaIconCheck } from '@/components/brand/SimonaIcons';
+import { CategoryFacet } from '@/lib/productFeatures';
 
 const accordionTransition = {
   duration: 0.3,
@@ -20,6 +21,7 @@ export interface FilterState {
   selectedLocations: string[];
   selectedWidth: string | null;
   selectedColor: string | null;
+  selectedFeatures: Record<string, string[]>;
 }
 
 interface CatalogSidebarProps {
@@ -28,6 +30,9 @@ interface CatalogSidebarProps {
   onResetFilters: () => void;
   brandCounts?: Record<string, number>;
   promoCounts?: Record<string, number>;
+  categoryFacets?: CategoryFacet[];
+  activeVariant?: 'sidebar_facets' | 'top_chips' | 'drawer';
+  onOpenDrawer?: () => void;
 }
 
 const ALL_BRANDS = [
@@ -55,6 +60,9 @@ export function CatalogSidebar({
   onResetFilters,
   brandCounts = {},
   promoCounts = {},
+  categoryFacets = [],
+  activeVariant = 'sidebar_facets',
+  onOpenDrawer,
 }: CatalogSidebarProps) {
   const [promoOpen, setPromoOpen] = useState(true);
   const [brandSearch, setBrandSearch] = useState('');
@@ -62,6 +70,63 @@ export function CatalogSidebar({
   const [priceOpen, setPriceOpen] = useState(true);
   const [locationOpen, setLocationOpen] = useState(true);
   const [specsOpen, setSpecsOpen] = useState(true);
+  const [isAllParamsOpen, setIsAllParamsOpen] = useState(false);
+  const [openFacets, setOpenFacets] = useState<Record<string, boolean>>({});
+
+  const asideRef = useRef<HTMLElement>(null);
+  const allParamsBtnRef = useRef<HTMLDivElement>(null);
+
+  const toggleFacetOpen = (label: string) => {
+    setOpenFacets((prev) => ({
+      ...prev,
+      [label]: prev[label] === undefined ? true : !prev[label],
+    }));
+  };
+
+  // Compact by default: only open if user toggled it open OR has selected values in it
+  const isFacetOpen = (label: string) => {
+    if (openFacets[label] !== undefined) return openFacets[label];
+    return (filters.selectedFeatures?.[label]?.length ?? 0) > 0;
+  };
+
+  const totalSelectedFeatures = Object.values(filters.selectedFeatures || {}).reduce(
+    (sum, vals) => sum + (vals?.length || 0),
+    0
+  );
+
+  const handleToggleAllParams = () => {
+    const next = !isAllParamsOpen;
+    setIsAllParamsOpen(next);
+    if (next) {
+      setTimeout(() => {
+        if (asideRef.current && allParamsBtnRef.current) {
+          const asideRect = asideRef.current.getBoundingClientRect();
+          const btnRect = allParamsBtnRef.current.getBoundingClientRect();
+          const currentOffset = btnRect.top - asideRect.top + asideRef.current.scrollTop;
+          const targetScrollTop = Math.max(0, currentOffset - (asideRef.current.clientHeight * 0.25));
+          asideRef.current.scrollTo({
+            top: targetScrollTop,
+            behavior: 'smooth',
+          });
+        }
+      }, 100);
+    }
+  };
+
+  const toggleFeatureValue = (label: string, value: string) => {
+    const current = filters.selectedFeatures?.[label] || [];
+    const next = current.includes(value)
+      ? current.filter((v) => v !== value)
+      : [...current, value];
+
+    const updated = { ...(filters.selectedFeatures || {}) };
+    if (next.length > 0) {
+      updated[label] = next;
+    } else {
+      delete updated[label];
+    }
+    onFilterChange({ selectedFeatures: updated });
+  };
 
   // Zero Dead Ends: only display promos with matching products in current category
   const activePromos = MANUFACTURER_PROMOS.filter((promo) => {
@@ -96,6 +161,7 @@ export function CatalogSidebar({
 
   return (
     <aside
+      ref={asideRef}
       data-lenis-prevent="true"
       className="w-full lg:w-[300px] shrink-0 bg-[#16191D] rounded-2xl p-5 border border-[#2B313A] space-y-6 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto simona-sidebar-scrollbar overscroll-contain scroll-smooth"
     >
@@ -495,6 +561,137 @@ export function CatalogSidebar({
           )}
         </AnimatePresence>
       </div>
+
+      {/* 5. ВСЕ ПАРАМЕТРЫ (In-place Progressive Disclosure) */}
+      {categoryFacets.length > 0 && (
+        <div ref={allParamsBtnRef} className="pt-2 border-t border-[#2B313A]/60">
+          <button
+            type="button"
+            onClick={handleToggleAllParams}
+            className={`w-full py-3 px-3.5 rounded-xl border text-white text-xs font-semibold flex items-center justify-between transition-all group cursor-pointer shadow-sm ${
+              isAllParamsOpen
+                ? 'bg-simona-teal/20 border-simona-teal shadow-[0_0_15px_rgba(0,151,156,0.15)]'
+                : 'bg-simona-teal/10 hover:bg-simona-teal/20 border-simona-teal/40 hover:border-simona-teal'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <ChevronDown
+                className={`w-4 h-4 text-simona-teal transition-transform duration-300 ${
+                  isAllParamsOpen ? 'rotate-180' : 'group-hover:translate-y-0.5'
+                }`}
+              />
+              <span>Все параметры</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              {totalSelectedFeatures > 0 && (
+                <span className="px-1.5 py-0.5 rounded-md bg-simona-teal text-white text-[10px] font-mono font-bold">
+                  {totalSelectedFeatures}
+                </span>
+              )}
+              <span className="px-2 py-0.5 rounded-md bg-simona-teal/20 text-[10px] font-mono text-simona-teal-light">
+                +{categoryFacets.length}
+              </span>
+            </div>
+          </button>
+
+          {/* Раскрывающийся список характеристик */}
+          <AnimatePresence initial={false}>
+            {isAllParamsOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={accordionTransition}
+                className="overflow-hidden"
+              >
+                <div className="pt-4 space-y-3">
+                  {categoryFacets.map((facet) => {
+                    const selectedVals = filters.selectedFeatures?.[facet.label] || [];
+                    const open = isFacetOpen(facet.label);
+
+                    return (
+                      <div key={facet.label} className="border-b border-[#2B313A]/40 pb-3 last:border-b-0">
+                        <button
+                          type="button"
+                          onClick={() => toggleFacetOpen(facet.label)}
+                          className="w-full flex items-center justify-between text-xs font-semibold text-white py-1 group cursor-pointer"
+                        >
+                          <div className="flex items-center gap-1.5 truncate max-w-[85%]">
+                            <span className="truncate group-hover:text-simona-teal transition-colors">
+                              {facet.label}
+                            </span>
+                            {selectedVals.length > 0 && (
+                              <span className="px-1.5 py-0.2 rounded-md bg-simona-teal text-white text-[10px] font-mono shrink-0">
+                                {selectedVals.length}
+                              </span>
+                            )}
+                          </div>
+                          <ChevronDown
+                            className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${
+                              open ? 'rotate-180 text-simona-teal' : 'text-[#87888A] group-hover:text-simona-teal'
+                            }`}
+                          />
+                        </button>
+
+                        <AnimatePresence initial={false}>
+                          {open && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={accordionTransition}
+                              className="overflow-hidden"
+                            >
+                              <div className="pt-2 space-y-1.5 pl-0.5">
+                                {facet.options.map((opt) => {
+                                  const isChecked = selectedVals.includes(opt.value);
+                                  return (
+                                    <label
+                                      key={opt.value}
+                                      onClick={() => toggleFeatureValue(facet.label, opt.value)}
+                                      className="flex items-center justify-between text-xs cursor-pointer py-0.5 group/opt"
+                                    >
+                                      <div className="flex items-center space-x-2 truncate pr-2">
+                                        <div
+                                          className={`w-3.5 h-3.5 rounded-[3px] border shrink-0 flex items-center justify-center transition-colors ${
+                                            isChecked
+                                              ? 'bg-simona-teal border-simona-teal text-white'
+                                              : 'bg-[#1E2228] border-[#2B313A] group-hover/opt:border-simona-teal/60'
+                                          }`}
+                                        >
+                                          {isChecked && (
+                                            <SimonaIconCheck className="w-2.5 h-2.5 stroke-[2.5]" />
+                                          )}
+                                        </div>
+                                        <span
+                                          className={`text-[11px] truncate transition-colors ${
+                                            isChecked
+                                              ? 'text-white font-medium'
+                                              : 'text-[#D7D9DB] group-hover/opt:text-white'
+                                          }`}
+                                        >
+                                          {opt.value}
+                                        </span>
+                                      </div>
+                                      <span className="text-[10px] text-[#87888A] font-mono shrink-0">
+                                        [{opt.count}]
+                                      </span>
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
     </aside>
   );
 }

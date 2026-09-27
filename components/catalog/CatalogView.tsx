@@ -15,6 +15,7 @@ import { CatalogPagination } from './CatalogPagination';
 import { ProductItem } from '@/types';
 import { CatalogServiceContour } from './CatalogServiceContour';
 import { MobileFilterDrawer } from './MobileFilterDrawer';
+import { getCategoryFacets } from '@/lib/productFeatures';
 
 interface CatalogViewProps {
   initialProducts?: ProductItem[];
@@ -41,6 +42,7 @@ export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = 
     selectedLocations: [],
     selectedWidth: null,
     selectedColor: null,
+    selectedFeatures: {},
   });
 
   // Deep Link support: /catalog?promo=slug
@@ -68,11 +70,57 @@ export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = 
       selectedLocations: [],
       selectedWidth: null,
       selectedColor: null,
+      selectedFeatures: {},
     });
     setActiveSubcategory('all');
     setActivePhysicalTab('ALL');
     setCurrentPage(1);
   };
+
+  const handleToggleFeature = (label: string, value: string) => {
+    const current = filters.selectedFeatures?.[label] || [];
+    const next = current.includes(value)
+      ? current.filter((v) => v !== value)
+      : [...current, value];
+
+    const updated = { ...(filters.selectedFeatures || {}) };
+    if (next.length > 0) {
+      updated[label] = next;
+    } else {
+      delete updated[label];
+    }
+    handleFilterChange({ selectedFeatures: updated });
+  };
+
+  const handleRemoveFeature = (label: string, value: string) => {
+    handleToggleFeature(label, value);
+  };
+
+  // Dynamic category facets calculation based on current category selection
+  const categoryFacets = useMemo(() => {
+    const base = rawProducts.filter((p) => {
+      if (activePhysicalTab !== 'ALL') {
+        if (activePhysicalTab === 'SHOWROOM') {
+          const isShowroom =
+            p.physicalStatus === 'SHOWROOM' ||
+            p.physicalStatus === 'ACTIVE_KITCHEN' ||
+            p.physicalStatus === 'EXHIBITION_15' ||
+            p.physicalStatus === 'EXHIBITION_11';
+          if (!isShowroom) return false;
+        } else if (p.physicalStatus !== activePhysicalTab) {
+          return false;
+        }
+      }
+      if (activeSubcategory !== 'all') {
+        const subtag = CATALOG_SUBCATEGORIES.find((s) => s.id === activeSubcategory);
+        if (subtag && !subtag.filterFn(p)) {
+          return false;
+        }
+      }
+      return true;
+    });
+    return getCategoryFacets(base, 6);
+  }, [rawProducts, activePhysicalTab, activeSubcategory]);
 
   // Dynamic promo count calculation for current category and tab (Zero Dead Ends)
   const promoCounts = useMemo(() => {
@@ -190,6 +238,19 @@ export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = 
         }
       }
 
+      // 7. Dynamic Feature Facets Filter (AND between facets, OR within same facet)
+      if (filters.selectedFeatures && Object.keys(filters.selectedFeatures).length > 0) {
+        for (const [label, vals] of Object.entries(filters.selectedFeatures)) {
+          if (!vals || vals.length === 0) continue;
+          const match = product.features?.some(
+            (f) =>
+              f.label.trim().toLowerCase() === label.trim().toLowerCase() &&
+              vals.includes(f.value.trim())
+          );
+          if (!match) return false;
+        }
+      }
+
       return true;
     }).sort((a, b) => {
       if (sort === 'popular') {
@@ -245,6 +306,7 @@ export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = 
               onResetFilters={handleResetFilters}
               brandCounts={brandCounts}
               promoCounts={promoCounts}
+              categoryFacets={categoryFacets}
             />
           </div>
 
@@ -260,6 +322,9 @@ export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = 
               }
               onRemoveWidth={() => handleFilterChange({ selectedWidth: null })}
               onRemoveColor={() => handleFilterChange({ selectedColor: null })}
+              onRemoveFeature={handleRemoveFeature}
+              onToggleFeature={handleToggleFeature}
+              categoryFacets={categoryFacets}
               sort={sort}
               onSortChange={setSort}
               viewMode={viewMode}
