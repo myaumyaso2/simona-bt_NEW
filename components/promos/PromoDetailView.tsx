@@ -69,7 +69,7 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
           <div className="max-w-3xl">
             {/* Badges Stack */}
             <div className="flex flex-wrap items-center gap-2.5 mb-5">
-              <span className="px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] text-xs font-semibold text-white uppercase tracking-wider">
+              <span className="px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] text-xs font-semibold text-white tracking-wide">
                 {promo.brand} {promo.brandCountry ? `(${promo.brandCountry})` : ''}
               </span>
 
@@ -119,34 +119,73 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
           {/* Left Column: Description, Conditions, Products */}
           <div className="lg:col-span-8 space-y-12">
             
-            {/* Detailed Description */}
-            <div className="rounded-2xl border border-[#2B313A] bg-[#16191D] p-6 sm:p-8">
-              <h2 className="text-xl font-semibold text-white tracking-tight mb-4">
-                Описание официальной программы
-              </h2>
-              <div className="prose prose-invert max-w-none text-sm leading-relaxed text-[#D7D9DB] whitespace-pre-line space-y-4">
-                {promo.fullDescription}
+            {/* Unified Promo Terms & Program Card */}
+            <div className="rounded-2xl border border-[#2B313A] bg-[#16191D] p-6 sm:p-8 space-y-7">
+              <div>
+                <div className="flex items-center space-x-2 text-simona-wine-light text-xs font-semibold uppercase tracking-wider mb-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-simona-wine" />
+                  <span>Программа и условия выгоды</span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
+                  Официальные условия специального предложения
+                </h2>
               </div>
-            </div>
 
-            {/* Official Conditions Checklist */}
-            <div className="rounded-2xl border border-[#2B313A] bg-[#16191D] p-6 sm:p-8">
-              <div className="flex items-center space-x-2 text-simona-wine-light text-xs font-semibold uppercase tracking-wider mb-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-simona-wine" />
-                <span>Условия участия и правила акции</span>
-              </div>
-              <h2 className="text-xl font-semibold text-white tracking-tight mb-6">
-                Что необходимо для получения выгоды
-              </h2>
+              {/* Polished Editorial Narrative */}
+              {promo.fullDescription && (
+                <div className="text-sm sm:text-base text-[#D7D9DB] leading-relaxed font-normal border-b border-[#2B313A]/60 pb-6">
+                  {promo.fullDescription}
+                </div>
+              )}
 
-              <ul className="space-y-3.5">
-                {promo.conditions.map((cond, idx) => (
-                  <li key={idx} className="flex items-start space-x-3 text-sm text-[#D7D9DB]">
-                    <SimonaIconCheckCircle className="w-5 h-5 text-simona-wine-light shrink-0 mt-0.5" />
-                    <span>{cond}</span>
-                  </li>
-                ))}
-              </ul>
+              {/* Tiers Grid (if promo has tiered structure) */}
+              {promo.tiers && promo.tiers.length > 0 && (
+                <div>
+                  <div className="text-xs font-semibold text-[#87888A] uppercase tracking-wider mb-3.5">
+                    Ступени выгоды и подарков
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    {promo.tiers.map((tier, idx) => (
+                      <div
+                        key={idx}
+                        className="rounded-xl border border-[#2B313A] bg-[#111315]/80 p-4 transition-all hover:border-simona-wine/40 relative overflow-hidden group flex flex-col justify-between"
+                      >
+                        <div className="absolute top-0 right-0 w-16 h-16 bg-simona-wine/5 rounded-full blur-xl pointer-events-none group-hover:bg-simona-wine/15 transition-all" />
+                        <div>
+                          <span className="inline-block px-2 py-0.5 rounded-md bg-[#16191D] border border-[#2B313A] text-[11px] font-semibold text-[#87888A]">
+                            {tier.step}
+                          </span>
+                          <div className="text-base font-bold text-white mt-2 leading-snug">
+                            {tier.benefit}
+                          </div>
+                        </div>
+                        {tier.description && (
+                          <p className="text-xs text-[#87888A] mt-2.5 leading-relaxed">
+                            {tier.description}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Official Rules Checklist */}
+              {promo.conditions && promo.conditions.length > 0 && (
+                <div className="pt-2">
+                  <div className="text-xs font-semibold text-[#87888A] uppercase tracking-wider mb-3.5">
+                    Правила участия и особенности обслуживания
+                  </div>
+                  <ul className="space-y-3">
+                    {promo.conditions.map((cond, idx) => (
+                      <li key={idx} className="flex items-start space-x-3 text-xs sm:text-sm text-[#D7D9DB]">
+                        <SimonaIconCheckCircle className="w-4 h-4 text-simona-wine-light shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">{cond}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             {/* Participating Products Section */}

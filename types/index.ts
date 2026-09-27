@@ -132,6 +132,12 @@ export type LeadType =
 
 export type PromoBenefitType = 'DISCOUNT' | 'GIFT' | 'SPECIAL_PRICE' | 'EXTENDED_WARRANTY';
 
+export interface PromoTier {
+  step: string;
+  benefit: string;
+  description?: string;
+}
+
 export interface ManufacturerPromo {
   id: string;
   slug: string;
@@ -145,9 +151,11 @@ export interface ManufacturerPromo {
   endDate: string;
   shortDescription: string;
   fullDescription: string;
+  tiers?: PromoTier[];
   conditions: string[];
   bannerUrl: string;
   participatingProductSlugs?: string[];
   categoryNames?: string[];
   isFeatured?: boolean;
 }
+
