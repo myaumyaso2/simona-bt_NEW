@@ -15,7 +15,6 @@ interface MobileFilterDrawerProps {
   availableBrands?: BrandOption[];
   brandCounts?: Record<string, number>;
   promoCounts?: Record<string, number>;
-  presenceCounts?: Record<string, number>;
   priceBounds?: { min: number; max: number };
   categoryFacets?: CategoryFacet[];
 }
@@ -30,7 +29,6 @@ export function MobileFilterDrawer({
   availableBrands,
   brandCounts,
   promoCounts,
-  presenceCounts,
   priceBounds,
   categoryFacets,
 }: MobileFilterDrawerProps) {
@@ -69,7 +67,6 @@ export function MobileFilterDrawer({
             availableBrands={availableBrands}
             brandCounts={brandCounts}
             promoCounts={promoCounts}
-            presenceCounts={presenceCounts}
             priceBounds={priceBounds}
             categoryFacets={categoryFacets}
           />

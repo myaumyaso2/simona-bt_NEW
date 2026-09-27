@@ -59,7 +59,6 @@ export function CatalogView({
     selectedBrands: [],
     priceMin: priceBounds.min,
     priceMax: priceBounds.max,
-    selectedLocations: [],
     selectedWidth: null,
     selectedColor: null,
     selectedFeatures: {},
@@ -96,7 +95,6 @@ export function CatalogView({
       selectedBrands: [],
       priceMin: priceBounds.min,
       priceMax: priceBounds.max,
-      selectedLocations: [],
       selectedWidth: null,
       selectedColor: null,
       selectedFeatures: {},
@@ -161,14 +159,52 @@ export function CatalogView({
     return counts;
   }, [availableBrands]);
 
-  // Dynamic presence counts for the category
+  // 1. Products filtered by sidebar criteria (promos, brands, price, dynamic facets) - WITHOUT physical presence tab
+  const sidebarFilteredProducts = useMemo(() => {
+    return rawProducts.filter((product) => {
+      // 0. Promo Filter (OR logic: product participates in ANY of the selected promos)
+      if (filters.selectedPromos.length > 0) {
+        const matchesPromo = filters.selectedPromos.some((promoSlug) =>
+          isProductInPromo(product, promoSlug)
+        );
+        if (!matchesPromo) return false;
+      }
+
+      // 1. Brand Filter
+      if (
+        filters.selectedBrands.length > 0 &&
+        !filters.selectedBrands.includes(product.brand)
+      ) {
+        return false;
+      }
+
+      // 2. Price Filter
+      if (product.price < filters.priceMin || product.price > filters.priceMax) {
+        return false;
+      }
+
+      // 3. Dynamic Feature Facets Filter
+      if (filters.selectedFeatures && Object.keys(filters.selectedFeatures).length > 0) {
+        for (const [label, vals] of Object.entries(filters.selectedFeatures)) {
+          if (!vals || vals.length === 0) continue;
+          if (!matchProductFeature(product, label, vals)) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    });
+  }, [rawProducts, filters]);
+
+  // 2. Dynamic presence counts based on current sidebar filters (Zero Dead Ends reactivity)
   const presenceCounts = useMemo(() => {
     let showroom = 0;
     let localStock = 0;
     let remoteStock = 0;
     let onOrder = 0;
 
-    rawProducts.forEach((p) => {
+    sidebarFilteredProducts.forEach((p) => {
       const isShowroom =
         p.physicalStatus === 'SHOWROOM' ||
         p.physicalStatus === 'ACTIVE_KITCHEN' ||
@@ -176,18 +212,20 @@ export function CatalogView({
         p.physicalStatus === 'EXHIBITION_11' ||
         (p.stockBelinskogo15 !== undefined && p.stockBelinskogo15 > 0);
 
-      if (isShowroom) {
-        showroom++;
-      } else if (
+      const isLocal =
         p.physicalStatus === 'LOCAL_STOCK' ||
         p.inStock ||
-        (p.stockKominterna !== undefined && p.stockKominterna > 0)
-      ) {
-        localStock++;
-      } else if (
+        (p.stockKominterna !== undefined && p.stockKominterna > 0);
+
+      const isRemote =
         p.physicalStatus === 'REMOTE_STOCK' ||
-        (p.stockRemote !== undefined && p.stockRemote > 0)
-      ) {
+        (p.stockRemote !== undefined && p.stockRemote > 0);
+
+      if (isShowroom) {
+        showroom++;
+      } else if (isLocal) {
+        localStock++;
+      } else if (isRemote) {
         remoteStock++;
       } else {
         onOrder++;
@@ -195,111 +233,45 @@ export function CatalogView({
     });
 
     return {
-      ALL: rawProducts.length,
+      ALL: sidebarFilteredProducts.length,
       SHOWROOM: showroom,
       LOCAL_STOCK: localStock,
       REMOTE_STOCK: remoteStock,
       ON_ORDER: onOrder,
     };
-  }, [rawProducts]);
+  }, [sidebarFilteredProducts]);
 
-  // Real-time dynamic filtering
+  // 3. Final filtered and sorted products (applying active physical tab)
   const filteredProducts = useMemo(() => {
-    return rawProducts
+    return sidebarFilteredProducts
       .filter((product) => {
-        // 0. Promo Filter (OR logic: product participates in ANY of the selected promos)
-        if (filters.selectedPromos.length > 0) {
-          const matchesPromo = filters.selectedPromos.some((promoSlug) =>
-            isProductInPromo(product, promoSlug)
-          );
-          if (!matchesPromo) return false;
+        if (activePhysicalTab === 'ALL') return true;
+
+        const isShowroom =
+          product.physicalStatus === 'SHOWROOM' ||
+          product.physicalStatus === 'ACTIVE_KITCHEN' ||
+          product.physicalStatus === 'EXHIBITION_15' ||
+          product.physicalStatus === 'EXHIBITION_11' ||
+          (product.stockBelinskogo15 !== undefined && product.stockBelinskogo15 > 0);
+
+        const isLocal =
+          product.physicalStatus === 'LOCAL_STOCK' ||
+          product.inStock ||
+          (product.stockKominterna !== undefined && product.stockKominterna > 0);
+
+        const isRemote =
+          product.physicalStatus === 'REMOTE_STOCK' ||
+          (product.stockRemote !== undefined && product.stockRemote > 0);
+
+        if (activePhysicalTab === 'SHOWROOM') {
+          return isShowroom;
+        } else if (activePhysicalTab === 'LOCAL_STOCK') {
+          return isLocal && !isShowroom;
+        } else if (activePhysicalTab === 'REMOTE_STOCK') {
+          return isRemote && !isShowroom;
+        } else if (activePhysicalTab === 'ON_ORDER') {
+          return !isLocal && !isRemote && !isShowroom;
         }
-
-        // 1. Physical Tab Filter
-        if (activePhysicalTab !== 'ALL') {
-          const isShowroom =
-            product.physicalStatus === 'SHOWROOM' ||
-            product.physicalStatus === 'ACTIVE_KITCHEN' ||
-            product.physicalStatus === 'EXHIBITION_15' ||
-            product.physicalStatus === 'EXHIBITION_11' ||
-            (product.stockBelinskogo15 !== undefined && product.stockBelinskogo15 > 0);
-
-          const isLocal =
-            product.physicalStatus === 'LOCAL_STOCK' ||
-            product.inStock ||
-            (product.stockKominterna !== undefined && product.stockKominterna > 0);
-
-          const isRemote =
-            product.physicalStatus === 'REMOTE_STOCK' ||
-            (product.stockRemote !== undefined && product.stockRemote > 0);
-
-          if (activePhysicalTab === 'SHOWROOM') {
-            if (!isShowroom) return false;
-          } else if (activePhysicalTab === 'LOCAL_STOCK') {
-            if (!isLocal || isShowroom) return false;
-          } else if (activePhysicalTab === 'REMOTE_STOCK') {
-            if (!isRemote || isShowroom) return false;
-          } else if (activePhysicalTab === 'ON_ORDER') {
-            if (isLocal || isRemote || isShowroom) return false;
-          }
-        }
-
-        // 2. Brand Filter
-        if (
-          filters.selectedBrands.length > 0 &&
-          !filters.selectedBrands.includes(product.brand)
-        ) {
-          return false;
-        }
-
-        // 3. Price Filter
-        if (product.price < filters.priceMin || product.price > filters.priceMax) {
-          return false;
-        }
-
-        // 4. Location Checkbox Filter
-        if (filters.selectedLocations.length > 0) {
-          const match = filters.selectedLocations.some((loc) => {
-            if (loc === 'SHOWROOM') {
-              return (
-                product.physicalStatus === 'SHOWROOM' ||
-                product.physicalStatus === 'ACTIVE_KITCHEN' ||
-                product.physicalStatus === 'EXHIBITION_15' ||
-                product.physicalStatus === 'EXHIBITION_11' ||
-                (product.stockBelinskogo15 !== undefined && product.stockBelinskogo15 > 0)
-              );
-            }
-            if (loc === 'LOCAL_STOCK') {
-              return (
-                product.physicalStatus === 'LOCAL_STOCK' ||
-                product.inStock ||
-                (product.stockKominterna !== undefined && product.stockKominterna > 0)
-              );
-            }
-            if (loc === 'REMOTE_STOCK') {
-              return (
-                product.physicalStatus === 'REMOTE_STOCK' ||
-                (product.stockRemote !== undefined && product.stockRemote > 0)
-              );
-            }
-            if (loc === 'ON_ORDER') {
-              return product.physicalStatus === 'ON_ORDER';
-            }
-            return false;
-          });
-          if (!match) return false;
-        }
-
-        // 5. Dynamic Feature Facets Filter
-        if (filters.selectedFeatures && Object.keys(filters.selectedFeatures).length > 0) {
-          for (const [label, vals] of Object.entries(filters.selectedFeatures)) {
-            if (!vals || vals.length === 0) continue;
-            if (!matchProductFeature(product, label, vals)) {
-              return false;
-            }
-          }
-        }
-
         return true;
       })
       .sort((a, b) => {
@@ -317,7 +289,7 @@ export function CatalogView({
         }
         return 0;
       });
-  }, [rawProducts, activePhysicalTab, filters, sort]);
+  }, [sidebarFilteredProducts, activePhysicalTab, sort]);
 
   // Client-side pagination
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
@@ -335,7 +307,7 @@ export function CatalogView({
           setActivePhysicalTab(tab);
           setCurrentPage(1);
         }}
-        totalCount={rawProducts.length}
+        totalCount={sidebarFilteredProducts.length}
         presenceCounts={presenceCounts}
         categoryTitle={categoryTitle}
         categorySlug={categorySlug}
@@ -354,7 +326,6 @@ export function CatalogView({
               availableBrands={availableBrands}
               brandCounts={brandCounts}
               promoCounts={promoCounts}
-              presenceCounts={presenceCounts}
               priceBounds={priceBounds}
               categoryFacets={categoryFacets}
             />
@@ -493,7 +464,6 @@ export function CatalogView({
         availableBrands={availableBrands}
         brandCounts={brandCounts}
         promoCounts={promoCounts}
-        presenceCounts={presenceCounts}
         priceBounds={priceBounds}
         categoryFacets={categoryFacets}
       />

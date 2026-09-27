@@ -18,7 +18,6 @@ export interface FilterState {
   selectedBrands: string[];
   priceMin: number;
   priceMax: number;
-  selectedLocations: string[];
   selectedWidth: string | null;
   selectedColor: string | null;
   selectedFeatures: Record<string, string[]>;
@@ -37,7 +36,6 @@ interface CatalogSidebarProps {
   availableBrands?: BrandOption[];
   brandCounts?: Record<string, number>;
   promoCounts?: Record<string, number>;
-  presenceCounts?: Record<string, number>;
   priceBounds?: { min: number; max: number };
   categoryFacets?: CategoryFacet[];
   activeVariant?: 'sidebar_facets' | 'top_chips' | 'drawer';
@@ -51,7 +49,6 @@ export function CatalogSidebar({
   availableBrands,
   brandCounts = {},
   promoCounts = {},
-  presenceCounts = {},
   priceBounds = { min: 0, max: 900000 },
   categoryFacets = [],
 }: CatalogSidebarProps) {
@@ -59,7 +56,6 @@ export function CatalogSidebar({
   const [brandSearch, setBrandSearch] = useState('');
   const [brandOpen, setBrandOpen] = useState(true);
   const [priceOpen, setPriceOpen] = useState(true);
-  const [locationOpen, setLocationOpen] = useState(true);
   const [openFacets, setOpenFacets] = useState<Record<string, boolean>>({
     'Ширина': true,
     'Всего конфорок': true,
@@ -133,13 +129,6 @@ export function CatalogSidebar({
       ? filters.selectedBrands.filter((b) => b !== brandId)
       : [...filters.selectedBrands, brandId];
     onFilterChange({ selectedBrands: next });
-  };
-
-  const toggleLocation = (locId: string) => {
-    const next = filters.selectedLocations.includes(locId)
-      ? filters.selectedLocations.filter((l) => l !== locId)
-      : [...filters.selectedLocations, locId];
-    onFilterChange({ selectedLocations: next });
   };
 
   return (
@@ -405,74 +394,7 @@ export function CatalogSidebar({
         </AnimatePresence>
       </div>
 
-      {/* 3. НАЛИЧИЕ (Реальные остатки 1С) */}
-      <div className="border-b border-[#2B313A]/60 pb-4">
-        <button
-          onClick={() => setLocationOpen(!locationOpen)}
-          className="w-full flex items-center justify-between text-sm font-semibold text-white py-1 group cursor-pointer transition-colors"
-        >
-          <span className="group-hover:text-white transition-colors">Наличие</span>
-          <ChevronDown
-            className={`w-4 h-4 transition-all duration-300 ${
-              locationOpen
-                ? 'rotate-180 text-simona-teal'
-                : 'text-[#87888A] group-hover:text-simona-teal'
-            }`}
-          />
-        </button>
-
-        <AnimatePresence initial={false}>
-          {locationOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={accordionTransition}
-              className="overflow-hidden"
-            >
-              <div className="pt-3 space-y-2">
-                {[
-                  { id: 'SHOWROOM', label: 'На витрине', count: presenceCounts.SHOWROOM ?? 0 },
-                  { id: 'LOCAL_STOCK', label: 'На складе', count: presenceCounts.LOCAL_STOCK ?? 0 },
-                  { id: 'REMOTE_STOCK', label: 'На удаленном складе', count: presenceCounts.REMOTE_STOCK ?? 0 },
-                  { id: 'ON_ORDER', label: 'Под заказ', count: presenceCounts.ON_ORDER ?? 0 },
-                ].map((item) => {
-                  const isChecked = filters.selectedLocations.includes(item.id);
-                  return (
-                    <label
-                      key={item.id}
-                      onClick={() => toggleLocation(item.id)}
-                      className="flex items-center justify-between text-xs cursor-pointer group/item py-0.5"
-                    >
-                      <div className="flex items-center space-x-2.5">
-                        <div
-                          className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-colors ${
-                            isChecked
-                              ? 'bg-simona-teal border-simona-teal text-white'
-                              : 'bg-[#1E2228] border-[#2B313A] group-hover/item:border-simona-teal/60'
-                          }`}
-                        >
-                          {isChecked && <SimonaIconCheck className="w-3 h-3 stroke-[2.5]" />}
-                        </div>
-                        <span
-                          className={`text-[11.5px] leading-tight transition-colors ${
-                            isChecked ? 'text-white font-medium' : 'text-[#D7D9DB] group-hover/item:text-white'
-                          }`}
-                        >
-                          {item.label}
-                        </span>
-                      </div>
-                      <span className="text-[11px] text-[#87888A] font-mono shrink-0 ml-1">[{item.count}]</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* 4. ДИНАМИЧЕСКИЕ ХАРАКТЕРИСТИКИ КАТЕГОРИИ */}
+      {/* 3. ДИНАМИЧЕСКИЕ ХАРАКТЕРИСТИКИ КАТЕГОРИИ */}
       {categoryFacets.map((facet) => {
         const selectedVals = filters.selectedFeatures?.[facet.label] || [];
         const open = isFacetOpen(facet.label);

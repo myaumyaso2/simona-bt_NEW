@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
@@ -33,13 +33,26 @@ export function CatalogHero({
   categoryTitle = 'Каталог техники',
   categoryDescription = 'Официальные авторизованные поставки премиальной бытовой техники от ведущих европейских брендов.',
 }: CatalogHeroProps) {
-  const presenceTabs: PresenceTabItem[] = [
+  const allTabs: PresenceTabItem[] = [
     { id: 'ALL', label: 'Все', count: presenceCounts?.ALL ?? totalCount },
     { id: 'SHOWROOM', label: 'На витрине', count: presenceCounts?.SHOWROOM ?? 0 },
     { id: 'LOCAL_STOCK', label: 'На складе', count: presenceCounts?.LOCAL_STOCK ?? 0 },
     { id: 'REMOTE_STOCK', label: 'На удаленном складе', count: presenceCounts?.REMOTE_STOCK ?? 0 },
     { id: 'ON_ORDER', label: 'Под заказ', count: presenceCounts?.ON_ORDER ?? 0 },
   ];
+
+  // Zero Dead Ends: Only display tabs with items (except 'ALL' which is always visible)
+  const presenceTabs = allTabs.filter((tab) => tab.id === 'ALL' || tab.count > 0);
+
+  // If the active tab drops to 0 count due to sidebar filters, gracefully fall back to ALL
+  useEffect(() => {
+    if (activePhysicalTab !== 'ALL') {
+      const activeItem = allTabs.find((t) => t.id === activePhysicalTab);
+      if (!activeItem || activeItem.count === 0) {
+        onSelectPhysicalTab('ALL');
+      }
+    }
+  }, [activePhysicalTab, presenceCounts, onSelectPhysicalTab]);
 
   return (
     <section className="pt-8 pb-6 border-b border-[#2B313A]/50">
@@ -72,7 +85,7 @@ export function CatalogHero({
           {categoryDescription}
         </p>
 
-        {/* 4. Physical Presence Tabs (Sliding Pill Animation with live category counts) */}
+        {/* 4. Physical Presence Tabs (Zero Dead Ends: hides 0-count tabs, with sliding pill animation) */}
         <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
           {presenceTabs.map((tab) => {
             const isActive = activePhysicalTab === tab.id;
