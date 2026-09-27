@@ -73,3 +73,44 @@ export const PHYSICAL_STATUS_CONFIG = {
 } as const;
 
 export type PhysicalStatusKey = keyof typeof PHYSICAL_STATUS_CONFIG;
+
+export type EffectivePhysicalStatus = 'SHOWROOM' | 'LOCAL_STOCK' | 'REMOTE_STOCK' | 'ON_ORDER';
+
+/**
+ * Returns single deterministic physical status based on priority:
+ * 1. SHOWROOM (витрина в салоне на Белинского)
+ * 2. LOCAL_STOCK (склад в НН на Коминтерна)
+ * 3. REMOTE_STOCK (удаленный склад в РФ)
+ * 4. ON_ORDER (под заказ)
+ */
+export function getProductPhysicalStatus(product: {
+  physicalStatus?: string;
+  stockBelinskogo15?: number;
+  stockKominterna?: number;
+  stockRemote?: number;
+  inStock?: boolean;
+}): EffectivePhysicalStatus {
+  const isShowroom =
+    product.physicalStatus === 'SHOWROOM' ||
+    product.physicalStatus === 'ACTIVE_KITCHEN' ||
+    product.physicalStatus === 'EXHIBITION_15' ||
+    product.physicalStatus === 'EXHIBITION_11' ||
+    (product.stockBelinskogo15 !== undefined && product.stockBelinskogo15 > 0);
+
+  if (isShowroom) return 'SHOWROOM';
+
+  const isLocal =
+    product.physicalStatus === 'LOCAL_STOCK' ||
+    Boolean(product.inStock) ||
+    (product.stockKominterna !== undefined && product.stockKominterna > 0);
+
+  if (isLocal) return 'LOCAL_STOCK';
+
+  const isRemote =
+    product.physicalStatus === 'REMOTE_STOCK' ||
+    (product.stockRemote !== undefined && product.stockRemote > 0);
+
+  if (isRemote) return 'REMOTE_STOCK';
+
+  return 'ON_ORDER';
+}

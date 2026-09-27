@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProductItem } from '@/types';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, getProductPhysicalStatus } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
 import { getPromosForProduct } from '@/data/promosData';
 import {
@@ -173,6 +173,7 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
     : 'bg-simona-wine/25 hover:bg-simona-wine/40 text-white border-simona-wine/50';
 
   const chips = getProductChips(product);
+  const physicalStatus = getProductPhysicalStatus(product);
 
   const renderActionButtons = () => (
     <div className="flex items-center gap-2 w-full">
@@ -248,18 +249,15 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
         >
           {/* Badges Stack (Top-Left): Availability Status + Brand Tag */}
           <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1.5 max-w-[85%]">
-            {product.physicalStatus === 'SHOWROOM' ||
-            product.physicalStatus === 'ACTIVE_KITCHEN' ||
-            product.physicalStatus === 'EXHIBITION_15' ||
-            product.physicalStatus === 'EXHIBITION_11' ? (
+            {physicalStatus === 'SHOWROOM' ? (
               <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
                 На витрине
               </span>
-            ) : product.physicalStatus === 'LOCAL_STOCK' ? (
+            ) : physicalStatus === 'LOCAL_STOCK' ? (
               <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
                 На складе
               </span>
-            ) : product.physicalStatus === 'REMOTE_STOCK' ? (
+            ) : physicalStatus === 'REMOTE_STOCK' ? (
               <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
                 На удаленном складе
               </span>

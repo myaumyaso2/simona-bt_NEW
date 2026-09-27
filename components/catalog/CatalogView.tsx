@@ -16,6 +16,7 @@ import { ProductItem } from '@/types';
 import { CatalogServiceContour } from './CatalogServiceContour';
 import { MobileFilterDrawer } from './MobileFilterDrawer';
 import { getCategoryFacets, matchProductFeature } from '@/lib/productFeatures';
+import { getProductPhysicalStatus } from '@/lib/utils';
 
 interface CatalogViewProps {
   initialProducts?: ProductItem[];
@@ -205,27 +206,12 @@ export function CatalogView({
     let onOrder = 0;
 
     sidebarFilteredProducts.forEach((p) => {
-      const isShowroom =
-        p.physicalStatus === 'SHOWROOM' ||
-        p.physicalStatus === 'ACTIVE_KITCHEN' ||
-        p.physicalStatus === 'EXHIBITION_15' ||
-        p.physicalStatus === 'EXHIBITION_11' ||
-        (p.stockBelinskogo15 !== undefined && p.stockBelinskogo15 > 0);
-
-      const isLocal =
-        p.physicalStatus === 'LOCAL_STOCK' ||
-        p.inStock ||
-        (p.stockKominterna !== undefined && p.stockKominterna > 0);
-
-      const isRemote =
-        p.physicalStatus === 'REMOTE_STOCK' ||
-        (p.stockRemote !== undefined && p.stockRemote > 0);
-
-      if (isShowroom) {
+      const status = getProductPhysicalStatus(p);
+      if (status === 'SHOWROOM') {
         showroom++;
-      } else if (isLocal) {
+      } else if (status === 'LOCAL_STOCK') {
         localStock++;
-      } else if (isRemote) {
+      } else if (status === 'REMOTE_STOCK') {
         remoteStock++;
       } else {
         onOrder++;
@@ -241,38 +227,12 @@ export function CatalogView({
     };
   }, [sidebarFilteredProducts]);
 
-  // 3. Final filtered and sorted products (applying active physical tab)
+  // 3. Final filtered and sorted products (strictly unified with getProductPhysicalStatus)
   const filteredProducts = useMemo(() => {
     return sidebarFilteredProducts
       .filter((product) => {
         if (activePhysicalTab === 'ALL') return true;
-
-        const isShowroom =
-          product.physicalStatus === 'SHOWROOM' ||
-          product.physicalStatus === 'ACTIVE_KITCHEN' ||
-          product.physicalStatus === 'EXHIBITION_15' ||
-          product.physicalStatus === 'EXHIBITION_11' ||
-          (product.stockBelinskogo15 !== undefined && product.stockBelinskogo15 > 0);
-
-        const isLocal =
-          product.physicalStatus === 'LOCAL_STOCK' ||
-          product.inStock ||
-          (product.stockKominterna !== undefined && product.stockKominterna > 0);
-
-        const isRemote =
-          product.physicalStatus === 'REMOTE_STOCK' ||
-          (product.stockRemote !== undefined && product.stockRemote > 0);
-
-        if (activePhysicalTab === 'SHOWROOM') {
-          return isShowroom;
-        } else if (activePhysicalTab === 'LOCAL_STOCK') {
-          return isLocal && !isShowroom;
-        } else if (activePhysicalTab === 'REMOTE_STOCK') {
-          return isRemote && !isShowroom;
-        } else if (activePhysicalTab === 'ON_ORDER') {
-          return !isLocal && !isRemote && !isShowroom;
-        }
-        return true;
+        return getProductPhysicalStatus(product) === activePhysicalTab;
       })
       .sort((a, b) => {
         if (sort === 'popular') {
