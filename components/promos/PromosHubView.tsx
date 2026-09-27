@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronRight, ArrowRight } from 'lucide-react';
 import {
   SimonaIconClock,
   SimonaIconPin,
   SimonaIconGuarantee,
+  SimonaIconChevronRight,
+  SimonaIconArrowRight,
 } from '@/components/brand/SimonaIcons';
 import { MANUFACTURER_PROMOS } from '@/data/promosData';
 import { ManufacturerPromo, PromoBenefitType } from '@/types';
@@ -16,13 +17,9 @@ import { SectionBadge } from '@/components/ui/SectionBadge';
 
 const BRAND_FILTERS = [
   'Все бренды',
-  'Miele',
-  'ASKO',
-  'Liebherr',
-  'SMEG',
-  'OMOIKIRI & KÖRTING',
-  'Falmec',
+  ...Array.from(new Set(MANUFACTURER_PROMOS.map((p) => p.brand))),
 ];
+
 
 export function PromosHubView() {
   const [selectedBrand, setSelectedBrand] = useState('Все бренды');
@@ -49,7 +46,7 @@ export function PromosHubView() {
             <Link href="/" className="hover:text-white transition-colors">
               Главная
             </Link>
-            <ChevronRight className="w-3 h-3 text-[#87888A]" />
+            <SimonaIconChevronRight className="w-3 h-3 text-[#87888A]" />
             <span className="text-[#D7D9DB] font-medium">Акции производителей</span>
           </nav>
         </div>
@@ -224,7 +221,7 @@ function PromoHubCard({ promo }: { promo: ManufacturerPromo }) {
 
           <div className="inline-flex items-center space-x-1 text-xs font-semibold text-simona-wine-light group-hover:text-white transition-colors">
             <span>Условия акции</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <SimonaIconArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
       </div>

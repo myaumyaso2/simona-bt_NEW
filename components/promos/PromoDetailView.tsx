@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronRight } from 'lucide-react';
 import {
   SimonaIconClock,
   SimonaIconPin,
@@ -11,6 +10,7 @@ import {
   SimonaIconConsultation,
   SimonaIconCheckCircle,
   SimonaIconPhoneSolid,
+  SimonaIconChevronRight,
 } from '@/components/brand/SimonaIcons';
 import { ManufacturerPromo, ProductItem } from '@/types';
 import { CATALOG_PRODUCTS } from '@/data/catalogData';
@@ -41,11 +41,11 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
             <Link href="/" className="hover:text-white transition-colors">
               Главная
             </Link>
-            <ChevronRight className="w-3 h-3 text-[#87888A] shrink-0" />
+            <SimonaIconChevronRight className="w-3 h-3 text-[#87888A] shrink-0" />
             <Link href="/promos" className="hover:text-white transition-colors shrink-0">
               Акции производителей
             </Link>
-            <ChevronRight className="w-3 h-3 text-[#87888A] shrink-0" />
+            <SimonaIconChevronRight className="w-3 h-3 text-[#87888A] shrink-0" />
             <span className="text-[#D7D9DB] font-medium truncate">{promo.brand}: {promo.title}</span>
           </nav>
         </div>

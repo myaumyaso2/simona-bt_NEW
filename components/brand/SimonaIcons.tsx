@@ -666,3 +666,71 @@ export function SimonaIconDownload({ className = 'w-5 h-5', size, color, ...prop
   );
 }
 
+/** Шеврон вправо */
+export function SimonaIconChevronRight({ className = 'w-4 h-4', size, color, ...props }: SimonaIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width={size}
+      height={size}
+      className={className}
+      style={color ? { color } : undefined}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
+  );
+}
+
+/** Шеврон влево */
+export function SimonaIconChevronLeft({ className = 'w-4 h-4', size, color, ...props }: SimonaIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width={size}
+      height={size}
+      className={className}
+      style={color ? { color } : undefined}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+  );
+}
+
+/** Стрелка вправо */
+export function SimonaIconArrowRight({ className = 'w-4 h-4', size, color, ...props }: SimonaIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width={size}
+      height={size}
+      className={className}
+      style={color ? { color } : undefined}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>
+  );
+}
+
+

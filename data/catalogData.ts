@@ -341,6 +341,2781 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     promoSlugs: ['omoikiri-washing-zone-set'],
   },
 
+  // --- Топ-SKU сентябрьских акций европейских производителей (UMI.CMS) ---
+  {
+    "id": "prod-umi-611664",
+    "sku": "KWO 0010-PR2",
+    "name": "KWO 0010-PR2 Штопор электрический",
+    "slug": "kwo_0010-pr2_shtopor_elektricheskij",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 1990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KWO 0010-PR2 Штопор электрический",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/90619.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-pokupka-eto-podarok1"
+    ]
+  },
+
+  {
+    "id": "prod-umi-611228",
+    "sku": "KHB 0317 W Tulip",
+    "name": "KHB 0317 W Tulip Блендер погружной",
+    "slug": "khb_0317_w_tulip_blender_pogruzhnoj",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 6490,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KHB 0317 W Tulip Блендер погружной",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/90163.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-pokupka-eto-podarok1"
+    ]
+  },
+
+  {
+    "id": "prod-umi-609608",
+    "sku": "KGPA 0403 W Infinity",
+    "name": "KGPA 0403 W Infinity Электрический гриль",
+    "slug": "kgpa_0403_w_infinity_elektricheskij_gril",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 13990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KGPA 0403 W Infinity Электрический гриль",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/88714.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-pokupka-eto-podarok1"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612992",
+    "sku": "KFD 2403 Pro S",
+    "name": "KFD 2403 Pro S Сушилка для продуктов",
+    "slug": "kfd_2403_pro_s_sushilka_dlya_produktov",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 25990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KFD 2403 Pro S Сушилка для продуктов",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91928.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-pokupka-eto-podarok1"
+    ]
+  },
+
+  {
+    "id": "prod-umi-590205",
+    "sku": "KIT0160040",
+    "name": "KIT0160040 Подставка для WOK",
+    "slug": "podstavka_dlya_wok_kit0160040",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 6290,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KIT0160040 Подставка для WOK",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/76905.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "akciya-ot-smeg-skidka-20-na-komplekt-bytovoj-tehniki",
+      "smeg-skidka-stiralnye-sushilnye-mashiny-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-579393",
+    "sku": "LGCN",
+    "name": "LGCN Соединительная планка",
+    "slug": "lgcn_soedinitel_naya_planka",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 9290,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "LGCN Соединительная планка",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/69273.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "akciya-ot-smeg-skidka-20-na-komplekt-bytovoj-tehniki",
+      "smeg-skidka-stiralnye-sushilnye-mashiny-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-580457",
+    "sku": "WOKGHU",
+    "name": "WOKGHU Кольцо WOK из чугуна",
+    "slug": "wokghu_kol_co_wok_iz_chuguna",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 6990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "WOKGHU Кольцо WOK из чугуна",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/10244.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "akciya-ot-smeg-skidka-20-na-komplekt-bytovoj-tehniki",
+      "smeg-skidka-stiralnye-sushilnye-mashiny-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-592084",
+    "sku": "6MP800P",
+    "name": "6MP800P Набор ручек",
+    "slug": "6mp800p_nabor_ruchek",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 5290,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "6MP800P Набор ручек",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/15766.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "akciya-ot-smeg-skidka-20-na-komplekt-bytovoj-tehniki",
+      "smeg-skidka-stiralnye-sushilnye-mashiny-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-592085",
+    "sku": "6MP1PGF",
+    "name": "6MP1PGF Набор из 6 ручек для варочных панелей",
+    "slug": "6mp_1pgf_nabor_iz_6_ruchek_dlya_varochnyh_panelej",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 5290,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "6MP1PGF Набор из 6 ручек для варочных панелей",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/64975.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "akciya-ot-smeg-skidka-20-na-komplekt-bytovoj-tehniki",
+      "smeg-skidka-stiralnye-sushilnye-mashiny-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-592089",
+    "sku": "5MP700AO",
+    "name": "5MP 700AO Набор из 5 ручек для варочных панелей",
+    "slug": "5mp_700ao_nabor_iz_5_ruchek_dlya_varochnyh_panelej",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 9290,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "5MP 700AO Набор из 5 ручек для варочных панелей",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/64971.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "akciya-ot-smeg-skidka-20-na-komplekt-bytovoj-tehniki",
+      "smeg-skidka-stiralnye-sushilnye-mashiny-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-603815",
+    "sku": "KFW 803 DB GN",
+    "name": "KFW 803 DB GN Холодильный шкаф для вина",
+    "slug": "kfw_803_db_gn_holodil_nyj_shkaf_dlya_vina",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 123990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KFW 803 DB GN Холодильный шкаф для вина",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85048.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-ckidka-pri-pokupke-komplekta"
+    ]
+  },
+
+  {
+    "id": "prod-umi-603809",
+    "sku": "KFW 604 DB GN",
+    "name": "KFW 604 DB GN Холодильный шкаф для вина",
+    "slug": "kfw_604_db_gn_holodil_nyj_shkaf_dlya_vina",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 111490,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KFW 604 DB GN Холодильный шкаф для вина",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85046.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-ckidka-pri-pokupke-komplekta"
+    ]
+  },
+
+  {
+    "id": "prod-umi-603804",
+    "sku": "KFW 604 DB GXN",
+    "name": "KFW 604 DB GXN Холодильный шкаф для вина",
+    "slug": "kfw_604_db_gxn_holodil_nyj_shkaf_dlya_vina",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 111490,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KFW 604 DB GXN Холодильный шкаф для вина",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85047.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-ckidka-pri-pokupke-komplekta"
+    ]
+  },
+
+  {
+    "id": "prod-umi-603799",
+    "sku": "KFW 501 SL GXN",
+    "name": "KFW 501 SL GXN Холодильный шкаф для вина",
+    "slug": "kfw_501_sl_gxn_holodil_nyj_shkaf_dlya_vina",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 100490,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KFW 501 SL GXN Холодильный шкаф для вина",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85045.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-ckidka-pri-pokupke-komplekta"
+    ]
+  },
+
+  {
+    "id": "prod-umi-603790",
+    "sku": "KFW 501 SL GN",
+    "name": "KFW 501 SL GN Холодильный шкаф для вина",
+    "slug": "kfw_501_sl_gn_holodil_nyj_shkaf_dlya_vina",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 100490,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KFW 501 SL GN Холодильный шкаф для вина",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85044.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-ckidka-pri-pokupke-komplekta"
+    ]
+  },
+
+  {
+    "id": "prod-umi-597282",
+    "sku": "DSK 150",
+    "name": "DSK 150 Соединительный элемент",
+    "slug": "dsk_150_soedinitel_nyj_element",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 18990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "DSK 150 Соединительный элемент",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/79016.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-ckidka-pri-pokupke-komplekta"
+    ]
+  },
+
+  {
+    "id": "prod-umi-604501",
+    "sku": "BD 4500",
+    "name": "BD 4500 Посудомоечная машина",
+    "slug": "bd_4500_posudomoechnaya_mashina",
+    "brand": "Evelux",
+    "category": "EVELUX",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 26690,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "BD 4500 Посудомоечная машина",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85617.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-skidki-pri-pokupke-komplekta",
+      "evelux-34"
+    ]
+  },
+
+  {
+    "id": "prod-umi-604482",
+    "sku": "BD 6000",
+    "name": "BD 6000 Посудомоечная машина",
+    "slug": "bd_6000_posudomoechnaya_mashina",
+    "brand": "Evelux",
+    "category": "EVELUX",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 26990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "BD 6000 Посудомоечная машина",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85619.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-skidki-pri-pokupke-komplekta",
+      "evelux-34"
+    ]
+  },
+
+  {
+    "id": "prod-umi-604479",
+    "sku": "BD 6002",
+    "name": "BD 6002 Посудомоечная машина",
+    "slug": "bd_6002_posudomoechnaya_mashina",
+    "brand": "Evelux",
+    "category": "EVELUX",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 30600,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "BD 6002 Посудомоечная машина",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85620.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-skidki-pri-pokupke-komplekta",
+      "evelux-34"
+    ]
+  },
+
+  {
+    "id": "prod-umi-604477",
+    "sku": "BD 4502",
+    "name": "BD 4502 Посудомоечная машина",
+    "slug": "bd_4502_posudomoechnaya_mashina",
+    "brand": "Evelux",
+    "category": "EVELUX",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 33990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "BD 4502 Посудомоечная машина",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85618.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-skidki-pri-pokupke-komplekta",
+      "evelux-34"
+    ]
+  },
+
+  {
+    "id": "prod-umi-604775",
+    "sku": "BD 4503",
+    "name": "BD 4503 Посудомоечная машина FIX",
+    "slug": "bd_4503_posudomoechnaya_mashina_fix",
+    "brand": "Evelux",
+    "category": "EVELUX",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 50190,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "BD 4503 Посудомоечная машина FIX",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85890.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-skidki-pri-pokupke-komplekta",
+      "evelux-34"
+    ]
+  },
+
+  {
+    "id": "prod-umi-604783",
+    "sku": "BD 4501",
+    "name": "BD 4501 Посудомоечная машина FIX",
+    "slug": "bd_4501_posudomoechnaya_mashina_fix",
+    "brand": "Evelux",
+    "category": "EVELUX",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 45290,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "BD 4501 Посудомоечная машина FIX",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85889.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-skidki-pri-pokupke-komplekta",
+      "evelux-34"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610073",
+    "sku": "VOE 684G",
+    "name": "VOE 684G Духовой шкаф",
+    "slug": "voe_684g_duhovoj_shkaf",
+    "brand": "VARD",
+    "category": "VARD",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 104990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VOE 684G Духовой шкаф",
+    "description": "Официальная техника VARD в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89058.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "vard-skidki-pri-pokupke-komplekta",
+      "vard-vygoda-15-populyarnye-modeli-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610072",
+    "sku": "VPE 681MB",
+    "name": "VPE 681MB Духовой шкаф",
+    "slug": "vpe_681mb_duhovoj_shkaf",
+    "brand": "VARD",
+    "category": "VARD",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 145990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VPE 681MB Духовой шкаф",
+    "description": "Официальная техника VARD в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89065.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "vard-skidki-pri-pokupke-komplekta",
+      "vard-vygoda-15-populyarnye-modeli-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610071",
+    "sku": "VOC 444HB",
+    "name": "VOC 444HB Духовой шкаф",
+    "slug": "voc_444hb_duhovoj_shkaf",
+    "brand": "VARD",
+    "category": "VARD",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 41490,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VOC 444HB Духовой шкаф",
+    "description": "Официальная техника VARD в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89062.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "vard-skidki-pri-pokupke-komplekta",
+      "vard-vygoda-15-populyarnye-modeli-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610070",
+    "sku": "VOS 684SG",
+    "name": "VOS 684SG Духовой шкаф",
+    "slug": "vos_684sg_duhovoj_shkaf",
+    "brand": "VARD",
+    "category": "VARD",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 143990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VOS 684SG Духовой шкаф",
+    "description": "Официальная техника VARD в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89054.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "vard-skidki-pri-pokupke-komplekta",
+      "vard-vygoda-15-populyarnye-modeli-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610069",
+    "sku": "VOP 682G",
+    "name": "VOP 682G Духовой шкаф",
+    "slug": "vop_682g_duhovoj_shkaf",
+    "brand": "VARD",
+    "category": "VARD",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 119990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VOP 682G Духовой шкаф",
+    "description": "Официальная техника VARD в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89056.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "vard-skidki-pri-pokupke-komplekta",
+      "vard-vygoda-15-populyarnye-modeli-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610067",
+    "sku": "VPS 681MG",
+    "name": "VPS 681MG Духовой шкаф",
+    "slug": "vps_681mg_duhovoj_shkaf",
+    "brand": "VARD",
+    "category": "VARD",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 159990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VPS 681MG Духовой шкаф",
+    "description": "Официальная техника VARD в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89068.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "vard-skidki-pri-pokupke-komplekta",
+      "vard-vygoda-15-populyarnye-modeli-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-603664",
+    "sku": "VHI 9552K",
+    "name": "VHI 9552K Варочная панель",
+    "slug": "vhi_9552k_varochnaya_panel",
+    "brand": "VARD",
+    "category": "VARD",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 59990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VHI 9552K Варочная панель",
+    "description": "Официальная техника VARD в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/84899.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "vard-gril-plancha"
+    ]
+  },
+
+  {
+    "id": "prod-umi-603641",
+    "sku": "VHI 6461K",
+    "name": "VHI 6461K Варочная панель",
+    "slug": "vhi_6461k_varochnaya_panel",
+    "brand": "VARD",
+    "category": "VARD",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 42490,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VHI 6461K Варочная панель",
+    "description": "Официальная техника VARD в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/84898.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "vard-gril-plancha"
+    ]
+  },
+
+  {
+    "id": "prod-umi-604764",
+    "sku": "VHI 6461X",
+    "name": "VHI 6461X Варочная панель",
+    "slug": "vhi_6461x_varochnaya_panel",
+    "brand": "VARD",
+    "category": "VARD",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 37490,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VHI 6461X Варочная панель",
+    "description": "Официальная техника VARD в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85829.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "vard-gril-plancha"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610839",
+    "sku": "VHH 8462B",
+    "name": "VHH 8462B Варочная панель с вытяжкой",
+    "slug": "vhh_8462b_varochnaya_panel_s_vytyazhkoj",
+    "brand": "VARD",
+    "category": "VARD",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 129990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VHH 8462B Варочная панель с вытяжкой",
+    "description": "Официальная техника VARD в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89690.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "vard-gril-plancha"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610843",
+    "sku": "VHH 6472B",
+    "name": "VHH 6472B Варочная панель с вытяжкой",
+    "slug": "vhh_6472b_varochnaya_panel_s_vytyazhkoj",
+    "brand": "VARD",
+    "category": "VARD",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 109990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VHH 6472B Варочная панель с вытяжкой",
+    "description": "Официальная техника VARD в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89689.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "vard-gril-plancha"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610845",
+    "sku": "VHA01GP",
+    "name": "VHA01GP Гриль планча",
+    "slug": "vha01gp_gril_plancha",
+    "brand": "VARD",
+    "category": "VARD",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 8890,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VHA01GP Гриль планча",
+    "description": "Официальная техника VARD в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89693.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "vard-gril-plancha"
+    ]
+  },
+
+  {
+    "id": "prod-umi-578582",
+    "sku": "Внешний мотор SLIM",
+    "name": "Внешний мотор SLIM (800м3/ч)",
+    "slug": "vneshnij_motor_slim_800m3_ch",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 71145,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "Внешний мотор SLIM (800м3/ч)",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/59637.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-skidka-20-na-komplekt1"
+    ]
+  },
+
+  {
+    "id": "prod-umi-578613",
+    "sku": "Внешний мотор 1500 м3/ч KACL.7964AF",
+    "name": "Внешний мотор 1500 м3/ч KACL.7964AF",
+    "slug": "vneshnij_motor_1500_m3_ch_kacl_796_4af",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 111690,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "Внешний мотор 1500 м3/ч KACL.7964AF",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/60455.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-skidka-20-na-komplekt1"
+    ]
+  },
+
+  {
+    "id": "prod-umi-578692",
+    "sku": "Внешний мотор 1300 м3/ч KACL.7974AF",
+    "name": "Внешний мотор 1300 м3/ч KACL.7974AF",
+    "slug": "vneshnij_motor_1300_m3_ch_kacl_797_4af",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 126990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "Внешний мотор 1300 м3/ч KACL.7974AF",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/60457.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-skidka-20-na-komplekt1"
+    ]
+  },
+
+  {
+    "id": "prod-umi-578712",
+    "sku": "Внешний мотор 1000м3/ч KACL.78641F",
+    "name": "Внешний мотор 1000м3/ч KACL.78641F",
+    "slug": "vneshnij_motor_1000m3_ch_kacl_786_41f",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 95625,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "Внешний мотор 1000м3/ч KACL.78641F",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/60456.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-skidka-20-na-komplekt1"
+    ]
+  },
+
+  {
+    "id": "prod-umi-587073",
+    "sku": "105080053",
+    "name": "Пульт ДУ 105080053",
+    "slug": "pul_t_du_105080053",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 11169,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "Пульт ДУ 105080053",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/60459.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-skidka-20-na-komplekt1"
+    ]
+  },
+
+  {
+    "id": "prod-umi-587807",
+    "sku": "Внешний мотор KACL 78446F",
+    "name": "Внешний мотор KACL 78446F",
+    "slug": "vneshnij_motor_kacl_78446f",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 71145,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "Внешний мотор KACL 78446F",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/75744.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-skidka-20-na-komplekt1"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610108",
+    "sku": "LEVEL ONE",
+    "name": "LEVEL ONE Варочная панель с вытяжкой",
+    "slug": "level_one_varochnaya_panel_s_vytyazhkoj",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 688500,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "LEVEL ONE Варочная панель с вытяжкой",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89020.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-bolshe-podarkov"
+    ]
+  },
+
+  {
+    "id": "prod-umi-603972",
+    "sku": "BRERA",
+    "name": "BRERA Варочная панель с вытяжкой",
+    "slug": "brera_varochnaya_panel_s_vytyazhkoj",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 504900,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "BRERA Варочная панель с вытяжкой",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85235.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-bolshe-podarkov",
+      "falmec-new-actions"
+    ]
+  },
+
+  {
+    "id": "prod-umi-598991",
+    "sku": "KACL 987 Steel",
+    "name": "KACL 987 Steel Сливной клапан",
+    "slug": "kacl_987_steel_slivnoj_klapan",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 4590,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KACL 987 Steel Сливной клапан",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/80675.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-water-50"
+    ]
+  },
+
+  {
+    "id": "prod-umi-598990",
+    "sku": "KACL 984",
+    "name": "KACL 984 Поддон для сушки",
+    "slug": "kacl_984_poddon_dlya_sushki",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 10710,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KACL 984 Поддон для сушки",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/80666.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-water-50"
+    ]
+  },
+
+  {
+    "id": "prod-umi-598986",
+    "sku": "KACL 983",
+    "name": "KACL 983 Поддон для сушки",
+    "slug": "kacl_983_poddon_dlya_sushki",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 9180,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KACL 983 Поддон для сушки",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/80665.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-water-50"
+    ]
+  },
+
+  {
+    "id": "prod-umi-598978",
+    "sku": "KACL 982",
+    "name": "KACL 982 Колландер",
+    "slug": "kacl_982_kollander",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 11781,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KACL 982 Колландер",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/80663.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-water-50"
+    ]
+  },
+
+  {
+    "id": "prod-umi-598963",
+    "sku": "KACL 987 WHITE",
+    "name": "KACL 987 WHITE Автоматический сливной клапан",
+    "slug": "kacl_987_white_avtomaticheskij_slivnoj_klapan",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 6120,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KACL 987 WHITE Автоматический сливной клапан",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/80673.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-water-50"
+    ]
+  },
+
+  {
+    "id": "prod-umi-598945",
+    "sku": "KACL 993",
+    "name": "KACL 993 Многофункциональная доска",
+    "slug": "kacl_993_mnogofunkcional_naya_doska",
+    "brand": "Falmec",
+    "category": "FALMEC",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 8415,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KACL 993 Многофункциональная доска",
+    "description": "Официальная техника Falmec в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/80670.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "falmec-water-50"
+    ]
+  },
+
+  {
+    "id": "prod-umi-611556",
+    "sku": "OKB 3221 AGN STEAM MW",
+    "name": "OKB 3221 AGN STEAM MW Духовой шкаф (Кухни PRO)",
+    "slug": "okb_3221_agn_steam_mw_duhovoj_shkaf_fix",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 122990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "OKB 3221 AGN STEAM MW Духовой шкаф (Кухни PRO)",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/90507.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "skidka-50-holodilnik-korting-ksi-17545-cfnf-kuhni-pro"
+    ]
+  },
+
+  {
+    "id": "prod-umi-611937",
+    "sku": "OKB 61061 SQGW",
+    "name": "OKB 61061 SQGW Духовой шкаф (Кухни PRO)",
+    "slug": "okb_61061_sqgw_duhovoj_shkaf",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 94990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "OKB 61061 SQGW Духовой шкаф (Кухни PRO)",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/90900.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "skidka-50-holodilnik-korting-ksi-17545-cfnf-kuhni-pro"
+    ]
+  },
+
+  {
+    "id": "prod-umi-611980",
+    "sku": "OKB 61031 QGN",
+    "name": "OKB 61031 QGN Духовой шкаф (Кухни PRO)",
+    "slug": "okb_61031_qgn_duhovoj_shkaf",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 89490,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "OKB 61031 QGN Духовой шкаф (Кухни PRO)",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/90956.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "skidka-50-holodilnik-korting-ksi-17545-cfnf-kuhni-pro"
+    ]
+  },
+
+  {
+    "id": "prod-umi-611982",
+    "sku": "OKB 61061 SQGGr",
+    "name": "OKB 61061 SQGGr Духовой шкаф (Кухни PRO)",
+    "slug": "okb_61061_sqggr_duhovoj_shkaf",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 94990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "OKB 61061 SQGGr Духовой шкаф (Кухни PRO)",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/90957.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "skidka-50-holodilnik-korting-ksi-17545-cfnf-kuhni-pro"
+    ]
+  },
+
+  {
+    "id": "prod-umi-611983",
+    "sku": "OKB 61061 SQGN",
+    "name": "OKB 61061 SQGN Духовой шкаф (Кухни PRO)",
+    "slug": "okb_61061_sqgn_duhovoj_shkaf",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 94990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "OKB 61061 SQGN Духовой шкаф (Кухни PRO)",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/90958.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "skidka-50-holodilnik-korting-ksi-17545-cfnf-kuhni-pro"
+    ]
+  },
+
+  {
+    "id": "prod-umi-605702",
+    "sku": "OKB 6071 CN",
+    "name": "OKB 6071 CN Духовой шкаф (Кухни)",
+    "slug": "okb_6071_cn_duhovoj_shkaf",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 54990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "OKB 6071 CN Духовой шкаф (Кухни)",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/86842.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "skidka-50-holodilnik-korting-ksi-17545-cfnf-kuhni-pro"
+    ]
+  },
+
+  {
+    "id": "prod-umi-611107",
+    "sku": "KSI 17545 CFNF",
+    "name": "KSI 17545 CFNF Холодильник",
+    "slug": "ksi_17545_cfnf_holodil_nik",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 122990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KSI 17545 CFNF Холодильник",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/90012.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "skidka-50-holodilnik-korting-ksi-17545-cfnf-kuhni-pro"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612931",
+    "sku": "KHI 6393 N",
+    "name": "KHI 6393 N Вытяжка",
+    "slug": "khi_6393_n_vytyazhka",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 14190,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KHI 6393 N Вытяжка",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91834.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-formula-vygody-sentyabr-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-611739",
+    "sku": "OKB 3810 FGN",
+    "name": "OKB 3810 FGN Духовой шкаф",
+    "slug": "okb_3810_fgn_duhovoj_shkaf",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 44590,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "OKB 3810 FGN Духовой шкаф",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/90690.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-formula-vygody-sentyabr-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-597162",
+    "sku": "KDI 45140",
+    "name": "KDI 45140 Посудомоечная машина",
+    "slug": "kdi_45140_posudomoechnaya_mashina",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 44990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KDI 45140 Посудомоечная машина",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/78923.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-formula-vygody-sentyabr-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-597261",
+    "sku": "KDI 60110",
+    "name": "KDI 60110 Посудомоечная машина",
+    "slug": "kdi_60110_posudomoechnaya_mashina",
+    "brand": "Körting",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 41990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KDI 60110 Посудомоечная машина",
+    "description": "Официальная техника Körting в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/78930.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "korting-formula-vygody-sentyabr-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-611715",
+    "sku": "JW 8W12T3",
+    "name": "JW 8W12T3 Стиральная машина",
+    "slug": "jw_8w12t3_stiral_naya_mashina",
+    "brand": "Jacky's",
+    "category": "JACKYS",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 61990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "JW 8W12T3 Стиральная машина",
+    "description": "Официальная техника Jacky's в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/90670.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "jackys-kaskad-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612595",
+    "sku": "JW 8TC41N",
+    "name": "JW 8TC41N Стиральная машина",
+    "slug": "jw_8tc41n_stiral_naya_mashina",
+    "brand": "Jacky's",
+    "category": "JACKYS",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 49999,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "JW 8TC41N Стиральная машина",
+    "description": "Официальная техника Jacky's в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91493.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "jackys-kaskad-2026",
+      "jackys-specialnye-promo-ceny-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612602",
+    "sku": "JW F0944BTD2",
+    "name": "JW F0944BTD2 Стиральная машина",
+    "slug": "jw_f0944btd2_stiral_naya_mashina",
+    "brand": "Jacky's",
+    "category": "JACKYS",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 59990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "JW F0944BTD2 Стиральная машина",
+    "description": "Официальная техника Jacky's в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91499.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "jackys-kaskad-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612608",
+    "sku": "JW 105W14T3",
+    "name": "JW 105W14T3 Стиральная машина",
+    "slug": "jw_105w14t3_stiral_naya_mashina",
+    "brand": "Jacky's",
+    "category": "JACKYS",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 59990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "JW 105W14T3 Стиральная машина",
+    "description": "Официальная техника Jacky's в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91489.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "jackys-kaskad-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612609",
+    "sku": "JW F1223BTB",
+    "name": "JW F1223BTB Стиральная машина",
+    "slug": "jw_f1223btb_stiral_naya_mashina",
+    "brand": "Jacky's",
+    "category": "JACKYS",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 59990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "JW F1223BTB Стиральная машина",
+    "description": "Официальная техника Jacky's в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91498.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "jackys-kaskad-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612616",
+    "sku": "JW 6W12L0N",
+    "name": "JW 6W12L0N Стиральная машина",
+    "slug": "jw_6w12l0n_stiral_naya_mashina",
+    "brand": "Jacky's",
+    "category": "JACKYS",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 36999,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "JW 6W12L0N Стиральная машина",
+    "description": "Официальная техника Jacky's в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91491.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "jackys-kaskad-2026",
+      "jackys-specialnye-promo-ceny-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-605532",
+    "sku": "COF 01WHEU",
+    "name": "COF 01WHEU Мини печь",
+    "slug": "cof_01wheu_mini_pech",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 108790,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "COF 01WHEU Мини печь",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/86660.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "smeg-osen-v-stile-smeg-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-605624",
+    "sku": "PIC 01WHMEU",
+    "name": "PIC 01WHMEU Настольная плита",
+    "slug": "pic_01whmeu_nastol_naya_plita",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 45590,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "PIC 01WHMEU Настольная плита",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/86760.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "smeg-osen-v-stile-smeg-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-605646",
+    "sku": "COF 01BLEU",
+    "name": "COF 01BLEU Мини печь",
+    "slug": "cof_01bleu_mini_pech",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 108790,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "COF 01BLEU Мини печь",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/86796.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "smeg-osen-v-stile-smeg-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-607151",
+    "sku": "COF 01PGEU",
+    "name": "COF 01PGEU Мини печь",
+    "slug": "cof_01pgeu_mini_pech",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 108790,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "COF 01PGEU Мини печь",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/87047.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "smeg-osen-v-stile-smeg-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612681",
+    "sku": "MOC 02EGMEU",
+    "name": "MOC 02EGMEU Микроволновая печь",
+    "slug": "moc_02egmeu_mikrovolnovaya_pech",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 47990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "MOC 02EGMEU Микроволновая печь",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91587.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "smeg-osen-v-stile-smeg-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-603502",
+    "sku": "EGF 03WHEU",
+    "name": "EGF 03WHEU Кофемашина",
+    "slug": "egf_03wheu_kofemashina",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 66242,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "EGF 03WHEU Кофемашина",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/84727.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "smeg-osen-v-stile-smeg-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612687",
+    "sku": "MOC 01EGMEU",
+    "name": "MOC 01EGMEU Микроволновая печь",
+    "slug": "moc_01egmeu_mikrovolnovaya_pech",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 39990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "MOC 01EGMEU Микроволновая печь",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91586.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "smeg-osen-v-stile-smeg-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-603503",
+    "sku": "EGF 03RDEU",
+    "name": "EGF 03RDEU Кофемашина",
+    "slug": "egf_03rdeu_kofemashina",
+    "brand": "SMEG",
+    "category": "SMEG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 71990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "EGF 03RDEU Кофемашина",
+    "description": "Официальная техника SMEG в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/84726.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "smeg-osen-v-stile-smeg-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610877",
+    "sku": "EBS 1001",
+    "name": "EBS 1001 Весы кухонные FIX",
+    "slug": "ebs_1001_vesy_kuhonnye",
+    "brand": "Evelux",
+    "category": "EVELUX",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 1290,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "EBS 1001 Весы кухонные FIX",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89734.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-pokupka-eto-podarok-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-604961",
+    "sku": "KCM 1001 EX",
+    "name": "KCM 1001 EX Кофеварка",
+    "slug": "kcm_1001_ex_kofevarka",
+    "brand": "Evelux",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 12990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KCM 1001 EX Кофеварка",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/86038.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-pokupka-eto-podarok-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-586622",
+    "sku": "KIT0121001",
+    "name": "KIT0121001 Соединитель 80ММ 227*94",
+    "slug": "soedinitel_80mm_227_94_kit0121001",
+    "brand": "Evelux",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 2490,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KIT0121001 Соединитель 80ММ 227*94",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/68638.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-pokupka-eto-podarok-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-608520",
+    "sku": "EWK 0902 G",
+    "name": "EWK 0902 G Чайник эл. FIX",
+    "slug": "ewk_0902_g_chajnik_el_fix",
+    "brand": "Evelux",
+    "category": "EVELUX",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 1790,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "EWK 0902 G Чайник эл. FIX",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/88487.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-pokupka-eto-podarok-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-608517",
+    "sku": "EWK 0904 G",
+    "name": "EWK 0904 G Чайник эл FIX",
+    "slug": "ewk_0904_g_chajnik_el_fix",
+    "brand": "Evelux",
+    "category": "EVELUX",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 1890,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "EWK 0904 G Чайник эл FIX",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/88489.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-pokupka-eto-podarok-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-608515",
+    "sku": "EWK 0903 G",
+    "name": "EWK 0903 G Чайник эл. FIX",
+    "slug": "ewk_0903_g_chajnik_el_fix",
+    "brand": "Evelux",
+    "category": "EVELUX",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 1490,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "EWK 0903 G Чайник эл. FIX",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/88488.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-pokupka-eto-podarok-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-609624",
+    "sku": "KWK 0904 Infinity",
+    "name": "KWK 0904 Infinity Чайник эл.",
+    "slug": "kwk_0904_infinity_chajnik_el",
+    "brand": "Evelux",
+    "category": "KORTING",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 3990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "KWK 0904 Infinity Чайник эл.",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/88723.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-pokupka-eto-podarok-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-608528",
+    "sku": "EHB 0301 B",
+    "name": "EHB 0301 B Блендер погружной FIX",
+    "slug": "ehb_0301_b_blender_pogruzhnoj_fix",
+    "brand": "Evelux",
+    "category": "EVELUX",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 2990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "EHB 0301 B Блендер погружной FIX",
+    "description": "Официальная техника Evelux в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/88483.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "evelux-pokupka-eto-podarok-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-609814",
+    "sku": "VIRTUS MULTI 60 TFT BL",
+    "name": "VIRTUS MULTI 60 TFT BL Духовой шкаф",
+    "slug": "virtus_multi_60_tft_bl_duhovoj_shkaf1",
+    "brand": "ELICA",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 132590,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VIRTUS MULTI 60 TFT BL Духовой шкаф",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/88837.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-komfortnoe-budushchee-virtus-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-609811",
+    "sku": "VIRTUS MULTI 60 DD BL",
+    "name": "VIRTUS MULTI 60 DD BL Духовой шкаф",
+    "slug": "virtus_multi_60_dd_bl_duhovoj_shkaf1",
+    "brand": "ELICA",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 101990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VIRTUS MULTI 60 DD BL Духовой шкаф",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/88838.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-komfortnoe-budushchee-virtus-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-609806",
+    "sku": "VIRTUS MULTI 90 TFT BL",
+    "name": "VIRTUS MULTI 90 TFT BL Духовой шкаф",
+    "slug": "virtus_multi_90_tft_bl_duhovoj_shkaf1",
+    "brand": "ELICA",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 203990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VIRTUS MULTI 90 TFT BL Духовой шкаф",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/88835.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-komfortnoe-budushchee-virtus-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-611974",
+    "sku": "VIRTUS MULTI 60 TFT PYRO BL",
+    "name": "VIRTUS MULTI 60 TFT PYRO BL Духовой шкаф",
+    "slug": "virtus_multi_60_tft_pyro_bl_duhovoj_shkaf",
+    "brand": "ELICA",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 169990,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VIRTUS MULTI 60 TFT PYRO BL Духовой шкаф",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/90938.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-komfortnoe-budushchee-virtus-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612042",
+    "sku": "INPUSH 60 B",
+    "name": "INPUSH 60 B Вытяжка",
+    "slug": "inpush_60_b_vytyazhka",
+    "brand": "ELICA",
+    "category": "KUPPERSBERG",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 12000,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "INPUSH 60 B Вытяжка",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/90708.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-komfortnoe-budushchee-virtus-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-609716",
+    "sku": "VIRTUS WARM DRAWER 60 PP BL",
+    "name": "VIRTUS WARM DRAWER 60 PP BL Подогреватель посуды",
+    "slug": "virtus_warm_drawer_60_pp_bl_podogrevatel_posudy",
+    "brand": "ELICA",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 61190,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "VIRTUS WARM DRAWER 60 PP BL Подогреватель посуды",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85717.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-komfortnoe-budushchee-virtus-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-609754",
+    "sku": "Ingrid 60 X",
+    "name": "Ingrid 60 X Вытяжка FIX",
+    "slug": "ingrid_60_x_vytyazhka_fix",
+    "brand": "ELICA",
+    "category": "EVELUX",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 16390,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "Ingrid 60 X Вытяжка FIX",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/88800.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-komfortnoe-budushchee-virtus-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-603363",
+    "sku": "DW60EPR/21",
+    "name": "DW60EPR/21 Посудомоечная машина",
+    "slug": "dw60epr_21_posudomoechnaya_mashina",
+    "brand": "ELICA",
+    "category": "BERTAZZONI",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 64900,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "DW60EPR/21 Посудомоечная машина",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/84585.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-komfortnoe-budushchee-virtus-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-609704",
+    "sku": "RATIO 302 PLUS BL",
+    "name": "RATIO 302 PLUS BL Варочная панель",
+    "slug": "ratio_302_plus_bl_varochnaya_panel",
+    "brand": "ELICA",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 45890,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "RATIO 302 PLUS BL Варочная панель",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85704.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-osennij-duet-connex-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-609705",
+    "sku": "RATIO 874 SLIM BL",
+    "name": "RATIO 874 SLIM BL Варочная панель",
+    "slug": "ratio_874_slim_bl_varochnaya_panel",
+    "brand": "ELICA",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 117290,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "RATIO 874 SLIM BL Варочная панель",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85710.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-osennij-duet-connex-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-609707",
+    "sku": "RATIO 804 PLUS BL",
+    "name": "RATIO 804 PLUS BL Варочная панель",
+    "slug": "ratio_804_plus_bl_varochnaya_panel",
+    "brand": "ELICA",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 86690,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "RATIO 804 PLUS BL Варочная панель",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85709.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-osennij-duet-connex-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-609709",
+    "sku": "RATIO 603 BL",
+    "name": "RATIO 603 BL Варочная панель",
+    "slug": "ratio_603_bl_varochnaya_panel",
+    "brand": "ELICA",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 66290,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "RATIO 603 BL Варочная панель",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85706.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-osennij-duet-connex-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-609712",
+    "sku": "RATIO 702 BL",
+    "name": "RATIO 702 BL Варочная панель",
+    "slug": "ratio_702_bl_varochnaya_panel",
+    "brand": "ELICA",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 56090,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "RATIO 702 BL Варочная панель",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/85705.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-osennij-duet-connex-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610765",
+    "sku": "RATIO CONNEX 604 PLUS BL",
+    "name": "RATIO CONNEX 604 PLUS BL Варочная панель",
+    "slug": "ratio_connex_604_plus_bl_varochnaya_panel",
+    "brand": "ELICA",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 76490,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "RATIO CONNEX 604 PLUS BL Варочная панель",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89607.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-osennij-duet-connex-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610766",
+    "sku": "RATIO CONNEX 603 PLUS BL",
+    "name": "RATIO CONNEX 603 PLUS BL Варочная панель",
+    "slug": "ratio_connex_603_plus_bl_varochnaya_panel",
+    "brand": "ELICA",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 76490,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "RATIO CONNEX 603 PLUS BL Варочная панель",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89606.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-osennij-duet-connex-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-610767",
+    "sku": "RATIO CONNEX 803 PLUS BL",
+    "name": "RATIO CONNEX 803 PLUS BL Варочная панель",
+    "slug": "ratio_connex_803_plus_bl_varochnaya_panel",
+    "brand": "ELICA",
+    "category": "ELICA",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 96890,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "RATIO CONNEX 803 PLUS BL Варочная панель",
+    "description": "Официальная техника ELICA в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/89608.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "elica-osennij-duet-connex-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612603",
+    "sku": "JR FW568EN",
+    "name": "JR FW568EN Холодильник",
+    "slug": "jr_fw568en_holodil_nik",
+    "brand": "Jacky's",
+    "category": "JACKYS",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 89999,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "JR FW568EN Холодильник",
+    "description": "Официальная техника Jacky's в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91523.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "jackys-specialnye-promo-ceny-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612618",
+    "sku": "JW S0822B2",
+    "name": "JW S0822B2 Стиральная машина",
+    "slug": "jw_s0822b2_stiral_naya_mashina",
+    "brand": "Jacky's",
+    "category": "JACKYS",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 35999,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "JW S0822B2 Стиральная машина",
+    "description": "Официальная техника Jacky's в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91495.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "jackys-specialnye-promo-ceny-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612625",
+    "sku": "JW 6TC21",
+    "name": "JW 6TC21 Стиральная машина",
+    "slug": "jw_6tc21_stiral_naya_mashina",
+    "brand": "Jacky's",
+    "category": "JACKYS",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 33999,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "JW 6TC21 Стиральная машина",
+    "description": "Официальная техника Jacky's в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91492.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "jackys-specialnye-promo-ceny-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612627",
+    "sku": "JR FD2000",
+    "name": "JR FD2000 Холодильник",
+    "slug": "jr_fd2000_holodil_nik",
+    "brand": "Jacky's",
+    "category": "JACKYS",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 79999,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "JR FD2000 Холодильник",
+    "description": "Официальная техника Jacky's в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91513.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "jackys-specialnye-promo-ceny-2026"
+    ]
+  },
+
+  {
+    "id": "prod-umi-612637",
+    "sku": "JR FD526V",
+    "name": "JR FD526V Холодильник",
+    "slug": "jr_fd526v_holodil_nik",
+    "brand": "Jacky's",
+    "category": "JACKYS",
+    "categoryType": "CATEGORY_B",
+    "physicalStatus": "SHOWROOM",
+    "price": 199999,
+    "oldPrice": null,
+    "inStock": true,
+    "stockCount": 3,
+    "rating": 4.9,
+    "reviewsCount": 14,
+    "shortDesc": "JR FD526V Холодильник",
+    "description": "Официальная техника Jacky's в салоне «СИМОНА» (Нижний Новгород, ул. Белинского 15). Гарантия производителя.",
+    "images": [
+      "https://www.simona-bt.ru/images/cms/data/photo_code/91526.jpg"
+    ],
+    "badge": "На витрине",
+    "isFeatured": true,
+    "promoSlugs": [
+      "jackys-specialnye-promo-ceny-2026"
+    ]
+  },
 ];
 
 export interface BundleItem {

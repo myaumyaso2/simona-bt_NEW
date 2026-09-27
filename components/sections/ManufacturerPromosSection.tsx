@@ -3,8 +3,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
-import { SimonaIconClock } from '@/components/brand/SimonaIcons';
+import {
+  SimonaIconClock,
+  SimonaIconChevronLeft,
+  SimonaIconChevronRight,
+  SimonaIconArrowRight,
+} from '@/components/brand/SimonaIcons';
 import { SectionBadge } from '@/components/ui/SectionBadge';
 import { MANUFACTURER_PROMOS, getFeaturedPromos } from '@/data/promosData';
 import { ManufacturerPromo } from '@/types';
@@ -101,7 +105,7 @@ export function ManufacturerPromosSection() {
               className="group inline-flex items-center space-x-1.5 text-xs sm:text-sm font-medium text-[#D7D9DB] hover:text-white transition-colors"
             >
               <span>Все акции производителей</span>
-              <ArrowRight className="w-4 h-4 text-simona-wine-light group-hover:translate-x-1 transition-transform" />
+              <SimonaIconArrowRight className="w-4 h-4 text-simona-wine-light group-hover:translate-x-1 transition-transform" />
             </Link>
 
             {/* Slider Navigation Arrows */}
@@ -112,7 +116,7 @@ export function ManufacturerPromosSection() {
                 aria-label="Предыдущие акции"
                 className="w-11 h-11 rounded-xl border border-[#2B313A] bg-[#16191D] text-[#87888A] hover:text-white hover:border-simona-wine/60 hover:bg-[#1E2228] transition-all flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <SimonaIconChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={nextSlide}
@@ -120,7 +124,7 @@ export function ManufacturerPromosSection() {
                 aria-label="Следующие акции"
                 className="w-11 h-11 rounded-xl border border-[#2B313A] bg-[#16191D] text-[#87888A] hover:text-white hover:border-simona-wine/60 hover:bg-[#1E2228] transition-all flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
               >
-                <ChevronRight className="w-4 h-4" />
+                <SimonaIconChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -231,7 +235,7 @@ function PromoCard({ promo }: { promo: ManufacturerPromo }) {
 
           <div className="inline-flex items-center space-x-1 text-xs font-semibold text-simona-wine-light group-hover:text-white transition-colors">
             <span>Подробнее</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <SimonaIconArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
       </div>
