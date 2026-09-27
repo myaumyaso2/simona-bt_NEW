@@ -268,14 +268,14 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
         </div>
 
         {/* 4 СБАЛАНСИРОВАННЫЕ КОЛОНКИ КАТАЛОГА (17 / 17 / 21 / 20) */}
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 py-6 max-h-[75vh] overflow-y-auto no-scrollbar">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 py-4 sm:py-5 max-h-[calc(100vh-125px)] overflow-y-auto no-scrollbar">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7 lg:gap-8">
             {CATALOG_COLUMNS.map((col) => (
-              <div key={col.id} className="flex flex-col gap-6">
+              <div key={col.id} className="flex flex-col gap-5">
                 {col.groups.map((group, groupIdx) => (
-                  <div key={groupIdx} className="flex flex-col gap-2.5">
+                  <div key={groupIdx} className="flex flex-col gap-2">
                     {group.title && (
-                      <div className="flex items-center justify-between pb-2 border-b border-[#2B313A]">
+                      <div className="flex items-center justify-between pb-1.5 border-b border-[#2B313A]">
                         <div className="flex items-center gap-2">
                           <span className="w-1.5 h-1.5 rounded-full bg-simona-teal shadow-[0_0_6px_rgba(0,151,156,0.6)]" />
                           <Link
@@ -290,18 +290,18 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
                     )}
 
                     {group.subtitle && (
-                      <div className="text-[11px] font-bold text-[#87888A] uppercase tracking-wider px-1.5 pt-1">
+                      <div className="text-[11px] font-bold text-[#87888A] uppercase tracking-wider px-1.5 pt-0.5">
                         {group.subtitle}
                       </div>
                     )}
 
-                    <ul className="flex flex-col gap-1 list-none p-0 m-0">
+                    <ul className="flex flex-col gap-0.5 list-none p-0 m-0">
                       {group.items.map((item, itemIdx) => (
                         <li key={itemIdx}>
                           <Link
                             href={item.href}
                             onClick={onClose}
-                            className="group/link flex items-center justify-between text-xs text-[#D7D9DB] hover:text-white px-2 py-1 rounded-md hover:bg-simona-teal/[0.07] hover:translate-x-1 transition-all"
+                            className="group/link flex items-center justify-between text-xs text-[#D7D9DB] hover:text-white px-2 py-0.5 rounded-md hover:bg-simona-teal/[0.07] hover:translate-x-1 transition-all"
                           >
                             <span className="group-hover/link:text-white transition-colors">
                               {item.name}
