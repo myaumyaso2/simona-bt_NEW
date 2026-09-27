@@ -62,6 +62,7 @@ export async function getProductBySlug(slug: string): Promise<ProductItem | null
 
 export async function getCatalogProducts(options?: {
   category?: string;
+  categories?: string[];
   brand?: string;
   limit?: number;
   offset?: number;
@@ -69,7 +70,9 @@ export async function getCatalogProducts(options?: {
 }): Promise<{ products: ProductItem[]; total: number }> {
   try {
     const where: any = {};
-    if (options?.category) {
+    if (options?.categories && options.categories.length > 0) {
+      where.category = { in: options.categories };
+    } else if (options?.category) {
       where.category = { contains: options.category };
     }
     if (options?.brand) {
@@ -95,12 +98,10 @@ export async function getCatalogProducts(options?: {
       prisma.product.count({ where }),
     ]);
 
-    if (items.length > 0) {
-      return {
-        products: items.map(formatPrismaProduct),
-        total,
-      };
-    }
+    return {
+      products: items.map(formatPrismaProduct),
+      total,
+    };
   } catch (e) {
     console.error('Error fetching catalog products from DB:', e);
   }
