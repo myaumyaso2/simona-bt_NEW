@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useStore } from '@/components/providers/StoreContext';
 
 export interface CatalogMegaMenuProps {
   isOpen: boolean;
@@ -39,12 +38,12 @@ const BRAND_BAR_ITEMS = [
 
 /**
  * 100% точные разделы и категории со старого сайта СИМОНА
- * с исправлением ошибки в блоке «Аксессуары для бытовой техники».
+ * с балансировкой колонок (17 / 17 / 21 / 20) и исправлением ошибки в блоке аксессуаров.
  */
 const CATALOG_COLUMNS: ColumnStructure[] = [
-  // КОЛОНКА 1: ВСТРАИВАЕМАЯ ТЕХНИКА
+  // КОЛОНКА 1: ВСТРАИВАЕМАЯ ТЕХНИКА + МОЙКИ И СМЕСИТЕЛИ (14 + 3 = 17)
   {
-    id: 'col-builtin',
+    id: 'col-builtin-sinks',
     groups: [
       {
         title: 'Встраиваемая техника',
@@ -66,12 +65,21 @@ const CATALOG_COLUMNS: ColumnStructure[] = [
           { name: 'Винные шкафы (встраиваемые)', href: '/catalog?category=Встраиваемые+винные+шкафы' },
         ],
       },
+      {
+        title: 'Мойки и смесители',
+        href: '/catalog?section=sinks',
+        items: [
+          { name: 'Мойки', href: '/catalog?category=Мойки+для+кухни' },
+          { name: 'Смесители', href: '/catalog?category=Смесители+для+кухни' },
+          { name: 'Врезные дозаторы для моющих средств', href: '/catalog?category=Врезные+дозаторы+для+моющих+средств' },
+        ],
+      },
     ],
   },
 
-  // КОЛОНКА 2: КРУПНАЯ БЫТОВАЯ ТЕХНИКА & КЛИМАТИЧЕСКАЯ ТЕХНИКА
+  // КОЛОНКА 2: КРУПНАЯ БЫТОВАЯ + КЛИМАТИЧЕСКАЯ + БОКАЛЫ И ПОСУДА (8 + 5 + 4 = 17)
   {
-    id: 'col-major-climate',
+    id: 'col-major-climate-tableware',
     groups: [
       {
         title: 'Крупная бытовая техника',
@@ -98,22 +106,23 @@ const CATALOG_COLUMNS: ColumnStructure[] = [
           { name: 'Увлажнение и очистка воздуха', href: '/catalog?category=Увлажнение+и+очистка+воздуха' },
         ],
       },
+      {
+        title: 'Бокалы и посуда',
+        href: '/catalog?section=tableware',
+        items: [
+          { name: 'Бокалы Riedel', href: '/catalog?category=Бокалы' },
+          { name: 'Декантеры Riedel', href: '/catalog?category=Декантеры' },
+          { name: 'Посуда', href: '/catalog?category=Посуда' },
+          { name: 'Кухонные принадлежности', href: '/catalog?category=Кухонные+принадлежности' },
+        ],
+      },
     ],
   },
 
-  // КОЛОНКА 3: МОЙКИ И СМЕСИТЕЛИ & МАЛАЯ БЫТОВАЯ ТЕХНИКА
+  // КОЛОНКА 3: МАЛАЯ БЫТОВАЯ ТЕХНИКА (17 + 4 = 21)
   {
-    id: 'col-sinks-small',
+    id: 'col-small-appliances',
     groups: [
-      {
-        title: 'Мойки и смесители',
-        href: '/catalog?section=sinks',
-        items: [
-          { name: 'Мойки', href: '/catalog?category=Мойки+для+кухни' },
-          { name: 'Смесители', href: '/catalog?category=Смесители+для+кухни' },
-          { name: 'Врезные дозаторы для моющих средств', href: '/catalog?category=Врезные+дозаторы+для+моющих+средств' },
-        ],
-      },
       {
         title: 'Малая бытовая техника',
         subtitle: 'Для кухни',
@@ -152,20 +161,10 @@ const CATALOG_COLUMNS: ColumnStructure[] = [
     ],
   },
 
-  // КОЛОНКА 4: БОКАЛЫ И ПОСУДА, УХОД И АКСЕССУАРЫ
+  // КОЛОНКА 4: СРЕДСТВА ПО УХОДУ И АКСЕССУАРЫ (6 + 14 = 20)
   {
     id: 'col-care-accessories',
     groups: [
-      {
-        title: 'Бокалы и посуда',
-        href: '/catalog?section=tableware',
-        items: [
-          { name: 'Бокалы Riedel', href: '/catalog?category=Бокалы' },
-          { name: 'Декантеры Riedel', href: '/catalog?category=Декантеры' },
-          { name: 'Посуда', href: '/catalog?category=Посуда' },
-          { name: 'Кухонные принадлежности', href: '/catalog?category=Кухонные+принадлежности' },
-        ],
-      },
       {
         title: 'Средства по уходу за техникой',
         href: '/catalog?section=care',
@@ -203,7 +202,6 @@ const CATALOG_COLUMNS: ColumnStructure[] = [
 ];
 
 export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
-  const { openModal } = useStore();
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Закрытие по клавише Esc
@@ -234,17 +232,9 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
         ref={menuRef}
         className="absolute top-full left-0 right-0 z-50 bg-[#14171B] border-b border-[#2B313A] shadow-[0_24px_50px_rgba(0,0,0,0.85)] animate-in fade-in slide-in-from-top-2 duration-200"
       >
-        {/* BRAND BAR STRIP */}
+        {/* BRAND BAR STRIP (ЧИСТЫЕ БРЕНДЫ) */}
         <div className="bg-[#111316] border-b border-[#2B313A] px-4 sm:px-8 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-0.5">
-            <Link
-              href="/promos"
-              onClick={onClose}
-              className="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white bg-simona-wine/25 border border-simona-wine/70 hover:bg-simona-wine hover:shadow-[0_0_14px_rgba(138,21,26,0.4)] transition-all whitespace-nowrap"
-            >
-              Акции брендов %
-            </Link>
-
             {BRAND_BAR_ITEMS.map((brand) => (
               <Link
                 key={brand.name}
@@ -276,8 +266,8 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
           </button>
         </div>
 
-        {/* 4 КОЛОНКИ САТАЛОГА (ТОЧНО ПО СКРИНШОТАМ СТАРОГО САЙТА) */}
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 py-6 max-h-[72vh] overflow-y-auto no-scrollbar">
+        {/* 4 СБАЛАНСИРОВАННЫЕ КОЛОНКИ КАТАЛОГА (17 / 17 / 21 / 20) */}
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 py-6 max-h-[75vh] overflow-y-auto no-scrollbar">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7 lg:gap-8">
             {CATALOG_COLUMNS.map((col) => (
               <div key={col.id} className="flex flex-col gap-6">
@@ -326,42 +316,6 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
                 ))}
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* СЕРВИСНЫЙ O2O-ФУТЕР */}
-        <div className="bg-[#0E1012] border-t border-[#2B313A] px-4 sm:px-8 py-3 flex flex-wrap items-center justify-between gap-4 text-xs">
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => {
-                onClose();
-                openModal('EQUIPMENT_SELECTION');
-              }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-[#D7D9DB] hover:text-white transition-all cursor-pointer font-medium"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-simona-teal shadow-[0_0_6px_rgba(0,151,156,0.8)]" />
-              <span>Подобрать комплект под дизайн-проект</span>
-            </button>
-
-            <Link
-              href="/promos"
-              onClick={onClose}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-wine text-[#D7D9DB] hover:text-white transition-all font-medium"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-simona-wine shadow-[0_0_6px_rgba(138,21,26,0.8)]" />
-              <span>Официальные акции европейских производителей</span>
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-3 text-[#87888A]">
-            <span>Консультация эксперта:</span>
-            <a
-              href="tel:+78314237600"
-              className="font-bold text-white hover:text-simona-teal transition-colors"
-            >
-              +7 (831) 423-76-00
-            </a>
-            <span className="hidden sm:inline">• Салон на ул. Белинского 15 (10:00–20:00)</span>
           </div>
         </div>
       </div>
