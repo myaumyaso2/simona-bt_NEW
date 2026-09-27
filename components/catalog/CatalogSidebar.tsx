@@ -110,6 +110,10 @@ export function CatalogSidebar({
           });
         }
       }, 100);
+    } else {
+      setTimeout(() => {
+        allParamsBtnRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 120);
     }
   };
 
@@ -580,7 +584,7 @@ export function CatalogSidebar({
                   isAllParamsOpen ? 'rotate-180' : 'group-hover:translate-y-0.5'
                 }`}
               />
-              <span>Все параметры</span>
+              <span>{isAllParamsOpen ? 'Скрыть' : 'Все параметры'}</span>
             </div>
             <div className="flex items-center gap-1.5">
               {totalSelectedFeatures > 0 && (
@@ -589,7 +593,7 @@ export function CatalogSidebar({
                 </span>
               )}
               <span className="px-2 py-0.5 rounded-md bg-simona-teal/20 text-[10px] font-mono text-simona-teal-light">
-                +{categoryFacets.length}
+                {isAllParamsOpen ? `−${categoryFacets.length}` : `+${categoryFacets.length}`}
               </span>
             </div>
           </button>
