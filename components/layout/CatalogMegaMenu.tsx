@@ -26,14 +26,15 @@ interface ColumnStructure {
 }
 
 const BRAND_BAR_ITEMS = [
-  { name: 'MIELE', href: '/brands/miele' },
+  { name: 'BOSCH', href: '/brands/bosch' },
   { name: 'ASKO', href: '/brands/asko' },
   { name: 'LIEBHERR', href: '/brands/liebherr' },
   { name: 'SMEG', href: '/brands/smeg' },
+  { name: 'MIELE', href: '/brands/miele' },
   { name: 'OMOIKIRI', href: '/brands/omoikiri' },
-  { name: 'BERTAZZONI', href: '/brands/bertazzoni' },
-  { name: 'FALMEC', href: '/brands/falmec' },
-  { name: 'VARD', href: '/brands/vard' },
+  { name: 'ELICA', href: '/brands/elica' },
+  { name: 'MIDEA', href: '/brands/midea' },
+  { name: 'KÖRTING', href: '/brands/korting' },
 ];
 
 /**
@@ -232,15 +233,15 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
         ref={menuRef}
         className="absolute top-full left-0 right-0 z-50 bg-[#14171B] border-b border-[#2B313A] shadow-[0_24px_50px_rgba(0,0,0,0.85)] animate-in fade-in slide-in-from-top-2 duration-200"
       >
-        {/* BRAND BAR STRIP (ЧИСТЫЕ БРЕНДЫ) */}
-        <div className="bg-[#111316] border-b border-[#2B313A] px-4 sm:px-8 py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-0.5">
+        {/* BRAND BAR STRIP (РАВНОМЕРНО РАСПРЕДЕЛЕННЫЕ КЛЮЧЕВЫЕ БРЕНДЫ) */}
+        <div className="bg-[#111316] border-b border-[#2B313A] px-4 sm:px-8 py-2.5 flex items-center justify-between gap-3 sm:gap-4">
+          <div className="flex-1 flex items-center justify-between gap-2 overflow-x-auto no-scrollbar py-0.5">
             {BRAND_BAR_ITEMS.map((brand) => (
               <Link
                 key={brand.name}
                 href={brand.href}
                 onClick={onClose}
-                className="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal hover:text-simona-teal-light hover:shadow-[0_0_14px_rgba(0,151,156,0.35)] transition-all whitespace-nowrap"
+                className="flex-1 min-w-[76px] sm:min-w-0 inline-flex items-center justify-center px-2 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal hover:text-simona-teal-light hover:shadow-[0_0_14px_rgba(0,151,156,0.35)] transition-all whitespace-nowrap text-center"
               >
                 {brand.name}
               </Link>
@@ -249,7 +250,7 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
             <Link
               href="/brands"
               onClick={onClose}
-              className="text-xs font-semibold text-[#87888A] hover:text-white px-3 py-1.5 rounded-xl hover:bg-[#1E2228] transition-all whitespace-nowrap"
+              className="shrink-0 text-xs font-semibold text-[#87888A] hover:text-white px-3 py-1.5 rounded-xl hover:bg-[#1E2228] border border-transparent hover:border-[#2B313A] transition-all whitespace-nowrap"
             >
               Все бренды →
             </Link>
@@ -258,7 +259,7 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
           <button
             onClick={onClose}
             aria-label="Закрыть каталог (Esc)"
-            className="w-8 h-8 rounded-xl border border-[#2B313A] bg-[#1E2228] text-[#87888A] hover:text-white hover:border-simona-teal flex items-center justify-center transition-all shrink-0"
+            className="w-8 h-8 rounded-xl border border-[#2B313A] bg-[#1E2228] text-[#87888A] hover:text-white hover:border-simona-teal flex items-center justify-center transition-all shrink-0 ml-1"
           >
             <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path d="M18 6 6 18M6 6l12 12" />
