@@ -401,6 +401,7 @@ export async function syncFullCatalog(
             ) || `product-${item.code}`;
 
             const newProduct = {
+              id: item.code, // Единый ID = Код 1С
               sku: item.code, // По регламенту заказчика: SKU = Код (колонка 0)
               oneCGuid: item.code,
               name: item.fullName,

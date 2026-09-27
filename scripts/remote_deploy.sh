@@ -29,13 +29,8 @@ echo "🗄️ Initializing Prisma & PostgreSQL..."
 npx prisma generate
 npx prisma db push --skip-generate
 
-COUNT=$(PGPASSWORD='SmBt_Staging_2026_PgPass!' psql -h localhost -U simona_app -d simona_staging -t -A -c 'SELECT COUNT(*) FROM "Product";' 2>/dev/null || echo "0")
-echo "Current products in DB: $COUNT"
-
-if [ "$COUNT" -eq "0" ]; then
-    echo "💾 Seeding products and 301-redirects into PostgreSQL..."
-    npx tsx scripts/import_catalog_to_db.ts
-fi
+echo "💾 Importing updated catalog and characteristics into PostgreSQL..."
+npx tsx scripts/import_catalog_to_db.ts
 
 echo "🔨 Building Next.js production build..."
 npm run build

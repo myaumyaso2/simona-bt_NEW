@@ -275,7 +275,7 @@ export function FastSearchModal() {
                         </button>
                         <span className="text-[#2B313A]">•</span>
                         <span className="font-mono text-[#87888A]">
-                          Арт: {product.sku}
+                          Код: {product.sku}
                         </span>
                         <span
                           className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${statusCfg.badgeClass}`}

@@ -13,6 +13,7 @@ import {
   SimonaIconCompare,
 } from '@/components/brand/SimonaIcons';
 import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
+import { extractKeySpecs } from '@/lib/productFeatures';
 
 interface LuxuryProductListCardProps {
   product: ProductItem;
@@ -24,68 +25,35 @@ interface SpecRow {
 }
 
 function getProductSpecs(product: ProductItem): SpecRow[] {
-  // 1. Color
-  let color = 'Черный классический';
-  if (product.name.includes('Obsidian Black')) color = 'Черный обсидиан (Obsidian)';
-  else if (product.name.includes('CleanSteel')) color = 'Нержавеющая сталь CleanSteel';
-  else if (product.name.includes('Brilliant White')) color = 'Белый (Brilliant White)';
-  else if (product.name.includes('Grafitschwarz')) color = 'Графитовый серый (Graphite)';
-  else if (product.name.includes('Nero')) color = 'Черный матовый (Nero)';
-  else if (product.name.includes('CS GB') || product.name.includes('Black')) color = 'Черное стекло (Black Glass)';
-  else if (product.name.includes('Steel') || product.name.includes('Inox')) color = 'Нержавеющая сталь';
+  const keySpecs = extractKeySpecs(product);
+  const rows: SpecRow[] = keySpecs.map((s) => ({ label: s.label, value: s.value }));
 
-  // 2. Volume
-  let volume = '72 л';
-  const volMatch = product.shortDesc?.match(/(\d+)\s*л/);
-  if (volMatch) {
-    volume = `${volMatch[1]} л`;
+  // Supplement if less than 4 specs
+  if (rows.length < 4 && product.color) {
+    rows.push({ label: 'Цвет', value: product.color });
+  }
+  if (rows.length < 4 && product.dimensions && !rows.some(r => r.label.includes('Габарит') || r.label.includes('Ширин'))) {
+    rows.push({ label: 'Габариты', value: product.dimensions });
+  }
+  if (rows.length < 4 && product.features && product.features.length > 0) {
+    for (const f of product.features) {
+      if (rows.length >= 4) break;
+      const lower = f.label.toLowerCase();
+      if (
+        !f.value ||
+        f.value === '-' ||
+        lower.includes('гарант') ||
+        lower.includes('код') ||
+        lower.includes('арт') ||
+        rows.some((r) => r.label.toLowerCase() === lower)
+      ) {
+        continue;
+      }
+      rows.push({ label: f.label, value: f.value });
+    }
   }
 
-  // 3. Width
-  let width = '60 см';
-  if (product.dimensions) {
-    const wMatch = product.dimensions.match(/(\d+)\s*см/);
-    if (wMatch) width = `${wMatch[1]} см`;
-  } else if (product.name.includes('45') || product.shortDesc?.includes('45 см')) {
-    width = '45 см';
-  } else if (product.name.includes('90') || product.shortDesc?.includes('90 см')) {
-    width = '90 см';
-  }
-
-  // 4. Cleaning
-  let cleaning = 'Каталитическая эмаль';
-  if (
-    (product.shortDesc && product.shortDesc.toLowerCase().includes('пиролиз')) ||
-    (product.description && product.description.toLowerCase().includes('пиролиз'))
-  ) {
-    cleaning = 'Пиролитическая';
-  } else if (
-    (product.shortDesc && product.shortDesc.toLowerCase().includes('пар')) ||
-    (product.description && product.description.toLowerCase().includes('пар'))
-  ) {
-    cleaning = 'Паровая (HydroClean)';
-  }
-
-  // 5. Country
-  const brand = product.brand.toLowerCase();
-  let country = 'Германия';
-  if (brand.includes('miele')) country = 'Германия';
-  else if (brand.includes('asko')) country = 'Словения';
-  else if (brand.includes('bertazzoni')) country = 'Италия';
-  else if (brand.includes('smeg')) country = 'Италия';
-  else if (brand.includes('körting') || brand.includes('korting')) country = 'Италия';
-  else if (brand.includes('liebherr')) country = 'Германия';
-  else if (brand.includes('falmec')) country = 'Италия';
-  else if (brand.includes('vard')) country = 'Турция';
-  else if (brand.includes('omoikiri')) country = 'Япония';
-
-  return [
-    { label: 'Цвет отделки', value: color },
-    { label: 'Объем камеры', value: volume },
-    { label: 'Ширина встройки', value: width },
-    { label: 'Тип очистки', value: cleaning },
-    { label: 'Страна производства', value: country },
-  ];
+  return rows.slice(0, 4);
 }
 
 export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
@@ -129,10 +97,10 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
 
   return (
     <div className="group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 sm:p-5 transition-all duration-300 shadow-xl flex flex-col sm:flex-row gap-5 items-stretch">
-      {/* 1. Left Media Area: Compact Square 220x220px */}
+      {/* 1. Left Media Area: White Showcase Tablet with object-contain */}
       <Link
         href={`/product/${product.slug}`}
-        className="block relative w-full sm:w-52 sm:h-52 md:w-56 md:h-56 aspect-square shrink-0 rounded-xl overflow-hidden bg-[#1E2228] border border-[#2B313A]/50 flex items-center justify-center"
+        className="block relative w-full sm:w-52 sm:h-52 md:w-56 md:h-56 aspect-square shrink-0 rounded-xl overflow-hidden bg-white border border-white/10 group-hover:border-simona-teal/50 transition-colors p-3 flex items-center justify-center shadow-inner"
       >
         {/* Badges Stack (Top-Left): Status + Brand directly below */}
         <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1.5 max-w-[85%]">
@@ -141,25 +109,25 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
           product.physicalStatus === 'ACTIVE_KITCHEN' ||
           product.physicalStatus === 'EXHIBITION_15' ||
           product.physicalStatus === 'EXHIBITION_11' ? (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-simona-teal/20 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-sm">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
               На витрине
             </span>
           ) : product.physicalStatus === 'LOCAL_STOCK' ? (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-simona-teal/20 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-sm">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
               На складе
             </span>
           ) : product.physicalStatus === 'REMOTE_STOCK' ? (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-simona-teal/20 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-sm">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
               На удаленном складе
             </span>
           ) : (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-medium bg-white/10 text-[#D7D9DB] border border-white/15 backdrop-blur-md shadow-sm">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-medium bg-[#16191D]/85 text-[#D7D9DB] border border-[#2B313A] backdrop-blur-md shadow-md">
               Под заказ
             </span>
           )}
 
           {/* Brand Tag directly below */}
-          <span className="px-2.5 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-[10px] uppercase font-bold tracking-wider text-white border border-white/10 shadow-sm">
+          <span className="px-2.5 py-0.5 rounded-md bg-[#16191D]/90 backdrop-blur-md text-[10px] uppercase font-bold tracking-wider text-white border border-[#2B313A] shadow-md">
             {product.brand}
           </span>
         </div>
@@ -180,7 +148,7 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
                   openModal('PROMO_TERMS', { promoData: activePromo });
                 }
               }}
-              className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold border backdrop-blur-md shadow-sm transition-all duration-200 cursor-pointer transform hover:scale-105 ${badgeClass}`}
+              className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold border backdrop-blur-md shadow-md transition-all duration-200 cursor-pointer transform hover:scale-105 ${badgeClass}`}
               title={activePromo ? 'Нажмите для подробных условий акции' : 'Скидка'}
             >
               <span>{badgeText}</span>
@@ -223,11 +191,11 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
           </div>
         )}
 
-        {/* Product Image */}
+        {/* Product Image (object-contain ensures zero clipping) */}
         <img
           src={mainImage}
           alt={product.name}
-          className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 select-none"
           loading="lazy"
         />
       </Link>
@@ -240,7 +208,7 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
             <span>{product.category}</span>
             <span>•</span>
             <span className="font-mono text-[#D7D9DB] font-medium">
-              Арт: {product.sku}
+              Код товара: {product.sku}
             </span>
           </div>
 
@@ -251,7 +219,7 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
             </h3>
           </Link>
 
-          {/* Specifications Table with Dot Leaders */}
+          {/* Dynamic Specifications Table with Dot Leaders */}
           <div className="mt-4 space-y-2.5">
             {specs.map((item, idx) => (
               <div key={idx} className="flex items-baseline text-xs">
@@ -301,57 +269,53 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
           )}
         </div>
 
-        {/* Buttons Stack: Wishlist/Compare ABOVE Buy Button */}
-        <div className="mt-4 pt-3 border-t border-[#2B313A]/60 sm:border-t-0 sm:pt-0">
-          {/* Row 1: Wishlist and Compare Buttons НАД кнопкой «Купить» */}
-          <div className="grid grid-cols-2 gap-2 mb-2.5">
-            {/* Wishlist Button */}
-            <button
-              onClick={() => toggleWishlist(product.id)}
-              aria-label={inWishlist ? 'Удалить из избранного' : 'Добавить в избранное'}
-              title={inWishlist ? 'В избранном' : 'В избранное'}
-              className={`h-9 rounded-xl flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                inWishlist
-                  ? 'bg-simona-teal border border-simona-teal text-white shadow-md shadow-simona-teal/20'
-                  : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal/50 hover:bg-[#242A32]'
-              }`}
-            >
-              <SimonaIconHeart className="w-4 h-4" />
-            </button>
-
-            {/* Compare Button */}
-            <button
-              onClick={() => toggleCompare(product.id)}
-              aria-label={inCompare ? 'Удалить из сравнения' : 'Добавить в сравнение'}
-              title={inCompare ? 'В сравнении' : 'В сравнение'}
-              className={`h-9 rounded-xl flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                inCompare
-                  ? 'bg-simona-teal border border-simona-teal text-white shadow-md shadow-simona-teal/20'
-                  : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal/50 hover:bg-[#242A32]'
-              }`}
-            >
-              <SimonaIconCompare className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Row 2: Full-width Buy / In Cart Button */}
+        {/* Action Buttons Row */}
+        <div className="mt-4 pt-3 border-t border-[#2B313A]/50 flex items-center gap-2">
           {inCart ? (
             <button
               onClick={() => setIsCartOpen(true)}
-              className="w-full h-10 px-3 rounded-xl bg-gradient-to-r from-simona-teal-dark to-simona-teal hover:to-simona-teal-light text-white text-xs font-semibold tracking-wide transition-all duration-300 shadow-lg shadow-simona-teal/30 hover:shadow-simona-teal/50 hover:scale-[1.02] active:scale-98 flex items-center justify-center cursor-pointer"
+              className="flex-1 h-10 px-3 rounded-xl bg-gradient-to-r from-simona-teal-dark to-simona-teal text-white text-xs font-semibold tracking-wide transition shadow-md shadow-simona-teal/20 flex items-center justify-center cursor-pointer"
             >
-              <SimonaIconCart className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
-              <span>В корзину</span>
+              <SimonaIconCart className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+              <span>В корзине</span>
             </button>
           ) : (
             <button
               onClick={() => addToCart(product, 1, false)}
-              className="w-full h-10 px-3 rounded-xl bg-[#16191D] hover:bg-[#1E2228] border border-simona-teal text-white text-xs font-bold tracking-wide transition-all duration-300 shadow-md shadow-simona-teal/10 hover:shadow-simona-teal/20 hover:scale-[1.02] active:scale-98 flex items-center justify-center cursor-pointer"
+              className="flex-1 h-10 px-3 rounded-xl bg-[#1E2228] hover:bg-[#242A32] border border-simona-teal text-white text-xs font-bold tracking-wide transition shadow-sm flex items-center justify-center cursor-pointer"
             >
-              <SimonaIconCart className="w-3.5 h-3.5 mr-1.5 flex-shrink-0 text-simona-teal" />
+              <SimonaIconCart className="w-3.5 h-3.5 mr-1.5 shrink-0 text-simona-teal" />
               <span>Купить</span>
             </button>
           )}
+
+          {/* Wishlist */}
+          <button
+            onClick={() => toggleWishlist(product.id)}
+            aria-label={inWishlist ? 'Удалить из избранного' : 'Добавить в избранное'}
+            title={inWishlist ? 'В избранном' : 'В избранное'}
+            className={`w-10 h-10 rounded-xl flex items-center justify-center transition shrink-0 cursor-pointer ${
+              inWishlist
+                ? 'bg-simona-teal text-white border border-simona-teal shadow-md shadow-simona-teal/20'
+                : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal/50'
+            }`}
+          >
+            <SimonaIconHeart className="w-4 h-4" />
+          </button>
+
+          {/* Compare */}
+          <button
+            onClick={() => toggleCompare(product.id)}
+            aria-label={inCompare ? 'Удалить из сравнения' : 'Добавить в сравнение'}
+            title={inCompare ? 'В сравнении' : 'В сравнение'}
+            className={`w-10 h-10 rounded-xl flex items-center justify-center transition shrink-0 cursor-pointer ${
+              inCompare
+                ? 'bg-simona-teal text-white border border-simona-teal shadow-md shadow-simona-teal/20'
+                : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal/50'
+            }`}
+          >
+            <SimonaIconCompare className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </div>

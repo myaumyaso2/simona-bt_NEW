@@ -113,8 +113,8 @@ export function OneClickBuyModal({
                     className="w-14 h-14 object-cover rounded-md bg-[#111315] border border-[#2B313A]"
                   />
                   <div className="flex-1 min-w-0">
-                    <span className="text-[10px] text-[#87888A] font-mono uppercase">
-                      {product.sku}
+                    <span className="text-[10px] text-[#87888A] font-mono">
+                      Код товара: {product.sku}
                     </span>
                     <h4 className="text-xs font-bold text-white truncate">
                       {product.name}

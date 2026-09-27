@@ -4,8 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
-import { CATALOG_SUBCATEGORIES, SubCategoryTag } from '@/data/catalogData';
-import { getCategoriesBySection } from '@/data/catalogCategories';
 
 export type PhysicalTabType = 'ALL' | 'SHOWROOM' | 'LOCAL_STOCK' | 'REMOTE_STOCK' | 'ON_ORDER';
 
@@ -15,36 +13,34 @@ interface PresenceTabItem {
   count: number;
 }
 
-const PRESENCE_TABS: PresenceTabItem[] = [
-  { id: 'ALL', label: 'Все', count: 420 },
-  { id: 'SHOWROOM', label: 'На витрине', count: 32 },
-  { id: 'LOCAL_STOCK', label: 'На складе', count: 84 },
-  { id: 'REMOTE_STOCK', label: 'На удаленном складе', count: 146 },
-  { id: 'ON_ORDER', label: 'Под заказ', count: 158 },
-];
-
 interface CatalogHeroProps {
-  activeSubcategory: string;
-  onSelectSubcategory: (id: string) => void;
+  activeSubcategory?: string;
+  onSelectSubcategory?: (id: string) => void;
   activePhysicalTab: PhysicalTabType;
   onSelectPhysicalTab: (tab: PhysicalTabType) => void;
   totalCount: number;
+  presenceCounts?: Record<PhysicalTabType, number>;
   categoryTitle?: string;
   categorySlug?: string;
   categoryDescription?: string;
 }
 
 export function CatalogHero({
-  activeSubcategory,
-  onSelectSubcategory,
   activePhysicalTab,
   onSelectPhysicalTab,
   totalCount,
-  categoryTitle = 'Духовые шкафы и пароварки',
-  categorySlug = 'ovens',
-  categoryDescription = 'Флагманские приборы с режимами пара, пиролизом и интеллектуальными термощупами от ведущих европейских брендов.',
+  presenceCounts,
+  categoryTitle = 'Каталог техники',
+  categoryDescription = 'Официальные авторизованные поставки премиальной бытовой техники от ведущих европейских брендов.',
 }: CatalogHeroProps) {
-  const sectionCats = categorySlug ? getCategoriesBySection(categorySlug) : [];
+  const presenceTabs: PresenceTabItem[] = [
+    { id: 'ALL', label: 'Все', count: presenceCounts?.ALL ?? totalCount },
+    { id: 'SHOWROOM', label: 'На витрине', count: presenceCounts?.SHOWROOM ?? 0 },
+    { id: 'LOCAL_STOCK', label: 'На складе', count: presenceCounts?.LOCAL_STOCK ?? 0 },
+    { id: 'REMOTE_STOCK', label: 'На удаленном складе', count: presenceCounts?.REMOTE_STOCK ?? 0 },
+    { id: 'ON_ORDER', label: 'Под заказ', count: presenceCounts?.ON_ORDER ?? 0 },
+  ];
+
   return (
     <section className="pt-8 pb-6 border-b border-[#2B313A]/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -76,43 +72,9 @@ export function CatalogHero({
           {categoryDescription}
         </p>
 
-        {/* 4. Subcategory / Section Quick Filter Chips */}
-        {sectionCats.length > 0 ? (
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none mb-5">
-            {sectionCats.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={`/catalog/${cat.slug}`}
-                className="shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 bg-[#16191D] hover:bg-[#1E2228] text-[#D7D9DB] hover:text-white border border-[#2B313A] hover:border-simona-teal/40"
-              >
-                {cat.menuTitle} <span className="text-[#87888A] ml-1">{cat.countNum}</span>
-              </Link>
-            ))}
-          </div>
-        ) : (categorySlug === 'vstraivaemye-duhovye-shkafy' || categorySlug === 'ovens') ? (
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none mb-5">
-            {CATALOG_SUBCATEGORIES.map((cat) => {
-              const isActive = activeSubcategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => onSelectSubcategory(cat.id)}
-                  className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 active:scale-95 ${
-                    isActive
-                      ? 'bg-simona-teal text-white shadow-md shadow-simona-teal/20 border border-simona-teal'
-                      : 'bg-[#16191D] hover:bg-[#1E2228] text-[#D7D9DB] border border-[#2B313A] hover:border-simona-teal/40'
-                  }`}
-                >
-                  {cat.name}
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
-
-        {/* 5. Physical Presence Tabs (Sliding Pill Animation) */}
+        {/* 4. Physical Presence Tabs (Sliding Pill Animation with live category counts) */}
         <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
-          {PRESENCE_TABS.map((tab) => {
+          {presenceTabs.map((tab) => {
             const isActive = activePhysicalTab === tab.id;
             return (
               <button

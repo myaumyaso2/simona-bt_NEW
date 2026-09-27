@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { ProductItem } from '@/types';
 import { formatPrice } from '@/lib/utils';
+import { extractKeySpecs } from '@/lib/productFeatures';
 import { useStore } from '@/components/providers/StoreContext';
 import { ArrowRight } from 'lucide-react';
 import {
@@ -48,6 +49,8 @@ export function ProductBuyBox({
 
   const selectedColor = colors.find((c) => c.id === selectedColorId) || colors[0];
 
+  const keySpecs = useMemo(() => extractKeySpecs(product), [product]);
+
   const handleAddToCart = () => {
     addToCart(product, quantity, false);
     setIsAddedAnimation(true);
@@ -71,7 +74,7 @@ export function ProductBuyBox({
           {product.brand}
         </div>
         <span className="font-mono text-xs text-[#87888A]">
-          Арт. {product.sku}
+          Код товара: {product.sku}
         </span>
       </div>
 
@@ -135,22 +138,19 @@ export function ProductBuyBox({
       </div>
 
       {/* 4. Key Specs Capsule */}
-      <div className="bg-[#1E2228] border border-[#2B313A]/70 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs text-[#D7D9DB]">
-        <div className="flex items-center gap-1.5">
-          <span className="text-[#87888A]">Объем:</span>
-          <span className="font-semibold text-white">68 л</span>
+      {keySpecs.length > 0 && (
+        <div className="bg-[#1E2228] border border-[#2B313A]/70 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs text-[#D7D9DB]">
+          {keySpecs.map((spec, idx) => (
+            <React.Fragment key={idx}>
+              {idx > 0 && <span className="text-[#2B313A] select-none">•</span>}
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#87888A]">{spec.label}:</span>
+                <span className="font-semibold text-white">{spec.value}</span>
+              </div>
+            </React.Fragment>
+          ))}
         </div>
-        <span className="text-[#2B313A]">•</span>
-        <div className="flex items-center gap-1.5">
-          <span className="text-[#87888A]">Ширина:</span>
-          <span className="font-semibold text-white">60 см</span>
-        </div>
-        <span className="text-[#2B313A]">•</span>
-        <div className="flex items-center gap-1.5">
-          <span className="text-[#87888A]">Режимы:</span>
-          <span className="font-semibold text-white">Пар + СВЧ + Пиролиз</span>
-        </div>
-      </div>
+      )}
 
       {/* 5. Price & Benefits Box */}
       <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-4 sm:p-5 flex flex-col gap-2">

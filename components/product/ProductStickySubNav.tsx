@@ -79,8 +79,8 @@ export function ProductStickySubNav({
           />
 
           <div className="flex flex-col">
-            <span className="text-xs font-semibold text-white truncate max-w-[160px]">
-              {product.brand} {product.sku}
+            <span className="text-xs font-semibold text-white truncate max-w-[180px]" title={product.name}>
+              {product.name}
             </span>
             <span className="text-xs font-extrabold text-white">
               {formatPrice(product.price)}

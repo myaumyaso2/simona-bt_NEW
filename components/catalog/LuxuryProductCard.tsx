@@ -241,10 +241,10 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
   return (
     <div className="group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 transition-all duration-300 shadow-xl flex flex-col justify-between">
       <div>
-        {/* Top Media Area */}
+        {/* Top Media Area (White Luxury Showcase Tablet with object-contain) */}
         <Link
           href={`/product/${product.slug}`}
-          className="block relative aspect-[4/3] bg-[#1E2228] rounded-xl overflow-hidden flex items-center justify-center border border-[#2B313A]/50"
+          className="block relative aspect-[4/3] bg-white rounded-xl overflow-hidden flex items-center justify-center p-3 border border-white/10 group-hover:border-simona-teal/50 transition-colors shadow-inner"
         >
           {/* Badges Stack (Top-Left): Availability Status + Brand Tag */}
           <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1.5 max-w-[85%]">
@@ -252,25 +252,25 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
             product.physicalStatus === 'ACTIVE_KITCHEN' ||
             product.physicalStatus === 'EXHIBITION_15' ||
             product.physicalStatus === 'EXHIBITION_11' ? (
-              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-simona-teal/20 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-sm">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
                 На витрине
               </span>
             ) : product.physicalStatus === 'LOCAL_STOCK' ? (
-              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-simona-teal/20 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-sm">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
                 На складе
               </span>
             ) : product.physicalStatus === 'REMOTE_STOCK' ? (
-              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-simona-teal/20 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-sm">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
                 На удаленном складе
               </span>
             ) : (
-              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-medium bg-white/10 text-[#D7D9DB] border border-white/15 backdrop-blur-md shadow-sm">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-medium bg-[#16191D]/85 text-[#D7D9DB] border border-[#2B313A] backdrop-blur-md shadow-md">
                 Под заказ
               </span>
             )}
 
             {/* Brand Tag directly below status badge */}
-            <span className="px-2.5 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-[10px] uppercase font-bold tracking-wider text-white border border-white/10 shadow-sm">
+            <span className="px-2.5 py-0.5 rounded-md bg-[#16191D]/90 backdrop-blur-md text-[10px] uppercase font-bold tracking-wider text-white border border-[#2B313A] shadow-md">
               {product.brand}
             </span>
           </div>
@@ -334,11 +334,11 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
             </div>
           )}
 
-          {/* Product Image */}
+          {/* Product Image (object-contain ensures zero clipping of wide and compact appliances) */}
           <img
             src={mainImage}
             alt={product.name}
-            className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 select-none"
             loading="lazy"
           />
         </Link>
@@ -349,7 +349,7 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
           <div className="flex items-center justify-between gap-2 text-[11px] text-[#87888A] mb-1.5 font-medium">
             <span className="truncate">{product.category}</span>
             <span className="font-mono text-[#D7D9DB] shrink-0 font-medium">
-              Арт: {product.sku}
+              Код: {product.sku}
             </span>
           </div>
 

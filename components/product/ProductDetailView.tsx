@@ -13,12 +13,14 @@ import { ProductWhiteGloveService } from './ProductWhiteGloveService';
 import { ProductMobileBottomBar } from './ProductMobileBottomBar';
 import { OneClickBuyModal } from './OneClickBuyModal';
 import { ChevronRight, ArrowLeft } from 'lucide-react';
+import { getCategorySlugByName } from '@/data/catalogCategories';
 
 interface ProductDetailViewProps {
   product: ProductItem;
 }
 
 export function ProductDetailView({ product }: ProductDetailViewProps) {
+  const categorySlug = getCategorySlugByName(product.category);
   const [activeTab, setActiveTab] = useState('about');
   const [isOneClickBuyOpen, setIsOneClickBuyOpen] = useState(false);
 
@@ -49,7 +51,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
               Каталог
             </Link>
             <ChevronRight className="w-3 h-3 text-[#3E3D40]" />
-            <Link href="/catalog" className="hover:text-white transition-colors">
+            <Link href={`/catalog/${categorySlug}`} className="hover:text-white transition-colors">
               {product.category}
             </Link>
             <ChevronRight className="w-3 h-3 text-[#3E3D40]" />
@@ -58,13 +60,13 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
             </span>
           </nav>
 
-          {/* Return to catalog link */}
+          {/* Return to category link */}
           <Link
-            href="/catalog"
+            href={`/catalog/${categorySlug}`}
             className="inline-flex items-center gap-1 text-simona-teal hover:text-simona-teal-light transition-colors font-medium shrink-0"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Вернуться в каталог</span>
+            <span>Вернуться в категорию</span>
           </Link>
         </div>
 

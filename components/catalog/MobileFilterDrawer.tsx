@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { X } from 'lucide-react';
-import { CatalogSidebar, FilterState } from './CatalogSidebar';
+import { CatalogSidebar, FilterState, BrandOption } from './CatalogSidebar';
+import { CategoryFacet } from '@/lib/productFeatures';
 
 interface MobileFilterDrawerProps {
   isOpen: boolean;
@@ -11,8 +12,12 @@ interface MobileFilterDrawerProps {
   onFilterChange: (newFilters: Partial<FilterState>) => void;
   onResetFilters: () => void;
   totalFilteredCount: number;
+  availableBrands?: BrandOption[];
   brandCounts?: Record<string, number>;
   promoCounts?: Record<string, number>;
+  presenceCounts?: Record<string, number>;
+  priceBounds?: { min: number; max: number };
+  categoryFacets?: CategoryFacet[];
 }
 
 export function MobileFilterDrawer({
@@ -22,8 +27,12 @@ export function MobileFilterDrawer({
   onFilterChange,
   onResetFilters,
   totalFilteredCount,
+  availableBrands,
   brandCounts,
   promoCounts,
+  presenceCounts,
+  priceBounds,
+  categoryFacets,
 }: MobileFilterDrawerProps) {
   if (!isOpen) return null;
 
@@ -57,8 +66,12 @@ export function MobileFilterDrawer({
             filters={filters}
             onFilterChange={onFilterChange}
             onResetFilters={onResetFilters}
+            availableBrands={availableBrands}
             brandCounts={brandCounts}
             promoCounts={promoCounts}
+            presenceCounts={presenceCounts}
+            priceBounds={priceBounds}
+            categoryFacets={categoryFacets}
           />
         </div>
 

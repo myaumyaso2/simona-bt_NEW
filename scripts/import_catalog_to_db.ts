@@ -29,8 +29,8 @@ async function main() {
 
   for (let i = 0; i < rawProducts.length; i += batchSize) {
     const batch = rawProducts.slice(i, i + batchSize).map((p: any) => ({
-      id: p.id,
-      sku: p.sku || 'NO-SKU',
+      id: p.oneCGuid || p.id,
+      sku: p.oneCGuid || p.sku || 'NO-SKU',
       name: p.name,
       slug: p.slug,
       brand: p.brand || 'СИМОНА',

@@ -60,7 +60,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   // Fetch products matching database category names
   const { products, total } = await getCatalogProducts({
     categories: category.dbCategories,
-    limit: 48,
+    limit: 1500,
   });
 
   const breadcrumbs = [

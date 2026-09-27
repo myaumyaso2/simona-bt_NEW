@@ -67,6 +67,10 @@ export interface ProductItem {
   oldPrice?: number | null;
   inStock: boolean;
   stockCount: number;
+  stockKominterna?: number;
+  stockBelinskogo15?: number;
+  stockRemote?: number;
+  color?: string | null;
   shortDesc?: string | null;
   description: string;
   features?: ProductFeature[];

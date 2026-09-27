@@ -393,7 +393,7 @@ function ProfileContent() {
                             )}
                             <div className="min-w-0">
                               <span className="font-semibold text-white block truncate">{item.name}</span>
-                              <span className="text-[11px] text-[#87888A]">Арт: {item.sku} {item.brand ? `• ${item.brand}` : ''}</span>
+                              <span className="text-[11px] text-[#87888A]">Код: {item.sku} {item.brand ? `• ${item.brand}` : ''}</span>
                             </div>
                           </div>
                           <div className="text-right shrink-0 ml-4">
@@ -470,7 +470,7 @@ function ProfileContent() {
                       <h4 className="text-sm font-semibold text-white leading-snug line-clamp-2 mb-2">
                         {item.name}
                       </h4>
-                      <div className="text-xs text-[#87888A] mb-3">Арт: {item.sku}</div>
+                      <div className="text-xs text-[#87888A] mb-3">Код товара: {item.sku}</div>
                     </div>
 
                     <div className="pt-3 border-t border-[#2B313A] flex items-center justify-between">

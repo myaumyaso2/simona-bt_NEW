@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import { CATALOG_PRODUCTS, CATALOG_SUBCATEGORIES } from '@/data/catalogData';
+import { CATALOG_PRODUCTS } from '@/data/catalogData';
 import { MANUFACTURER_PROMOS, isProductInPromo } from '@/data/promosData';
 import { CatalogHero, PhysicalTabType } from './CatalogHero';
 import { CatalogSidebar, FilterState } from './CatalogSidebar';
@@ -15,35 +15,64 @@ import { CatalogPagination } from './CatalogPagination';
 import { ProductItem } from '@/types';
 import { CatalogServiceContour } from './CatalogServiceContour';
 import { MobileFilterDrawer } from './MobileFilterDrawer';
-import { getCategoryFacets } from '@/lib/productFeatures';
+import { getCategoryFacets, matchProductFeature } from '@/lib/productFeatures';
 
 interface CatalogViewProps {
   initialProducts?: ProductItem[];
   totalCount?: number;
+  categorySlug?: string;
+  categoryTitle?: string;
+  categoryDescription?: string;
 }
 
-export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = {}) {
+const PAGE_SIZE = 24;
+
+export function CatalogView({
+  initialProducts,
+  categorySlug,
+  categoryTitle,
+  categoryDescription,
+}: CatalogViewProps = {}) {
   const searchParams = useSearchParams();
   const rawProducts = useMemo(() => {
     return initialProducts && initialProducts.length > 0 ? initialProducts : CATALOG_PRODUCTS;
   }, [initialProducts]);
-  const [activeSubcategory, setActiveSubcategory] = useState<string>('all');
+
   const [activePhysicalTab, setActivePhysicalTab] = useState<PhysicalTabType>('ALL');
   const [sort, setSort] = useState<SortOption>('popular');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
+  // Dynamic price bounds for the current category
+  const priceBounds = useMemo(() => {
+    const prices = rawProducts.map((p) => p.price).filter((p) => p > 0);
+    if (prices.length === 0) return { min: 0, max: 500000 };
+    return {
+      min: Math.floor(Math.min(...prices) / 1000) * 1000,
+      max: Math.ceil(Math.max(...prices) / 1000) * 1000,
+    };
+  }, [rawProducts]);
+
   const [filters, setFilters] = useState<FilterState>({
     selectedPromos: [],
     selectedBrands: [],
-    priceMin: 85000,
-    priceMax: 890000,
+    priceMin: priceBounds.min,
+    priceMax: priceBounds.max,
     selectedLocations: [],
     selectedWidth: null,
     selectedColor: null,
     selectedFeatures: {},
   });
+
+  // Keep price filter aligned with category price bounds on mount/category change
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      priceMin: priceBounds.min,
+      priceMax: priceBounds.max,
+    }));
+  }, [priceBounds]);
 
   // Deep Link support: /catalog?promo=slug
   const promoParam = searchParams.get('promo');
@@ -65,14 +94,13 @@ export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = 
     setFilters({
       selectedPromos: [],
       selectedBrands: [],
-      priceMin: 85000,
-      priceMax: 890000,
+      priceMin: priceBounds.min,
+      priceMax: priceBounds.max,
       selectedLocations: [],
       selectedWidth: null,
       selectedColor: null,
       selectedFeatures: {},
     });
-    setActiveSubcategory('all');
     setActivePhysicalTab('ALL');
     setCurrentPage(1);
   };
@@ -98,201 +126,220 @@ export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = 
 
   // Dynamic category facets calculation based on current category selection
   const categoryFacets = useMemo(() => {
-    const base = rawProducts.filter((p) => {
-      if (activePhysicalTab !== 'ALL') {
-        if (activePhysicalTab === 'SHOWROOM') {
-          const isShowroom =
-            p.physicalStatus === 'SHOWROOM' ||
-            p.physicalStatus === 'ACTIVE_KITCHEN' ||
-            p.physicalStatus === 'EXHIBITION_15' ||
-            p.physicalStatus === 'EXHIBITION_11';
-          if (!isShowroom) return false;
-        } else if (p.physicalStatus !== activePhysicalTab) {
-          return false;
-        }
-      }
-      if (activeSubcategory !== 'all') {
-        const subtag = CATALOG_SUBCATEGORIES.find((s) => s.id === activeSubcategory);
-        if (subtag && !subtag.filterFn(p)) {
-          return false;
-        }
-      }
-      return true;
-    });
-    return getCategoryFacets(base, 6);
-  }, [rawProducts, activePhysicalTab, activeSubcategory]);
+    return getCategoryFacets(rawProducts, 8);
+  }, [rawProducts]);
 
   // Dynamic promo count calculation for current category and tab (Zero Dead Ends)
   const promoCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     MANUFACTURER_PROMOS.forEach((promo) => {
       const count = rawProducts.filter((product) => {
-        // Physical Tab Filter
-        if (activePhysicalTab !== 'ALL') {
-          if (activePhysicalTab === 'SHOWROOM') {
-            const isShowroom =
-              product.physicalStatus === 'SHOWROOM' ||
-              product.physicalStatus === 'ACTIVE_KITCHEN' ||
-              product.physicalStatus === 'EXHIBITION_15' ||
-              product.physicalStatus === 'EXHIBITION_11';
-            if (!isShowroom) return false;
-          } else if (product.physicalStatus !== activePhysicalTab) {
-            return false;
-          }
-        }
-        // Subcategory Filter
-        if (activeSubcategory !== 'all') {
-          const subtag = CATALOG_SUBCATEGORIES.find((s) => s.id === activeSubcategory);
-          if (subtag && !subtag.filterFn(product)) {
-            return false;
-          }
-        }
         return isProductInPromo(product, promo.slug);
       }).length;
       counts[promo.slug] = count;
     });
     return counts;
-  }, [rawProducts, activePhysicalTab, activeSubcategory]);
+  }, [rawProducts]);
+
+  // Dynamic brand list with real counts for the category
+  const availableBrands = useMemo(() => {
+    const counts: Record<string, number> = {};
+    rawProducts.forEach((p) => {
+      const b = p.brand?.trim() || 'СИМОНА';
+      counts[b] = (counts[b] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(([id, count]) => ({ id, name: id, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [rawProducts]);
+
+  const brandCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    availableBrands.forEach((b) => {
+      counts[b.id] = b.count;
+    });
+    return counts;
+  }, [availableBrands]);
+
+  // Dynamic presence counts for the category
+  const presenceCounts = useMemo(() => {
+    let showroom = 0;
+    let localStock = 0;
+    let remoteStock = 0;
+    let onOrder = 0;
+
+    rawProducts.forEach((p) => {
+      const isShowroom =
+        p.physicalStatus === 'SHOWROOM' ||
+        p.physicalStatus === 'ACTIVE_KITCHEN' ||
+        p.physicalStatus === 'EXHIBITION_15' ||
+        p.physicalStatus === 'EXHIBITION_11' ||
+        (p.stockBelinskogo15 !== undefined && p.stockBelinskogo15 > 0);
+
+      if (isShowroom) {
+        showroom++;
+      } else if (
+        p.physicalStatus === 'LOCAL_STOCK' ||
+        p.inStock ||
+        (p.stockKominterna !== undefined && p.stockKominterna > 0)
+      ) {
+        localStock++;
+      } else if (
+        p.physicalStatus === 'REMOTE_STOCK' ||
+        (p.stockRemote !== undefined && p.stockRemote > 0)
+      ) {
+        remoteStock++;
+      } else {
+        onOrder++;
+      }
+    });
+
+    return {
+      ALL: rawProducts.length,
+      SHOWROOM: showroom,
+      LOCAL_STOCK: localStock,
+      REMOTE_STOCK: remoteStock,
+      ON_ORDER: onOrder,
+    };
+  }, [rawProducts]);
 
   // Real-time dynamic filtering
   const filteredProducts = useMemo(() => {
-    return rawProducts.filter((product) => {
-      // 0. Promo Filter (OR logic: product participates in ANY of the selected promos)
-      if (filters.selectedPromos.length > 0) {
-        const matchesPromo = filters.selectedPromos.some((promoSlug) =>
-          isProductInPromo(product, promoSlug)
-        );
-        if (!matchesPromo) return false;
-      }
+    return rawProducts
+      .filter((product) => {
+        // 0. Promo Filter (OR logic: product participates in ANY of the selected promos)
+        if (filters.selectedPromos.length > 0) {
+          const matchesPromo = filters.selectedPromos.some((promoSlug) =>
+            isProductInPromo(product, promoSlug)
+          );
+          if (!matchesPromo) return false;
+        }
 
-      // 1. Physical Tab Filter
-      if (activePhysicalTab !== 'ALL') {
-        if (activePhysicalTab === 'SHOWROOM') {
+        // 1. Physical Tab Filter
+        if (activePhysicalTab !== 'ALL') {
           const isShowroom =
             product.physicalStatus === 'SHOWROOM' ||
             product.physicalStatus === 'ACTIVE_KITCHEN' ||
             product.physicalStatus === 'EXHIBITION_15' ||
-            product.physicalStatus === 'EXHIBITION_11';
-          if (!isShowroom) return false;
-        } else if (product.physicalStatus !== activePhysicalTab) {
-          return false;
-        }
-      }
+            product.physicalStatus === 'EXHIBITION_11' ||
+            (product.stockBelinskogo15 !== undefined && product.stockBelinskogo15 > 0);
 
-      // 2. Subcategory Quick Filter
-      if (activeSubcategory !== 'all') {
-        const subtag = CATALOG_SUBCATEGORIES.find((s) => s.id === activeSubcategory);
-        if (subtag && !subtag.filterFn(product)) {
-          return false;
-        }
-      }
+          const isLocal =
+            product.physicalStatus === 'LOCAL_STOCK' ||
+            product.inStock ||
+            (product.stockKominterna !== undefined && product.stockKominterna > 0);
 
-      // 3. Brand Filter
-      if (
-        filters.selectedBrands.length > 0 &&
-        !filters.selectedBrands.includes(product.brand)
-      ) {
-        return false;
-      }
+          const isRemote =
+            product.physicalStatus === 'REMOTE_STOCK' ||
+            (product.stockRemote !== undefined && product.stockRemote > 0);
 
-      // 4. Price Filter
-      if (product.price < filters.priceMin || product.price > filters.priceMax) {
-        return false;
-      }
-
-      // 5. Location Checkbox Filter
-      if (filters.selectedLocations.length > 0) {
-        const match = filters.selectedLocations.some((loc) => {
-          if (loc === 'SHOWROOM') {
-            return (
-              product.physicalStatus === 'SHOWROOM' ||
-              product.physicalStatus === 'ACTIVE_KITCHEN' ||
-              product.physicalStatus === 'EXHIBITION_15' ||
-              product.physicalStatus === 'EXHIBITION_11'
-            );
+          if (activePhysicalTab === 'SHOWROOM') {
+            if (!isShowroom) return false;
+          } else if (activePhysicalTab === 'LOCAL_STOCK') {
+            if (!isLocal || isShowroom) return false;
+          } else if (activePhysicalTab === 'REMOTE_STOCK') {
+            if (!isRemote || isShowroom) return false;
+          } else if (activePhysicalTab === 'ON_ORDER') {
+            if (isLocal || isRemote || isShowroom) return false;
           }
-          return product.physicalStatus === loc;
-        });
-        if (!match) return false;
-      }
+        }
 
-      // 6. Width Filter
-      if (filters.selectedWidth) {
+        // 2. Brand Filter
         if (
-          filters.selectedWidth === '45 см' &&
-          !(product.dimensions?.includes('45') || product.name.includes('45'))
+          filters.selectedBrands.length > 0 &&
+          !filters.selectedBrands.includes(product.brand)
         ) {
           return false;
         }
-        if (
-          filters.selectedWidth === '60 см' &&
-          !(product.dimensions?.includes('60') || product.dimensions?.includes('595') || product.name.includes('60'))
-        ) {
-          return false;
-        }
-        if (
-          filters.selectedWidth === '90 см' &&
-          !(product.dimensions?.includes('90') || product.name.includes('90'))
-        ) {
-          return false;
-        }
-      }
 
-      // 7. Dynamic Feature Facets Filter (AND between facets, OR within same facet)
-      if (filters.selectedFeatures && Object.keys(filters.selectedFeatures).length > 0) {
-        for (const [label, vals] of Object.entries(filters.selectedFeatures)) {
-          if (!vals || vals.length === 0) continue;
-          const match = product.features?.some(
-            (f) =>
-              f.label.trim().toLowerCase() === label.trim().toLowerCase() &&
-              vals.includes(f.value.trim())
-          );
+        // 3. Price Filter
+        if (product.price < filters.priceMin || product.price > filters.priceMax) {
+          return false;
+        }
+
+        // 4. Location Checkbox Filter
+        if (filters.selectedLocations.length > 0) {
+          const match = filters.selectedLocations.some((loc) => {
+            if (loc === 'SHOWROOM') {
+              return (
+                product.physicalStatus === 'SHOWROOM' ||
+                product.physicalStatus === 'ACTIVE_KITCHEN' ||
+                product.physicalStatus === 'EXHIBITION_15' ||
+                product.physicalStatus === 'EXHIBITION_11' ||
+                (product.stockBelinskogo15 !== undefined && product.stockBelinskogo15 > 0)
+              );
+            }
+            if (loc === 'LOCAL_STOCK') {
+              return (
+                product.physicalStatus === 'LOCAL_STOCK' ||
+                product.inStock ||
+                (product.stockKominterna !== undefined && product.stockKominterna > 0)
+              );
+            }
+            if (loc === 'REMOTE_STOCK') {
+              return (
+                product.physicalStatus === 'REMOTE_STOCK' ||
+                (product.stockRemote !== undefined && product.stockRemote > 0)
+              );
+            }
+            if (loc === 'ON_ORDER') {
+              return product.physicalStatus === 'ON_ORDER';
+            }
+            return false;
+          });
           if (!match) return false;
         }
-      }
 
-      return true;
-    }).sort((a, b) => {
-      if (sort === 'popular') {
-        return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
-      }
-      if (sort === 'price_asc') {
-        return a.price - b.price;
-      }
-      if (sort === 'price_desc') {
-        return b.price - a.price;
-      }
-      if (sort === 'newest') {
-        return b.id.localeCompare(a.id);
-      }
-      return 0;
-    });
-  }, [rawProducts, activePhysicalTab, activeSubcategory, filters, sort]);
+        // 5. Dynamic Feature Facets Filter
+        if (filters.selectedFeatures && Object.keys(filters.selectedFeatures).length > 0) {
+          for (const [label, vals] of Object.entries(filters.selectedFeatures)) {
+            if (!vals || vals.length === 0) continue;
+            if (!matchProductFeature(product, label, vals)) {
+              return false;
+            }
+          }
+        }
 
-  // Brand count calculation for the sidebar
-  const brandCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    rawProducts.forEach((p) => {
-      counts[p.brand] = (counts[p.brand] || 0) + 1;
-    });
-    return counts;
-  }, [rawProducts]);
+        return true;
+      })
+      .sort((a, b) => {
+        if (sort === 'popular') {
+          return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
+        }
+        if (sort === 'price_asc') {
+          return a.price - b.price;
+        }
+        if (sort === 'price_desc') {
+          return b.price - a.price;
+        }
+        if (sort === 'newest') {
+          return b.id.localeCompare(a.id);
+        }
+        return 0;
+      });
+  }, [rawProducts, activePhysicalTab, filters, sort]);
+
+  // Client-side pagination
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    return filteredProducts.slice(startIndex, startIndex + PAGE_SIZE);
+  }, [filteredProducts, currentPage]);
 
   return (
     <div className="bg-[#111315] min-h-screen text-white">
       {/* 1. Category Hero Block */}
       <CatalogHero
-        activeSubcategory={activeSubcategory}
-        onSelectSubcategory={(id) => {
-          setActiveSubcategory(id);
-          setCurrentPage(1);
-        }}
         activePhysicalTab={activePhysicalTab}
         onSelectPhysicalTab={(tab) => {
           setActivePhysicalTab(tab);
           setCurrentPage(1);
         }}
-        totalCount={totalCount ?? filteredProducts.length}
+        totalCount={rawProducts.length}
+        presenceCounts={presenceCounts}
+        categoryTitle={categoryTitle}
+        categorySlug={categorySlug}
+        categoryDescription={categoryDescription}
       />
 
       {/* 2. Main Catalog Workspace: Split-Layout */}
@@ -304,8 +351,11 @@ export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = 
               filters={filters}
               onFilterChange={handleFilterChange}
               onResetFilters={handleResetFilters}
+              availableBrands={availableBrands}
               brandCounts={brandCounts}
               promoCounts={promoCounts}
+              presenceCounts={presenceCounts}
+              priceBounds={priceBounds}
               categoryFacets={categoryFacets}
             />
           </div>
@@ -373,9 +423,9 @@ export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = 
             )}
 
             {/* Product Cards: Grid or List */}
-            {filteredProducts.length > 0 ? (
+            {paginatedProducts.length > 0 ? (
               <motion.div
-                key={`${activePhysicalTab}-${activeSubcategory}-${sort}-${viewMode}`}
+                key={`${activePhysicalTab}-${sort}-${viewMode}-${currentPage}`}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
@@ -385,7 +435,7 @@ export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = 
                     : 'flex flex-col space-y-4'
                 }
               >
-                {filteredProducts.map((product) =>
+                {paginatedProducts.map((product) =>
                   viewMode === 'grid' ? (
                     <LuxuryProductCard key={product.id} product={product} />
                   ) : (
@@ -411,14 +461,20 @@ export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = 
             )}
 
             {/* Pagination & Load More */}
-            <CatalogPagination
-              currentPage={currentPage}
-              totalPages={18}
-              totalItems={totalCount ?? filteredProducts.length}
-              shownItems={Math.min(24, Math.max(filteredProducts.length, 6))}
-              onPageChange={setCurrentPage}
-              onLoadMore={() => alert('Загружена следующая порция моделей каталога')}
-            />
+            {filteredProducts.length > PAGE_SIZE && (
+              <CatalogPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={filteredProducts.length}
+                shownItems={paginatedProducts.length}
+                onPageChange={setCurrentPage}
+                onLoadMore={() => {
+                  if (currentPage < totalPages) {
+                    setCurrentPage((prev) => prev + 1);
+                  }
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -434,8 +490,12 @@ export function CatalogView({ initialProducts, totalCount }: CatalogViewProps = 
         onFilterChange={handleFilterChange}
         onResetFilters={handleResetFilters}
         totalFilteredCount={filteredProducts.length}
+        availableBrands={availableBrands}
         brandCounts={brandCounts}
         promoCounts={promoCounts}
+        presenceCounts={presenceCounts}
+        priceBounds={priceBounds}
+        categoryFacets={categoryFacets}
       />
     </div>
   );

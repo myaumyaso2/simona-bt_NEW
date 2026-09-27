@@ -58,7 +58,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {/* Category & SKU */}
             <div className="flex items-center justify-between gap-2 text-[11px] text-[#87888A] mb-1.5 font-medium">
               <span className="truncate">{product.category}</span>
-              <span className="font-mono text-[#3E3D40] font-semibold shrink-0">Арт: {product.sku}</span>
+              <span className="font-mono text-[#3E3D40] font-semibold shrink-0">Код: {product.sku}</span>
             </div>
 
             {/* Product Name */}

@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProductItem } from '@/types';
+import { groupProductFeatures } from '@/lib/productFeatures';
 import {
   MIELE_SUITE_BUNDLE,
   MIELE_CARE_ACCESSORIES,
@@ -24,6 +25,7 @@ import {
   SimonaIconStar,
   SimonaIconCheck,
   SimonaIconSparkles,
+  SimonaIconSearch,
 } from '@/components/brand/SimonaIcons';
 
 interface ProductTabsSectionProps {
@@ -51,6 +53,38 @@ export function ProductTabsSection({
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
+
+  const [specQuery, setSpecQuery] = useState('');
+
+  const computedSpecGroups = useMemo(() => {
+    let baseGroups = product.specGroups && product.specGroups.length > 0
+      ? product.specGroups
+      : groupProductFeatures(product.features || []);
+
+    // Also inject Dimensions & Warranty if not already in features
+    if (product.dimensions) {
+      const dimGroup = baseGroups.find((g) => g.groupName === 'Габариты и монтаж');
+      if (dimGroup && !dimGroup.items.some((i) => i.label.toLowerCase().includes('габарит'))) {
+        dimGroup.items.unshift({ label: 'Габариты (ВхШхГ)', value: product.dimensions });
+      }
+    }
+
+    if (!specQuery.trim()) return baseGroups;
+
+    const q = specQuery.toLowerCase().trim();
+    return baseGroups
+      .map((g) => ({
+        ...g,
+        items: g.items.filter(
+          (i) => i.label.toLowerCase().includes(q) || i.value.toLowerCase().includes(q)
+        ),
+      }))
+      .filter((g) => g.items.length > 0);
+  }, [product, specQuery]);
+
+  const totalSpecCount = useMemo(() => {
+    return computedSpecGroups.reduce((acc, g) => acc + g.items.length, 0);
+  }, [computedSpecGroups]);
 
   // Bundle calculations
   const bundleItems = MIELE_SUITE_BUNDLE;
@@ -178,57 +212,107 @@ export function ProductTabsSection({
           transition={{ duration: 0.3 }}
           className="flex flex-col gap-8"
         >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#2B313A]">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#2B313A]">
             <div>
-              <span className="text-xs uppercase tracking-widest text-simona-teal font-semibold">
-                ПОЛНЫЕ ТЕХНИЧЕСКИЕ ПАРАМЕТРЫ
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs uppercase tracking-widest text-simona-teal font-semibold">
+                  ПОЛНЫЕ ТЕХНИЧЕСКИЕ ПАРАМЕТРЫ
+                </span>
+                {totalSpecCount > 0 && (
+                  <span className="px-2 py-0.5 rounded-md bg-[#1E2228] border border-[#2B313A] text-[11px] font-mono text-[#87888A]">
+                    {totalSpecCount} параметров
+                  </span>
+                )}
+              </div>
               <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white mt-1">
                 Технические характеристики
               </h2>
             </div>
 
-            {product.schematicPdfUrl && (
-              <a
-                href={product.schematicPdfUrl}
-                download
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors"
-              >
-                <SimonaIconDownload className="w-3.5 h-3.5 text-simona-teal" />
-                <span>Скачать паспорт модели (PDF)</span>
-              </a>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {(product.specGroups || []).map((group, gIdx) => (
-              <div
-                key={gIdx}
-                className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 flex flex-col gap-4"
-              >
-                <h3 className="text-sm font-bold uppercase tracking-wider text-simona-teal border-b border-[#2B313A] pb-3">
-                  {group.groupName}
-                </h3>
-
-                <div className="flex flex-col gap-3.5">
-                  {group.items.map((item, iIdx) => (
-                    <div
-                      key={iIdx}
-                      className="flex items-baseline justify-between text-xs gap-3"
-                    >
-                      <span className="text-[#87888A] shrink-0 font-medium">
-                        {item.label}
-                      </span>
-                      <span className="grow border-b border-dotted border-[#2B313A] mx-2" />
-                      <span className="text-white font-semibold text-right shrink-0">
-                        {item.value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Quick Search inside Specs */}
+              <div className="relative w-full sm:w-64">
+                <input
+                  type="text"
+                  placeholder="Поиск по параметрам..."
+                  value={specQuery}
+                  onChange={(e) => setSpecQuery(e.target.value)}
+                  className="w-full bg-[#16191D] border border-[#2B313A] focus:border-simona-teal rounded-xl pl-9 pr-8 py-2 text-xs text-white placeholder-[#87888A] focus:outline-none transition-colors"
+                />
+                <SimonaIconSearch className="w-4 h-4 text-[#87888A] absolute left-3 top-2.5 pointer-events-none" />
+                {specQuery && (
+                  <button
+                    onClick={() => setSpecQuery('')}
+                    className="absolute right-2.5 top-2.5 text-xs text-[#87888A] hover:text-white"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
-            ))}
+
+              {product.schematicPdfUrl && (
+                <a
+                  href={product.schematicPdfUrl}
+                  download
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal text-white text-xs font-semibold transition-colors shrink-0"
+                >
+                  <SimonaIconDownload className="w-3.5 h-3.5 text-simona-teal" />
+                  <span>Паспорт (PDF)</span>
+                </a>
+              )}
+            </div>
           </div>
+
+          {computedSpecGroups.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {computedSpecGroups.map((group, gIdx) => (
+                <div
+                  key={gIdx}
+                  className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 flex flex-col gap-4 shadow-sm hover:border-[#3E4550] transition-colors"
+                >
+                  <div className="flex items-center justify-between border-b border-[#2B313A] pb-3">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-simona-teal">
+                      {group.groupName}
+                    </h3>
+                    <span className="text-[11px] font-mono text-[#87888A]">
+                      [{group.items.length}]
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    {group.items.map((item, iIdx) => (
+                      <div
+                        key={iIdx}
+                        className="flex items-baseline justify-between text-xs gap-3 group/item py-0.5 hover:bg-white/[0.02] px-1 rounded transition-colors"
+                      >
+                        <span className="text-[#87888A] group-hover/item:text-[#D7D9DB] shrink-0 font-medium transition-colors">
+                          {item.label}
+                        </span>
+                        <span className="grow border-b border-dotted border-[#2B313A] mx-2" />
+                        <span className="text-white font-semibold text-right shrink-0 max-w-[55%]">
+                          {item.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-10 text-center flex flex-col items-center justify-center gap-3">
+              <span className="text-sm text-[#87888A]">
+                {specQuery ? `По запросу «${specQuery}» ничего не найдено` : 'Характеристики не указаны'}
+              </span>
+              {specQuery && (
+                <button
+                  onClick={() => setSpecQuery('')}
+                  className="text-xs text-simona-teal hover:underline font-semibold"
+                >
+                  Сбросить поиск
+                </button>
+              )}
+            </div>
+          )}
         </motion.div>
       )}
 
@@ -495,7 +579,7 @@ export function ProductTabsSection({
                     </div>
 
                     <span className="text-[10px] font-mono text-[#87888A]">
-                      Арт. {acc.sku}
+                      Код товара: {acc.sku}
                     </span>
                     <h4 className="text-xs font-bold text-white line-clamp-2 mt-1">
                       {acc.name}

@@ -35,7 +35,8 @@ $TarExcludes = @(
     "--exclude=*.log",
     "--exclude=.env*",
     "--exclude=staging_bundle.tar.gz",
-    "--exclude=prisma/dev.db*"
+    "--exclude=prisma/dev.db*",
+    "--exclude=data/*.backup*"
 )
 
 $ProjectRoot = Resolve-Path (Join-Path $PSScriptRoot "..")

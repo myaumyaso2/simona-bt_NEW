@@ -218,7 +218,7 @@ export function KeyDirectionsSection() {
           {CATEGORIES.map((cat, idx) => (
             <Link
               key={idx}
-              href={`/catalog?category=${cat.slug}`}
+              href={`/catalog/${cat.slug}`}
               className={`direction-card group relative rounded-2xl overflow-hidden border border-[#2B313A] hover:border-simona-teal/60 bg-[#16191D] p-6 sm:p-7 flex flex-col justify-end min-h-[260px] sm:min-h-[280px] transition-colors duration-500 shadow-xl ${
                 cat.span || 'lg:col-span-4'
               }`}

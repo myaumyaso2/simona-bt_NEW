@@ -181,7 +181,7 @@ export default function ComparePage() {
                       </Link>
 
                       <div className="text-[10px] text-[#87888A] mb-3">
-                        Арт: {item.sku}
+                        Код товара: {item.sku}
                       </div>
                     </div>
 

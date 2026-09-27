@@ -163,6 +163,7 @@ export function CartDrawer() {
                         </div>
                         <div className="min-w-0">
                           <div className="text-xs font-bold text-[#16181B] truncate">{product.name}</div>
+                          <div className="text-[10px] font-mono text-[#87888A]">Код: {product.sku}</div>
                           <div className="text-xs font-montserrat font-bold text-simona-teal mt-0.5">
                             {formatPrice(product.price)}
                           </div>

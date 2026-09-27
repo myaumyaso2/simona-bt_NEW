@@ -148,14 +148,15 @@ export interface CategoryFacet {
 /**
  * Computes top dynamic filter facets for the current product selection in catalog.
  */
-export function getCategoryFacets(products: ProductItem[], maxFacets = 5): CategoryFacet[] {
+export function getCategoryFacets(products: ProductItem[], maxFacets = 8): CategoryFacet[] {
   if (!products || products.length === 0) return [];
 
-  // Exclude labels that are already handled by primary filters
+  // Exclude labels that are internal or raw dimensional decimals
   const excludeLabels = new Set([
-    'бренд', 'цена', 'страна производства', 'гарантия',
-    'высота (см)', 'ширина (см)', 'глубина (см)', 'цвет',
-    'артикул', 'код', 'модель'
+    'бренд', 'цена', 'гарантия',
+    'артикул', 'код', 'модель', 'id', 'описание',
+    'длина (см)', 'высота (см)', 'глубина (см)', 'вес (кг)',
+    'габариты упаковки (см)', 'вес в упаковке (кг)'
   ]);
 
   const labelCounts: Record<string, number> = {};
@@ -163,23 +164,46 @@ export function getCategoryFacets(products: ProductItem[], maxFacets = 5): Categ
 
   products.forEach((p) => {
     (p.features || []).forEach((f) => {
-      const norm = f.label.trim();
+      let norm = f.label.trim();
       const lower = norm.toLowerCase();
       if (excludeLabels.has(lower)) return;
       if (!f.value || f.value === '-' || f.value.toLowerCase() === 'нет') return;
 
+      let val = f.value.trim();
+
+      // Normalize width values into standard Quiet Luxury installation buckets
+      if (lower.includes('ширина')) {
+        norm = 'Ширина';
+        const num = parseFloat(val.replace(',', '.'));
+        if (!isNaN(num)) {
+          if (num < 37) val = '30 см';
+          else if (num < 55) val = '45 см';
+          else if (num < 67) val = '60 см';
+          else if (num < 77) val = '70–75 см';
+          else if (num < 86) val = '80–85 см';
+          else val = '90 см и шире';
+        }
+      }
+
       labelCounts[norm] = (labelCounts[norm] || 0) + 1;
       if (!labelValues[norm]) labelValues[norm] = {};
-      const val = f.value.trim();
       labelValues[norm][val] = (labelValues[norm][val] || 0) + 1;
     });
   });
 
+  const totalProducts = products.length;
+
   const sortedLabels = Object.entries(labelCounts)
     .filter(([label, count]) => {
       const vals = Object.keys(labelValues[label]);
-      // Meaningful facets: at least 2 distinct values, at most 20, covering a decent subset of products
-      return vals.length >= 2 && vals.length <= 20 && count >= Math.min(2, products.length * 0.1);
+      // Skip if 100% of products have identical single value (useless filter)
+      if (vals.length === 1 && count >= totalProducts * 0.98) return false;
+      // Meaningful facets:
+      // Multi-value facets: 2 to 20 options
+      // Boolean facets: 1 option with 5% to 95% prevalence
+      const isMultiValue = vals.length >= 2 && vals.length <= 20 && count >= Math.min(2, totalProducts * 0.05);
+      const isUsefulBoolean = vals.length === 1 && count >= Math.min(2, totalProducts * 0.05) && count <= totalProducts * 0.95;
+      return isMultiValue || isUsefulBoolean;
     })
     .sort((a, b) => b[1] - a[1])
     .slice(0, maxFacets);
@@ -194,5 +218,43 @@ export function getCategoryFacets(products: ProductItem[], maxFacets = 5): Categ
       totalCount: count,
       options,
     };
+  });
+}
+
+/**
+ * Accurately matches a product against selected dynamic facet values.
+ */
+export function matchProductFeature(
+  product: ProductItem,
+  facetLabel: string,
+  selectedValues: string[]
+): boolean {
+  if (!selectedValues || selectedValues.length === 0) return true;
+  const targetLower = facetLabel.trim().toLowerCase();
+
+  return (product.features || []).some((f) => {
+    const fLower = f.label.trim().toLowerCase();
+    let val = f.value?.trim() || '';
+    if (!val || val === '-' || val.toLowerCase() === 'нет') return false;
+
+    // Width handling with same architectural buckets
+    if (fLower.includes('ширина') && (targetLower.includes('ширина') || targetLower === 'ширина')) {
+      const num = parseFloat(val.replace(',', '.'));
+      if (!isNaN(num)) {
+        if (num < 37) val = '30 см';
+        else if (num < 55) val = '45 см';
+        else if (num < 67) val = '60 см';
+        else if (num < 77) val = '70–75 см';
+        else if (num < 86) val = '80–85 см';
+        else val = '90 см и шире';
+      }
+      return selectedValues.includes(val);
+    }
+
+    if (fLower === targetLower) {
+      return selectedValues.includes(val);
+    }
+
+    return false;
   });
 }

@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>СИМОНА — 3 Варианта Мега-Меню Каталога (Quiet Luxury Showcase)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-canvas: #111315;
+      --color-surface: #16191D;
+      --color-card: #1E2228;
+      --color-card-hover: #262B33;
+      --color-border: #2B313A;
+      --color-border-hover: rgba(0, 151, 156, 0.4);
+      --color-teal: #00979C;
+      --color-teal-light: #00B5BA;
+      --color-teal-glow: rgba(0, 151, 156, 0.35);
+      --color-wine: #8A151A;
+      --color-wine-light: #A61C22;
+      --color-wine-glow: rgba(138, 21, 26, 0.4);
+      --color-white: #FFFFFF;
+      --color-light-grey: #D7D9DB;
+      --color-muted: #87888A;
+      --font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --radius-btn: 12px;  /* rounded-xl */
+      --radius-badge: 6px; /* rounded-md */
+      --radius-card: 16px; /* rounded-2xl */
+      --transition-smooth: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--color-canvas);
+      color: var(--color-white);
+      font-family: var(--font-family);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* VARIANT SELECTOR DOCK */
+    .variant-dock {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #0D0E10;
+      border-bottom: 1px solid var(--color-border);
+      padding: 10px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .variant-dock-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .variant-dock-title span {
+      color: var(--color-teal);
+      font-weight: 700;
+    }
+
+    .variant-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .variant-btn {
+      font-family: var(--font-family);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: var(--radius-btn);
+      border: 1px solid var(--color-border);
+      background: var(--color-card);
+      color: var(--color-light-grey);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .variant-btn:hover {
+      border-color: var(--color-teal);
+      color: var(--color-white);
+    }
+
+    .variant-btn.active {
+      background: var(--color-teal);
+      border-color: var(--color-teal);
+      color: var(--color-white);
+      box-shadow: 0 0 16px var(--color-teal-glow);
+    }
+
+    .variant-tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: var(--radius-badge);
+      background: rgba(0,0,0,0.25);
+      text-transform: uppercase;
+    }
+
+    /* UMBRELLA BAR */
+    .umbrella-bar {
+      background: #0B0C0E;
+      border-bottom: 1px solid rgba(43, 49, 58, 0.6);
+      padding: 7px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--color-muted);
+    }
+
+    .umbrella-left, .umbrella-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .umbrella-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border-radius: var(--radius-badge);
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      color: var(--color-light-grey);
+    }
+
+    .umbrella-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-teal);
+      box-shadow: 0 0 6px var(--color-teal);
+    }
+
+    /* SITE HEADER */
+    .header-main {
+      background: rgba(17, 19, 21, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--color-border);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      position: relative;
+      z-index: 50;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .brand-logo-text {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--color-white);
+    }
+
+    .brand-logo-badge {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--color-teal);
+      letter-spacing: 0.1em;
+      border-left: 1px solid var(--color-border);
+      padding-left: 8px;
+    }
+
+    /* CATALOG TRIGGER BUTTON */
+    .catalog-trigger-btn {
+      font-family: var(--font-family);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      border-radius: var(--radius-btn);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-white);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: var(--transition-smooth);
+    }
+
+    .catalog-trigger-btn:hover {
+      border-color: var(--color-teal);
+      box-shadow: 0 0 12px var(--color-teal-glow);
+    }
+
+    .catalog-trigger-btn.is-active {
+      background: var(--color-teal);
+      border-color: var(--color-teal);
+      color: var(--color-white);
+      box-shadow: 0 0 18px var(--color-teal-glow);
+    }
+
+    .burger-icon {
+      width: 16px;
+      height: 12px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .burger-icon span {
+      display: block;
+      height: 2px;
+      width: 100%;
+      background: currentColor;
+      border-radius: 1px;
+      transition: var(--transition-smooth);
+    }
+
+    .catalog-trigger-btn.is-active .burger-icon span:nth-child(1) {
+      transform: translateY(5px) rotate(45deg);
+    }
+    .catalog-trigger-btn.is-active .burger-icon span:nth-child(2) {
+      opacity: 0;
+    }
+    .catalog-trigger-btn.is-active .burger-icon span:nth-child(3) {
+      transform: translateY(-5px) rotate(-45deg);
+    }
+
+    /* SEARCH BAR */
+    .header-search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      padding: 8px 16px;
+      width: 280px;
+      color: var(--color-muted);
+      font-size: 12px;
+    }
+
+    /* NAV LINKS */
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .header-nav-link {
+      color: var(--color-light-grey);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: var(--transition-smooth);
+    }
+
+    .header-nav-link:hover {
+      color: var(--color-white);
+    }
+
+    .header-nav-link.promo {
+      color: var(--color-wine-light);
+      position: relative;
+    }
+
+    .header-nav-link.promo:hover {
+      color: #ff4757;
+    }
+
+    /* HEADER ACTIONS */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .action-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-btn);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-light-grey);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .action-btn:hover {
+      border-color: var(--color-teal);
+      color: var(--color-white);
+    }
+
+    .action-badge-count {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--color-teal);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ========================================================= */
+    /* BACKDROP OVERLAY */
+    /* ========================================================= */
+    .mega-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 6, 8, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 40;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .mega-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ========================================================= */
+    /* MEGA-MENU CORE WRAPPER */
+    /* ========================================================= */
+    .mega-menu-container {
+      display: none !important;
+      z-index: 45;
+      animation: menuFadeIn 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .mega-menu-container.is-active-view {
+      display: block !important;
+    }
+
+    #container-var-2.is-active-view {
+      display: flex !important;
+    }
+
+    @keyframes menuFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ========================================================= */
+    /* VARIANT 1: HEADER-ANCHORED (Directly under header) */
+    /* ========================================================= */
+    .variant-1-wrapper {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #14171B;
+      border-bottom: 1px solid var(--color-border);
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.85);
+    }
+
+    /* ========================================================= */
+    /* VARIANT 2: AUTONOMOUS OVERLAY (Hausdorf Reference Replica) */
+    /* ========================================================= */
+    .variant-2-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 11, 13, 0.94);
+      backdrop-filter: blur(14px);
+      z-index: 60;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+      padding: 100px 24px 40px;
+    }
+
+    .variant-2-card {
+      width: 100%;
+      max-width: 1360px;
+      background: #15181C;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
+      overflow: hidden;
+      animation: menuScaleIn 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes menuScaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.98) translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    /* ========================================================= */
+    /* VARIANT 3: FLOATING ISLAND (Modern Detached Island) */
+    /* ========================================================= */
+    .variant-3-wrapper {
+      position: absolute;
+      top: calc(100% + 14px);
+      left: 32px;
+      right: 32px;
+      max-width: 1380px;
+      margin: 0 auto;
+      background: #15181D;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.92), 0 0 0 1px rgba(255,255,255,0.04) inset;
+      overflow: hidden;
+    }
+
+    /* ========================================================= */
+    /* SHARED MEGA-MENU INTERIOR COMPONENTS */
+    /* ========================================================= */
+
+    /* BRAND BAR (TOP STRIP) */
+    .brand-bar-strip {
+      background: #111316;
+      border-bottom: 1px solid var(--color-border);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .brand-bar-left::-webkit-scrollbar {
+      display: none;
+    }
+
+    .brand-pill {
+      font-family: var(--font-family);
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: var(--radius-btn);
+      border: 1px solid var(--color-border);
+      background: var(--color-card);
+      color: var(--color-white);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: var(--transition-smooth);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-pill:hover {
+      border-color: var(--color-teal);
+      color: var(--color-teal-light);
+      background: #242930;
+      box-shadow: 0 0 14px var(--color-teal-glow);
+    }
+
+    .brand-pill.promo {
+      background: rgba(138, 21, 26, 0.25);
+      border-color: rgba(138, 21, 26, 0.7);
+      color: #FFFFFF;
+    }
+
+    .brand-pill.promo:hover {
+      background: var(--color-wine);
+      border-color: var(--color-wine-light);
+      box-shadow: 0 0 14px var(--color-wine-glow);
+    }
+
+    .brand-bar-all {
+      font-family: var(--font-family);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-muted);
+      text-decoration: none;
+      white-space: nowrap;
+      padding: 8px 14px;
+      border-radius: var(--radius-btn);
+      border: 1px solid transparent;
+      transition: var(--transition-smooth);
+    }
+
+    .brand-bar-all:hover {
+      color: var(--color-white);
+      border-color: var(--color-border);
+      background: var(--color-card);
+    }
+
+    .close-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-btn);
+      border: 1px solid var(--color-border);
+      background: var(--color-card);
+      color: var(--color-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      flex-shrink: 0;
+    }
+
+    .close-btn:hover {
+      color: var(--color-white);
+      border-color: var(--color-teal);
+      background: var(--color-card-hover);
+    }
+
+    /* 4-COLUMN GRID */
+    .catalog-columns-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+      padding: 32px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .catalog-column {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .category-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .category-group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .group-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .group-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-teal);
+      box-shadow: 0 0 6px var(--color-teal-glow);
+    }
+
+    .group-dot.wine {
+      background: var(--color-wine-light);
+      box-shadow: 0 0 6px var(--color-wine-glow);
+    }
+
+    .group-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-white);
+      text-decoration: none;
+    }
+
+    .group-title:hover {
+      color: var(--color-teal);
+    }
+
+    .group-count {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--color-muted);
+      background: var(--color-surface);
+      padding: 2px 6px;
+      border-radius: var(--radius-badge);
+      border: 1px solid var(--color-border);
+    }
+
+    /* SUBCATEGORY LINKS LIST */
+    .subcat-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .subcat-link {
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--color-light-grey);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 6px;
+      border-radius: var(--radius-badge);
+      transition: var(--transition-smooth);
+    }
+
+    .subcat-link:hover {
+      color: var(--color-white);
+      transform: translateX(4px);
+      background: rgba(0, 151, 156, 0.07);
+    }
+
+    .subcat-link:hover .subcat-name {
+      color: var(--color-white);
+      font-weight: 500;
+    }
+
+    .subcat-link:hover .subcat-arrow {
+      opacity: 1;
+      transform: translateX(0);
+      color: var(--color-teal);
+    }
+
+    .subcat-arrow {
+      font-size: 11px;
+      color: var(--color-muted);
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: var(--transition-smooth);
+    }
+
+    .subcat-badge {
+      font-size: 9.5px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: var(--radius-badge);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .subcat-badge.wine {
+      background: rgba(138, 21, 26, 0.35);
+      border: 1px solid rgba(138, 21, 26, 0.6);
+      color: #FFFFFF;
+    }
+
+    .subcat-badge.teal {
+      background: rgba(0, 151, 156, 0.2);
+      border: 1px solid rgba(0, 151, 156, 0.5);
+      color: var(--color-teal-light);
+    }
+
+    /* SERVICE O2O FOOTER */
+    .mega-menu-service-footer {
+      background: #0E1012;
+      border-top: 1px solid var(--color-border);
+      padding: 14px 32px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .service-footer-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .service-chip {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-light-grey);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-btn);
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      transition: var(--transition-smooth);
+    }
+
+    .service-chip:hover {
+      border-color: var(--color-teal);
+      color: var(--color-white);
+      background: var(--color-card-hover);
+    }
+
+    .service-chip.wine-variant:hover {
+      border-color: var(--color-wine-light);
+      box-shadow: 0 0 10px var(--color-wine-glow);
+    }
+
+    .service-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--color-teal);
+      box-shadow: 0 0 8px var(--color-teal-glow);
+    }
+
+    .service-dot.wine {
+      background: var(--color-wine-light);
+      box-shadow: 0 0 8px var(--color-wine-glow);
+    }
+
+    .service-footer-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--color-muted);
+    }
+
+    .service-phone {
+      font-weight: 700;
+      color: var(--color-white);
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+    }
+
+    .service-phone:hover {
+      color: var(--color-teal);
+    }
+
+    /* MOCK HERO BACKGROUND FOR REALISTIC FEEL */
+    .mock-hero {
+      position: relative;
+      padding: 100px 32px 140px;
+      max-width: 1440px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .mock-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-badge);
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-light-grey);
+      margin-bottom: 24px;
+    }
+
+    .mock-hero-h1 {
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      max-width: 800px;
+    }
+
+    .mock-hero-h1 span {
+      color: var(--color-teal);
+    }
+
+    .mock-hero-desc {
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.6;
+      color: var(--color-muted);
+      max-width: 640px;
+      margin-bottom: 36px;
+    }
+
+    .mock-hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .mock-btn-primary {
+      background: var(--color-teal);
+      color: white;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 12px 24px;
+      border-radius: var(--radius-btn);
+      border: none;
+      cursor: pointer;
+    }
+
+    .mock-btn-secondary {
+      background: var(--color-card);
+      color: var(--color-light-grey);
+      font-weight: 600;
+      font-size: 13px;
+      padding: 12px 24px;
+      border-radius: var(--radius-btn);
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+    }
+
+    /* COMPARISON CALLOUT */
+    .variant-explainer-bar {
+      background: #171B20;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 18px 24px;
+      margin: 20px 32px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .explainer-info h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-white);
+      margin-bottom: 4px;
+    }
+
+    .explainer-info p {
+      font-size: 12px;
+      color: var(--color-muted);
+      line-height: 1.4;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .catalog-columns-grid {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 20px;
+      }
+      .header-search, .header-nav {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .catalog-columns-grid {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+      .variant-dock {
+        padding: 10px 16px;
+      }
+      .brand-bar-strip {
+        padding: 12px 16px;
+      }
+      .mega-menu-service-footer {
+        padding: 12px 16px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================= -->
+  <!-- 1. VARIANT SELECTOR DOCK (STICKY CONTROLLER) -->
+  <!-- ========================================================= -->
+  <div class="variant-dock">
+    <div class="variant-dock-title">
+      <span>СИМОНА</span> • Интерактивный смотр 3 вариантов Мега-Меню
+    </div>
+    <div class="variant-buttons">
+      <button class="variant-btn active" id="btn-var-1" onclick="switchVariant(1)">
+        <span>Вариант 1: Под шапкой</span>
+        <span class="variant-tag">Header-Anchored</span>
+      </button>
+      <button class="variant-btn" id="btn-var-2" onclick="switchVariant(2)">
+        <span>Вариант 2: Автономный оверлей</span>
+        <span class="variant-tag">Hausdorf Style</span>
+      </button>
+      <button class="variant-btn" id="btn-var-3" onclick="switchVariant(3)">
+        <span>Вариант 3: Парящий остров</span>
+        <span class="variant-tag">Floating Island</span>
+      </button>
+      <button class="variant-btn" id="btn-toggle-menu" onclick="toggleMenu()" style="border-color: var(--color-teal); color: var(--color-teal);">
+        <span id="toggle-label">✕ Скрыть меню</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- 2. UMBRELLA BAR & HEADER -->
+  <!-- ========================================================= -->
+  <div class="umbrella-bar">
+    <div class="umbrella-left">
+      <div class="umbrella-badge">
+        <div class="umbrella-dot"></div>
+        <span>Нижний Новгород, ул. Белинского 15</span>
+      </div>
+      <span>Салон Omoikiri & Körting: ул. Белинского 11/66</span>
+    </div>
+    <div class="umbrella-right">
+      <span>Ежедневно 10:00 – 20:00</span>
+      <span>Склад: ул. Коминтерна 27</span>
+      <span style="color: var(--color-white); font-weight: 600;">+7 (831) 423-76-00</span>
+    </div>
+  </div>
+
+  <header class="header-main" id="site-header">
+    <div class="header-left">
+      <a href="#" class="brand-logo">
+        <span class="brand-logo-text">СИМОНА</span>
+        <span class="brand-logo-badge">PREMIUM</span>
+      </a>
+
+      <!-- CATALOG TRIGGER BUTTON -->
+      <button class="catalog-trigger-btn is-active" id="header-catalog-btn" onclick="toggleMenu()">
+        <div class="burger-icon">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span>Каталог товаров</span>
+      </button>
+
+      <!-- SEARCH BAR -->
+      <div class="header-search">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span>Поиск по артикулу, бренду, модели...</span>
+      </div>
+    </div>
+
+    <!-- MAIN NAV -->
+    <ul class="header-nav">
+      <li><a href="#" class="header-nav-link promo">Акции брендов</a></li>
+      <li><a href="#" class="header-nav-link">Бренды</a></li>
+      <li><a href="#" class="header-nav-link">Дизайнерам</a></li>
+      <li><a href="#" class="header-nav-link">Салоны</a></li>
+      <li><a href="#" class="header-nav-link">Активная кухня</a></li>
+      <li><a href="#" class="header-nav-link">Сервис</a></li>
+    </ul>
+
+    <!-- ACTIONS -->
+    <div class="header-actions">
+      <div class="action-btn" title="Избранное">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+      </div>
+      <div class="action-btn" title="Сравнение">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+      </div>
+      <div class="action-btn" title="Корзина">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="action-badge-count">2</span>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- VARIANT 1 CONTAINER: Attached under header -->
+    <!-- ========================================================= -->
+    <div class="mega-menu-container is-active-view variant-1-wrapper" id="container-var-1">
+      <!-- BRAND BAR STRIP -->
+      <div class="brand-bar-strip">
+        <div class="brand-bar-left">
+          <a href="#" class="brand-pill promo">Акции брендов %</a>
+          <a href="#" class="brand-pill">MIELE</a>
+          <a href="#" class="brand-pill">ASKO</a>
+          <a href="#" class="brand-pill">LIEBHERR</a>
+          <a href="#" class="brand-pill">SMEG</a>
+          <a href="#" class="brand-pill">OMOIKIRI</a>
+          <a href="#" class="brand-pill">BERTAZZONI</a>
+          <a href="#" class="brand-pill">FALMEC</a>
+          <a href="#" class="brand-pill">VARD</a>
+          <a href="#" class="brand-bar-all">Все бренды →</a>
+        </div>
+        <button class="close-btn" onclick="toggleMenu()" title="Закрыть (Esc)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- 4-COLUMN TAXONOMY (100% VERBATIM FROM SIMONA OLD SITE) -->
+      <div class="catalog-columns-grid" style="max-height: 72vh; overflow-y: auto; padding-right: 20px;">
+        <!-- COL 1: Встраиваемая техника -->
+        <div class="catalog-column">
+          <div class="category-group">
+            <div class="category-group-header">
+              <div class="group-title-wrap">
+                <div class="group-dot"></div>
+                <a href="#" class="group-title">Встраиваемая техника</a>
+              </div>
+            </div>
+            <ul class="subcat-list">
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Варочные панели</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Духовые шкафы</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Вытяжки</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Посудомоечные машины (встраиваемые)</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Микроволновые печи (встраиваемые)</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Кофемашины (встраиваемые)</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Стиральные машины (встраиваемые)</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Холодильники (встраиваемые)</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Измельчители пищевых отходов</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Сортеры (ведра)</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Пароварки (встраиваемые)</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Подогреватели посуды</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Вакууматоры (встраиваемые)</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Винные шкафы (встраиваемые)</span><span class="subcat-arrow">→</span></a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- COL 2: Крупная бытовая техника + Климатическая техника -->
+        <div class="catalog-column">
+          <!-- РАЗДЕЛ: КРУПНАЯ БЫТОВАЯ ТЕХНИКА -->
+          <div class="category-group">
+            <div class="category-group-header">
+              <div class="group-title-wrap">
+                <div class="group-dot"></div>
+                <a href="#" class="group-title">Крупная бытовая техника</a>
+              </div>
+            </div>
+            <ul class="subcat-list">
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Стиральные машины</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Холодильники</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Плиты</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Посудомоечные машины</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Сушильные машины</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Микроволновые печи</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Гладильные системы</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Винные шкафы</span><span class="subcat-arrow">→</span></a></li>
+            </ul>
+          </div>
+
+          <!-- РАЗДЕЛ: КЛИМАТИЧЕСКАЯ ТЕХНИКА -->
+          <div class="category-group">
+            <div class="category-group-header">
+              <div class="group-title-wrap">
+                <div class="group-dot"></div>
+                <a href="#" class="group-title">Климатическая техника</a>
+              </div>
+            </div>
+            <ul class="subcat-list">
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Водонагреватели</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Камины</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Кондиционеры</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Тепловая техника</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Увлажнение и очистка воздуха</span><span class="subcat-arrow">→</span></a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- COL 3: Мойки и смесители + Малая бытовая техника -->
+        <div class="catalog-column">
+          <!-- РАЗДЕЛ: МОЙКИ И СМЕСИТЕЛИ -->
+          <div class="category-group">
+            <div class="category-group-header">
+              <div class="group-title-wrap">
+                <div class="group-dot"></div>
+                <a href="#" class="group-title">Мойки и смесители</a>
+              </div>
+            </div>
+            <ul class="subcat-list">
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Мойки</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Смесители</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Врезные дозаторы для моющих средств</span><span class="subcat-arrow">→</span></a></li>
+            </ul>
+          </div>
+
+          <!-- РАЗДЕЛ: МАЛАЯ БЫТОВАЯ ТЕХНИКА -->
+          <div class="category-group">
+            <div class="category-group-header">
+              <div class="group-title-wrap">
+                <div class="group-dot"></div>
+                <a href="#" class="group-title">Малая бытовая техника</a>
+              </div>
+            </div>
+            <!-- Для кухни -->
+            <div style="font-size: 11px; font-weight: 700; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 6px 2px;">Для кухни</div>
+            <ul class="subcat-list">
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Блендеры</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Кофеварки</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Кофемашины</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Кофе</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Кухонные комбайны</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Миксеры</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Мультиварки</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Мясорубки</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Соковыжималки</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Тостеры</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Чайники</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Мини-печи</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Вакууматоры</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Вспениватели молока</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Генераторы льда</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Яйцеварки</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Прочая малая кухонная техника</span><span class="subcat-arrow">→</span></a></li>
+            </ul>
+            <!-- Для дома -->
+            <div style="font-size: 11px; font-weight: 700; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 6px 2px;">Для дома</div>
+            <ul class="subcat-list">
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Весы</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Пылесосы</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Утюги</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Роботы для мойки окон</span><span class="subcat-arrow">→</span></a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- COL 4: Бокалы и посуда + Средства по уходу + Аксессуары для бытовой техники -->
+        <div class="catalog-column">
+          <!-- РАЗДЕЛ: БОКАЛЫ И ПОСУДА -->
+          <div class="category-group">
+            <div class="category-group-header">
+              <div class="group-title-wrap">
+                <div class="group-dot"></div>
+                <a href="#" class="group-title">Бокалы и посуда</a>
+              </div>
+            </div>
+            <ul class="subcat-list">
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Бокалы Riedel</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Декантеры Riedel</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Посуда</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Кухонные принадлежности</span><span class="subcat-arrow">→</span></a></li>
+            </ul>
+          </div>
+
+          <!-- РАЗДЕЛ: СРЕДСТВА ПО УХОДУ ЗА ТЕХНИКОЙ -->
+          <div class="category-group">
+            <div class="category-group-header">
+              <div class="group-title-wrap">
+                <div class="group-dot"></div>
+                <a href="#" class="group-title">Средства по уходу за техникой</a>
+              </div>
+            </div>
+            <ul class="subcat-list">
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для чистки и ухода за бытовой техникой</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для удаления накипи</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для стирки белья</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для посуды</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Ароматизаторы для бытовой техники</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Салфетки для бытовой техники</span><span class="subcat-arrow">→</span></a></li>
+            </ul>
+          </div>
+
+          <!-- РАЗДЕЛ: АКСЕССУАРЫ ДЛЯ БЫТОВОЙ ТЕХНИКИ -->
+          <div class="category-group">
+            <div class="category-group-header">
+              <div class="group-title-wrap">
+                <div class="group-dot"></div>
+                <a href="#" class="group-title">Аксессуары для бытовой техники</a>
+              </div>
+            </div>
+            <ul class="subcat-list">
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для вытяжек</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для пылесосов</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для моек</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для варочных поверхностей</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для холодильников</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для духовых шкафов и плит</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для стиральных и сушильных машин</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для малой кухонной техники</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для климатической техники</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для посудомоечных машин</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для прочей малой бытовой техники</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для кофемашин</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Электротовары</span><span class="subcat-arrow">→</span></a></li>
+              <li><a href="#" class="subcat-link"><span class="subcat-name">Для гладильных машин и систем</span><span class="subcat-arrow">→</span></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICE FOOTER -->
+      <div class="mega-menu-service-footer">
+        <div class="service-footer-left">
+          <a href="#" class="service-chip">
+            <div class="service-dot"></div>
+            <span>Подобрать комплект под дизайн-проект</span>
+          </a>
+          <a href="#" class="service-chip wine-variant">
+            <div class="service-dot wine"></div>
+            <span>Официальные акции европейских производителей</span>
+          </a>
+        </div>
+        <div class="service-footer-right">
+          <span>Консультация эксперта:</span>
+          <a href="tel:+78314237600" class="service-phone">+7 (831) 423-76-00</a>
+          <span>ул. Белинского 15 (10:00–20:00)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- VARIANT 3 CONTAINER: Floating Island (Detached) -->
+    <!-- ========================================================= -->
+    <div class="mega-menu-container variant-3-wrapper" id="container-var-3">
+      <!-- (Reuses same inner markup via JS or template, cloned on init) -->
+    </div>
+
+  </header>
+
+  <!-- ========================================================= -->
+  <!-- VARIANT 2 CONTAINER: Autonomous Modal Overlay (Hausdorf Replica) -->
+  <!-- ========================================================= -->
+  <div class="mega-menu-container variant-2-wrapper" id="container-var-2">
+    <div class="variant-2-card" id="var-2-card-content">
+      <!-- (Inner markup injected here) -->
+    </div>
+  </div>
+
+  <!-- BACKDROP OVERLAY FOR VARIANT 1 & 3 -->
+  <div class="mega-backdrop is-open" id="mega-backdrop" onclick="toggleMenu()"></div>
+
+  <!-- ========================================================= -->
+  <!-- EXPLAINER CALLOUT & BACKGROUND CONTENT -->
+  <!-- ========================================================= -->
+  <div class="variant-explainer-bar">
+    <div class="explainer-info">
+      <h4 id="explainer-title">Вариант 1: Выпадающее полотно строго под шапкой (Header-Anchored)</h4>
+      <p id="explainer-desc">Меню зафиксировано прямо под шапкой сайта. Кнопка «Каталог товаров» в шапке подсвечена бирюзовым цветом с активным крестиком. Ниже полотна — тёмный матовый бэкдроп (backdrop-blur-md). Самый привычный и удобный E-commerce паттерн.</p>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <span class="umbrella-badge" style="border-color: var(--color-teal); color: var(--color-teal);">Pantone 7716 C (#00979C)</span>
+      <span class="umbrella-badge" style="border-color: var(--color-wine); color: #ff6b81;">Pantone 7628 C (#8A151A)</span>
+    </div>
+  </div>
+
+  <main class="mock-hero">
+    <div class="mock-hero-badge">
+      <span>●</span> Флагманский салон премиальной техники в Нижнем Новгороде
+    </div>
+    <h1 class="mock-hero-h1">
+      Искусство европейской инженерии на вашей кухне
+    </h1>
+    <p class="mock-hero-desc">
+      Официальный партнер Miele, ASKO, Liebherr, SMEG и OMOIKIRI. Более 8 000 сертифицированных приборов с гарантией производителя, шеф-демонстрации на Активной кухне и комплексный подбор под дизайн-проекты.
+    </p>
+    <div class="mock-hero-actions">
+      <button class="mock-btn-primary" onclick="toggleMenu()">Открыть каталог товаров</button>
+      <button class="mock-btn-secondary">Забронировать визит в салон</button>
+    </div>
+  </main>
+
+  <script>
+    let currentVariant = 1;
+    let isMenuOpen = true;
+
+    // Grab inner HTML template from Variant 1 to avoid code duplication in mockup
+    const innerTemplate = document.getElementById('container-var-1').innerHTML;
+    document.getElementById('container-var-3').innerHTML = innerTemplate;
+    
+    // Variant 2 (Hausdorf Style) gets the [ ☰ Каталог товаров ] button directly on the brand strip
+    const var2Content = document.getElementById('var-2-card-content');
+    var2Content.innerHTML = innerTemplate;
+    const var2BrandLeft = var2Content.querySelector('.brand-bar-left');
+    if (var2BrandLeft) {
+      const hausdorfBtn = document.createElement('button');
+      hausdorfBtn.className = 'catalog-trigger-btn is-active';
+      hausdorfBtn.style.padding = '8px 14px';
+      hausdorfBtn.style.fontSize = '12px';
+      hausdorfBtn.style.marginRight = '8px';
+      hausdorfBtn.innerHTML = '<div class="burger-icon"><span></span><span></span><span></span></div><span>Каталог товаров</span>';
+      var2BrandLeft.insertBefore(hausdorfBtn, var2BrandLeft.firstChild);
+    }
+
+    function switchVariant(varNum) {
+      currentVariant = varNum;
+
+      // Update button styles
+      document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`btn-var-${varNum}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      // Hide all containers
+      document.getElementById('container-var-1').classList.remove('is-active-view');
+      document.getElementById('container-var-2').classList.remove('is-active-view');
+      document.getElementById('container-var-3').classList.remove('is-active-view');
+
+      // Update backdrop & explainer
+      const backdrop = document.getElementById('mega-backdrop');
+      const titleEl = document.getElementById('explainer-title');
+      const descEl = document.getElementById('explainer-desc');
+
+      if (isMenuOpen) {
+        if (varNum === 1) {
+          document.getElementById('container-var-1').classList.add('is-active-view');
+          backdrop.classList.add('is-open');
+          titleEl.textContent = 'Вариант 1: Выпадающее полотно строго под шапкой (Header-Anchored)';
+          descEl.textContent = 'Меню зафиксировано прямо под шапкой сайта. Кнопка «Каталог товаров» в шапке подсвечена бирюзовым цветом с активным крестиком. Ниже полотна — тёмный матовый бэкдроп (backdrop-blur-md). Самый привычный и удобный E-commerce паттерн.';
+        } else if (varNum === 2) {
+          document.getElementById('container-var-2').classList.add('is-active-view');
+          backdrop.classList.remove('is-open'); // Variant 2 has built-in fullscreen overlay
+          titleEl.textContent = 'Вариант 2: Автономный оверлей (Hausdorf Reference Replica)';
+          descEl.textContent = 'В точности как на скриншоте Hausdorf: меню открывается отдельным окном по центру экрана поверх всего интерфейса. Сверху — Brand Bar с крестиком ✕, внутри — 4 колонки категорий СИМОНА и сервисное O2O-меню внизу.';
+        } else if (varNum === 3) {
+          document.getElementById('container-var-3').classList.add('is-active-view');
+          backdrop.classList.add('is-open');
+          titleEl.textContent = 'Вариант 3: Парящий остров (Floating Island Dropdown)';
+          descEl.textContent = 'Ультра-современный дизайн: полотно каталога парит чуть ниже шапки с деликатным отступом 12px, скруглением rounded-2xl и глубокой графитовой тенью. Ощущение премиальной легкости и архитектурного объема.';
+        }
+      }
+    }
+
+    function toggleMenu() {
+      isMenuOpen = !isMenuOpen;
+      const headerBtn = document.getElementById('header-catalog-btn');
+      const backdrop = document.getElementById('mega-backdrop');
+      const toggleLabel = document.getElementById('toggle-label');
+
+      if (isMenuOpen) {
+        headerBtn.classList.add('is-active');
+        toggleLabel.textContent = '✕ Скрыть меню';
+        switchVariant(currentVariant);
+      } else {
+        headerBtn.classList.remove('is-active');
+        toggleLabel.textContent = '☰ Открыть меню';
+        document.getElementById('container-var-1').classList.remove('is-active-view');
+        document.getElementById('container-var-2').classList.remove('is-active-view');
+        document.getElementById('container-var-3').classList.remove('is-active-view');
+        backdrop.classList.remove('is-open');
+      }
+    }
+
+    // Keyboard navigation (Esc to close)
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isMenuOpen) {
+        toggleMenu();
+      }
+    });
+  </script>
+</body>
+</html>
