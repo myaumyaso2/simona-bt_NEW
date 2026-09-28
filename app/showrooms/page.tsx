@@ -24,8 +24,10 @@ import {
 } from 'lucide-react';
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { trackGoal } from '@/lib/analytics/tracker';
+import { useSiteContent } from '@/components/providers/ContentContext';
 
 export default function ShowroomsPage() {
+  const content = useSiteContent();
   const analyticsData = useAnalyticsData();
   const [selectedShowroom, setSelectedShowroom] = useState<'BELINSKOGO_15' | 'BELINSKOGO_11'>('BELINSKOGO_15');
   const [name, setName] = useState('');
@@ -82,19 +84,21 @@ export default function ShowroomsPage() {
           <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
           <div className="max-w-3xl text-left space-y-4">
-            <SectionBadge variant="teal" text="Пространства Quiet Luxury в Нижнем Новгороде" />
+            <SectionBadge variant="teal">
+              {content.showroomsPage.badge}
+            </SectionBadge>
             <h1 className="text-3xl sm:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
-              Шоурумы премиальной техники «СИМОНА»
+              {content.showroomsPage.title}
             </h1>
             <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
-              Два концептуальных салона в едином архитектурном ансамбле на улице Белинского. Оцените тишину работы приборов, тактильность материалов, посмотрите демонстрации в «Активной кухне» и выберите идеальный комплект встройки.
+              {content.showroomsPage.subtitle}
             </p>
             <div className="pt-2">
               <a
                 href="#booking"
                 className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-bold uppercase tracking-wider transition shadow-lg shadow-simona-teal/20"
               >
-                <span>Забронировать персональный визит</span>
+                <span>{content.showroomsPage.ctaButton}</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
             </div>

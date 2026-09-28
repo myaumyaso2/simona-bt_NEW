@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { trackGoal } from '@/lib/analytics/tracker';
+import { useSiteContent } from '@/components/providers/ContentContext';
 
 const DESIGNER_PILLARS = [
   {
@@ -141,6 +142,7 @@ const AVAILABLE_BRANDS = [
 ];
 
 export default function DesignersPage() {
+  const content = useSiteContent();
   const analyticsData = useAnalyticsData();
   const [name, setName] = useState('');
   const [studio, setStudio] = useState('');
@@ -225,14 +227,16 @@ export default function DesignersPage() {
           <div className="absolute bottom-0 left-1/3 w-[360px] h-[360px] bg-simona-wine/10 rounded-full blur-[100px] pointer-events-none" />
 
           <div className="relative z-10 max-w-4xl text-left space-y-6">
-            <SectionBadge variant="teal" text="Клуб архитекторов и дизайнеров" />
+            <SectionBadge variant="teal">
+              {content.designersPage.badge}
+            </SectionBadge>
 
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-montserrat font-semibold tracking-tight text-white leading-[1.12]">
-              Сотрудничество с дизайнерами и архитекторами
+              {content.designersPage.title}
             </h1>
 
             <p className="text-base sm:text-lg text-[#87888A] leading-relaxed max-w-3xl">
-              Работа с профессионалами интерьерного рынка — приоритетное направление компании Simona с 1995 года. Мы становимся надежной инженерной и сервисной опорой для вашей студии: берем на себя подбор, расчет спецификаций, контроль монтажных схем и прямую координацию с кухонными фабриками.
+              {content.designersPage.subtitle}
             </p>
 
             <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -240,7 +244,7 @@ export default function DesignersPage() {
                 href="#cooperation-form"
                 className="px-7 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wide transition shadow-lg shadow-simona-teal/25 flex items-center gap-2 group cursor-pointer"
               >
-                <span>Заполнить форму сотрудничества</span>
+                <span>{content.designersPage.ctaButton}</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
 

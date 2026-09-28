@@ -7,6 +7,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SectionBadge } from '@/components/ui/SectionBadge';
 import { DeepParallaxBackground } from '@/components/backgrounds/DeepParallaxBackground';
+import { useSiteContent } from '@/components/providers/ContentContext';
 
 interface CategoryDirection {
   title: string;
@@ -105,6 +106,7 @@ const CATEGORIES: CategoryDirection[] = [
 ];
 
 export function KeyDirectionsSection() {
+  const content = useSiteContent();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -194,11 +196,14 @@ export function KeyDirectionsSection() {
         >
           <div className="max-w-2xl text-left">
             <SectionBadge variant="teal" className="mb-3.5">
-              Каталог премиальной техники
+              {content.keyDirections.badge}
             </SectionBadge>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-semibold text-white tracking-tight">
-              Ключевые направления коллекции
+              {content.keyDirections.title}
             </h2>
+            <p className="mt-2 text-xs sm:text-sm text-[#87888A] leading-relaxed">
+              {content.keyDirections.subtitle}
+            </p>
           </div>
 
           <Link

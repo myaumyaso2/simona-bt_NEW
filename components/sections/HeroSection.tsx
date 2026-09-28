@@ -8,6 +8,7 @@ import { useStore } from '@/components/providers/StoreContext';
 import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
 import { SimonaIconConsultation, SimonaIconMark } from '@/components/brand/SimonaIcons';
 import { SectionBadge } from '@/components/ui/SectionBadge';
+import { useSiteContent } from '@/components/providers/ContentContext';
 import { HeroBackgroundSlider } from './HeroBackgroundSlider';
 
 const HERO_DESKTOP_SLIDES = [
@@ -28,6 +29,7 @@ const HERO_MOBILE_SLIDES = [
 
 export function HeroSection() {
   const { openModal } = useStore();
+  const content = useSiteContent();
   const sectionRef = useRef<HTMLElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
   const badgeRef = useRef<HTMLDivElement>(null);
@@ -143,7 +145,7 @@ export function HeroSection() {
             variant="teal"
             className="mb-6 sm:mb-8"
           >
-            Официальный партнер Miele · ASKO · Liebherr · SMEG · OMOIKIRI
+            {content.hero.badge}
           </SectionBadge>
 
           {/* Heading H1 */}
@@ -151,7 +153,7 @@ export function HeroSection() {
             ref={headingRef}
             className="text-3xl sm:text-5xl lg:text-6xl font-montserrat font-bold text-white tracking-tight leading-[1.15] mb-6 [text-shadow:_0_2px_12px_rgba(0,0,0,0.95),_0_4px_32px_rgba(0,0,0,0.9)]"
           >
-            Премиальная бытовая техника для вашей идеальной кухни
+            {content.hero.title}
           </h1>
 
           {/* Subtitle */}
@@ -159,7 +161,7 @@ export function HeroSection() {
             ref={subtitleRef}
             className="text-sm sm:text-base lg:text-lg text-[#D7D9DB] font-normal leading-relaxed max-w-2xl mb-8 sm:mb-10 [text-shadow:_0_2px_8px_rgba(0,0,0,0.95)]"
           >
-            Флагманские шоурумы в центре Нижнего Новгорода. Персональный подбор под дизайн-проект, выверка встроечных схем и сертифицированный шеф-монтаж.
+            {content.hero.subtitle}
           </p>
 
           {/* Action CTA Buttons */}
@@ -172,7 +174,7 @@ export function HeroSection() {
               className="inline-flex items-center justify-center px-7 py-4 rounded-xl bg-gradient-to-r from-simona-teal-dark to-simona-teal hover:to-simona-teal-light text-white text-sm font-semibold tracking-wide transition-all duration-300 shadow-lg shadow-simona-teal/30 hover:shadow-simona-teal/50 hover:scale-[1.02] active:scale-98 space-x-2.5 text-center cursor-pointer"
             >
               <SimonaIconConsultation className="w-5 h-5 text-white flex-shrink-0" />
-              <span>Получить консультацию</span>
+              <span>{content.hero.primaryCta}</span>
             </button>
 
             <Link
@@ -180,7 +182,7 @@ export function HeroSection() {
               className="inline-flex items-center justify-center px-7 py-4 rounded-xl bg-[#16191D] hover:bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal/50 text-white text-sm font-medium tracking-wide transition-all duration-300 space-x-2.5 text-center group"
             >
               <SimonaIconMark className="w-5 h-5 text-simona-teal flex-shrink-0 group-hover:scale-110 transition-transform" />
-              <span>Перейти в каталог</span>
+              <span>{content.hero.secondaryCta}</span>
             </Link>
           </div>
         </div>
@@ -195,28 +197,28 @@ export function HeroSection() {
           
           <div className="flex flex-col space-y-1.5">
             <span className="text-xl lg:text-2xl font-montserrat font-semibold text-white tracking-tight [text-shadow:_0_1px_8px_rgba(0,0,0,0.8)]">
-              Эксперты встройки
+              {content.hero.features.experts.title}
             </span>
             <span className="text-xs sm:text-sm text-[#D7D9DB]/85 leading-relaxed font-normal [text-shadow:_0_1px_4px_rgba(0,0,0,0.8)]">
-              Премиальная встраиваемая бытовая техника, персональный подбор комплектов и выверка монтажных схем.
+              {content.hero.features.experts.description}
             </span>
           </div>
 
           <div className="flex flex-col space-y-1.5">
             <span className="text-xl lg:text-2xl font-montserrat font-semibold text-white tracking-tight [text-shadow:_0_1px_8px_rgba(0,0,0,0.8)]">
-              Активная кухня
+              {content.hero.features.activeKitchen.title}
             </span>
             <span className="text-xs sm:text-sm text-[#D7D9DB]/85 leading-relaxed font-normal [text-shadow:_0_1px_4px_rgba(0,0,0,0.8)]">
-              Демонстрируем работу премиальной бытовой техники, устраиваем дегустации, рассказываем о новинках.
+              {content.hero.features.activeKitchen.description}
             </span>
           </div>
 
           <div className="flex flex-col space-y-1.5">
             <span className="text-xl lg:text-2xl font-montserrat font-semibold text-white tracking-tight [text-shadow:_0_1px_8px_rgba(0,0,0,0.8)]">
-              Дизайнерам и B2B
+              {content.hero.features.b2b.title}
             </span>
             <span className="text-xs sm:text-sm text-[#D7D9DB]/85 leading-relaxed font-normal [text-shadow:_0_1px_4px_rgba(0,0,0,0.8)]">
-              Интересные условия сотрудничества с дизайнерами интерьера и оптовыми клиентами.
+              {content.hero.features.b2b.description}
             </span>
           </div>
 

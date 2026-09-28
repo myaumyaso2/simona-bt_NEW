@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { trackGoal } from '@/lib/analytics/tracker';
+import { useSiteContent } from '@/components/providers/ContentContext';
 
 const OPT_PILLARS = [
   {
@@ -143,6 +144,7 @@ const KEY_OPT_BRANDS = [
 ];
 
 export default function OptPage() {
+  const content = useSiteContent();
   const analyticsData = useAnalyticsData();
   const [name, setName] = useState('');
   const [company, setCompany] = useState('');
@@ -218,14 +220,16 @@ export default function OptPage() {
           <div className="absolute bottom-0 left-1/3 w-[360px] h-[360px] bg-simona-wine/10 rounded-full blur-[100px] pointer-events-none" />
 
           <div className="relative z-10 max-w-4xl text-left space-y-6">
-            <SectionBadge variant="teal" text="Оптовый отдел и дистрибьюция" />
+            <SectionBadge variant="teal">
+              {content.optPage.badge}
+            </SectionBadge>
 
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-montserrat font-semibold tracking-tight text-white leading-[1.12]">
-              Бытовая техника оптом от компании Simona
+              {content.optPage.title}
             </h1>
 
             <p className="text-base sm:text-lg text-[#87888A] leading-relaxed max-w-3xl">
-              Компания Simona — надежный дистрибьютор и партнер на рынке бытовой техники с 1995 года. Мы работаем по прямым контрактам с ведущими европейскими фабриками: Smeg, Asko, Vard, Falmec, Franke, Bertazzoni, Elica, Jetair, Teka. Обеспечиваем конкурентные оптовые цены, проектную защиту, наличие на складе и авторизованный сервис.
+              {content.optPage.subtitle}
             </p>
 
             <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -233,16 +237,16 @@ export default function OptPage() {
                 href="#cooperation-form"
                 className="px-7 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wide transition shadow-lg shadow-simona-teal/25 flex items-center gap-2 group cursor-pointer"
               >
-                <span>Заполнить форму сотрудничества</span>
+                <span>{content.optPage.ctaButton}</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
 
               <a
-                href="tel:+78314237600"
+                href={`tel:${content.contacts.phoneRaw}`}
                 className="px-6 py-3.5 rounded-xl bg-[#1E2228] hover:bg-[#252A32] text-white border border-[#2B313A] hover:border-simona-teal/50 text-xs font-medium tracking-wide transition flex items-center gap-2"
               >
                 <SimonaIconPhoneSolid className="w-3.5 h-3.5 text-simona-teal" />
-                <span>+7 (831) 423-76-00</span>
+                <span>{content.contacts.phone}</span>
               </a>
             </div>
           </div>

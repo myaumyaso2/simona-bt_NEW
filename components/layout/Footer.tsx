@@ -6,10 +6,12 @@ import { Send, ArrowRight, ExternalLink } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaLogo } from '@/components/brand/SimonaLogo';
 import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
+import { useSiteContent } from '@/components/providers/ContentContext';
 
 export function Footer() {
   const { openModal } = useStore();
-  const kuhniUrl = process.env.NEXT_PUBLIC_KUHNI_URL || 'https://simona-kuhni.ru';
+  const content = useSiteContent();
+  const kuhniUrl = process.env.NEXT_PUBLIC_KUHNI_URL || content.contacts.kuhniUrl;
 
   return (
     <footer className="relative bg-[#0B0C0E] border-t border-[#2B313A] text-xs text-[#87888A] overflow-hidden">
@@ -27,7 +29,7 @@ export function Footer() {
             </Link>
             
             <p className="text-xs text-[#87888A] leading-relaxed max-w-sm">
-              Премиальный интернет-бутик и digital-витрина бытовой техники в Нижнем Новгороде.
+              {content.footer.brandTagline}
             </p>
 
             <div className="pt-2">
@@ -37,7 +39,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center space-x-1.5 text-xs text-simona-teal hover:text-simona-teal-light font-medium group transition-colors"
               >
-                <span>НАПРАВЛЕНИЕ МЕБЕЛИ И КУХОНЬ simona-kuhni.ru</span>
+                <span>{content.footer.kuhniLinkText}</span>
                 <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
               </a>
             </div>
@@ -46,27 +48,27 @@ export function Footer() {
           {/* Col 2: Salons in NN (3 Cols) */}
           <div className="lg:col-span-3 space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-[0.14em] text-white">
-              Салоны в Нижнем Новгороде
+              {content.footer.salonsHeading}
             </h4>
             
             <div className="space-y-3 text-xs">
               <div>
-                <p className="text-white font-medium">Флагман: ул. Белинского, 15</p>
-                <a href="tel:+78312170015" className="text-[#87888A] hover:text-simona-teal transition-colors">
-                  +7 (831) 217-00-15
+                <p className="text-white font-medium">Флагман: {content.contacts.flagmanAddress}</p>
+                <a href={`tel:${content.contacts.phoneFlagman.replace(/[^+\d]/g, '')}`} className="text-[#87888A] hover:text-simona-teal transition-colors">
+                  {content.contacts.phoneFlagman}
                 </a>
               </div>
 
               <div>
-                <p className="text-white font-medium">Omoikiri & Körting: Белинского, 11/66</p>
-                <a href="tel:+78312170011" className="text-[#87888A] hover:text-simona-teal transition-colors">
-                  +7 (831) 217-00-11
+                <p className="text-white font-medium">Omoikiri & Körting: {content.contacts.omoikiriAddress}</p>
+                <a href={`tel:${content.contacts.phoneOmoikiri.replace(/[^+\d]/g, '')}`} className="text-[#87888A] hover:text-simona-teal transition-colors">
+                  {content.contacts.phoneOmoikiri}
                 </a>
               </div>
 
               <div className="pt-1">
                 <a
-                  href="https://t.me/simona_bt"
+                  href={content.contacts.telegramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center space-x-1.5 text-simona-teal hover:underline font-medium"
@@ -81,13 +83,18 @@ export function Footer() {
           {/* Col 3: Navigation (2 Cols) */}
           <div className="lg:col-span-2 space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-[0.14em] text-white">
-              Навигация
+              {content.footer.navHeading}
             </h4>
             
             <ul className="space-y-2 text-xs">
               <li>
                 <Link href="/catalog" className="text-[#87888A] hover:text-white transition-colors">
-                  Каталог техники
+                  {content.navigation.catalog}
+                </Link>
+              </li>
+              <li>
+                <Link href="/promos" className="text-[#87888A] hover:text-white transition-colors">
+                  {content.navigation.promos}
                 </Link>
               </li>
               <li>
@@ -119,11 +126,11 @@ export function Footer() {
           {/* Col 4: Designers B2B (3 Cols) */}
           <div className="lg:col-span-3 space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-[0.14em] text-white">
-              Архитекторам и дизайнерам
+              {content.footer.designersHeading}
             </h4>
             
             <p className="text-xs text-[#87888A] leading-relaxed">
-              Специальная программа сотрудничества, выверка схем за 24 часа, база 3D-моделей.
+              {content.footer.designersText}
             </p>
 
             <div className="pt-1">
@@ -131,7 +138,7 @@ export function Footer() {
                 onClick={() => openModal('B2B_CLUB')}
                 className="inline-flex items-center space-x-1.5 text-xs text-simona-teal hover:text-simona-teal-light font-medium group transition-colors"
               >
-                <span>Перейти в B2B-раздел</span>
+                <span>{content.footer.designersCta}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
@@ -141,7 +148,7 @@ export function Footer() {
 
         {/* Bottom Bar per Figma */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#87888A]">
-          <p>© 2026 Салон бытовой техники «СИМОНА». Все права защищены.</p>
+          <p>{content.footer.copyright}</p>
 
           <div className="flex items-center space-x-6">
             <a
@@ -152,7 +159,7 @@ export function Footer() {
               }}
               className="hover:text-white transition-colors"
             >
-              Политика конфиденциальности
+              {content.footer.privacyPolicyText}
             </a>
             <a
               href="#"
@@ -162,7 +169,7 @@ export function Footer() {
               }}
               className="hover:text-white transition-colors"
             >
-              Пользовательское соглашение
+              {content.footer.userAgreementText}
             </a>
           </div>
         </div>

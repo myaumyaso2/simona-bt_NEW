@@ -24,8 +24,10 @@ import {
 } from 'lucide-react';
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { trackGoal } from '@/lib/analytics/tracker';
+import { useSiteContent } from '@/components/providers/ContentContext';
 
 export default function ServicesPage() {
+  const content = useSiteContent();
   const analyticsData = useAnalyticsData();
   const [serviceType, setServiceType] = useState('INSTALLATION');
   const [name, setName] = useState('');
@@ -73,19 +75,21 @@ export default function ServicesPage() {
           <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
           <div className="max-w-3xl text-left space-y-4">
-            <SectionBadge variant="teal" text="Премиальный сервисный контур" />
+            <SectionBadge variant="teal">
+              {content.servicesPage.badge}
+            </SectionBadge>
             <h1 className="text-3xl sm:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
-              Сервисная экосистема «СИМОНА»
+              {content.servicesPage.title}
             </h1>
             <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
-              Покупка премиальной техники — это комплексный процесс. Мы берем на себя каждый этап: от предварительного инженерного аудита и бесплатного складского хранения до монтажа в перчатках и авторизованного сервисного обслуживания.
+              {content.servicesPage.subtitle}
             </p>
             <div className="pt-2">
               <a
                 href="#order-service"
                 className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-bold uppercase tracking-wider transition shadow-lg shadow-simona-teal/20"
               >
-                <span>Заказать шеф-монтаж или выезд инженера</span>
+                <span>{content.servicesPage.ctaButton}</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
             </div>
@@ -97,7 +101,7 @@ export default function ServicesPage() {
           <div className="text-left space-y-2">
             <SectionBadge variant="teal" text="Стандарты заботы" />
             <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
-              4 опоры нашего сервисного обслуживания
+              {content.servicesPage.pillarsTitle}
             </h2>
           </div>
 

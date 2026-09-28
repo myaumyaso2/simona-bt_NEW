@@ -14,6 +14,7 @@ import { MANUFACTURER_PROMOS } from '@/data/promosData';
 import { ManufacturerPromo, PromoBenefitType } from '@/types';
 import { useStore } from '@/components/providers/StoreContext';
 import { SectionBadge } from '@/components/ui/SectionBadge';
+import { useSiteContent } from '@/components/providers/ContentContext';
 
 const BRAND_FILTERS = [
   'Все бренды',
@@ -22,6 +23,7 @@ const BRAND_FILTERS = [
 
 
 export function PromosHubView() {
+  const content = useSiteContent();
   const [selectedBrand, setSelectedBrand] = useState('Все бренды');
   const [selectedType, setSelectedType] = useState<string>('ALL');
   const { openModal } = useStore();
@@ -60,15 +62,15 @@ export function PromosHubView() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl text-left">
             <SectionBadge variant="wine" className="mb-4">
-              Официальные программы выгоды
+              {content.promosPage.badge}
             </SectionBadge>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
-              Акции производителей бытовой техники
+              {content.promosPage.title}
             </h1>
 
             <p className="text-sm sm:text-base text-[#87888A] mt-4 leading-relaxed max-w-2xl">
-              Специальные предложения, комплекты со скидкой, подарки и продленная гарантия от официальных европейских брендов в салонах «СИМОНА» на ул. Белинского, 15 и 11/66.
+              {content.promosPage.subtitle}
             </p>
           </div>
         </div>

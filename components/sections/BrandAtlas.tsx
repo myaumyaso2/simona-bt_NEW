@@ -7,6 +7,7 @@ import { SectionBadge } from '@/components/ui/SectionBadge';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { PlexusConstellationBackground } from '@/components/backgrounds/PlexusConstellationBackground';
+import { useSiteContent } from '@/components/providers/ContentContext';
 
 export interface BrandItem {
   name: string;
@@ -158,6 +159,7 @@ function BrandCardItem({ brand }: { brand: BrandItem }) {
 }
 
 export function BrandAtlas() {
+  const content = useSiteContent();
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -226,14 +228,14 @@ export function BrandAtlas() {
         >
           <div className="max-w-2xl text-left">
             <SectionBadge variant="teal" className="mb-3.5">
-              Официальный дилер
+              {content.brandAtlas.badge}
             </SectionBadge>
 
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-tight font-montserrat">
-              Авторизованный дилер мировых брендов
+              {content.brandAtlas.title}
             </h2>
             <p className="text-xs sm:text-sm text-[#87888A] mt-2.5 max-w-xl leading-relaxed">
-              Прямые поставки оригинальной техники из Германии, Швеции, Италии и Японии с официальной гарантией производителя и сертифицированным сервисом.
+              {content.brandAtlas.subtitle}
             </p>
           </div>
 

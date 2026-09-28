@@ -78,13 +78,16 @@ simona-bt_NEW/
 ├── AGENTS.md               # Настоящий документ: операционный регламент AI-разработчиков
 ├── PRODUCT.md              # Продуктовая истина, миссия, O2O-сценарии, локации, интеграции
 ├── DESIGN.md               # Визуальный манифест Quiet Luxury, токены, геометрия, Impeccable
+├── CONTENT_GUIDE.md        # Наглядная таблица соответствий текстов для контент-менеджеров
+├── content/
+│   └── siteContent.json    # Единый структурированный JSON со всеми текстами сайта (Live F5)
 ├── app/                    # Next.js 14 App Router (pages, layouts, api routes)
 │   ├── page.tsx            # Главная страница (8 сквозных секций)
 │   ├── catalog/            # Каталог товаров и категорий
 │   ├── product/[slug]/     # Детальная карточка товара
 │   ├── promos/             # Раздел акций европейских производителей
 │   ├── designers/          # B2B-клуб архитекторов и дизайнеров
-│   └── api/                # API-роуты (поиск, аналитика, вебхуки 1С/Asana/ЮKassa)
+│   └── api/                # API-роуты (content, поиск, аналитика, вебхуки 1С/Asana/ЮKassa)
 ├── components/
 │   ├── brand/              # Брендовые ассеты (SimonaIcons, SimonaLogo, SimonaPattern)
 │   ├── layout/             # Шапка и подвал (UmbrellaBar, HeaderContainer, Footer)
@@ -94,12 +97,13 @@ simona-bt_NEW/
 │   ├── product/            # Компоненты карточки товара (ProductBuyBox, галерея, вкладки)
 │   ├── promos/             # Компоненты промо-хаба (PromosHubView, PromoCard, PromoModal)
 │   ├── modals/             # Модальные окна (EquipmentSelectionModal, ShowroomVisitModal...)
-│   ├── providers/          # Провайдеры контекста (SmoothScrollProvider, StoreContext)
+│   ├── providers/          # Провайдеры контекста (SmoothScrollProvider, StoreContext, ContentContext)
 │   └── backgrounds/        # Декоративные фоны (DeepParallaxBackground, Constellations)
 ├── data/                   # Данные витрины (catalogData.ts, showroomPhotos.ts, promosData.ts)
 ├── lib/
+│   ├── content.ts          # Live-загрузчик текстов (динамическое чтение JSON + fail-safe fallback)
 │   └── integrations/       # Внешние API коннекторы (one_c.ts, asana.ts, yookassa.ts)
-├── types/                  # Строгие интерфейсы TypeScript (каталог, промо, заказы, токены)
+├── types/                  # Строгие интерфейсы TypeScript (siteContent, каталог, промо, заказы)
 └── prisma/                 # Схема базы данных Prisma (schema.prisma)
 ```
 
@@ -114,5 +118,8 @@ simona-bt_NEW/
 - **Интерактивная верификация верстки (Visual Feedback Loop)**:
   - Любой новый блок или редизайн проверяется через headless-инструменты или Chrome DevTools в двух обязательных разрешениях: **Desktop (1440px)** и **Mobile (390px)**.
   - Соблюдается принцип Bounded Verification (один пакетный прогон скриншотов $\rightarrow$ устранение дефектов $\rightarrow$ сдача).
+- **Единый контентный слой (Single Source of Content)**:
+  - Любые пользовательские тексты (заголовки, слоганы, описания преимуществ, сервисные тезисы, адреса, телефоны) **запрещено жестко зашивать в JSX**.
+  - Все новые тексты и разделы регистрируются в схеме [`types/siteContent.ts`](file:///c:/Users/trash/Documents/antigravity/simona-bt_NEW/types/siteContent.ts) и в файле [`content/siteContent.json`](file:///c:/Users/trash/Documents/antigravity/simona-bt_NEW/content/siteContent.json), потребляются через хук `useSiteContent()` и документируются в [`CONTENT_GUIDE.md`](file:///c:/Users/trash/Documents/antigravity/simona-bt_NEW/CONTENT_GUIDE.md).
 - **Git Hygiene**:
   - Атомарные, осмысленные коммиты на английском или русском языке с четким указанием затронутого модуля.

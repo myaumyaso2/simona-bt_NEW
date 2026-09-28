@@ -14,6 +14,7 @@ import {
   SimonaIconUser,
   SimonaIconSearch,
 } from '@/components/brand/SimonaIcons';
+import { useSiteContent } from '@/components/providers/ContentContext';
 
 interface HeaderProps {
   isScrolled?: boolean;
@@ -26,6 +27,7 @@ export function Header({
   onMobileMenuToggle,
   onCatalogMenuToggle,
 }: HeaderProps = {}) {
+  const content = useSiteContent();
   const pathname = usePathname();
   const [internalScrolled, setInternalScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -95,7 +97,7 @@ export function Header({
               className="hidden lg:flex items-center space-x-2.5 px-3.5 py-2 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 transition-all cursor-pointer w-48 xl:w-60 text-[#87888A] hover:text-[#D7D9DB]"
             >
               <SimonaIconSearch className="w-4 h-4 text-[#87888A] shrink-0" />
-              <span className="text-xs truncate">Поиск прибора...</span>
+              <span className="text-xs truncate">{content.navigation.searchPlaceholder}</span>
             </div>
           </div>
 
@@ -105,7 +107,7 @@ export function Header({
             <button
               type="button"
               onClick={() => handleCatalogMenuToggle(!catalogMenuOpen)}
-              aria-label="Каталог"
+              aria-label={content.navigation.catalog}
               aria-expanded={catalogMenuOpen}
               className={`relative py-1.5 transition-colors group select-none cursor-pointer ${
                 catalogMenuOpen || pathname?.startsWith('/catalog')
@@ -113,7 +115,7 @@ export function Header({
                   : 'text-[#D7D9DB] hover:text-white'
               }`}
             >
-              <span>Каталог</span>
+              <span>{content.navigation.catalog}</span>
               <span
                 className={`absolute bottom-0 left-0 h-[2px] w-full bg-simona-teal transition-transform duration-300 origin-left ${
                   catalogMenuOpen || pathname?.startsWith('/catalog')
@@ -128,7 +130,7 @@ export function Header({
               href="/promos"
               className="relative py-1.5 text-white transition-colors group select-none"
             >
-              <span>Акции</span>
+              <span>{content.navigation.promos}</span>
               <span
                 className={`absolute bottom-0 left-0 h-[2px] w-full bg-simona-wine transition-transform duration-300 origin-left ${
                   pathname?.startsWith('/promos')
@@ -147,7 +149,7 @@ export function Header({
                   : 'text-[#D7D9DB] hover:text-white'
               }`}
             >
-              <span>Дизайнерам</span>
+              <span>{content.navigation.designers}</span>
               <span
                 className={`absolute bottom-0 left-0 h-[2px] w-full bg-simona-teal transition-transform duration-300 origin-left ${
                   pathname?.startsWith('/designers')
@@ -166,7 +168,7 @@ export function Header({
                   : 'text-[#D7D9DB] hover:text-white'
               }`}
             >
-              <span>Опт</span>
+              <span>{content.navigation.opt}</span>
               <span
                 className={`absolute bottom-0 left-0 h-[2px] w-full bg-simona-teal transition-transform duration-300 origin-left ${
                   pathname?.startsWith('/opt')

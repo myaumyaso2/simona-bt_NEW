@@ -5,29 +5,15 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SimonaIconPhoneSolid } from '@/components/brand/SimonaIcons';
 import { SectionBadge } from '@/components/ui/SectionBadge';
-
-const SERVICES = [
-  {
-    num: '01',
-    title: 'Бесплатное бережное хранение на складе',
-    desc: 'Резервируйте технику по фиксированной цене и храните на нашем отапливаемом складе до окончания ремонта и сборки кухонного гарнитура.',
-  },
-  {
-    num: '02',
-    title: 'Шеф-монтаж сертифицированными мастерами',
-    desc: 'Инсталляция и пусконаладка строго по заводским регламентам брендов. Сохранение полной официальной заводской гарантии производителя.',
-  },
-  {
-    num: '03',
-    title: 'Доставка в белых перчатках',
-    desc: 'Собственная служба доставки. Аккуратный подъем в квартиру на любой этаж, бережная распаковка при вас, осмотр и утилизация упаковки.',
-  },
-];
+import { useSiteContent } from '@/components/providers/ContentContext';
 
 export function ServiceContour() {
+  const content = useSiteContent();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+
+  const services = content.service?.cards || [];
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -126,24 +112,24 @@ export function ServiceContour() {
         >
           <div className="max-w-2xl text-left">
             <SectionBadge variant="teal" className="mb-3.5">
-              Премиальный сервисный стандарт
+              {content.service.badge}
             </SectionBadge>
 
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-montserrat font-semibold text-white tracking-tight">
-              Забота о вашем комфорте на каждом этапе
+              {content.service.title}
             </h2>
             <p className="mt-2.5 text-xs sm:text-sm text-[#87888A] leading-relaxed max-w-xl">
-              Сопровождаем покупку от выверки технических схем с производителями кухонь до бережной доставки и фирменного шеф-монтажа.
+              {content.service.subtitle}
             </p>
           </div>
 
           <div className="shrink-0 self-start md:self-end">
             <a
-              href="tel:+78314237600"
+              href={`tel:${content.contacts.phoneRaw}`}
               className="inline-flex items-center space-x-2 text-xs sm:text-sm font-medium text-[#D7D9DB] hover:text-white transition-colors py-2.5 px-4 rounded-xl bg-[#111315] border border-[#2B313A] hover:border-simona-teal/50 shadow-sm"
             >
               <SimonaIconPhoneSolid className="w-3.5 h-3.5 text-simona-teal" />
-              <span>Служба заботы: (831) 423 76 00</span>
+              <span>{content.service.consultationCta}: {content.contacts.phone}</span>
             </a>
           </div>
         </div>
@@ -153,14 +139,14 @@ export function ServiceContour() {
           ref={gridRef}
           className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
         >
-          {SERVICES.map((item) => (
+          {services.map((item) => (
             <div
-              key={item.num}
+              key={item.number}
               className="service-card p-8 sm:p-10 rounded-2xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal/50 transition-colors duration-300 flex flex-col justify-between space-y-6 shadow-xl group"
             >
               <div>
                 <span className="service-num font-montserrat text-3xl sm:text-4xl font-bold text-simona-teal tracking-tight block mb-6 transition-colors">
-                  {item.num}
+                  {item.number}
                 </span>
 
                 <h3 className="text-xl font-montserrat font-bold text-white leading-snug mb-3 group-hover:text-simona-teal transition-colors">
@@ -168,7 +154,7 @@ export function ServiceContour() {
                 </h3>
 
                 <p className="text-sm text-[#87888A] leading-relaxed">
-                  {item.desc}
+                  {item.description}
                 </p>
               </div>
 

@@ -12,8 +12,10 @@ import {
 import { SectionBadge } from '@/components/ui/SectionBadge';
 import { MANUFACTURER_PROMOS, getFeaturedPromos } from '@/data/promosData';
 import { ManufacturerPromo } from '@/types';
+import { useSiteContent } from '@/components/providers/ContentContext';
 
 export function ManufacturerPromosSection() {
+  const content = useSiteContent();
   const promos = getFeaturedPromos();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(3);
@@ -87,14 +89,14 @@ export function ManufacturerPromosSection() {
           <div>
             {/* Wine Accent Badge */}
             <SectionBadge variant="wine" className="mb-3.5">
-              Спецпредложения и выгода
+              {content.promosSection.badge}
             </SectionBadge>
 
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-tight">
-              Акции европейских производителей
+              {content.promosSection.title}
             </h2>
             <p className="text-sm sm:text-base text-[#87888A] max-w-2xl mt-2 font-normal">
-              Официальные программы выгоды и подарков от авторизованных брендов для комплектования кухни вашей мечты.
+              {content.promosSection.subtitle}
             </p>
           </div>
 
@@ -104,7 +106,7 @@ export function ManufacturerPromosSection() {
               href="/promos"
               className="group inline-flex items-center space-x-1.5 text-xs sm:text-sm font-medium text-[#D7D9DB] hover:text-white transition-colors"
             >
-              <span>Все акции производителей</span>
+              <span>{content.promosSection.allPromosCta}</span>
               <SimonaIconArrowRight className="w-4 h-4 text-simona-wine-light group-hover:translate-x-1 transition-transform" />
             </Link>
 

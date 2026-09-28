@@ -18,6 +18,7 @@ import {
   SimonaIconClock,
   SimonaIconPhoneSolid,
 } from '@/components/brand/SimonaIcons';
+import { useSiteContent } from '@/components/providers/ContentContext';
 
 interface ShowroomPhoto {
   id: string;
@@ -169,6 +170,7 @@ const SHOWROOMS: Record<'belinskogo-15' | 'belinskogo-11', ShowroomData> = {
 };
 
 export function ShowroomsFigmaSection() {
+  const content = useSiteContent();
   const [activeTab, setActiveTab] = useState<'belinskogo-15' | 'belinskogo-11'>('belinskogo-15');
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -479,13 +481,13 @@ export function ShowroomsFigmaSection() {
         <div ref={headerRef} className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div className="max-w-2xl text-left">
             <SectionBadge variant="teal" className="mb-3.5">
-              Физические пространства «СИМОНА» в Нижнем Новгороде
+              {content.showroomsSection.badge}
             </SectionBadge>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-semibold text-white tracking-tight leading-tight">
-              Наши магазины
+              {content.showroomsSection.title}
             </h2>
             <p className="mt-3 text-sm sm:text-base text-[#87888A] leading-relaxed">
-              Оцените материалы, эргономику и технологии приборов вживую перед покупкой
+              {content.showroomsSection.subtitle}
             </p>
           </div>
 

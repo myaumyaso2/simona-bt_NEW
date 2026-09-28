@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import './globals.css';
 import { StoreProvider } from '@/components/providers/StoreContext';
+import { ContentProvider } from '@/components/providers/ContentContext';
+import { getSiteContent } from '@/lib/content';
 import { SmoothScrollProvider } from '@/components/providers/SmoothScrollProvider';
 import { HeaderContainer } from '@/components/layout/HeaderContainer';
 import { Footer } from '@/components/layout/Footer';
@@ -38,18 +40,22 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const content = getSiteContent();
+
   return (
     <html lang="ru" className={montserrat.variable}>
       <body className="bg-[#111315] text-white font-sans min-h-screen flex flex-col antialiased selection:bg-simona-teal/30 selection:text-white">
         <YandexMetrika />
         <SchemaOrgStore />
         <SmoothScrollProvider>
-          <StoreProvider>
-            <HeaderContainer />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <GlobalModalContainer />
-          </StoreProvider>
+          <ContentProvider initialContent={content}>
+            <StoreProvider>
+              <HeaderContainer />
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <GlobalModalContainer />
+            </StoreProvider>
+          </ContentProvider>
         </SmoothScrollProvider>
       </body>
     </html>

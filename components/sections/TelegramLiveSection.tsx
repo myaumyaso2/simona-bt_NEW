@@ -7,6 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useStore } from '@/components/providers/StoreContext';
 import { SectionBadge } from '@/components/ui/SectionBadge';
 import { PlexusConstellationBackground } from '@/components/backgrounds/PlexusConstellationBackground';
+import { useSiteContent } from '@/components/providers/ContentContext';
 
 const TELEGRAM_VIDEOS = [
   {
@@ -34,6 +35,7 @@ const TELEGRAM_VIDEOS = [
 
 export function TelegramLiveSection() {
   const { openModal } = useStore();
+  const content = useSiteContent();
   const sectionRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const leftRef = useRef<HTMLDivElement>(null);
@@ -118,26 +120,26 @@ export function TelegramLiveSection() {
             {/* Left Content (5 Cols) */}
             <div ref={leftRef} className="lg:col-span-5 space-y-5">
               <SectionBadge variant="teal">
-                Live из салонов «СИМОНА»
+                {content.telegram.badge}
               </SectionBadge>
 
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-montserrat font-bold text-white tracking-tight leading-snug">
-                Следите за обзорами новинок в Telegram
+                {content.telegram.title}
               </h2>
 
               <p className="text-sm text-[#87888A] leading-relaxed">
-                Честные тест-драйвы техники, видео с закрытых кулинарных мастер-классов, анонсы поступлений эксклюзивных серий и секреты правильного ухода.
+                {content.telegram.subtitle}
               </p>
 
               <div className="pt-2">
                 <a
-                  href="https://t.me/simona_bt"
+                  href={content.contacts.telegramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-simona-teal-dark to-simona-teal hover:to-simona-teal-light text-white text-xs font-semibold uppercase tracking-wider transition-all duration-300 shadow-lg shadow-simona-teal/25 hover:shadow-simona-teal/40"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  <span>Перейти в Telegram-канал @simona_bt</span>
+                  <span>{content.telegram.subscribeCta}</span>
                 </a>
               </div>
             </div>
