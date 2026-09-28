@@ -16,7 +16,6 @@ import {
   SimonaIconClock,
   SimonaIconStar,
   SimonaIconCheck,
-  SimonaIconGuarantee,
 } from '@/components/brand/SimonaIcons';
 import { getPromosForProduct, getPromosForCategory } from '@/data/promosData';
 import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
@@ -83,7 +82,6 @@ export function ProductBuyBox({
   };
 
   const savings = product.oldPrice ? product.oldPrice - product.price : 0;
-  const installmentPerMonth = Math.round(product.price / 12);
 
   const hasRealReviews = Boolean(product.reviews && product.reviews.length > 0);
   const reviewCount = product.reviews?.length || 0;
@@ -107,35 +105,34 @@ export function ProductBuyBox({
           {product.name}
         </h1>
 
-        <div className="flex flex-wrap items-center gap-2 mt-2.5 text-xs text-[#87888A]">
-          {hasRealReviews ? (
-            <>
-              <div className="flex items-center gap-1 text-[#D4AF37] font-semibold">
-                <SimonaIconStar className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]" />
-                <span>{averageRating.toFixed(1)} / 5.0</span>
-              </div>
-              <span>•</span>
+        {(hasRealReviews || Boolean(product.expertVerdict)) && (
+          <div className="flex flex-wrap items-center gap-2 mt-2.5 text-xs text-[#87888A]">
+            {hasRealReviews && (
+              <>
+                <div className="flex items-center gap-1 text-[#D4AF37] font-semibold">
+                  <SimonaIconStar className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]" />
+                  <span>{averageRating.toFixed(1)} / 5.0</span>
+                </div>
+                <span>•</span>
+                <button
+                  onClick={() => onNavigateToTab('reviews')}
+                  className="hover:text-white transition-colors underline-offset-2 hover:underline cursor-pointer"
+                >
+                  {reviewCount} {reviewCount === 1 ? 'отзыв владельца' : 'отзывов владельцев'}
+                </button>
+              </>
+            )}
+            {hasRealReviews && Boolean(product.expertVerdict) && <span>•</span>}
+            {Boolean(product.expertVerdict) && (
               <button
-                onClick={() => onNavigateToTab('reviews')}
-                className="hover:text-white transition-colors underline-offset-2 hover:underline cursor-pointer"
+                onClick={() => onNavigateToTab('about')}
+                className="text-simona-teal hover:text-simona-teal-light transition-colors font-medium cursor-pointer"
               >
-                {reviewCount} {reviewCount === 1 ? 'отзыв владельца' : 'отзывов владельцев'}
+                Экспертная оценка СИМОНА
               </button>
-              <span>•</span>
-            </>
-          ) : (
-            <>
-              <span className="text-[#87888A]">Премиальная техника</span>
-              <span>•</span>
-            </>
-          )}
-          <button
-            onClick={() => onNavigateToTab(hasRealReviews ? 'reviews' : 'specs')}
-            className="text-simona-teal hover:text-simona-teal-light transition-colors font-medium cursor-pointer"
-          >
-            Экспертная оценка СИМОНА
-          </button>
-        </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 3. Color / Finish Selection (Rendered ONLY if genuine variations exist) */}
@@ -171,34 +168,35 @@ export function ProductBuyBox({
         </div>
       )}
 
-      {/* 4. Key Specs Capsule */}
+      {/* 4. Key Specs Grid (2x2 aligned, no floating dot clutter) */}
       {keySpecs.length > 0 && (
-        <div className="bg-[#1E2228] border border-[#2B313A]/70 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs text-[#D7D9DB]">
+        <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-3.5 grid grid-cols-2 gap-x-6 gap-y-2.5 text-xs">
           {keySpecs.map((spec, idx) => (
-            <React.Fragment key={idx}>
-              {idx > 0 && <span className="text-[#2B313A] select-none">•</span>}
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#87888A]">{spec.label}:</span>
-                <span className="font-semibold text-white">{spec.value}</span>
-              </div>
-            </React.Fragment>
+            <div key={idx} className="flex items-baseline gap-1.5 min-w-0">
+              <span className="text-[#87888A] shrink-0">{spec.label}:</span>
+              <span className="font-semibold text-white truncate">{spec.value}</span>
+            </div>
           ))}
         </div>
       )}
 
-      {/* 4.1. Official Dealer & Warranty Benefits Capsule (Moved from photo stage) */}
-      <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-3 flex flex-wrap items-center justify-between gap-2.5 text-xs">
-        <div className="flex items-center gap-2 text-emerald-400 font-medium">
-          <SimonaIconGuarantee className="w-4 h-4 shrink-0" />
+      {/* 4.1. Official Dealer, Warranty & Certification Benefits */}
+      <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-3.5 flex flex-col gap-2.5 text-xs">
+        <div className="flex items-center gap-2 text-white font-medium">
+          <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
           <span>Официальный дилер {brandFormatted}</span>
         </div>
-        <div className="flex items-center gap-2 text-[#D7D9DB]">
+        <div className="flex items-center gap-2 text-white font-medium">
           <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
           <span>Официальная заводская гарантия</span>
         </div>
+        <div className="flex items-center gap-2 text-white font-medium">
+          <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
+          <span>Прибор сертифицирован для эксплуатации в РФ</span>
+        </div>
       </div>
 
-      {/* 5. Price & Benefits Box */}
+      {/* 5. Price Box */}
       <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-4 sm:p-5 flex flex-col gap-2">
         <div className="flex items-baseline justify-between gap-2">
           <div className="flex items-baseline gap-3">
@@ -233,10 +231,6 @@ export function ProductBuyBox({
               </span>
             )}
           </div>
-        </div>
-
-        <div className="text-xs text-simona-teal font-medium mt-1">
-          или от {formatPrice(installmentPerMonth)}/мес без переплат (рассрочка 0-0-12)
         </div>
       </div>
 

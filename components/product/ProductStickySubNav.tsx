@@ -2,10 +2,6 @@
 
 import React, { useMemo } from 'react';
 import { ProductItem } from '@/types';
-import { formatPrice } from '@/lib/utils';
-import { useStore } from '@/components/providers/StoreContext';
-import { SimonaIconCart } from '@/components/brand/SimonaIcons';
-import { formatBrandName } from '@/lib/formatters';
 
 export interface TabItem {
   id: string;
@@ -47,21 +43,11 @@ export function ProductStickySubNav({
   activeTab,
   onSelectTab,
 }: ProductStickySubNavProps) {
-  const { addToCart, setIsCartOpen } = useStore();
-
   const tabs = useMemo(() => getProductTabs(product), [product]);
-
-  const handleQuickAdd = () => {
-    addToCart(product, 1, false);
-    setIsCartOpen(true);
-  };
-
-  const images = product.images || [];
-  const thumbnail = images[0] || 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=100&q=80';
 
   return (
     <div className="sticky top-[76px] z-30 w-full bg-[#111315]/95 backdrop-blur-md border-y border-[#2B313A] shadow-md">
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 flex items-center justify-between h-14 overflow-x-auto scrollbar-none">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 flex items-center h-14 overflow-x-auto scrollbar-none">
         {/* Navigation Tabs (Dynamic, Zero Dead Ends) */}
         <div className="flex items-center gap-6 sm:gap-8 h-full shrink-0">
           {tabs.map((tab) => {
@@ -83,32 +69,6 @@ export function ProductStickySubNav({
               </button>
             );
           })}
-        </div>
-
-        {/* Floating Mini Buy Box Widget (Right) */}
-        <div className="hidden lg:flex items-center gap-3.5 pl-6 border-l border-[#2B313A] shrink-0">
-          <img
-            src={thumbnail}
-            alt={product.name}
-            className="w-9 h-9 object-cover rounded-lg border border-[#2B313A] bg-[#1E2228]"
-          />
-
-          <div className="flex flex-col">
-            <span className="text-xs font-semibold text-white truncate max-w-[180px]" title={product.name}>
-              {product.name}
-            </span>
-            <span className="text-xs font-extrabold text-white">
-              {formatPrice(product.price)}
-            </span>
-          </div>
-
-          <button
-            onClick={handleQuickAdd}
-            className="h-8 px-4 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
-          >
-            <SimonaIconCart className="w-3 h-3 text-white" />
-            <span>В корзину</span>
-          </button>
         </div>
       </div>
     </div>

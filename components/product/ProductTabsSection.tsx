@@ -234,16 +234,6 @@ export function ProductTabsSection({
                 </div>
 
                 <div className="lg:col-span-4 flex flex-col gap-4">
-                  <div className="bg-[#1E2228] border border-[#2B313A] rounded-2xl p-6 flex flex-col gap-3">
-                    <div className="flex items-center gap-2 text-simona-teal text-xs font-semibold">
-                      <SimonaIconGuarantee className="w-4 h-4" />
-                      <span>Авторизованный партнер</span>
-                    </div>
-                    <p className="text-xs text-[#87888A] leading-relaxed">
-                      Сеть салонов «СИМОНА» является официальным партнером бренда {brandFormatted}. Все приборы сертифицированы для эксплуатации в РФ и обеспечены полной заводской гарантией.
-                    </p>
-                  </div>
-
                   <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 flex flex-col gap-3">
                     <span className="text-xs text-white font-semibold">
                       Нужна помощь с интеграцией в проект?
