@@ -1,14 +1,20 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { UmbrellaBar } from './UmbrellaBar';
 import { Header } from './Header';
 
 export function HeaderContainer() {
+  const pathname = usePathname();
   const [showUmbrella, setShowUmbrella] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCatalogMenuOpen, setIsCatalogMenuOpen] = useState(false);
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   const lastScrollYRef = useRef(0);
   const turnPointRef = useRef(0);

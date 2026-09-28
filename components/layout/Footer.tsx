@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Send, ArrowRight, ExternalLink } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaLogo } from '@/components/brand/SimonaLogo';
@@ -9,9 +10,14 @@ import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
 import { useSiteContent } from '@/components/providers/ContentContext';
 
 export function Footer() {
+  const pathname = usePathname();
   const { openModal } = useStore();
   const content = useSiteContent();
   const kuhniUrl = process.env.NEXT_PUBLIC_KUHNI_URL || content.contacts.kuhniUrl;
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <footer className="relative bg-[#0B0C0E] border-t border-[#2B313A] text-xs text-[#87888A] overflow-hidden">

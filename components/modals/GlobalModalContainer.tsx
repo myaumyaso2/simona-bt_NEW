@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { TestDriveModal } from '@/components/modals/TestDriveModal';
 import { ShowroomVisitModal } from '@/components/modals/ShowroomVisitModal';
 import { B2BLeadModal } from '@/components/modals/B2BLeadModal';
@@ -15,6 +16,12 @@ import { PromoTermsModal } from '@/components/modals/PromoTermsModal';
 import { LiveChatWidget } from '@/components/chat/LiveChatWidget';
 
 export function GlobalModalContainer() {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <>
       <TestDriveModal />

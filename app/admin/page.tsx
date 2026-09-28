@@ -10,6 +10,7 @@ import {
   getValueByPath,
   setValueByPath,
 } from '@/lib/adminContentSchema';
+export const dynamic = 'force-dynamic';
 
 export default function AdminPage() {
   const [authStatus, setAuthStatus] = useState<'loading' | 'unauthenticated' | 'authenticated'>('loading');
