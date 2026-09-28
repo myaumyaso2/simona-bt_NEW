@@ -3,34 +3,29 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProductItem } from '@/types';
-import { useStore } from '@/components/providers/StoreContext';
 import {
-  SimonaIconHeart,
-  SimonaIconCompare,
-  SimonaIconGuarantee,
   SimonaIconCheck,
   SimonaIconShare,
 } from '@/components/brand/SimonaIcons';
-import { Maximize2 } from 'lucide-react';
-import { getProductO2OInfo } from '@/lib/productO2O';
+import { formatBrandName } from '@/lib/formatters';
+import { getProductPhysicalStatus } from '@/lib/utils';
 
 interface ProductHeroGalleryProps {
   product: ProductItem;
 }
 
 export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
-  const o2oInfo = getProductO2OInfo(product);
-  const images = product.images && product.images.length > 0
-    ? product.images
-    : ['https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80'];
+  const images =
+    product.images && product.images.length > 0
+      ? product.images
+      : ['https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80'];
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [copied, setCopied] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
 
-  const { isInWishlist, toggleWishlist, isInCompare, toggleCompare } = useStore();
-  const inWishlist = isInWishlist(product.id);
-  const inCompare = isInCompare(product.id);
+  const physicalStatus = getProductPhysicalStatus(product);
+  const brandFormatted = formatBrandName(product.brand);
 
   const handleShare = async () => {
     if (typeof window !== 'undefined') {
@@ -54,16 +49,16 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
             <button
               key={idx}
               onClick={() => setActiveImageIndex(idx)}
-              className={`relative w-[76px] h-[76px] md:w-[88px] md:h-[88px] rounded-xl overflow-hidden bg-[#1E2228] border transition-all duration-200 cursor-pointer shrink-0 ${
+              className={`relative w-[76px] h-[76px] md:w-[88px] md:h-[88px] rounded-xl overflow-hidden bg-white border transition-all duration-200 cursor-pointer shrink-0 p-1 flex items-center justify-center ${
                 isActive
                   ? 'border-simona-teal ring-1 ring-simona-teal/50 shadow-md shadow-simona-teal/10'
-                  : 'border-[#2B313A] hover:border-[#87888A]/60 opacity-70 hover:opacity-100'
+                  : 'border-[#2B313A] hover:border-[#87888A]/60 opacity-80 hover:opacity-100'
               }`}
             >
               <img
                 src={img}
                 alt={`${product.name} - ракурс ${idx + 1}`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 loading="lazy"
               />
               {isActive && (
@@ -74,66 +69,36 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
         })}
       </div>
 
-      {/* 2. Main Image Stage */}
-      <div className="order-1 md:order-2 flex-1 relative h-[380px] sm:h-[480px] md:h-[580px] bg-[#1E2228] rounded-2xl border border-[#2B313A] overflow-hidden flex items-center justify-center p-4 select-none">
-        {/* Top-Left Badges Stack (Strict Quiet Luxury, No emojis) */}
-        <div className="absolute top-4 left-4 z-20 flex flex-col items-start gap-2 max-w-[85%]">
-          {o2oInfo.inShowroomExposition ? (
-            <>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 backdrop-blur-md shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>В экспозиции: {o2oInfo.showroomAddress}</span>
-              </div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-simona-teal/15 text-simona-teal border border-simona-teal/30 backdrop-blur-md shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-simona-teal" />
-                <span>Доступен для тест-драйва</span>
-              </div>
-            </>
+      {/* 2. Main Image Stage (White Luxury Showcase Tablet with object-contain) */}
+      <div className="order-1 md:order-2 flex-1 relative h-[380px] sm:h-[480px] md:h-[580px] bg-white rounded-2xl border border-white/10 shadow-inner overflow-hidden flex items-center justify-center p-4 sm:p-6 select-none">
+        {/* Badges Stack (Top-Left): Availability Status + Brand Tag */}
+        <div className="absolute top-4 left-4 z-20 flex flex-col items-start gap-1.5 max-w-[85%] pointer-events-none">
+          {physicalStatus === 'SHOWROOM' ? (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
+              На витрине
+            </span>
+          ) : physicalStatus === 'LOCAL_STOCK' ? (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
+              На складе
+            </span>
+          ) : physicalStatus === 'REMOTE_STOCK' ? (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
+              На удаленном складе
+            </span>
           ) : (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 backdrop-blur-md shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>{o2oInfo.statusBadge.text}</span>
-            </div>
+            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-medium bg-[#16191D]/85 text-[#D7D9DB] border border-[#2B313A] backdrop-blur-md shadow-md">
+              Под заказ
+            </span>
           )}
 
-          {/* Badge 3: Official Manufacturer Warranty */}
-          <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-white/10 text-white/90 border border-white/15 backdrop-blur-md shadow-sm">
-            <SimonaIconGuarantee className="w-3.5 h-3.5 text-[#D7D9DB]" />
-            <span>Официальная гарантия {o2oInfo.brandFormatted}</span>
-          </div>
+          {/* Brand Tag directly below status badge */}
+          <span className="px-2.5 py-0.5 rounded-md bg-[#16191D]/90 backdrop-blur-md text-[10px] font-bold tracking-wider text-white border border-[#2B313A] shadow-md">
+            {brandFormatted}
+          </span>
         </div>
 
-        {/* Top-Right Action Icons */}
-        <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
-          {/* Wishlist */}
-          <button
-            onClick={() => toggleWishlist(product.id)}
-            title={inWishlist ? 'Удалить из избранного' : 'Добавить в избранное'}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center backdrop-blur-md border transition-all duration-200 cursor-pointer shadow-md ${
-              inWishlist
-                ? 'bg-simona-wine/30 border-simona-wine text-simona-wine'
-                : 'bg-[#111315]/80 border-[#2B313A] text-[#D7D9DB] hover:text-white hover:border-[#87888A]'
-            }`}
-          >
-            <SimonaIconHeart
-              className={`w-4 h-4 ${inWishlist ? 'text-simona-wine fill-simona-wine' : ''}`}
-            />
-          </button>
-
-          {/* Compare */}
-          <button
-            onClick={() => toggleCompare(product.id)}
-            title={inCompare ? 'Удалить из сравнения' : 'Добавить к сравнению'}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center backdrop-blur-md border transition-all duration-200 cursor-pointer shadow-md ${
-              inCompare
-                ? 'bg-simona-teal/30 border-simona-teal text-simona-teal'
-                : 'bg-[#111315]/80 border-[#2B313A] text-[#D7D9DB] hover:text-white hover:border-[#87888A]'
-            }`}
-          >
-            <SimonaIconCompare className="w-4 h-4" />
-          </button>
-
-          {/* Share */}
+        {/* Top-Right Share Button */}
+        <div className="absolute top-4 right-4 z-20">
           <button
             onClick={handleShare}
             title="Поделиться ссылкой"
@@ -145,7 +110,7 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
               <SimonaIconShare className="w-4 h-4" />
             )}
             {copied && (
-              <span className="absolute -left-20 top-2 px-2 py-0.5 rounded-md bg-[#16191D] border border-[#2B313A] text-[10px] text-white">
+              <span className="absolute -left-24 top-2 px-2 py-0.5 rounded-md bg-[#16191D] border border-[#2B313A] text-[10px] text-white whitespace-nowrap shadow-lg">
                 Скопировано
               </span>
             )}
@@ -165,20 +130,11 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
             <img
               src={images[activeImageIndex]}
               alt={product.name}
-              className="max-h-full max-w-full object-contain rounded-lg drop-shadow-2xl cursor-zoom-in"
+              className="max-h-full max-w-full object-contain drop-shadow-md cursor-zoom-in"
               onClick={() => setIsZoomed(true)}
             />
           </motion.div>
         </AnimatePresence>
-
-        {/* Bottom-Right 360 / Interior Badge */}
-        <button
-          onClick={() => setIsZoomed(true)}
-          className="absolute bottom-4 right-4 z-20 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#111315]/85 backdrop-blur-md border border-[#2B313A] text-xs text-[#D7D9DB] hover:text-white hover:border-simona-teal transition-all duration-200 cursor-pointer shadow-md"
-        >
-          <Maximize2 className="w-3.5 h-3.5 text-simona-teal" />
-          <span>360° / Фото в интерьере</span>
-        </button>
 
         {/* Fullscreen Zoom Lightbox Modal */}
         <AnimatePresence>

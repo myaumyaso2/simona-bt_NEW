@@ -9,6 +9,8 @@ import { useStore } from '@/components/providers/StoreContext';
 import { ArrowRight } from 'lucide-react';
 import {
   SimonaIconCart,
+  SimonaIconHeart,
+  SimonaIconCompare,
   SimonaIconDelivery,
   SimonaIconPin,
   SimonaIconClock,
@@ -32,8 +34,21 @@ export function ProductBuyBox({
   onOpenOneClickBuy,
   onNavigateToTab,
 }: ProductBuyBoxProps) {
-  const { addToCart, setIsCartOpen, openModal } = useStore();
-  const [quantity, setQuantity] = useState(1);
+  const {
+    addToCart,
+    setIsCartOpen,
+    isInCart,
+    isInWishlist,
+    toggleWishlist,
+    isInCompare,
+    toggleCompare,
+    openModal,
+  } = useStore();
+
+  const inCart = isInCart(product.id);
+  const inWishlist = isInWishlist(product.id);
+  const inCompare = isInCompare(product.id);
+
   const [selectedColorId, setSelectedColorId] = useState(
     product.colors?.[0]?.id || ''
   );
@@ -59,16 +74,13 @@ export function ProductBuyBox({
   const keySpecs = useMemo(() => extractKeySpecs(product), [product]);
 
   const handleAddToCart = () => {
-    addToCart(product, quantity, false);
+    addToCart(product, 1, false);
     setIsAddedAnimation(true);
     setTimeout(() => {
       setIsAddedAnimation(false);
       setIsCartOpen(true);
     }, 400);
   };
-
-  const handleIncrement = () => setQuantity((prev) => Math.min(prev + 1, 10));
-  const handleDecrement = () => setQuantity((prev) => Math.max(prev - 1, 1));
 
   const savings = product.oldPrice ? product.oldPrice - product.price : 0;
   const installmentPerMonth = Math.round(product.price / 12);
@@ -113,10 +125,7 @@ export function ProductBuyBox({
             </>
           ) : (
             <>
-              <div className="flex items-center gap-1.5 text-emerald-400 font-medium">
-                <SimonaIconGuarantee className="w-3.5 h-3.5" />
-                <span>Официальный дилер {brandFormatted}</span>
-              </div>
+              <span className="text-[#87888A]">Премиальная техника</span>
               <span>•</span>
             </>
           )}
@@ -176,6 +185,18 @@ export function ProductBuyBox({
           ))}
         </div>
       )}
+
+      {/* 4.1. Official Dealer & Warranty Benefits Capsule (Moved from photo stage) */}
+      <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-3 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+        <div className="flex items-center gap-2 text-emerald-400 font-medium">
+          <SimonaIconGuarantee className="w-4 h-4 shrink-0" />
+          <span>Официальный дилер {brandFormatted}</span>
+        </div>
+        <div className="flex items-center gap-2 text-[#D7D9DB]">
+          <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0" />
+          <span>Официальная заводская гарантия</span>
+        </div>
+      </div>
 
       {/* 5. Price & Benefits Box */}
       <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-4 sm:p-5 flex flex-col gap-2">
@@ -278,50 +299,67 @@ export function ProductBuyBox({
         </div>
       ) : null}
 
-      {/* 6. Action Buttons: Quantity + Add To Cart + Buy 1-Click (Strict rounded-xl) */}
+      {/* 6. Action Row: Buy/Cart + Wishlist + Compare + 1-Click Buy */}
       <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-3">
-          {/* Quantity Selector */}
-          <div className="flex items-center bg-[#1E2228] border border-[#2B313A] rounded-xl px-2 py-1 h-12">
+        <div className="flex items-center gap-2 w-full">
+          {/* Main Cart / Buy Button */}
+          {inCart ? (
             <button
-              onClick={handleDecrement}
-              disabled={quantity <= 1}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#87888A] hover:text-white disabled:opacity-30 cursor-pointer font-bold transition-colors"
+              onClick={() => setIsCartOpen(true)}
+              className="flex-1 h-12 px-4 rounded-xl bg-gradient-to-r from-simona-teal-dark to-simona-teal hover:to-simona-teal-light text-white text-xs font-semibold tracking-wide transition-all duration-300 shadow-lg shadow-simona-teal/30 hover:shadow-simona-teal/50 hover:scale-[1.01] active:scale-98 flex items-center justify-center cursor-pointer"
             >
-              −
+              <SimonaIconCart className="w-4 h-4 mr-2 flex-shrink-0" />
+              <span>В корзину</span>
             </button>
-            <span className="w-8 text-center text-sm font-semibold text-white">
-              {quantity}
-            </span>
+          ) : (
             <button
-              onClick={handleIncrement}
-              disabled={quantity >= 10}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#87888A] hover:text-white disabled:opacity-30 cursor-pointer font-bold transition-colors"
+              onClick={handleAddToCart}
+              className={`flex-1 h-12 px-4 rounded-xl text-white text-xs font-bold tracking-wide transition-all duration-300 flex items-center justify-center cursor-pointer shadow-md ${
+                isAddedAnimation
+                  ? 'bg-emerald-600 scale-[0.98]'
+                  : 'bg-[#16191D] hover:bg-[#1E2228] border border-simona-teal shadow-simona-teal/10 hover:shadow-simona-teal/20 hover:scale-[1.01] active:scale-98'
+              }`}
             >
-              +
+              {isAddedAnimation ? (
+                <>
+                  <SimonaIconCheck className="w-4 h-4 mr-2 text-white" />
+                  <span>Добавлено</span>
+                </>
+              ) : (
+                <>
+                  <SimonaIconCart className="w-4 h-4 mr-2 flex-shrink-0 text-simona-teal" />
+                  <span>Купить</span>
+                </>
+              )}
             </button>
-          </div>
+          )}
 
-          {/* Primary CTA: Add To Cart */}
+          {/* Wishlist Button */}
           <button
-            onClick={handleAddToCart}
-            className={`flex-1 h-12 rounded-xl font-bold text-sm tracking-wide text-white transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-teal-950/40 ${
-              isAddedAnimation
-                ? 'bg-emerald-600 scale-[0.98]'
-                : 'bg-simona-teal hover:bg-simona-teal-light active:scale-[0.98]'
+            onClick={() => toggleWishlist(product.id)}
+            aria-label={inWishlist ? 'Удалить из избранного' : 'Добавить в избранное'}
+            title={inWishlist ? 'В избранном' : 'В избранное'}
+            className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0 cursor-pointer ${
+              inWishlist
+                ? 'bg-simona-teal border border-simona-teal text-white shadow-md shadow-simona-teal/20'
+                : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal/50 hover:bg-[#242A32]'
             }`}
           >
-            {isAddedAnimation ? (
-              <>
-                <SimonaIconCheck className="w-4 h-4 text-white" />
-                <span>Добавлено в корзину</span>
-              </>
-            ) : (
-              <>
-                <SimonaIconCart className="w-4 h-4 text-white" />
-                <span>В корзину — {formatPrice(product.price * quantity)}</span>
-              </>
-            )}
+            <SimonaIconHeart className="w-4 h-4" />
+          </button>
+
+          {/* Compare Button */}
+          <button
+            onClick={() => toggleCompare(product.id)}
+            aria-label={inCompare ? 'Удалить из сравнения' : 'Добавить к сравнению'}
+            title={inCompare ? 'В сравнении' : 'В сравнение'}
+            className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0 cursor-pointer ${
+              inCompare
+                ? 'bg-simona-teal border border-simona-teal text-white shadow-md shadow-simona-teal/20'
+                : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal/50 hover:bg-[#242A32]'
+            }`}
+          >
+            <SimonaIconCompare className="w-4 h-4" />
           </button>
         </div>
 
