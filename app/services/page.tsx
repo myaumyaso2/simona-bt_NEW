@@ -113,10 +113,10 @@ export default function ServicesPage() {
                   <SimonaIconDelivery className="w-6 h-6" />
                 </div>
                 <h3 className="text-xl font-montserrat font-bold text-white mb-2">
-                  Доставка в белых перчатках
+                  {content.servicesPage.pillars[0]?.title || 'Аккуратная доставка и подъем на этаж'}
                 </h3>
                 <p className="text-xs sm:text-sm text-[#87888A] leading-relaxed mb-4">
-                  Собственный специализированный автопарк с гидролифтами. Экипаж из двух опытных экспедиторов бережно заносит крупногабаритные приборы в квартиру, распаковывает в белых перчатках, проверяет целостность стекол и эмали при клиенте и утилизирует упаковочный картон.
+                  {content.servicesPage.pillars[0]?.desc || 'Собственная служба доставки. Экипаж бережно заносит приборы прямо в квартиру, распаковывает, проверяет целостность стекол и эмали при вас и утилизирует упаковку.'}
                 </p>
                 <ul className="space-y-2 text-xs text-zinc-300">
                   <li className="flex items-center space-x-2">
@@ -145,10 +145,10 @@ export default function ServicesPage() {
                   <Wrench className="w-6 h-6" />
                 </div>
                 <h3 className="text-xl font-montserrat font-bold text-white mb-2">
-                  Сертифицированный шеф-монтаж
+                  {content.servicesPage.pillars[1]?.title || 'Профессиональная установка и подключение'}
                 </h3>
                 <p className="text-xs sm:text-sm text-[#87888A] leading-relaxed mb-4">
-                  Монтаж премиальной встройки требует инженерной точности. Наши мастера прошли сертификацию на заводах Miele, ASKO, SMEG и Falmec. Выполняем скрытую навеску мебельных фасадов, балансировку петель, подключение к 3-фазной сети и пуско-наладку.
+                  {content.servicesPage.pillars[1]?.desc || 'Монтаж встраиваемой техники требует точности. Наши мастера аккуратно устанавливают приборы, выполняют навеску фасадов, балансировку петель, подключение к коммуникациям и пусконаладку с сохранением заводской гарантии.'}
                 </p>
                 <ul className="space-y-2 text-xs text-zinc-300">
                   <li className="flex items-center space-x-2">
@@ -279,7 +279,7 @@ export default function ServicesPage() {
                           : 'bg-[#1E2228] border-[#2B313A] text-[#87888A] hover:text-white'
                       }`}
                     >
-                      <div className="font-semibold text-white">Шеф-монтаж и подключение</div>
+                      <div className="font-semibold text-white">Установка и подключение</div>
                       <div className="text-[10px] text-[#87888A]">Встройка приборов, навеска фасадов</div>
                     </button>
 

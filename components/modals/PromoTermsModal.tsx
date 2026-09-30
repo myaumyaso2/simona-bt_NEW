@@ -109,7 +109,7 @@ export function PromoTermsModal() {
           <div className="p-4 rounded-2xl bg-simona-teal/10 border border-simona-teal/20 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-white">
               <span className="w-2 h-2 rounded-full bg-simona-teal animate-pulse" />
-              <span>Официальная гарантия и сервис авторизованного бутика</span>
+              <span>Официальная гарантия и сервис авторизованного дилера</span>
             </div>
             <span className="text-[#87888A]">Белинского, 15 / 11-66</span>
           </div>

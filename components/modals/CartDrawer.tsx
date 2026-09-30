@@ -252,7 +252,7 @@ export function CartDrawer() {
                               className="text-simona-teal focus:ring-0 mr-2"
                             />
                             <div>
-                              <span className="text-[#16181B] font-semibold text-[11px]">Доставка в белых перчатках</span>
+                              <span className="text-[#16181B] font-semibold text-[11px]">Аккуратная доставка собственной службой</span>
                               <span className="block text-[9px] text-[#87888A]">По Нижнему Новгороду и области</span>
                             </div>
                           </label>

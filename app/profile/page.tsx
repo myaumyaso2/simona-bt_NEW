@@ -191,7 +191,7 @@ function ProfileContent() {
       case 'PICKUP_BELINSKOGO_15':
         return 'Самовывоз: Салон (ул. Белинского, 15)';
       case 'WHITE_GLOVE_DELIVERY':
-        return address ? `Доставка: ${address}` : 'Премиальная доставка в белых перчатках';
+        return address ? `Доставка: ${address}` : 'Аккуратная доставка собственной службой';
       default:
         return 'Самовывоз со склада (Коминтерна, 27)';
     }
@@ -497,7 +497,7 @@ function ProfileContent() {
           <div className="max-w-2xl bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 sm:p-8">
             <h3 className="text-lg font-montserrat font-semibold text-white mb-2">Персональные данные и адреса</h3>
             <p className="text-xs text-[#87888A] mb-6 leading-relaxed">
-              Информация используется для подтверждения заказов, бронирования визитов в шоурумы и доставки в белых перчатках.
+              Информация используется для подтверждения заказов, бронирования визитов в шоурумы и аккуратной доставки бытовой техники.
             </p>
 
             <form onSubmit={handleSaveProfile} className="space-y-4 text-xs">
@@ -612,7 +612,7 @@ function ProfileContent() {
                   </div>
                   <h4 className="text-base font-bold text-white mb-1">Мария Воронина</h4>
                   <p className="text-xs text-[#87888A] mb-4">
-                    Ведущий эксперт по интеграции премиальной встройки, шеф-монтажу и координации с фабриками кухонь.
+                    Ведущий эксперт по подбору и установке встраиваемой техники, координации с фабриками кухонь.
                   </p>
                   <div className="space-y-1.5 text-xs text-zinc-300">
                     <div>📞 Телефон / WhatsApp: <a href="tel:+78314237600" className="text-white hover:text-simona-teal">+7 (831) 423-76-00 (доб. 104)</a></div>

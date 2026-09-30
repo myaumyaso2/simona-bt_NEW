@@ -605,7 +605,7 @@ export const ADMIN_TABS: AdminTabDef[] = [
     id: 'services',
     title: 'Сервис и монтаж',
     badge: '/services',
-    description: 'Сервисная экосистема, шеф-монтаж, хранение на складе и инженерный замер объекта',
+    description: 'Сервисная экосистема, установка и подключение, хранение на складе и инженерный замер объекта',
     fields: [
       {
         section: 'Главный экран',
@@ -628,7 +628,7 @@ export const ADMIN_TABS: AdminTabDef[] = [
       {
         section: 'Главный экран',
         keyPath: 'servicesPage.ctaButton',
-        label: 'Кнопка заказа сервиса/шеф-монтажа',
+        label: 'Кнопка заказа сервиса и установки',
         type: 'text',
       },
       {

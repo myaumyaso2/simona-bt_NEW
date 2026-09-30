@@ -36,7 +36,7 @@ export function OrderOnlineBanner() {
 
               {/* Description */}
               <p className="text-sm sm:text-base text-white/90 font-normal leading-relaxed max-w-xl">
-                Совершайте покупки не выходя из дома. Каталог 8 000+ позиций с доставкой и шеф-монтажом по Нижнему Новгороду.
+                Совершайте покупки не выходя из дома. Каталог 8 000+ позиций с доставкой и профессиональной установкой по Нижнему Новгороду.
               </p>
 
               {/* Action Buttons */}
@@ -66,7 +66,7 @@ export function OrderOnlineBanner() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-white shadow-sm" />
-                  <span>Шеф-монтаж</span>
+                  <span>Установка и подключение</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-white shadow-sm" />

@@ -66,7 +66,7 @@ export function getProductO2OInfo(product: ProductItem): ProductO2OInfo {
       }
       deliveryText = {
         time: 'Завтра, бесплатно',
-        details: '(в белых перчатках до кухни)',
+        details: '(аккуратный подъем до кухни)',
       };
       consultationText = `Модель представлена в экспозиции салона на ${showroomAddress}`;
       break;
@@ -83,7 +83,7 @@ export function getProductO2OInfo(product: ProductItem): ProductO2OInfo {
       };
       deliveryText = {
         time: '1–2 рабочих дня, бесплатно',
-        details: '(в белых перчатках до кухни)',
+        details: '(аккуратный подъем до кухни)',
       };
       consultationText = `Похожие образцы бренда ${brandFormatted} представлены в салоне на ${showroomAddress}`;
       break;

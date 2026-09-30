@@ -115,7 +115,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="#service" className="text-[#87888A] hover:text-white transition-colors">
-                  Шеф-монтаж
+                  Установка и подключение
                 </Link>
               </li>
               <li>

@@ -386,14 +386,14 @@ export default function CheckoutPage() {
                         <div>
                           <div className="flex items-center space-x-2">
                             <span className="text-xs font-bold text-white">
-                              Доставка в белых перчатках
+                              Аккуратная доставка и подъем на этаж
                             </span>
-                            <span className="px-2 py-0.5 rounded-md bg-simona-wine/20 text-simona-wine-light text-[10px] font-semibold">
-                              Премиум сервис
+                            <span className="px-2 py-0.5 rounded-md bg-simona-teal/20 text-simona-teal text-[10px] font-semibold">
+                              Собственная служба
                             </span>
                           </div>
                           <p className="text-[11px] text-[#87888A] mt-1 leading-relaxed">
-                            Собственная служба логистики «СИМОНА». Бережный подъем на этаж, занос в квартиру, распаковка прибора и вывоз упаковочных материалов.
+                            Собственная служба логистики «СИМОНА». Бережный занос в квартиру, распаковка прибора, проверка целостности при вас и вывоз упаковки.
                           </p>
                         </div>
                       </div>

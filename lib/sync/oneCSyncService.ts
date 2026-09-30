@@ -420,7 +420,7 @@ export async function syncFullCatalog(
               stockRemote: 0,
               deliveryDays: item.deliveryDays || (item.inStock ? 1 : 7),
               color: item.color || null,
-              description: `${item.fullName} по официальной цене производителя в интернет-бутике СИМОНА.`,
+              description: `${item.fullName} по официальной цене производителя в салонах и интернет-магазине СИМОНА.`,
               featuresJson: '[]',
               imagesJson: '[]',
             };

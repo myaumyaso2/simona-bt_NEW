@@ -247,7 +247,7 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
             )}
           </div>
           <p className="text-[11px] text-[#87888A]">
-            Шеф-монтаж салона
+            Профессиональный монтаж
           </p>
 
           {/* Accent Wine Benefit row per AGENTS.md 8.2 */}

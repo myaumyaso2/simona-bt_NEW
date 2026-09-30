@@ -7,7 +7,7 @@ import { ArrowRight, Globe2 } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 
 export const metadata: Metadata = {
-  title: 'Мировые бренды премиальной бытовой техники | Бутик СИМОНА',
+  title: 'Мировые бренды бытовой техники | Салоны СИМОНА',
   description:
     'Официальный дилер европейских производителей в Нижнем Новгороде: Miele, ASKO, Liebherr, SMEG, OMOIKIRI, Bertazzoni, Falmec, VARD, Körting. Флагманские экспозиции в салонах на ул. Белинского 15 и 11/66.',
 };

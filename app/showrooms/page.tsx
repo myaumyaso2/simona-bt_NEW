@@ -199,7 +199,7 @@ export default function ShowroomsPage() {
                 </p>
 
                 <p className="text-xs sm:text-sm text-[#87888A] leading-relaxed mb-6">
-                  Специализированная мокрая зона и сантехнический бутик. Коллекции японских моек из гранита Tetogranit и Artgranit, смесители 2-в-1 с подключением фильтра, измельчители пищевых отходов NAGARE и немецкая встройка Körting.
+                  Специализированная мокрая зона и сантехнический салон. Коллекции японских моек из гранита Tetogranit и Artgranit, смесители 2-в-1 с подключением фильтра, измельчители пищевых отходов NAGARE и немецкая встройка Körting.
                 </p>
 
                 {/* Logistics Disclaimer Notice */}

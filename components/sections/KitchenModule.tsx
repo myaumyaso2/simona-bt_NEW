@@ -45,7 +45,7 @@ export function KitchenModule() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <SimonaIconCheckCircle className="w-4 h-4 text-simona-teal shrink-0" />
-                    <span>Шеф-монтаж фасадов и приборов одной бригадой</span>
+                    <span>Монтаж кухни и подключение приборов одной бригадой</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <SimonaIconCheckCircle className="w-4 h-4 text-simona-teal shrink-0" />
