@@ -6,6 +6,7 @@ import { ProductItem } from '@/types';
 import { formatPrice, PHYSICAL_STATUS_CONFIG } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaIconCart, SimonaIconChef } from '@/components/brand/SimonaIcons';
+import { formatProductName } from '@/lib/catalog/productTitle';
 
 interface ProductCardProps {
   product: ProductItem;
@@ -23,6 +24,7 @@ export function ProductCard({ product }: ProductCardProps) {
     : [];
 
   const mainImage = images[0] || 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80';
+  const formattedTitle = formatProductName(product);
 
   return (
     <div className="group p-1 rounded-[1.5rem] bg-black/[0.02] ring-1 ring-black/[0.06] hover:ring-simona-teal/50 hover:bg-black/[0.03] transition-all duration-300 shadow-sm flex flex-col justify-between">
@@ -47,7 +49,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {/* Product Image */}
             <img
               src={mainImage}
-              alt={product.name}
+              alt={formattedTitle}
               className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
             />
@@ -63,7 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
             {/* Product Name */}
             <h3 className="text-sm font-bold text-[#16181B] group-hover:text-simona-teal transition-colors line-clamp-2 leading-snug">
-              {product.name}
+              {formattedTitle}
             </h3>
 
             {/* Short Description */}

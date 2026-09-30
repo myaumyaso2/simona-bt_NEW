@@ -13,6 +13,7 @@ import {
   SimonaIconCompare,
 } from '@/components/brand/SimonaIcons';
 import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
+import { formatProductName } from '@/lib/catalog/productTitle';
 
 function getProductChips(product: ProductItem): string[] {
   const chips: string[] = [];
@@ -167,6 +168,7 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
 
   const discountBadge = getDiscountBadgeInfo(product);
   const showPromoBadge = Boolean(activePromo || discountBadge);
+  const formattedTitle = formatProductName(product);
   const badgeText = discountBadge ? discountBadge.text : 'АКЦИЯ';
   const badgeClass = discountBadge
     ? discountBadge.className
@@ -335,7 +337,7 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
           {/* Product Image (object-contain ensures zero clipping of wide and compact appliances) */}
           <img
             src={mainImage}
-            alt={product.name}
+            alt={formattedTitle}
             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 select-none"
             loading="lazy"
           />
@@ -354,7 +356,7 @@ export function LuxuryProductCard({ product }: LuxuryProductCardProps) {
           {/* Product Name */}
           <Link href={`/product/${product.slug}`} className="block">
             <h3 className="text-[15px] font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors line-clamp-2 leading-snug">
-              {product.name}
+              {formattedTitle}
             </h3>
           </Link>
         </div>

@@ -8,6 +8,7 @@ import { useStore } from '@/components/providers/StoreContext';
 import { ProductItem } from '@/types';
 import { formatPrice, PHYSICAL_STATUS_CONFIG } from '@/lib/utils';
 import { getPromosForProduct } from '@/data/promosData';
+import { formatProductName } from '@/lib/catalog/productTitle';
 import {
   SimonaIconCart,
   SimonaIconChef,
@@ -239,6 +240,7 @@ export function FastSearchModal() {
               const isEcom = product.categoryType === 'CATEGORY_A';
               const productPromos = getPromosForProduct(product);
               const activePromo = productPromos[0];
+              const formattedTitle = formatProductName(product);
 
               return (
                 <div
@@ -257,7 +259,7 @@ export function FastSearchModal() {
                             ? JSON.parse(product.imagesJson || '[]')[0]
                             : 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=400&q=80'
                         }
-                        alt={product.name}
+                        alt={formattedTitle}
                         className="w-full h-full object-cover rounded-md group-hover:scale-105 transition-transform"
                         loading="lazy"
                       />
@@ -291,7 +293,7 @@ export function FastSearchModal() {
 
                       {/* Product Name */}
                       <div className="text-xs sm:text-sm font-bold text-white group-hover:text-simona-teal transition-colors truncate mt-1">
-                        {product.name}
+                        {formattedTitle}
                       </div>
 
                       {/* Price Row */}

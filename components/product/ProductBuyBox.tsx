@@ -21,6 +21,7 @@ import { getPromosForProduct, getPromosForCategory } from '@/data/promosData';
 import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
 import { formatBrandName } from '@/lib/formatters';
 import { getProductO2OInfo } from '@/lib/productO2O';
+import { formatProductName } from '@/lib/catalog/productTitle';
 
 interface ProductBuyBoxProps {
   product: ProductItem;
@@ -54,6 +55,7 @@ export function ProductBuyBox({
   const [isAddedAnimation, setIsAddedAnimation] = useState(false);
 
   const brandFormatted = formatBrandName(product.brand);
+  const formattedTitle = formatProductName(product);
   const o2oInfo = useMemo(() => getProductO2OInfo(product), [product]);
 
   const productPromos = getPromosForProduct(product);
@@ -102,7 +104,7 @@ export function ProductBuyBox({
       {/* 2. Title & Verified Rating / Expertise */}
       <div>
         <h1 className="text-xl sm:text-2xl font-montserrat font-bold text-white leading-tight tracking-tight">
-          {product.name}
+          {formattedTitle}
         </h1>
 
         {(hasRealReviews || Boolean(product.expertVerdict)) && (

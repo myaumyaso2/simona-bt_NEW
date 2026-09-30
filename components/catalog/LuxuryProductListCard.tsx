@@ -14,6 +14,7 @@ import {
 } from '@/components/brand/SimonaIcons';
 import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
 import { extractKeySpecs } from '@/lib/productFeatures';
+import { formatProductName } from '@/lib/catalog/productTitle';
 
 interface LuxuryProductListCardProps {
   product: ProductItem;
@@ -91,6 +92,7 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
 
   const discountBadge = getDiscountBadgeInfo(product);
   const showPromoBadge = Boolean(activePromo || discountBadge);
+  const formattedTitle = formatProductName(product);
   const badgeText = discountBadge ? discountBadge.text : 'АКЦИЯ';
   const badgeClass = discountBadge
     ? discountBadge.className
@@ -192,7 +194,7 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
         {/* Product Image (object-contain ensures zero clipping) */}
         <img
           src={mainImage}
-          alt={product.name}
+          alt={formattedTitle}
           className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 select-none"
           loading="lazy"
         />
@@ -213,7 +215,7 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
           {/* Product Name */}
           <Link href={`/product/${product.slug}`} className="block">
             <h3 className="text-base sm:text-lg font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors leading-snug">
-              {product.name}
+              {formattedTitle}
             </h3>
           </Link>
 
