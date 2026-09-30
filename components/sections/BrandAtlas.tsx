@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { SectionBadge } from '@/components/ui/SectionBadge';
 import { PlexusConstellationBackground } from '@/components/backgrounds/PlexusConstellationBackground';
 import { useSiteContent } from '@/components/providers/ContentContext';
-import { BrandLogo } from '@/components/brand/BrandLogos';
 import { BrandCardData } from '@/lib/catalog/brandStats';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -14,100 +13,139 @@ interface BrandAtlasProps {
   initialBrands?: BrandCardData[];
 }
 
-export function BrandAtlas({ initialBrands }: BrandAtlasProps) {
+function BrandCardItem({ brand }: { brand: BrandCardData }) {
+  const cardRef = useRef<HTMLAnchorElement>(null);
+  const sheenRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+
+    gsap.to(cardRef.current, {
+      rotateY: x * 0.04,
+      rotateX: -y * 0.04,
+      transformPerspective: 900,
+      duration: 0.25,
+      ease: 'power2.out',
+    });
+
+    if (sheenRef.current) {
+      gsap.to(sheenRef.current, {
+        opacity: 0.22,
+        x: e.clientX - rect.left - 80,
+        y: e.clientY - rect.top - 80,
+        duration: 0.2,
+      });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!cardRef.current) return;
+    gsap.to(cardRef.current, {
+      rotateY: 0,
+      rotateX: 0,
+      duration: 0.6,
+      ease: 'power3.out',
+    });
+
+    if (sheenRef.current) {
+      gsap.to(sheenRef.current, {
+        opacity: 0,
+        duration: 0.4,
+      });
+    }
+  };
+
+  return (
+    <Link
+      ref={cardRef}
+      href={`/catalog?brand=${encodeURIComponent(brand.slug)}`}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="brand-card group relative overflow-hidden flex flex-col items-center justify-center p-4 sm:p-5 rounded-xl bg-gradient-to-b from-[#1A1E24]/90 to-[#16191D]/95 backdrop-blur-md border border-[#2B313A] hover:border-simona-teal/70 hover:bg-[#1E2228] transition-all duration-300 min-h-[124px] text-center will-change-transform shadow-lg shadow-black/40 hover:shadow-simona-teal/10 hover:-translate-y-1"
+      style={{ transformStyle: 'preserve-3d' }}
+    >
+      {/* Dynamic Cursor Sheen */}
+      <div
+        ref={sheenRef}
+        className="pointer-events-none absolute w-44 h-44 rounded-full bg-[radial-gradient(circle,rgba(0,181,186,0.32)_0%,transparent_70%)] opacity-0 -translate-x-1/2 -translate-y-1/2"
+      />
+
+      {/* Flagship Ribbon for Top-9 Brands */}
+      {brand.isPriority && (
+        <div className="absolute top-2 right-2.5 text-[9.5px] font-semibold tracking-wider text-[#87888A] uppercase opacity-40 group-hover:opacity-80 group-hover:text-simona-teal transition-all">
+          Флагман
+        </div>
+      )}
+
+      {/* Brand Text Name (Clean Quiet Luxury Typography) */}
+      <span className="font-montserrat text-lg sm:text-xl font-bold text-white group-hover:text-simona-teal transition-colors tracking-wide relative z-10 leading-snug">
+        {brand.name}
+      </span>
+
+      {/* Country & USP Specialty */}
+      <span className="text-[11px] text-[#87888A] mt-1 font-medium group-hover:text-[#D7D9DB] transition-colors relative z-10 text-center leading-tight line-clamp-1">
+        {brand.country} • {brand.usp}
+      </span>
+
+      {/* Real Inventory Model Count Badge */}
+      <span className="inline-flex items-center gap-1.5 mt-2.5 px-2.5 py-0.5 rounded-md bg-simona-teal/10 border border-simona-teal/20 text-simona-teal text-[11px] font-semibold group-hover:bg-simona-teal/20 group-hover:border-simona-teal/40 transition-all relative z-10">
+        <span className="w-1.5 h-1.5 rounded-full bg-simona-teal animate-pulse" />
+        {brand.countLabel}
+      </span>
+    </Link>
+  );
+}
+
+export function BrandAtlas({ initialBrands = [] }: BrandAtlasProps) {
   const content = useSiteContent();
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
-  const [brands] = useState<BrandCardData[]>(() => initialBrands || []);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
 
-  // Mouse Drag state
-  const isDownRef = useRef(false);
-  const startXRef = useRef(0);
-  const scrollLeftRef = useRef(0);
-  const dragDistanceRef = useRef(0);
-
-  // Обновление прогресс-бара и состояния стрелок
-  const updateScrollState = useCallback(() => {
-    const el = trackRef.current;
-    if (!el) return;
-
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    if (maxScroll <= 0) {
-      setScrollProgress(100);
-      setCanScrollLeft(false);
-      setCanScrollRight(false);
-      return;
+  // Разбиваем бренды на страницы по 10 карточек (2 ряда по 5 колонок)
+  const pageSize = 10;
+  const pages = useMemo(() => {
+    const list: BrandCardData[][] = [];
+    for (let i = 0; i < initialBrands.length; i += pageSize) {
+      list.push(initialBrands.slice(i, i + pageSize));
     }
+    return list.length > 0 ? list : [[]];
+  }, [initialBrands]);
 
-    const currentScroll = el.scrollLeft;
-    const progress = Math.min(100, Math.max(0, (currentScroll / maxScroll) * 100));
-    setScrollProgress(progress);
-    setCanScrollLeft(currentScroll > 10);
-    setCanScrollRight(currentScroll < maxScroll - 10);
-  }, []);
+  const totalPages = pages.length;
 
-  useEffect(() => {
-    updateScrollState();
-    const el = trackRef.current;
-    if (!el) return;
-
-    const handleScroll = () => updateScrollState();
-    el.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll);
-
-    return () => {
-      el.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-    };
-  }, [updateScrollState]);
-
-  // Плавный скролл кнопками
-  const handleScrollBy = (offset: number) => {
-    const el = trackRef.current;
-    if (!el) return;
-    el.scrollBy({ left: offset, behavior: 'smooth' });
-  };
-
-  // Drag-and-drop логика для мыши (Fluid Drag)
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = trackRef.current;
-    if (!el) return;
-
-    isDownRef.current = true;
-    startXRef.current = e.pageX - el.offsetLeft;
-    scrollLeftRef.current = el.scrollLeft;
-    dragDistanceRef.current = 0;
-  };
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDownRef.current) return;
-    const el = trackRef.current;
-    if (!el) return;
-
-    e.preventDefault();
-    const x = e.pageX - el.offsetLeft;
-    const walk = (x - startXRef.current) * 1.35; // чувствительность свайпа
-    dragDistanceRef.current = Math.abs(walk);
-    el.scrollLeft = scrollLeftRef.current - walk;
-  };
-
-  const handleMouseUp = () => {
-    isDownRef.current = false;
-  };
-
-  const handleCardClick = (e: React.MouseEvent) => {
-    // Если пользователь тянул карточки дальше 6px, предотвращаем случайный переход по ссылке
-    if (dragDistanceRef.current > 6) {
-      e.preventDefault();
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 0 && newPage < totalPages) {
+      setCurrentPage(newPage);
     }
   };
 
-  // GSAP анимация плавного появления блока при скролле
+  // Touch Swipe для мобильных устройств
+  const touchStartXRef = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartXRef.current - touchEndX;
+
+    if (diff > 50 && currentPage < totalPages - 1) {
+      setCurrentPage((p) => p + 1);
+    } else if (diff < -50 && currentPage > 0) {
+      setCurrentPage((p) => p - 1);
+    }
+    touchStartXRef.current = null;
+  };
+
+  // GSAP анимация появления секции при скролле
   useEffect(() => {
     if (typeof window === 'undefined') return;
     gsap.registerPlugin(ScrollTrigger);
@@ -130,8 +168,8 @@ export function BrandAtlas({ initialBrands }: BrandAtlasProps) {
         );
       }
 
-      if (trackRef.current) {
-        const cards = trackRef.current.querySelectorAll('.brand-kinetic-card');
+      if (sliderRef.current) {
+        const cards = sliderRef.current.querySelectorAll('.brand-card');
         gsap.fromTo(
           cards,
           { y: 30, opacity: 0, scale: 0.96 },
@@ -143,7 +181,7 @@ export function BrandAtlas({ initialBrands }: BrandAtlasProps) {
             stagger: 0.03,
             ease: 'power2.out',
             scrollTrigger: {
-              trigger: trackRef.current,
+              trigger: sliderRef.current,
               start: 'top 88%',
             },
           }
@@ -184,15 +222,15 @@ export function BrandAtlas({ initialBrands }: BrandAtlasProps) {
             </p>
           </div>
 
-          {/* Action Controls: Arrow Navigation & Catalog Link */}
+          {/* Action Controls: Page Counter + Arrow Controls + Link to Catalog */}
           <div className="flex items-center gap-3 shrink-0 self-start md:self-end">
-            <div className="inline-flex items-center gap-1.5 p-1 bg-[#16191D]/90 backdrop-blur-md border border-[#2B313A] rounded-xl shadow-inner">
+            <div className="inline-flex items-center gap-2 p-1.5 bg-[#16191D]/90 backdrop-blur-md border border-[#2B313A] rounded-xl shadow-inner">
               <button
                 type="button"
-                onClick={() => handleScrollBy(-420)}
-                disabled={!canScrollLeft}
-                aria-label="Прокрутить бренды влево"
-                className="w-9 h-9 rounded-lg flex items-center justify-center text-[#87888A] hover:text-white hover:bg-[#1E2228] transition-all disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 0}
+                aria-label="Предыдущая страница брендов"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-[#87888A] hover:text-white hover:bg-[#1E2228] transition-all disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
               >
                 <svg
                   className="w-4 h-4"
@@ -207,12 +245,20 @@ export function BrandAtlas({ initialBrands }: BrandAtlasProps) {
                 </svg>
               </button>
 
+              <div className="text-xs font-bold text-[#87888A] px-2 font-mono tabular-nums select-none">
+                <span className="text-simona-teal">
+                  {String(currentPage + 1).padStart(2, '0')}
+                </span>{' '}
+                /{' '}
+                <span>{String(totalPages).padStart(2, '0')}</span>
+              </div>
+
               <button
                 type="button"
-                onClick={() => handleScrollBy(420)}
-                disabled={!canScrollRight}
-                aria-label="Прокрутить бренды вправо"
-                className="w-9 h-9 rounded-lg flex items-center justify-center text-[#87888A] hover:text-white hover:bg-[#1E2228] transition-all disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages - 1}
+                aria-label="Следующая страница брендов"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-[#87888A] hover:text-white hover:bg-[#1E2228] transition-all disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
               >
                 <svg
                   className="w-4 h-4"
@@ -232,7 +278,7 @@ export function BrandAtlas({ initialBrands }: BrandAtlasProps) {
               href="/catalog"
               className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#16191D]/90 backdrop-blur-md border border-[#2B313A] hover:border-simona-teal/60 text-xs sm:text-sm font-medium text-[#D7D9DB] hover:text-white transition-all shadow-sm"
             >
-              <span>Смотреть все бренды</span>
+              <span>Смотреть все ({initialBrands.length > 0 ? `${initialBrands.length}+` : '30+'})</span>
               <svg
                 className="w-3.5 h-3.5 text-simona-teal group-hover:translate-x-1 transition-transform"
                 viewBox="0 0 24 24"
@@ -249,66 +295,30 @@ export function BrandAtlas({ initialBrands }: BrandAtlasProps) {
           </div>
         </div>
 
-        {/* Horizontal Kinetic Track */}
+        {/* 2x5 Grid Slider Container */}
         <div
-          ref={trackRef}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          className="flex gap-4 overflow-x-auto py-2 px-1 cursor-grab active:cursor-grabbing scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] touch-pan-x"
-          style={{
-            scrollSnapType: 'x proximity',
-            WebkitOverflowScrolling: 'touch',
-          }}
+          ref={sliderRef}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          className="relative overflow-hidden w-full"
         >
-          {brands.map((brand) => (
-            <Link
-              key={brand.slug}
-              href={`/catalog?brand=${encodeURIComponent(brand.slug)}`}
-              onClick={handleCardClick}
-              className="brand-kinetic-card group relative flex-shrink-0 w-[270px] sm:w-[310px] p-6 rounded-xl bg-gradient-to-b from-[#1A1E24]/90 to-[#16191D]/95 backdrop-blur-md border border-[#2B313A] hover:border-simona-teal/70 hover:bg-[#1E2228] transition-all duration-300 flex flex-col items-center justify-between min-h-[160px] text-center shadow-lg shadow-black/30 hover:shadow-simona-teal/10 hover:-translate-y-1 overflow-hidden"
-              style={{ scrollSnapAlign: 'start' }}
-            >
-              {/* Radial Glow Sheen on Hover */}
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,151,156,0.14)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-              {/* Top Priority Ribbon for Main 9 Brands */}
-              {brand.isPriority && (
-                <div className="absolute top-2.5 right-3 text-[10px] font-semibold tracking-wider text-[#87888A] uppercase opacity-40 group-hover:opacity-75 group-hover:text-simona-teal transition-all">
-                  Флагман
-                </div>
-              )}
-
-              {/* Authentic Quiet Luxury Vector Brand Logo */}
-              <div className="h-12 w-full flex items-center justify-center text-[#D7D9DB] group-hover:text-white transition-all duration-260 group-hover:scale-105 relative z-10">
-                <BrandLogo name={brand.name} />
-              </div>
-
-              {/* Brand Metadata: Country, USP, and Real Inventory Badge */}
-              <div className="w-full flex flex-col items-center gap-2 mt-4 relative z-10">
-                <span className="text-[11px] font-medium text-[#87888A] group-hover:text-[#E2E8F0] transition-colors leading-tight">
-                  {brand.country} • {brand.usp}
-                </span>
-
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-simona-teal/10 border border-simona-teal/20 text-simona-teal text-[11px] font-semibold group-hover:bg-simona-teal/20 group-hover:border-simona-teal/40 transition-all">
-                  <span className="w-1.5 h-1.5 rounded-full bg-simona-teal animate-pulse" />
-                  {brand.countLabel}
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        {/* Dynamic Kinetic Progress Bar */}
-        <div className="mt-8 max-w-md mx-auto h-1 bg-[#1E2228] rounded-full overflow-hidden border border-[#2B313A]/50">
           <div
-            className="h-full bg-gradient-to-r from-simona-teal to-[#00B5BA] rounded-full transition-all duration-150"
+            className="flex transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] w-full"
             style={{
-              width: `${Math.max(15, Math.min(100, scrollProgress + 15))}%`,
-              transform: `translateX(${scrollProgress * 0.85}%)`,
+              transform: `translateX(-${currentPage * 100}%)`,
             }}
-          />
+          >
+            {pages.map((pageBrands, pageIdx) => (
+              <div
+                key={pageIdx}
+                className="w-full shrink-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4"
+              >
+                {pageBrands.map((brand) => (
+                  <BrandCardItem key={brand.slug} brand={brand} />
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
