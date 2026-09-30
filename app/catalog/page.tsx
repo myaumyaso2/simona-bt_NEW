@@ -29,15 +29,17 @@ interface CatalogPageProps {
   searchParams?: {
     category?: string;
     section?: string;
+    brand?: string;
   };
 }
 
 export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   // Backward compatibility: If redirected or linked with ?category=slug, redirect to clean URL /catalog/[category]
   if (searchParams?.category) {
+    const brandQuery = searchParams.brand ? `?brand=${encodeURIComponent(searchParams.brand)}` : '';
     const directCat = getCategoryBySlug(searchParams.category);
     if (directCat) {
-      redirect(`/catalog/${directCat.slug}`);
+      redirect(`/catalog/${directCat.slug}${brandQuery}`);
     }
     const matchCat = CATALOG_CATEGORIES.find(
       (c) =>
@@ -46,9 +48,38 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
         c.dbCategories.some((db) => db.toLowerCase() === searchParams.category?.toLowerCase())
     );
     if (matchCat) {
-      redirect(`/catalog/${matchCat.slug}`);
+      redirect(`/catalog/${matchCat.slug}${brandQuery}`);
     }
-    redirect(`/catalog/${encodeURIComponent(searchParams.category)}`);
+    redirect(`/catalog/${encodeURIComponent(searchParams.category)}${brandQuery}`);
+  }
+
+  // Brand Filter View: /catalog?brand=ASKO
+  if (searchParams?.brand) {
+    const { products, total } = await getCatalogProducts({
+      brand: searchParams.brand,
+      limit: 1500,
+    });
+
+    const breadcrumbs = [
+      { name: 'Главная', url: '/' },
+      { name: 'Каталог', url: '/catalog' },
+      { name: searchParams.brand, url: `/catalog?brand=${encodeURIComponent(searchParams.brand)}` },
+    ];
+
+    return (
+      <>
+        <SchemaOrgBreadcrumbs items={breadcrumbs} />
+        <Suspense fallback={<div className="min-h-screen bg-[#111315]" />}>
+          <CatalogView
+            initialProducts={products}
+            totalCount={total}
+            categoryTitle={`Техника ${searchParams.brand}`}
+            categoryDescription={`Официальная коллекция бытовой техники ${searchParams.brand} в салонах и на центральном складе СИМОНА.`}
+            initialBrand={searchParams.brand}
+          />
+        </Suspense>
+      </>
+    );
   }
 
   // Section Filter View: /catalog?section=vstraivaemaya-tehnika

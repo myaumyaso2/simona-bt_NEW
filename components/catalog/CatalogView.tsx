@@ -24,6 +24,7 @@ interface CatalogViewProps {
   categorySlug?: string;
   categoryTitle?: string;
   categoryDescription?: string;
+  initialBrand?: string;
 }
 
 const PAGE_SIZE = 24;
@@ -33,6 +34,7 @@ export function CatalogView({
   categorySlug,
   categoryTitle,
   categoryDescription,
+  initialBrand,
 }: CatalogViewProps = {}) {
   const searchParams = useSearchParams();
   const rawProducts = useMemo(() => {
@@ -44,6 +46,8 @@ export function CatalogView({
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+
+  const brandParam = searchParams.get('brand') || initialBrand;
 
   // Dynamic price bounds for the current category
   const priceBounds = useMemo(() => {
@@ -57,7 +61,7 @@ export function CatalogView({
 
   const [filters, setFilters] = useState<FilterState>({
     selectedPromos: [],
-    selectedBrands: [],
+    selectedBrands: brandParam ? [brandParam] : [],
     priceMin: priceBounds.min,
     priceMax: priceBounds.max,
     selectedWidth: null,
@@ -84,6 +88,17 @@ export function CatalogView({
       }));
     }
   }, [promoParam]);
+
+  // Deep Link support: /catalog/[category]?brand=BRAND
+  useEffect(() => {
+    const b = searchParams.get('brand') || initialBrand;
+    if (b && !filters.selectedBrands.some((sb) => sb.toUpperCase() === b.toUpperCase())) {
+      setFilters((prev) => ({
+        ...prev,
+        selectedBrands: [b],
+      }));
+    }
+  }, [searchParams, initialBrand]);
 
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
@@ -171,10 +186,12 @@ export function CatalogView({
         if (!matchesPromo) return false;
       }
 
-      // 1. Brand Filter
+      // 1. Brand Filter (case-insensitive)
       if (
         filters.selectedBrands.length > 0 &&
-        !filters.selectedBrands.includes(product.brand)
+        !filters.selectedBrands.some(
+          (b) => b.trim().toUpperCase() === product.brand?.trim().toUpperCase()
+        )
       ) {
         return false;
       }
@@ -258,6 +275,24 @@ export function CatalogView({
     return filteredProducts.slice(startIndex, startIndex + PAGE_SIZE);
   }, [filteredProducts, currentPage]);
 
+  const dynamicTitle = useMemo(() => {
+    if (!categoryTitle) return 'Каталог техники';
+    if (filters.selectedBrands.length === 1) {
+      const b = filters.selectedBrands[0];
+      if (categoryTitle.toUpperCase().includes(b.toUpperCase())) {
+        return categoryTitle;
+      }
+      return `${categoryTitle} ${b}`;
+    }
+    if (filters.selectedBrands.length === 0) {
+      if (initialBrand && categoryTitle.toUpperCase().endsWith(initialBrand.toUpperCase())) {
+        return categoryTitle.slice(0, -initialBrand.length).trim();
+      }
+      return categoryTitle;
+    }
+    return categoryTitle;
+  }, [categoryTitle, filters.selectedBrands, initialBrand]);
+
   return (
     <div className="bg-[#111315] min-h-screen text-white">
       {/* 1. Category Hero Block */}
@@ -269,7 +304,7 @@ export function CatalogView({
         }}
         totalCount={sidebarFilteredProducts.length}
         presenceCounts={presenceCounts}
-        categoryTitle={categoryTitle}
+        categoryTitle={dynamicTitle}
         categorySlug={categorySlug}
         categoryDescription={categoryDescription}
       />
@@ -298,7 +333,7 @@ export function CatalogView({
               filters={filters}
               onRemoveBrand={(brand) =>
                 handleFilterChange({
-                  selectedBrands: filters.selectedBrands.filter((b) => b !== brand),
+                  selectedBrands: filters.selectedBrands.filter((b) => b.toUpperCase() !== brand.toUpperCase()),
                 })
               }
               onRemoveWidth={() => handleFilterChange({ selectedWidth: null })}

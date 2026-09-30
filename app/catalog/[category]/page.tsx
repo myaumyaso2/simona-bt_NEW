@@ -10,6 +10,9 @@ interface CategoryPageProps {
   params: {
     category: string;
   };
+  searchParams?: {
+    brand?: string;
+  };
 }
 
 export async function generateStaticParams() {
@@ -18,7 +21,7 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: CategoryPageProps): Promise<Metadata> {
   const category = getCategoryBySlug(params.category);
   if (!category) {
     return {
@@ -26,22 +29,31 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     };
   }
 
-  const title = `${category.title} | Каталог техники СИМОНА — Нижний Новгород`;
-  const description = `${category.heroSubtitle} Авторизованные поставки европейских брендов: ${category.featuredBrands.join(', ')}. Экспозиция в салонах на ул. Белинского 15 и 11/66, тест-драйв на «Активной кухне».`;
+  const brand = searchParams?.brand;
+  let pageTitle = category.title;
+  let pageDescription = `${category.heroSubtitle} Авторизованные поставки европейских брендов: ${category.featuredBrands.join(', ')}. Экспозиция в салонах на ул. Белинского 15 и 11/66, тест-драйв на «Активной кухне».`;
+
+  if (brand) {
+    const baseCategoryName = category.slug === 'holodilniki' ? 'Холодильники' : (category.menuTitle || category.title);
+    pageTitle = `${baseCategoryName} ${brand}`;
+    pageDescription = `Купить ${baseCategoryName.toLowerCase()} ${brand} в официальном салоне СИМОНА в Нижнем Новгороде. Авторизованная гарантия производителя, складской резерв и тест-драйв в шоурумах на ул. Белинского.`;
+  }
+
+  const title = `${pageTitle} | Каталог техники СИМОНА — Нижний Новгород`;
 
   return {
     title,
-    description,
+    description: pageDescription,
     openGraph: {
       title,
-      description,
-      url: `https://simona-bt.ru/catalog/${category.slug}`,
+      description: pageDescription,
+      url: `https://simona-bt.ru/catalog/${category.slug}${brand ? `?brand=${encodeURIComponent(brand)}` : ''}`,
       images: [
         {
           url: category.image.startsWith('http') ? category.image : `https://simona-bt.ru${category.image}`,
           width: 1200,
           height: 630,
-          alt: category.title,
+          alt: pageTitle,
         },
       ],
     },
@@ -50,12 +62,14 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
 export const dynamic = 'force-dynamic';
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const category = getCategoryBySlug(params.category);
 
   if (!category) {
     notFound();
   }
+
+  const brand = searchParams?.brand;
 
   // Fetch products matching database category names
   const { products, total } = await getCatalogProducts({
@@ -63,10 +77,14 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     limit: 1500,
   });
 
+  const baseCategoryName = category.slug === 'holodilniki' ? 'Холодильники' : (category.menuTitle || category.title);
+  const pageTitle = brand ? `${baseCategoryName} ${brand}` : category.title;
+
   const breadcrumbs = [
     { name: 'Главная', url: '/' },
     { name: 'Каталог', url: '/catalog' },
     { name: category.title, url: `/catalog/${category.slug}` },
+    ...(brand ? [{ name: brand, url: `/catalog/${category.slug}?brand=${encodeURIComponent(brand)}` }] : []),
   ];
 
   return (
@@ -77,8 +95,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           initialProducts={products}
           totalCount={total}
           categorySlug={category.slug}
-          categoryTitle={category.title}
+          categoryTitle={pageTitle}
           categoryDescription={category.heroSubtitle}
+          initialBrand={brand}
         />
       </Suspense>
     </>

@@ -24,6 +24,16 @@ export interface PillarItem {
   highlight?: string;
 }
 
+export interface KeyDirectionItem {
+  title: string;
+  desc: string;
+  count: string;
+  categorySlug: string;
+  brand: string;
+  image: string;
+  span?: string;
+}
+
 export interface SiteContent {
   contacts: {
     phone: string;
@@ -88,6 +98,7 @@ export interface SiteContent {
     badge: string;
     title: string;
     subtitle: string;
+    items?: KeyDirectionItem[];
   };
   service: {
     badge: string;

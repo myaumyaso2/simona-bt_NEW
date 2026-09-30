@@ -2,105 +2,107 @@
 
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Plus } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SectionBadge } from '@/components/ui/SectionBadge';
 import { DeepParallaxBackground } from '@/components/backgrounds/DeepParallaxBackground';
 import { useSiteContent } from '@/components/providers/ContentContext';
+import { SimonaIconArrowRight, SimonaIconPlus } from '@/components/brand/SimonaIcons';
+import { KeyDirectionItem } from '@/types/siteContent';
 
-interface CategoryDirection {
-  title: string;
-  desc: string;
-  count: string;
-  slug: string;
-  image: string;
-  span?: string; // Tailwind grid span
-}
-
-const CATEGORIES: CategoryDirection[] = [
+const DEFAULT_CATEGORIES: KeyDirectionItem[] = [
   // Row 1
   {
-    title: 'Духовые шкафы и пароварки',
-    desc: 'Miele, ASKO, Bertazzoni • Пиролиз, приготовление на пару, термощупы',
-    count: '420 моделей',
-    slug: 'ovens',
-    image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80',
+    title: 'Стиральные машины ASKO',
+    desc: 'Шведская надежность: барабан Active Drum, конструкция Quattro и уплотнитель Steel Seal без резиновой манжеты',
+    count: '25 моделей',
+    categorySlug: 'stiralnye-mashiny',
+    brand: 'ASKO',
+    image: '/showrooms/belinskogo-15/asko_zone_01.jpg',
     span: 'lg:col-span-8',
   },
   {
-    title: 'Винные шкафы',
-    desc: 'Liebherr, Dunavox • Мультитемпературные зоны и деревянные полки',
-    count: '140 моделей',
-    slug: 'wine-cabinets',
+    title: 'Холодильники LIEBHERR',
+    desc: 'Немецкие технологии свежести BioFresh, бесшумные инверторные компрессоры, зоны DuoCooling и NoFrost',
+    count: '64 модели',
+    categorySlug: 'holodilniki',
+    brand: 'LIEBHERR',
     image: '/showrooms/belinskogo-15/wine_storage_01.jpg',
     span: 'lg:col-span-4',
   },
   // Row 2
   {
-    title: 'Варочные панели и индукция',
-    desc: 'ASKO, Miele, Falmec со встроенной вытяжкой',
-    count: '210 моделей',
-    slug: 'cooktops',
-    image: 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?auto=format&fit=crop&w=800&q=80',
+    title: 'Варочные панели BOSCH',
+    desc: 'Индукционные поверхности с сенсорным управлением DirectSelect, объединением зон CombiZone и сенсором PerfectFry',
+    count: '32 модели',
+    categorySlug: 'varochnye-paneli',
+    brand: 'BOSCH',
+    image: 'https://simona-bt.ru/images/cms/data/photo_code/88451.jpg',
     span: 'lg:col-span-4',
   },
   {
-    title: 'Холодильники и морозильники',
-    desc: 'Liebherr BioFresh, встраиваемые Side-by-Side колонны',
-    count: '185 моделей',
-    slug: 'refrigerators',
-    image: 'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=800&q=80',
+    title: 'Кухонные вытяжки ELICA',
+    desc: 'Итальянская эстетика аспирации, бесшумные турбины, периметральное всасывание и скрытые встраиваемые модули',
+    count: '292 модели',
+    categorySlug: 'vytyazhki',
+    brand: 'ELICA',
+    image: 'https://simona-bt.ru/images/cms/data/photo_code/63694.jpg',
     span: 'lg:col-span-4',
   },
   {
-    title: 'Вытяжки и вентиляция',
-    desc: 'Falmec Circle.Tech, островные и скрытые системы',
-    count: '90 моделей',
-    slug: 'hoods',
-    image: 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=80',
+    title: 'Духовые шкафы MIELE',
+    desc: 'Немецкий премиум: пиролитическая самоочистка, конвекция с увлажнением Moisture Plus и термощуп',
+    count: '12 моделей',
+    categorySlug: 'vstraivaemye-duhovye-shkafy',
+    brand: 'MIELE',
+    image: '/showrooms/belinskogo-15/miele_zone_01.jpg',
     span: 'lg:col-span-4',
   },
   // Row 3
   {
-    title: 'Посудомоечные машины',
-    desc: 'Miele Knock2Open, ASKO XL загрузка',
-    count: '75 моделей',
-    slug: 'dishwashers',
-    image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80',
+    title: 'Посудомоечные машины KORTING',
+    desc: 'Немецкая эргономика: 3-й уровень загрузки для приборов, автооткрывание двери и бережная защита хрупкого стекла',
+    count: '27 моделей',
+    categorySlug: 'vstraivaemye-posudomoechnye-mashiny',
+    brand: 'KORTING',
+    image: 'https://simona-bt.ru/images/cms/data/photo_code/88700.jpg',
     span: 'lg:col-span-4',
   },
   {
-    title: 'Встраиваемые кофемашины',
-    desc: 'Сенсорное управление, OneTouch for Two',
-    count: '48 моделей',
-    slug: 'coffee-machines',
-    image: '/showrooms/belinskogo-15/coffee_corner_01.jpg',
-    span: 'lg:col-span-4',
-  },
-  {
-    title: 'Малая техника SMEG',
-    desc: 'Ретро-коллекция 50-х: чайники, тостеры, планетарные миксеры',
-    count: '120 моделей',
-    slug: 'smeg-small',
+    title: 'Дизайнерская техника SMEG',
+    desc: 'Итальянский стиль в коллекциях Cortina, Coloniale, Linea и Dolce Stil Novo: духовые шкафы и варочные панели',
+    count: '62 модели',
+    categorySlug: 'vstraivaemye-duhovye-shkafy',
+    brand: 'SMEG',
     image: '/showrooms/belinskogo-15/smeg_zone_01.jpg',
+    span: 'lg:col-span-4',
+  },
+  {
+    title: 'Встраиваемая техника MIDEA',
+    desc: 'Современные варочные поверхности и духовые шкафы с сенсорным управлением, надежной гарантией и функциональностью',
+    count: '21 модель',
+    categorySlug: 'varochnye-paneli',
+    brand: 'MIDEA',
+    image: 'https://simona-bt.ru/images/cms/data/photo_code/92208.jpg',
     span: 'lg:col-span-4',
   },
   // Row 4
   {
-    title: 'Мойки и смесители OMOIKIRI',
-    desc: 'Японский гранит Tetogranit, смесители под фильтр, измельчители',
-    count: '160 моделей',
-    slug: 'sinks',
-    image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1000&q=80',
+    title: 'Кухонные мойки OMOIKIRI',
+    desc: 'Японский композит Tetogranit, Artgranit и нержавеющая сталь с PVD-оттенками золота, меди и графита',
+    count: '836 моделей',
+    categorySlug: 'mojki-dlya-kuhni',
+    brand: 'OMOIKIRI',
+    image: 'https://simona-bt.ru/images/cms/data/photo_code/81618.jpg',
     span: 'lg:col-span-6',
   },
   {
-    title: 'Уход и аксессуары Miele Care',
-    desc: 'Фирменная химия для техники, бокалы Riedel, фильтры',
-    count: '340 позиций',
-    slug: 'care-accessories',
-    image: '/showrooms/belinskogo-15/details_03.jpg',
+    title: 'Смесители для кухни OMOIKIRI',
+    desc: 'Смесители 2-в-1 с подключением фильтра питьевой воды Pure Life, выдвижные изливы и фактурные покрытия в тон мойки',
+    count: '290 моделей',
+    categorySlug: 'smesiteli-dlya-kuhni',
+    brand: 'OMOIKIRI',
+    image: 'https://simona-bt.ru/images/cms/data/photo_code/88783.jpg',
     span: 'lg:col-span-6',
   },
 ];
@@ -211,7 +213,7 @@ export function KeyDirectionsSection() {
             className="inline-flex items-center space-x-2 text-sm font-medium text-simona-teal hover:text-simona-teal-light transition-colors group self-start md:self-auto"
           >
             <span>Смотреть весь каталог (8 000+ SKU)</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <SimonaIconArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
@@ -220,49 +222,55 @@ export function KeyDirectionsSection() {
           ref={gridRef}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5"
         >
-          {CATEGORIES.map((cat, idx) => (
-            <Link
-              key={idx}
-              href={`/catalog/${cat.slug}`}
-              className={`direction-card group relative rounded-2xl overflow-hidden border border-[#2B313A] hover:border-simona-teal/60 bg-[#16191D] p-6 sm:p-7 flex flex-col justify-end min-h-[260px] sm:min-h-[280px] transition-colors duration-500 shadow-xl ${
-                cat.span || 'lg:col-span-4'
-              }`}
-            >
-              {/* Card Photo Background with Overflow Hidden & Inner Parallax Container */}
-              <div className="absolute inset-0 z-0 overflow-hidden">
-                <div className="parallax-img absolute -inset-y-[12%] inset-x-0 w-full h-[124%] will-change-transform">
-                  <img
-                    src={cat.image}
-                    alt={cat.title}
-                    className="w-full h-full object-cover opacity-35 group-hover:opacity-45 group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
+          {(content.keyDirections.items && content.keyDirections.items.length > 0
+            ? content.keyDirections.items
+            : DEFAULT_CATEGORIES
+          ).map((cat, idx) => {
+            const href = `/catalog/${cat.categorySlug}${cat.brand ? `?brand=${encodeURIComponent(cat.brand)}` : ''}`;
+            return (
+              <Link
+                key={idx}
+                href={href}
+                className={`direction-card group relative rounded-2xl overflow-hidden border border-[#2B313A] hover:border-simona-teal/60 bg-[#16191D] p-6 sm:p-7 flex flex-col justify-end min-h-[260px] sm:min-h-[280px] transition-colors duration-500 shadow-xl ${
+                  cat.span || 'lg:col-span-4'
+                }`}
+              >
+                {/* Card Photo Background with Overflow Hidden & Inner Parallax Container */}
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                  <div className="parallax-img absolute -inset-y-[12%] inset-x-0 w-full h-[124%] will-change-transform">
+                    <img
+                      src={cat.image}
+                      alt={cat.title}
+                      className="w-full h-full object-cover opacity-35 group-hover:opacity-45 group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#16191D] via-[#16191D]/80 to-transparent pointer-events-none" />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#16191D] via-[#16191D]/80 to-transparent pointer-events-none" />
-              </div>
 
-              {/* Card Content */}
-              <div className="relative z-10 space-y-2">
-                <h3 className="text-xl sm:text-2xl font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors">
-                  {cat.title}
-                </h3>
+                {/* Card Content */}
+                <div className="relative z-10 space-y-2 text-left">
+                  <h3 className="text-xl sm:text-2xl font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors">
+                    {cat.title}
+                  </h3>
 
-                <p className="text-xs sm:text-sm text-[#87888A] line-clamp-2 max-w-xl leading-relaxed">
-                  {cat.desc}
-                </p>
+                  <p className="text-xs sm:text-sm text-[#87888A] line-clamp-2 max-w-xl leading-relaxed">
+                    {cat.desc}
+                  </p>
 
-                <div className="pt-3 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-simona-teal">
-                    {cat.count}
-                  </span>
+                  <div className="pt-3 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-simona-teal">
+                      {cat.count}
+                    </span>
 
-                  <span className="inline-flex items-center space-x-1 text-xs text-[#D7D9DB] group-hover:text-white transition-colors">
-                    <span>В каталог</span>
-                    <Plus className="w-3.5 h-3.5 text-simona-teal group-hover:rotate-90 transition-transform duration-300" />
-                  </span>
+                    <span className="inline-flex items-center space-x-1.5 text-xs text-[#D7D9DB] group-hover:text-white transition-colors">
+                      <span>В каталог</span>
+                      <SimonaIconPlus className="w-3.5 h-3.5 text-simona-teal group-hover:rotate-90 transition-transform duration-300" />
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

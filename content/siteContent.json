@@ -70,7 +70,99 @@
   "keyDirections": {
     "badge": "Экспозиция витрины",
     "title": "Ключевые направления каталога",
-    "subtitle": "Более 8 000 оригинальных приборов от ведущих мировых марок бытовой техники"
+    "subtitle": "Более 8 000 оригинальных приборов от ведущих мировых марок бытовой техники",
+    "items": [
+      {
+        "title": "Стиральные машины ASKO",
+        "desc": "Шведская надежность: барабан Active Drum, конструкция Quattro и уплотнитель Steel Seal без резиновой манжеты",
+        "count": "25 моделей",
+        "categorySlug": "stiralnye-mashiny",
+        "brand": "ASKO",
+        "image": "/showrooms/belinskogo-15/asko_zone_01.jpg",
+        "span": "lg:col-span-8"
+      },
+      {
+        "title": "Холодильники LIEBHERR",
+        "desc": "Немецкие технологии свежести BioFresh, бесшумные инверторные компрессоры, зоны DuoCooling и NoFrost",
+        "count": "64 модели",
+        "categorySlug": "holodilniki",
+        "brand": "LIEBHERR",
+        "image": "/showrooms/belinskogo-15/wine_storage_01.jpg",
+        "span": "lg:col-span-4"
+      },
+      {
+        "title": "Варочные панели BOSCH",
+        "desc": "Индукционные поверхности с сенсорным управлением DirectSelect, объединением зон CombiZone и сенсором PerfectFry",
+        "count": "32 модели",
+        "categorySlug": "varochnye-paneli",
+        "brand": "BOSCH",
+        "image": "https://simona-bt.ru/images/cms/data/photo_code/88451.jpg",
+        "span": "lg:col-span-4"
+      },
+      {
+        "title": "Кухонные вытяжки ELICA",
+        "desc": "Итальянская эстетика аспирации, бесшумные турбины, периметральное всасывание и скрытые встраиваемые модули",
+        "count": "292 модели",
+        "categorySlug": "vytyazhki",
+        "brand": "ELICA",
+        "image": "https://simona-bt.ru/images/cms/data/photo_code/63694.jpg",
+        "span": "lg:col-span-4"
+      },
+      {
+        "title": "Духовые шкафы MIELE",
+        "desc": "Немецкий премиум: пиролитическая самоочистка, конвекция с увлажнением Moisture Plus и термощуп",
+        "count": "12 моделей",
+        "categorySlug": "vstraivaemye-duhovye-shkafy",
+        "brand": "MIELE",
+        "image": "/showrooms/belinskogo-15/miele_zone_01.jpg",
+        "span": "lg:col-span-4"
+      },
+      {
+        "title": "Посудомоечные машины KORTING",
+        "desc": "Немецкая эргономика: 3-й уровень загрузки для приборов, автооткрывание двери и бережная защита хрупкого стекла",
+        "count": "27 моделей",
+        "categorySlug": "vstraivaemye-posudomoechnye-mashiny",
+        "brand": "KORTING",
+        "image": "https://simona-bt.ru/images/cms/data/photo_code/88700.jpg",
+        "span": "lg:col-span-4"
+      },
+      {
+        "title": "Дизайнерская техника SMEG",
+        "desc": "Итальянский стиль в коллекциях Cortina, Coloniale, Linea и Dolce Stil Novo: духовые шкафы и варочные панели",
+        "count": "62 модели",
+        "categorySlug": "vstraivaemye-duhovye-shkafy",
+        "brand": "SMEG",
+        "image": "/showrooms/belinskogo-15/smeg_zone_01.jpg",
+        "span": "lg:col-span-4"
+      },
+      {
+        "title": "Встраиваемая техника MIDEA",
+        "desc": "Современные варочные поверхности и духовые шкафы с сенсорным управлением, надежной гарантией и функциональностью",
+        "count": "21 модель",
+        "categorySlug": "varochnye-paneli",
+        "brand": "MIDEA",
+        "image": "https://simona-bt.ru/images/cms/data/photo_code/92208.jpg",
+        "span": "lg:col-span-4"
+      },
+      {
+        "title": "Кухонные мойки OMOIKIRI",
+        "desc": "Японский композит Tetogranit, Artgranit и нержавеющая сталь с PVD-оттенками золота, меди и графита",
+        "count": "836 моделей",
+        "categorySlug": "mojki-dlya-kuhni",
+        "brand": "OMOIKIRI",
+        "image": "https://simona-bt.ru/images/cms/data/photo_code/81618.jpg",
+        "span": "lg:col-span-6"
+      },
+      {
+        "title": "Смесители для кухни OMOIKIRI",
+        "desc": "Смесители 2-в-1 с подключением фильтра питьевой воды Pure Life, выдвижные изливы и фактурные покрытия в тон мойки",
+        "count": "290 моделей",
+        "categorySlug": "smesiteli-dlya-kuhni",
+        "brand": "OMOIKIRI",
+        "image": "https://simona-bt.ru/images/cms/data/photo_code/88783.jpg",
+        "span": "lg:col-span-6"
+      }
+    ]
   },
   "service": {
     "badge": "Сервисный стандарт СИМОНА",
