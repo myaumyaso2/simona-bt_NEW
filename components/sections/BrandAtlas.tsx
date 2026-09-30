@@ -73,13 +73,6 @@ function BrandCardItem({ brand }: { brand: BrandCardData }) {
         className="pointer-events-none absolute w-44 h-44 rounded-full bg-[radial-gradient(circle,rgba(0,181,186,0.32)_0%,transparent_70%)] opacity-0 -translate-x-1/2 -translate-y-1/2"
       />
 
-      {/* Flagship Ribbon for Top-9 Brands */}
-      {brand.isPriority && (
-        <div className="absolute top-2 right-2.5 text-[9.5px] font-semibold tracking-wider text-[#87888A] uppercase opacity-40 group-hover:opacity-80 group-hover:text-simona-teal transition-all">
-          Флагман
-        </div>
-      )}
-
       {/* Brand Text Name (Clean Quiet Luxury Typography) */}
       <span className="font-montserrat text-lg sm:text-xl font-bold text-white group-hover:text-simona-teal transition-colors tracking-wide relative z-10 leading-snug">
         {brand.name}
@@ -278,7 +271,7 @@ export function BrandAtlas({ initialBrands = [] }: BrandAtlasProps) {
               href="/catalog"
               className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#16191D]/90 backdrop-blur-md border border-[#2B313A] hover:border-simona-teal/60 text-xs sm:text-sm font-medium text-[#D7D9DB] hover:text-white transition-all shadow-sm"
             >
-              <span>Смотреть все ({initialBrands.length > 0 ? `${initialBrands.length}+` : '30+'})</span>
+              <span>В каталог</span>
               <svg
                 className="w-3.5 h-3.5 text-simona-teal group-hover:translate-x-1 transition-transform"
                 viewBox="0 0 24 24"
