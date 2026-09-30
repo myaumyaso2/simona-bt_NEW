@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>СИМОНА — 3 Концепта Брендового Атласа (High-End Visual Design Showcase)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-canvas: #111315;
+      --color-surface: #16191D;
+      --color-card: #1A1E24;
+      --color-card-hover: #222730;
+      --color-border: #2B313A;
+      --color-border-hover: rgba(0, 151, 156, 0.6);
+      --color-teal: #00979C;
+      --color-teal-light: #00B5BA;
+      --color-teal-glow: rgba(0, 151, 156, 0.3);
+      --color-white: #FFFFFF;
+      --color-light-grey: #D7D9DB;
+      --color-muted: #87888A;
+      --font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --radius-btn: 12px;
+      --radius-badge: 6px;
+      --radius-card: 16px;
+      --transition-smooth: all 260ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--color-canvas);
+      color: var(--color-white);
+      font-family: var(--font-family);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      padding-bottom: 120px;
+    }
+
+    /* TOP COMPARISON BAR */
+    .top-dock {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(17, 19, 21, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--color-border);
+      padding: 12px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .dock-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-teal);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dock-title::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-teal);
+      box-shadow: 0 0 10px var(--color-teal);
+    }
+
+    .dock-tabs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 4px;
+      border-radius: var(--radius-btn);
+    }
+
+    .dock-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--color-muted);
+      font-family: var(--font-family);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      white-space: nowrap;
+    }
+
+    .dock-btn:hover {
+      color: var(--color-white);
+    }
+
+    .dock-btn.active {
+      background: var(--color-teal);
+      color: var(--color-white);
+      box-shadow: 0 2px 12px var(--color-teal-glow);
+    }
+
+    /* SECTION CONTAINER */
+    .section-wrap {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 48px 24px;
+      position: relative;
+    }
+
+    /* VARIANT META CARD */
+    .variant-meta {
+      background: rgba(22, 25, 29, 0.7);
+      border: 1px solid var(--color-border);
+      border-left: 3px solid var(--color-teal);
+      border-radius: var(--radius-badge);
+      padding: 16px 20px;
+      margin-bottom: 36px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .variant-meta h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-white);
+      margin-bottom: 4px;
+    }
+
+    .variant-meta p {
+      font-size: 13px;
+      color: var(--color-muted);
+      line-height: 1.5;
+    }
+
+    .variant-badge {
+      padding: 4px 10px;
+      border-radius: var(--radius-badge);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      background: rgba(0, 151, 156, 0.15);
+      color: var(--color-teal-light);
+      border: 1px solid rgba(0, 151, 156, 0.3);
+    }
+
+    /* HEADER OF BLOCK */
+    .section-header {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 32px;
+      gap: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .section-header {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+    }
+
+    .header-left {
+      max-width: 680px;
+      text-align: left;
+    }
+
+    .section-overline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      border-radius: var(--radius-badge);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(0, 151, 156, 0.12);
+      border: 1px solid rgba(0, 151, 156, 0.3);
+      color: var(--color-teal-light);
+      margin-bottom: 12px;
+    }
+
+    .section-overline::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-teal);
+    }
+
+    .section-title {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--color-white);
+      letter-spacing: -0.02em;
+    }
+
+    @media (min-width: 1024px) {
+      .section-title {
+        font-size: 40px;
+      }
+    }
+
+    .section-subtitle {
+      font-size: 14px;
+      color: var(--color-muted);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* SLIDER CONTROLS */
+    .slider-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 4px;
+      border-radius: var(--radius-btn);
+    }
+
+    .nav-arrow {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--color-light-grey);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-arrow:hover:not(:disabled) {
+      background: var(--color-card);
+      border-color: var(--color-border);
+      color: var(--color-white);
+    }
+
+    .nav-arrow:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .page-indicator {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-light-grey);
+      padding: 0 8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .page-indicator span {
+      color: var(--color-teal);
+    }
+
+    .all-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--color-light-grey);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition-smooth);
+      padding: 8px 12px;
+    }
+
+    .all-link:hover {
+      color: var(--color-teal);
+    }
+
+    /* BRAND CARD STYLING (QUIET LUXURY DOUBLE-BEZEL) */
+    .brand-card {
+      position: relative;
+      background: linear-gradient(180deg, rgba(26, 30, 36, 0.9) 0%, rgba(22, 25, 29, 0.95) 100%);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 24px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 154px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .brand-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(0, 151, 156, 0.12) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 300ms ease;
+      pointer-events: none;
+    }
+
+    .brand-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-border-hover);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(0, 151, 156, 0.15);
+    }
+
+    .brand-card:hover::before {
+      opacity: 1;
+    }
+
+    .brand-logo-wrap {
+      height: 44px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .brand-logo-svg {
+      max-height: 34px;
+      max-width: 140px;
+      width: auto;
+      height: auto;
+      fill: #D7D9DB;
+      color: #D7D9DB;
+      opacity: 0.82;
+      transition: all 260ms ease;
+    }
+
+    .brand-card:hover .brand-logo-svg {
+      fill: #FFFFFF;
+      color: #FFFFFF;
+      opacity: 1;
+      transform: scale(1.04);
+      filter: drop-shadow(0 0 8px rgba(0, 151, 156, 0.4));
+    }
+
+    .brand-meta {
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-muted);
+      letter-spacing: 0.02em;
+      transition: color 220ms ease;
+      line-height: 1.3;
+    }
+
+    .brand-card:hover .brand-sub {
+      color: #E2E8F0;
+    }
+
+    .brand-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--color-teal);
+      background: rgba(0, 151, 156, 0.08);
+      border: 1px solid rgba(0, 151, 156, 0.22);
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.03em;
+    }
+
+    /* VARIANT 1: 2x5 GRID SLIDER */
+    .v1-grid-wrapper {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-card);
+    }
+
+    .v1-slider-track {
+      display: flex;
+      transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
+      width: 300%;
+    }
+
+    .v1-slide {
+      width: 33.33333%;
+      flex-shrink: 0;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    @media (min-width: 640px) {
+      .v1-slide {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .v1-slide {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    /* VARIANT 2: HORIZONTAL KINETIC TRACK */
+    .v2-track-wrapper {
+      position: relative;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 12px;
+      scrollbar-width: none;
+    }
+
+    .v2-track-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    .v2-track {
+      display: flex;
+      gap: 18px;
+      width: max-content;
+      padding: 4px;
+    }
+
+    .v2-card {
+      width: 250px;
+      flex-shrink: 0;
+      min-height: 175px;
+      padding: 28px 24px 22px;
+      justify-content: space-between;
+    }
+
+    .v2-card .brand-logo-svg {
+      max-height: 40px;
+      max-width: 160px;
+    }
+
+    .v2-progress-bar {
+      width: 100%;
+      height: 3px;
+      background: var(--color-surface);
+      border-radius: 999px;
+      margin-top: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .v2-progress-fill {
+      height: 100%;
+      width: 33.33%;
+      background: linear-gradient(90deg, var(--color-teal), var(--color-teal-light));
+      border-radius: 999px;
+      transition: width 200ms ease;
+    }
+
+    /* VARIANT 3: SEGMENTED TABS */
+    .v3-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .v3-tab {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      color: var(--color-muted);
+      padding: 10px 18px;
+      border-radius: var(--radius-btn);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .v3-tab:hover {
+      color: var(--color-white);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .v3-tab.active {
+      background: var(--color-card);
+      border-color: var(--color-teal);
+      color: var(--color-white);
+      box-shadow: 0 4px 16px rgba(0, 151, 156, 0.2);
+    }
+
+    .v3-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      animation: fadeIn 350ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (min-width: 640px) {
+      .v3-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .v3-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* SVG LOGO SYMBOLS */
+    svg.logo-bosch { width: 130px; height: 32px; }
+    svg.logo-asko { width: 110px; height: 26px; }
+    svg.logo-liebherr { width: 140px; height: 26px; }
+    svg.logo-smeg { width: 120px; height: 28px; }
+    svg.logo-miele { width: 110px; height: 30px; }
+    svg.logo-omoikiri { width: 135px; height: 24px; }
+    svg.logo-elica { width: 105px; height: 28px; }
+    svg.logo-midea { width: 110px; height: 28px; }
+    svg.logo-korting { width: 135px; height: 26px; }
+    svg.logo-falmec { width: 115px; height: 28px; }
+    svg.logo-bertazzoni { width: 140px; height: 32px; }
+    svg.logo-vard { width: 105px; height: 24px; }
+    svg.logo-dunavox { width: 130px; height: 24px; }
+    svg.logo-schulthess { width: 140px; height: 24px; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP SELECTOR DOCK -->
+  <header class="top-dock">
+    <div class="dock-title">
+      SIMONA-BT &bull; Quiet Luxury Brand Atlas
+    </div>
+
+    <div class="dock-tabs">
+      <button class="dock-btn active" onclick="switchVariant(1)">
+        Вариант 1: Слайдер 2x5 (10 на экране)
+      </button>
+      <button class="dock-btn" onclick="switchVariant(2)">
+        Вариант 2: Горизонтальный трек (Fluid Drag)
+      </button>
+      <button class="dock-btn" onclick="switchVariant(3)">
+        Вариант 3: Сегментированный (Табы категорий)
+      </button>
+    </div>
+
+    <div style="font-size: 11px; color: var(--color-muted);">
+      Единый векторный стандарт SVG-логотипов
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- VARIANT 1: ДВУХРЯДНЫЙ СЛАЙДЕР 2x5 (10 КАРТОЧЕК НА ЭКРАНЕ) -->
+  <!-- ========================================================================= -->
+  <section id="variant-1" class="section-wrap">
+    <div class="variant-meta">
+      <div>
+        <h3>Вариант 1: Постраничный слайдер 2x5 (Рекомендованный)</h3>
+        <p>На первом экране ровно 10 карточек: все 9 главных брендов (BOSCH, ASKO, LIEBHERR, SMEG, MIELE, OMOIKIRI, ELICA, MIDEA, KORTING) + 10-й по каталогу FALMEC. Стрелки листают на 2-ю и 3-ю страницы со всеми остальными фабриками.</p>
+      </div>
+      <span class="variant-badge">Quiet Luxury Архитип</span>
+    </div>
+
+    <!-- Section Header -->
+    <div class="section-header">
+      <div class="header-left">
+        <div class="section-overline">Официальный дилер европейских брендов</div>
+        <h2 class="section-title">Брендовый атлас СИМОНА</h2>
+        <p class="section-subtitle">
+          Прямые поставки оригинальной техники ведущих мировых марок с официальной заводской гарантией и сертифицированным монтажом
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <!-- Controls: Page Indicator + Arrows -->
+        <div class="slider-nav">
+          <button id="v1-prev-btn" class="nav-arrow" onclick="v1Slide(-1)" disabled aria-label="Предыдущая страница">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <div class="page-indicator">
+            <span id="v1-page-num">01</span> / 03
+          </div>
+          <button id="v1-next-btn" class="nav-arrow" onclick="v1Slide(1)" aria-label="Следующая страница">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+
+        <a href="/catalog" class="all-link">
+          <span>Смотреть все бренды (30+)</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Slider Grid -->
+    <div class="v1-grid-wrapper">
+      <div id="v1-track" class="v1-slider-track">
+        
+        <!-- SLIDE 1: TOP-9 USER BRANDS + FALMEC (10 CARDS) -->
+        <div class="v1-slide">
+          
+          <!-- 1. ASKO -->
+          <a href="/catalog?brand=ASKO" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-asko" viewBox="0 0 160 36">
+                <text x="50%" y="28" font-family="'Montserrat', sans-serif" font-weight="900" font-size="34" letter-spacing="4" text-anchor="middle" fill="currentColor">ASKO</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Швеция &bull; Скандинавское качество</span>
+              <span class="brand-count">241 модель</span>
+            </div>
+          </a>
+
+          <!-- 2. LIEBHERR -->
+          <a href="/catalog?brand=LIEBHERR" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-liebherr" viewBox="0 0 200 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="900" font-size="28" letter-spacing="2" text-anchor="middle" fill="currentColor">LIEBHERR</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Германия &bull; Холод и вино BioFresh</span>
+              <span class="brand-count">150 моделей</span>
+            </div>
+          </a>
+
+          <!-- 3. BOSCH -->
+          <a href="/catalog?brand=BOSCH" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-bosch" viewBox="0 0 180 40">
+                <circle cx="28" cy="20" r="16" fill="none" stroke="currentColor" stroke-width="4.5"/>
+                <path d="M19 14h18v12H19z" fill="none" stroke="currentColor" stroke-width="3"/>
+                <text x="110" y="29" font-family="'Montserrat', sans-serif" font-weight="900" font-size="28" letter-spacing="1.5" text-anchor="middle" fill="currentColor">BOSCH</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Германия &bull; Немецкая надежность</span>
+              <span class="brand-count">139 моделей</span>
+            </div>
+          </a>
+
+          <!-- 4. SMEG -->
+          <a href="/catalog?brand=SMEG" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-smeg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="900" font-size="30" letter-spacing="6" text-anchor="middle" fill="currentColor">SMEG</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Италия &bull; Дизайнерские серии</span>
+              <span class="brand-count">657 моделей</span>
+            </div>
+          </a>
+
+          <!-- 5. MIELE -->
+          <a href="/catalog?brand=MIELE" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-miele" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="30" letter-spacing="2" text-anchor="middle" fill="currentColor">Miele</text>
+                <polygon points="69,8 75,5 73,11 67,14" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Германия &bull; Премиум стандарт</span>
+              <span class="brand-count">77 моделей</span>
+            </div>
+          </a>
+
+          <!-- 6. OMOIKIRI -->
+          <a href="/catalog?brand=OMOIKIRI" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-omoikiri" viewBox="0 0 180 36">
+                <text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="24" letter-spacing="3" text-anchor="middle" fill="currentColor">OMOIKIRI</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Япония &bull; Мойки и смесители</span>
+              <span class="brand-count">1 421 модель</span>
+            </div>
+          </a>
+
+          <!-- 7. ELICA -->
+          <a href="/catalog?brand=ELICA" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-elica" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="700" font-size="30" letter-spacing="3" text-anchor="middle" fill="currentColor">elica</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Италия &bull; Премиум аспирация</span>
+              <span class="brand-count">459 моделей</span>
+            </div>
+          </a>
+
+          <!-- 8. MIDEA -->
+          <a href="/catalog?brand=MIDEA" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-midea" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="28" letter-spacing="1" text-anchor="middle" fill="currentColor">Midea</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Инновации &bull; Встраиваемая техника</span>
+              <span class="brand-count">94 модели</span>
+            </div>
+          </a>
+
+          <!-- 9. KÖRTING -->
+          <a href="/catalog?brand=KORTING" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-korting" viewBox="0 0 180 36">
+                <text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="25" letter-spacing="2" text-anchor="middle" fill="currentColor">KÖRTING</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Германия &bull; Салон 11/66</span>
+              <span class="brand-count">607 моделей</span>
+            </div>
+          </a>
+
+          <!-- 10. FALMEC -->
+          <a href="/catalog?brand=FALMEC" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-falmec" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="28" letter-spacing="3" text-anchor="middle" fill="currentColor">falmec</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Италия &bull; Тихая аспирация Circle.Tech</span>
+              <span class="brand-count">338 моделей</span>
+            </div>
+          </a>
+
+        </div>
+
+        <!-- SLIDE 2: NEXT TOP BRANDS IN CATALOG -->
+        <div class="v1-slide">
+          
+          <a href="/catalog?brand=BERTAZZONI" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-bertazzoni" viewBox="0 0 200 36">
+                <text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="22" letter-spacing="3" text-anchor="middle" fill="currentColor">BERTAZZONI</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Италия &bull; Кухонные блоки с 1882 г.</span>
+              <span class="brand-count">189 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=EVELUX" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="26" letter-spacing="3" text-anchor="middle" fill="currentColor">EVELUX</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Европа &bull; Современная встройка</span>
+              <span class="brand-count">188 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=GRAUDE" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="26" letter-spacing="3" text-anchor="middle" fill="currentColor">GRAUDE</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Германия &bull; Практичный комфорт</span>
+              <span class="brand-count">160 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=MEYVEL" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="26" letter-spacing="3" text-anchor="middle" fill="currentColor">MEYVEL</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Италия &bull; Винные шкафы и холод</span>
+              <span class="brand-count">150 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=DUNAVOX" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-dunavox" viewBox="0 0 180 36">
+                <text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="25" letter-spacing="3" text-anchor="middle" fill="currentColor">DUNAVOX</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Венгрия &bull; Премиальное винохранение</span>
+              <span class="brand-count">121 модель</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=FRANKE" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="26" letter-spacing="3" text-anchor="middle" fill="currentColor">FRANKE</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Швейцария &bull; Мойки и системы кухни</span>
+              <span class="brand-count">111 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=VARD" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-vard" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="900" font-size="30" letter-spacing="4" text-anchor="middle" fill="currentColor">VARD</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Европа &bull; Гарантия 5 лет</span>
+              <span class="brand-count">101 модель</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=HIBERG" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="26" letter-spacing="3" text-anchor="middle" fill="currentColor">HIBERG</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Премиум холод &bull; French Door</span>
+              <span class="brand-count">65 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=SCHULTHESS" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg logo-schulthess" viewBox="0 0 200 36">
+                <text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="22" letter-spacing="2" text-anchor="middle" fill="currentColor">SCHULTHESS</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Швейцария &bull; Швейцарский эталон</span>
+              <span class="brand-count">36 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=CASO" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="26" letter-spacing="3" text-anchor="middle" fill="currentColor">CASO</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Германия &bull; Вакууматоры и шкафы</span>
+              <span class="brand-count">35 моделей</span>
+            </div>
+          </a>
+
+        </div>
+
+        <!-- SLIDE 3: SPECIALIZED & ACCESSORY BRANDS -->
+        <div class="v1-slide">
+          
+          <a href="/catalog?brand=BONE%20CRUSHER" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 200 36">
+                <text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="20" letter-spacing="2" text-anchor="middle" fill="currentColor">BONE CRUSHER</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">США &bull; Измельчители отходов</span>
+              <span class="brand-count">19 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=RIEDEL" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="700" font-size="28" letter-spacing="3" text-anchor="middle" fill="currentColor">RIEDEL</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Австрия &bull; Бокалы и декантеры</span>
+              <span class="brand-count">158 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=LONGRAN" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="25" letter-spacing="3" text-anchor="middle" fill="currentColor">LONGRAN</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Италия &bull; Мойки из гранита</span>
+              <span class="brand-count">207 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=ELIKOR" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="26" letter-spacing="3" text-anchor="middle" fill="currentColor">ELIKOR</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Россия &bull; Кухонные вытяжки</span>
+              <span class="brand-count">205 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=NIVONA" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="26" letter-spacing="3" text-anchor="middle" fill="currentColor">NIVONA</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Швейцария &bull; Кофемашины</span>
+              <span class="brand-count">25 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=STEBA" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="26" letter-spacing="3" text-anchor="middle" fill="currentColor">STEBA</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Германия &bull; Грили и су-вид</span>
+              <span class="brand-count">22 модели</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=ROMMELSBACHER" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 200 36">
+                <text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="19" letter-spacing="2" text-anchor="middle" fill="currentColor">ROMMELSBACHER</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Германия &bull; Настольная кулинария</span>
+              <span class="brand-count">19 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=ALVEUS" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="26" letter-spacing="3" text-anchor="middle" fill="currentColor">ALVEUS</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Словения &bull; Кухонные системы</span>
+              <span class="brand-count">18 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=BUGATTI" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="26" letter-spacing="3" text-anchor="middle" fill="currentColor">BUGATTI</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Италия &bull; Малая арт-техника</span>
+              <span class="brand-count">14 моделей</span>
+            </div>
+          </a>
+
+          <a href="/catalog?brand=EKO" class="brand-card">
+            <div class="brand-logo-wrap">
+              <svg class="brand-logo-svg" viewBox="0 0 160 36">
+                <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="28" letter-spacing="4" text-anchor="middle" fill="currentColor">EKO</text>
+              </svg>
+            </div>
+            <div class="brand-meta">
+              <span class="brand-sub">Сортеры &bull; Сенсорные системы</span>
+              <span class="brand-count">12 моделей</span>
+            </div>
+          </a>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- VARIANT 2: ГОРИЗОНТАЛЬНЫЙ КИНЕТИЧЕСКИЙ ТРЕК (FLUID DRAG SCROLL) -->
+  <!-- ========================================================================= -->
+  <section id="variant-2" class="section-wrap" style="display: none;">
+    <div class="variant-meta">
+      <div>
+        <h3>Вариант 2: Горизонтальный кинетический трек (Fluid Drag & Scroll)</h3>
+        <p>Крупные, воздушные карточки в один ряд. Свободный горизонтальный свайп мышью или пальцем + стрелки навигации и плавная полоса прогресса. Стиль Apple / Awwwards.</p>
+      </div>
+      <span class="variant-badge">Kinetic Motion</span>
+    </div>
+
+    <!-- Section Header -->
+    <div class="section-header">
+      <div class="header-left">
+        <div class="section-overline">Официальный дилер европейских брендов</div>
+        <h2 class="section-title">Брендовый атлас СИМОНА</h2>
+        <p class="section-subtitle">
+          Прямые поставки оригинальной техники ведущих мировых марок с официальной заводской гарантией
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <div class="slider-nav">
+          <button class="nav-arrow" onclick="v2Scroll(-400)" aria-label="Прокрутка влево">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button class="nav-arrow" onclick="v2Scroll(400)" aria-label="Прокрутка вправо">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+
+        <a href="/catalog" class="all-link">
+          <span>Смотреть все</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Horizontal Track -->
+    <div id="v2-container" class="v2-track-wrapper" onscroll="updateV2Progress()">
+      <div class="v2-track">
+        
+        <a href="/catalog?brand=ASKO" class="brand-card v2-card">
+          <div class="brand-logo-wrap">
+            <svg class="brand-logo-svg logo-asko" viewBox="0 0 160 36">
+              <text x="50%" y="28" font-family="'Montserrat', sans-serif" font-weight="900" font-size="34" letter-spacing="4" text-anchor="middle" fill="currentColor">ASKO</text>
+            </svg>
+          </div>
+          <div class="brand-meta">
+            <span class="brand-sub">Швеция &bull; Скандинавское качество</span>
+            <span class="brand-count">241 модель в наличии</span>
+          </div>
+        </a>
+
+        <a href="/catalog?brand=LIEBHERR" class="brand-card v2-card">
+          <div class="brand-logo-wrap">
+            <svg class="brand-logo-svg logo-liebherr" viewBox="0 0 200 36">
+              <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="900" font-size="28" letter-spacing="2" text-anchor="middle" fill="currentColor">LIEBHERR</text>
+            </svg>
+          </div>
+          <div class="brand-meta">
+            <span class="brand-sub">Германия &bull; BioFresh & NoFrost</span>
+            <span class="brand-count">150 моделей в наличии</span>
+          </div>
+        </a>
+
+        <a href="/catalog?brand=BOSCH" class="brand-card v2-card">
+          <div class="brand-logo-wrap">
+            <svg class="brand-logo-svg logo-bosch" viewBox="0 0 180 40">
+              <circle cx="28" cy="20" r="16" fill="none" stroke="currentColor" stroke-width="4.5"/>
+              <path d="M19 14h18v12H19z" fill="none" stroke="currentColor" stroke-width="3"/>
+              <text x="110" y="29" font-family="'Montserrat', sans-serif" font-weight="900" font-size="28" letter-spacing="1.5" text-anchor="middle" fill="currentColor">BOSCH</text>
+            </svg>
+          </div>
+          <div class="brand-meta">
+            <span class="brand-sub">Германия &bull; Немецкая надежность</span>
+            <span class="brand-count">139 моделей в наличии</span>
+          </div>
+        </a>
+
+        <a href="/catalog?brand=SMEG" class="brand-card v2-card">
+          <div class="brand-logo-wrap">
+            <svg class="brand-logo-svg logo-smeg" viewBox="0 0 160 36">
+              <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="900" font-size="30" letter-spacing="6" text-anchor="middle" fill="currentColor">SMEG</text>
+            </svg>
+          </div>
+          <div class="brand-meta">
+            <span class="brand-sub">Италия &bull; Серии 50's Retro и Linea</span>
+            <span class="brand-count">657 моделей в наличии</span>
+          </div>
+        </a>
+
+        <a href="/catalog?brand=MIELE" class="brand-card v2-card">
+          <div class="brand-logo-wrap">
+            <svg class="brand-logo-svg logo-miele" viewBox="0 0 160 36">
+              <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="30" letter-spacing="2" text-anchor="middle" fill="currentColor">Miele</text>
+              <polygon points="69,8 75,5 73,11 67,14" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="brand-meta">
+            <span class="brand-sub">Германия &bull; Премиум стандарт</span>
+            <span class="brand-count">77 моделей в наличии</span>
+          </div>
+        </a>
+
+        <a href="/catalog?brand=OMOIKIRI" class="brand-card v2-card">
+          <div class="brand-logo-wrap">
+            <svg class="brand-logo-svg logo-omoikiri" viewBox="0 0 180 36">
+              <text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="24" letter-spacing="3" text-anchor="middle" fill="currentColor">OMOIKIRI</text>
+            </svg>
+          </div>
+          <div class="brand-meta">
+            <span class="brand-sub">Япония &bull; Мойки и смесители Tetogranit</span>
+            <span class="brand-count">1 421 модель в наличии</span>
+          </div>
+        </a>
+
+        <a href="/catalog?brand=ELICA" class="brand-card v2-card">
+          <div class="brand-logo-wrap">
+            <svg class="brand-logo-svg logo-elica" viewBox="0 0 160 36">
+              <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="700" font-size="30" letter-spacing="3" text-anchor="middle" fill="currentColor">elica</text>
+            </svg>
+          </div>
+          <div class="brand-meta">
+            <span class="brand-sub">Италия &bull; Аспирация и дизайн</span>
+            <span class="brand-count">459 моделей в наличии</span>
+          </div>
+        </a>
+
+        <a href="/catalog?brand=MIDEA" class="brand-card v2-card">
+          <div class="brand-logo-wrap">
+            <svg class="brand-logo-svg logo-midea" viewBox="0 0 160 36">
+              <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="28" letter-spacing="1" text-anchor="middle" fill="currentColor">Midea</text>
+            </svg>
+          </div>
+          <div class="brand-meta">
+            <span class="brand-sub">Инновации &bull; Встраиваемая техника</span>
+            <span class="brand-count">94 модели в наличии</span>
+          </div>
+        </a>
+
+        <a href="/catalog?brand=KORTING" class="brand-card v2-card">
+          <div class="brand-logo-wrap">
+            <svg class="brand-logo-svg logo-korting" viewBox="0 0 180 36">
+              <text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="25" letter-spacing="2" text-anchor="middle" fill="currentColor">KÖRTING</text>
+            </svg>
+          </div>
+          <div class="brand-meta">
+            <span class="brand-sub">Германия &bull; Фирменный салон 11/66</span>
+            <span class="brand-count">607 моделей в наличии</span>
+          </div>
+        </a>
+
+        <a href="/catalog?brand=FALMEC" class="brand-card v2-card">
+          <div class="brand-logo-wrap">
+            <svg class="brand-logo-svg logo-falmec" viewBox="0 0 160 36">
+              <text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="28" letter-spacing="3" text-anchor="middle" fill="currentColor">falmec</text>
+            </svg>
+          </div>
+          <div class="brand-meta">
+            <span class="brand-sub">Италия &bull; Тихая аспирация Circle.Tech</span>
+            <span class="brand-count">338 моделей в наличии</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="v2-progress-bar">
+      <div id="v2-progress" class="v2-progress-fill"></div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- VARIANT 3: СЕГМЕНТИРОВАННЫЙ АТЛАС (ТАБЫ КАТЕГОРИЙ + СЕТКА) -->
+  <!-- ========================================================================= -->
+  <section id="variant-3" class="section-wrap" style="display: none;">
+    <div class="variant-meta">
+      <div>
+        <h3>Вариант 3: Сегментированный атлас (Табы специализации + Сетка)</h3>
+        <p>Категорийные пилюльные табы позволяют покупателю сразу выбрать нужное направление: «Главные фабрики», «Кухонная встройка», «Холод и вино», «Мойки и смесители». Мгновенная адаптивная перестройка.</p>
+      </div>
+      <span class="variant-badge">O2O Архитектура</span>
+    </div>
+
+    <!-- Section Header -->
+    <div class="section-header">
+      <div class="header-left">
+        <div class="section-overline">Официальный дилер европейских брендов</div>
+        <h2 class="section-title">Брендовый атлас СИМОНА</h2>
+        <p class="section-subtitle">
+          Прямые поставки оригинальной техники ведущих мировых марок с официальной заводской гарантией
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <a href="/catalog" class="all-link">
+          <span>Смотреть весь каталог</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="v3-tabs">
+      <button class="v3-tab active" onclick="v3Filter('all', this)">Все флагманы (10)</button>
+      <button class="v3-tab" onclick="v3Filter('cooking', this)">Кухонная встройка</button>
+      <button class="v3-tab" onclick="v3Filter('cooling', this)">Холод и вино</button>
+      <button class="v3-tab" onclick="v3Filter('water', this)">Мойки и сантехника</button>
+      <button class="v3-tab" onclick="v3Filter('laundry', this)">Уход за бельем</button>
+    </div>
+
+    <!-- Dynamic Grid -->
+    <div id="v3-grid" class="v3-grid">
+      <!-- Populated dynamically via JS -->
+    </div>
+  </section>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // Tab switching between 3 main variants
+    function switchVariant(num) {
+      document.querySelectorAll('.dock-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === num - 1);
+      });
+      document.getElementById('variant-1').style.display = num === 1 ? 'block' : 'none';
+      document.getElementById('variant-2').style.display = num === 2 ? 'block' : 'none';
+      document.getElementById('variant-3').style.display = num === 3 ? 'block' : 'none';
+
+      if (num === 2) updateV2Progress();
+      if (num === 3) v3Filter('all');
+    }
+
+    // VARIANT 1 SLIDER LOGIC
+    let v1CurrentPage = 0;
+    const v1TotalPages = 3;
+
+    function v1Slide(dir) {
+      v1CurrentPage = Math.max(0, Math.min(v1TotalPages - 1, v1CurrentPage + dir));
+      const track = document.getElementById('v1-track');
+      track.style.transform = `translateX(-${v1CurrentPage * 33.33333}%)`;
+      
+      document.getElementById('v1-page-num').textContent = `0${v1CurrentPage + 1}`;
+      document.getElementById('v1-prev-btn').disabled = v1CurrentPage === 0;
+      document.getElementById('v1-next-btn').disabled = v1CurrentPage === v1TotalPages - 1;
+    }
+
+    // VARIANT 2 TRACK LOGIC
+    function v2Scroll(amount) {
+      const el = document.getElementById('v2-container');
+      el.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+
+    function updateV2Progress() {
+      const el = document.getElementById('v2-container');
+      const progress = document.getElementById('v2-progress');
+      if (!el || !progress) return;
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      const percent = maxScroll > 0 ? (el.scrollLeft / maxScroll) : 0;
+      const widthPercent = 33.33 + (percent * 66.67);
+      progress.style.width = `${Math.min(100, Math.max(25, widthPercent))}%`;
+    }
+
+    // VARIANT 3 TABS DATA & LOGIC
+    const ALL_BRANDS_DATA = [
+      { name: 'ASKO', slug: 'ASKO', country: 'Швеция', desc: 'Скандинавское качество', count: '241 модель', tags: ['cooking', 'laundry'], logo: `<svg class="brand-logo-svg logo-asko" viewBox="0 0 160 36"><text x="50%" y="28" font-family="'Montserrat', sans-serif" font-weight="900" font-size="34" letter-spacing="4" text-anchor="middle" fill="currentColor">ASKO</text></svg>` },
+      { name: 'LIEBHERR', slug: 'LIEBHERR', country: 'Германия', desc: 'Холод и вино BioFresh', count: '150 моделей', tags: ['cooling'], logo: `<svg class="brand-logo-svg logo-liebherr" viewBox="0 0 200 36"><text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="900" font-size="28" letter-spacing="2" text-anchor="middle" fill="currentColor">LIEBHERR</text></svg>` },
+      { name: 'BOSCH', slug: 'BOSCH', country: 'Германия', desc: 'Немецкая надежность', count: '139 моделей', tags: ['cooking', 'laundry'], logo: `<svg class="brand-logo-svg logo-bosch" viewBox="0 0 180 40"><circle cx="28" cy="20" r="16" fill="none" stroke="currentColor" stroke-width="4.5"/><path d="M19 14h18v12H19z" fill="none" stroke="currentColor" stroke-width="3"/><text x="110" y="29" font-family="'Montserrat', sans-serif" font-weight="900" font-size="28" letter-spacing="1.5" text-anchor="middle" fill="currentColor">BOSCH</text></svg>` },
+      { name: 'SMEG', slug: 'SMEG', country: 'Италия', desc: 'Дизайнерские серии', count: '657 моделей', tags: ['cooking', 'cooling'], logo: `<svg class="brand-logo-svg logo-smeg" viewBox="0 0 160 36"><text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="900" font-size="30" letter-spacing="6" text-anchor="middle" fill="currentColor">SMEG</text></svg>` },
+      { name: 'MIELE', slug: 'MIELE', country: 'Германия', desc: 'Премиум стандарт', count: '77 моделей', tags: ['cooking', 'laundry'], logo: `<svg class="brand-logo-svg logo-miele" viewBox="0 0 160 36"><text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="30" letter-spacing="2" text-anchor="middle" fill="currentColor">Miele</text><polygon points="69,8 75,5 73,11 67,14" fill="currentColor"/></svg>` },
+      { name: 'OMOIKIRI', slug: 'OMOIKIRI', country: 'Япония', desc: 'Мойки и смесители', count: '1 421 модель', tags: ['water'], logo: `<svg class="brand-logo-svg logo-omoikiri" viewBox="0 0 180 36"><text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="24" letter-spacing="3" text-anchor="middle" fill="currentColor">OMOIKIRI</text></svg>` },
+      { name: 'ELICA', slug: 'ELICA', country: 'Италия', desc: 'Премиум аспирация', count: '459 моделей', tags: ['cooking'], logo: `<svg class="brand-logo-svg logo-elica" viewBox="0 0 160 36"><text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="700" font-size="30" letter-spacing="3" text-anchor="middle" fill="currentColor">elica</text></svg>` },
+      { name: 'MIDEA', slug: 'MIDEA', country: 'Инновации', desc: 'Встраиваемая техника', count: '94 модели', tags: ['cooking', 'cooling'], logo: `<svg class="brand-logo-svg logo-midea" viewBox="0 0 160 36"><text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="28" letter-spacing="1" text-anchor="middle" fill="currentColor">Midea</text></svg>` },
+      { name: 'KÖRTING', slug: 'KORTING', country: 'Германия', desc: 'Салон 11/66', count: '607 моделей', tags: ['cooking', 'laundry'], logo: `<svg class="brand-logo-svg logo-korting" viewBox="0 0 180 36"><text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="25" letter-spacing="2" text-anchor="middle" fill="currentColor">KÖRTING</text></svg>` },
+      { name: 'FALMEC', slug: 'FALMEC', country: 'Италия', desc: 'Тихая аспирация Circle.Tech', count: '338 моделей', tags: ['cooking'], logo: `<svg class="brand-logo-svg logo-falmec" viewBox="0 0 160 36"><text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="28" letter-spacing="3" text-anchor="middle" fill="currentColor">falmec</text></svg>` },
+      { name: 'BERTAZZONI', slug: 'BERTAZZONI', country: 'Италия', desc: 'Кухонные блоки с 1882 г.', count: '189 моделей', tags: ['cooking'], logo: `<svg class="brand-logo-svg logo-bertazzoni" viewBox="0 0 200 36"><text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="22" letter-spacing="3" text-anchor="middle" fill="currentColor">BERTAZZONI</text></svg>` },
+      { name: 'DUNAVOX', slug: 'DUNAVOX', country: 'Венгрия', desc: 'Винные климатические шкафы', count: '121 модель', tags: ['cooling'], logo: `<svg class="brand-logo-svg logo-dunavox" viewBox="0 0 180 36"><text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="25" letter-spacing="3" text-anchor="middle" fill="currentColor">DUNAVOX</text></svg>` },
+      { name: 'FRANKE', slug: 'FRANKE', country: 'Швейцария', desc: 'Мойки и кухонные системы', count: '111 моделей', tags: ['water'], logo: `<svg class="brand-logo-svg" viewBox="0 0 160 36"><text x="50%" y="27" font-family="'Montserrat', sans-serif" font-weight="800" font-size="26" letter-spacing="3" text-anchor="middle" fill="currentColor">FRANKE</text></svg>` },
+      { name: 'SCHULTHESS', slug: 'SCHULTHESS', country: 'Швейцария', desc: 'Швейцарский эталон стирки', count: '36 моделей', tags: ['laundry'], logo: `<svg class="brand-logo-svg logo-schulthess" viewBox="0 0 200 36"><text x="50%" y="26" font-family="'Montserrat', sans-serif" font-weight="800" font-size="22" letter-spacing="2" text-anchor="middle" fill="currentColor">SCHULTHESS</text></svg>` }
+    ];
+
+    function v3Filter(category, btnElement) {
+      if (btnElement) {
+        document.querySelectorAll('.v3-tab').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+      }
+
+      const grid = document.getElementById('v3-grid');
+      const filtered = category === 'all' 
+        ? ALL_BRANDS_DATA.slice(0, 10) 
+        : ALL_BRANDS_DATA.filter(b => b.tags.includes(category));
+
+      grid.innerHTML = filtered.map(b => `
+        <a href="/catalog?brand=${encodeURIComponent(b.slug)}" class="brand-card">
+          <div class="brand-logo-wrap">
+            ${b.logo}
+          </div>
+          <div class="brand-meta">
+            <span class="brand-sub">${b.country} &bull; ${b.desc}</span>
+            <span class="brand-count">${b.count}</span>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    // Init variant 3
+    v3Filter('all');
+  </script>
+</body>
+</html>

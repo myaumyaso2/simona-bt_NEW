@@ -7,10 +7,13 @@ import { KeyDirectionsSection } from '@/components/sections/KeyDirectionsSection
 import { ServiceContour } from '@/components/sections/ServiceContour';
 import { TelegramLiveSection } from '@/components/sections/TelegramLiveSection';
 import { ShowroomMapSection } from '@/components/sections/ShowroomMapSection';
+import { getDynamicBrandAtlas } from '@/lib/catalog/brandStats';
 
 export const dynamic = 'force-dynamic';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const brands = await getDynamicBrandAtlas();
+
   return (
     <div className="flex flex-col bg-[#111315] min-h-screen">
       {/* 1. Hero Screen per AGENTS.md 8.1 */}
@@ -20,7 +23,7 @@ export default function HomePage() {
       <ManufacturerPromosSection />
 
       {/* 3. Authorized Dealer Brand Wall per AGENTS.md 8.1 */}
-      <BrandAtlas />
+      <BrandAtlas initialBrands={brands} />
 
       {/* 4. Физические шоурумы на Белинского per AGENTS.md 8.1 */}
       <ShowroomsFigmaSection />
