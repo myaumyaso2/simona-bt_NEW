@@ -51,7 +51,11 @@ model_extractors = [
     ('prod-vard-6', '84912', 'VCPA1C', 'Рожковая кофеварка эспрессо', 'VARD', 19990, 22988, ['https://simona-bt.ru/images/cms/data/photo_code/89082.jpg']),
 ]
 
-# Generate standardized ProductItem objects
+# Load master 1C catalog dump to get authentic physicalStatus and warehouse stocks
+master_dump = json.load(gzip.open('data/exported_catalog_products.json.gz', 'rt', encoding='utf-8'))
+dump_by_sku = {p['sku']: p for p in master_dump}
+
+# Generate standardized ProductItem objects with honest stock data
 brand_products = {}
 product_items_code = []
 
@@ -59,6 +63,25 @@ for pid, one_c_sku, model_code, group, brand, price, old_price, images in model_
     title = f"{group} {brand} {model_code}"
     slug = f"{brand.lower()}-{model_code.lower().replace(' ', '-')}"
     brand_products.setdefault(brand, []).append({'sku': one_c_sku, 'slug': slug})
+
+    dump_item = dump_by_sku.get(one_c_sku)
+    if dump_item:
+        phys_status = dump_item.get('physicalStatus', 'LOCAL_STOCK')
+        stock_kominterna = dump_item.get('stockKominterna', 1)
+        stock_belinskogo15 = dump_item.get('stockBelinskogo15', 0)
+        stock_remote = dump_item.get('stockRemote', 0)
+        in_stock = dump_item.get('inStock', True)
+        stock_count = dump_item.get('stockCount', 1)
+        dump_badge = dump_item.get('badge')
+        badge_val = f"'{dump_badge}'" if dump_badge else "null"
+    else:
+        phys_status = 'ON_ORDER'
+        stock_kominterna = 0
+        stock_belinskogo15 = 0
+        stock_remote = 0
+        in_stock = False
+        stock_count = 0
+        badge_val = "null"
 
     item_code = f"""  {{
     id: '{pid}',
@@ -68,17 +91,20 @@ for pid, one_c_sku, model_code, group, brand, price, old_price, images in model_
     brand: '{brand}',
     category: '{group}',
     categoryType: 'CATEGORY_B',
-    physicalStatus: 'SHOWROOM',
+    physicalStatus: '{phys_status}',
     price: {price},
     oldPrice: {old_price},
-    inStock: true,
-    stockCount: 3,
+    inStock: {'true' if in_stock else 'false'},
+    stockCount: {stock_count},
+    stockKominterna: {stock_kominterna},
+    stockBelinskogo15: {stock_belinskogo15},
+    stockRemote: {stock_remote},
     rating: 4.9,
     reviewsCount: 14,
-    shortDesc: 'Официальная гарантия производителя • Экспозиция в салонах СИМОНА',
+    shortDesc: 'Официальная гарантия производителя • Подбор и комплектация в СИМОНА',
     description: '{title}. Доступен к заказу в салонах бытовой техники СИМОНА в Нижнем Новгороде.',
     images: {json.dumps(images)},
-    badge: 'На витрине',
+    badge: {badge_val},
     isFeatured: true,
   }},"""
     product_items_code.append(item_code)
