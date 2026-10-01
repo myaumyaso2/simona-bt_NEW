@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   skipTrailingSlashRedirect: true,
+  experimental: {
+    workerThreads: false,
+    cpus: 2,
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
