@@ -56,13 +56,14 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
         {/* Background Image with Deep Luxury Gradient */}
         <div className="absolute inset-0 z-0">
           <Image
-            src={promo.bannerUrl}
+            src={promo.heroBgUrl || promo.bannerUrl}
             alt={promo.title}
             fill
             priority
-            className="object-cover opacity-25 filter blur-[1px]"
+            className="object-cover opacity-35"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#111315] via-[#111315]/85 to-[#111315]/60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#111315] via-[#111315]/90 sm:via-[#111315]/80 to-[#111315]/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#111315] via-transparent to-[#111315]/40" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

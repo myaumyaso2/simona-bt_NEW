@@ -154,6 +154,8 @@ export interface ManufacturerPromo {
   tiers?: PromoTier[];
   conditions: string[];
   bannerUrl: string;
+  thumbnailUrl?: string;
+  heroBgUrl?: string;
   participatingProductSlugs?: string[];
   categoryNames?: string[];
   isFeatured?: boolean;

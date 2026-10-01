@@ -23,6 +23,8 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Срок действия специального предложения: до 31 октября 2026 года."
     ],
     "bannerUrl": "/images/promos/promo-korting-gifts.jpg",
+    "thumbnailUrl": "/images/promos/pilot-korting-gifts-thumb.jpg",
+    "heroBgUrl": "/images/promos/pilot-korting-gifts-hero.jpg",
     "participatingProductSlugs": [
       "kwo_0010-pr2_shtopor_elektricheskij",
       "khb_0317_w_tulip_blender_pogruzhnoj",

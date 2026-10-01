@@ -180,7 +180,7 @@ function PromoHubCard({ promo }: { promo: ManufacturerPromo }) {
       {/* Top Media */}
       <div className="relative h-56 w-full overflow-hidden bg-[#111315]">
         <Image
-          src={promo.bannerUrl}
+          src={promo.thumbnailUrl || promo.bannerUrl}
           alt={promo.title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

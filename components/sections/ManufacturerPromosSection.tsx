@@ -189,7 +189,7 @@ function PromoCard({ promo }: { promo: ManufacturerPromo }) {
       {/* Visual Top Media */}
       <div className="relative h-56 w-full overflow-hidden bg-[#111315]">
         <Image
-          src={promo.bannerUrl}
+          src={promo.thumbnailUrl || promo.bannerUrl}
           alt={promo.title}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
