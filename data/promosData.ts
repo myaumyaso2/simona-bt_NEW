@@ -8,6 +8,7 @@ import { ManufacturerPromo, ProductItem } from '@/types';
 export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   {
     id: 'promo-korting-gifts',
+    badgeText: 'Подарок за покупку',
     slug: 'korting-pokupka-eto-podarok1',
     title: "Покупка – это подарок: премиальные аксессуары Körting",
     brand: 'Körting',
@@ -35,6 +36,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-korting-cascade',
+    badgeText: 'Комплектная скидка',
     slug: 'korting-kaskad',
     title: "Каскадные скидки до 100% на комплект техники Körting",
     brand: 'Körting',
@@ -62,6 +64,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-korting-razygryvaet-podarki',
+    badgeText: 'Подарок за покупку',
     slug: 'korting-razdaet-podarki',
     title: "Körting раздает подарки: посудомоечная машина или холодильник по спеццене",
     brand: 'Körting',
@@ -87,6 +90,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-korting-kitchens-pro',
+    badgeText: 'Скидка на комплект',
     slug: 'korting-skidka-50-varochnaya-kuhni-pro',
     title: "Скидка 50% на индукционную варочную панель Körting по программе Кухни PRO",
     brand: 'Körting',
@@ -111,6 +115,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-falmec-water-50',
+    badgeText: 'Скидка на коллекцию',
     slug: 'falmec-akciya-water-50',
     title: "Скидка 50% на мойки и смесители Falmec Water",
     brand: 'Falmec',
@@ -135,6 +140,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-falmec-integrated-gifts',
+    badgeText: 'Подарок за покупку',
     slug: 'falmec-integrirovannye-modeli-podarki',
     title: "Интегрированные модели Falmec: подарок iPad или пылесос Dreame",
     brand: 'Falmec',
@@ -160,6 +166,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-falmec-induction-hood',
+    badgeText: 'Скидка на комплект',
     slug: 'falmec-komplekt-indukciya-i-vytyazhka',
     title: "Скидка 20% на комплект из индукционной панели и вытяжки Falmec",
     brand: 'Falmec',
@@ -184,6 +191,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-falmec-extra-discount',
+    badgeText: 'Комплектная скидка',
     slug: 'falmec-dopolnitelnaya-skidka-na-komplekt',
     title: "Дополнительная скидка до 20% на кухонный комплект Falmec",
     brand: 'Falmec',
@@ -209,6 +217,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-evelux-34',
+    badgeText: 'Комплектная скидка',
     slug: 'evelux-akciya-3-ravno-4',
     title: "Четвертый прибор в подарок: программа 3=4 на технику EVELUX",
     brand: 'Evelux',
@@ -234,6 +243,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-evelux-cascade',
+    badgeText: 'Комплектная скидка',
     slug: 'evelux-kaskad',
     title: "Каскадные скидки до 100% на технику EVELUX",
     brand: 'Evelux',
@@ -259,6 +269,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-evelux-gifts',
+    badgeText: 'Подарок за покупку',
     slug: 'evelux-pokupka-eto-podarok',
     title: "Покупка – это подарок: полезные аксессуары EVELUX",
     brand: 'Evelux',
@@ -284,6 +295,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-vard-top-models',
+    badgeText: 'Специальные цены',
     slug: 'vard-vygoda-15-20-populyarnye-modeli',
     title: "Выгода 15-20% на популярные модели техники VARD",
     brand: 'VARD',
@@ -308,6 +320,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-vard-cascade',
+    badgeText: 'Комплектная скидка',
     slug: 'vard-kaskad',
     title: "Каскадные скидки до 100% на комплект техники VARD",
     brand: 'VARD',
@@ -333,6 +346,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-vard-mill-gift',
+    badgeText: 'Подарок за покупку',
     slug: 'vard-podarok-nabor-melnic',
     title: "Набор мельниц для специй VARD в подарок при заказе от 3 приборов",
     brand: 'VARD',
@@ -357,6 +371,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-vard-coffee-maker-gift',
+    badgeText: 'Подарок за покупку',
     slug: 'vard-podarok-kofevarka',
     title: "Кофеварка эспрессо VARD в подарок при покупке от 4 приборов",
     brand: 'VARD',
@@ -382,6 +397,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-smeg-bundle-archived',
+    badgeText: 'Комплектная скидка',
     slug: 'smeg-skidki-na-komplekty',
     title: "Скидки до 20% на комплекты техники Smeg",
     brand: 'SMEG',
@@ -403,6 +419,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
   },
   {
     id: 'promo-asko-autumn-archived',
+    badgeText: 'Специальные условия',
     slug: 'asko-specialnye-predlozheniya-osen',
     title: "Специальные условия на технику ASKO",
     brand: 'ASKO',

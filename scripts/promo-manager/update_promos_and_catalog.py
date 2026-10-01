@@ -1,3 +1,23 @@
+mechanics_map = {
+  "promo-korting-gifts": "Подарок за покупку",
+  "promo-korting-cascade": "Комплектная скидка",
+  "promo-korting-razygryvaet-podarki": "Подарок за покупку",
+  "promo-korting-kitchens-pro": "Скидка на комплект",
+  "promo-falmec-water-50": "Скидка на коллекцию",
+  "promo-falmec-integrated-gifts": "Подарок за покупку",
+  "promo-falmec-induction-hood": "Скидка на комплект",
+  "promo-falmec-extra-discount": "Комплектная скидка",
+  "promo-evelux-34": "Комплектная скидка",
+  "promo-evelux-cascade": "Комплектная скидка",
+  "promo-evelux-gifts": "Подарок за покупку",
+  "promo-vard-top-models": "Специальные цены",
+  "promo-vard-cascade": "Комплектная скидка",
+  "promo-vard-mill-gift": "Подарок за покупку",
+  "promo-vard-coffee-maker-gift": "Подарок за покупку",
+  "promo-smeg-bundle-archived": "Комплектная скидка",
+  "promo-asko-autumn-archived": "Специальные условия"
+}
+
 import json
 import re
 import sys
@@ -477,6 +497,7 @@ for p in october_promos:
     slug: '{p['slug']}',
     title: {json.dumps(p['title'], ensure_ascii=False)},
     brand: '{p['brand']}',
+    badgeText: mechanics_map.get(p['id'], 'Акция'),
     discountBadge: '{p['discountBadge']}',
     timeRemaining: '{p['timeRemaining']}',
     startDate: '{p['startDate']}',
@@ -542,6 +563,7 @@ for p in archived_promos:
     slug: '{p['slug']}',
     title: {json.dumps(p['title'], ensure_ascii=False)},
     brand: '{p['brand']}',
+    badgeText: mechanics_map.get(p['id'], 'Акция'),
     discountBadge: '{p['discountBadge']}',
     timeRemaining: '{p['timeRemaining']}',
     startDate: '{p['startDate']}',

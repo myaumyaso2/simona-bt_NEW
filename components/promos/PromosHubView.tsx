@@ -193,9 +193,11 @@ function PromoHubCard({ promo }: { promo: ManufacturerPromo }) {
             {promo.brand}
           </span>
 
-          <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-simona-wine/25 text-white text-xs font-semibold shadow-sm border border-simona-wine/50 backdrop-blur-md">
-            <span>{promo.badgeText}</span>
-          </div>
+          {(promo.badgeText || promo.discountBadge) && (
+            <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-simona-wine/25 text-white text-xs font-semibold shadow-sm border border-simona-wine/50 backdrop-blur-md">
+              <span>{promo.badgeText || promo.discountBadge}</span>
+            </div>
+          )}
         </div>
       </div>
 

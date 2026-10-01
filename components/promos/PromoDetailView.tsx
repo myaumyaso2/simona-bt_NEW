@@ -82,9 +82,11 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
                 {promo.brand} {promo.brandCountry ? `(${promo.brandCountry})` : ''}
               </span>
 
-              <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-simona-wine/25 text-white text-xs font-semibold border border-simona-wine/50 backdrop-blur-md shadow-sm">
-                <span>{promo.badgeText}</span>
-              </div>
+              {(promo.badgeText || promo.discountBadge) && (
+                <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-simona-wine/25 text-white text-xs font-semibold border border-simona-wine/50 backdrop-blur-md shadow-sm">
+                  <span>{promo.badgeText || promo.discountBadge}</span>
+                </div>
+              )}
 
               <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] text-xs text-[#D7D9DB]">
                 <SimonaIconClock className="w-3.5 h-3.5 text-simona-wine-light" />
