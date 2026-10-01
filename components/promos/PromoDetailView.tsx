@@ -53,17 +53,25 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
 
       {/* 2. Hero Section */}
       <div className="relative border-b border-[#2B313A] py-14 sm:py-20 lg:py-24 overflow-hidden">
-        {/* Background Image with Deep Luxury Gradient */}
-        <div className="absolute inset-0 z-0">
+        {/* Background Image with Deep Luxury Gradient (Main Hero Style) */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <Image
             src={promo.heroBgUrl || promo.bannerUrl}
             alt={promo.title}
             fill
             priority
-            className="object-cover opacity-35"
+            className="object-cover object-right lg:object-center opacity-85"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#111315] via-[#111315]/90 sm:via-[#111315]/80 to-[#111315]/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#111315] via-transparent to-[#111315]/40" />
+          {/* Mobile Vignette: Deep overlay to guarantee white text readability */}
+          <div className="lg:hidden absolute inset-0 bg-gradient-to-b from-[#111315]/90 via-[#111315]/65 to-[#111315]/95" />
+          
+          {/* Desktop Left-to-Right Gradient: Left side is solid dark #111315 for text, right side fades to transparent for bright, clear photography */}
+          <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#111315] via-[#111315]/90 via-[50%] to-transparent" />
+          <div className="hidden lg:block absolute inset-0 bg-[radial-gradient(ellipse_65%_75%_at_20%_45%,rgba(17,19,21,0.92)_0%,transparent_100%)]" />
+
+          {/* Edge fading for seamless section transitions */}
+          <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#111315] to-transparent pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#111315] to-transparent pointer-events-none" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
