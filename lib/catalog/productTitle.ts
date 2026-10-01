@@ -62,30 +62,60 @@ export function cleanLegacySuffixes(raw: string): string {
   return res.replace(/\s+/g, ' ').trim();
 }
 
+export const CANONICAL_BRANDS: Record<string, string> = {
+  'korting': 'Körting',
+  'körting': 'Körting',
+  'falmec': 'Falmec',
+  'evelux': 'Evelux',
+  'vard': 'VARD',
+  'asko': 'ASKO',
+  'smeg': 'SMEG',
+  'miele': 'Miele',
+  'midea': 'Midea',
+  'omoikiri': 'Omoikiri',
+  'liebherr': 'Liebherr',
+  'bosch': 'Bosch',
+  'neff': 'Neff',
+  'siemens': 'Siemens',
+  'kuppersbusch': 'Küppersbusch',
+  'bertazzoni': 'Bertazzoni',
+  'elica': 'Elica',
+  'graude': 'Graude',
+};
+
+export function getCanonicalBrand(brand: string): string {
+  if (!brand) return '';
+  const key = brand.trim().toLowerCase();
+  return CANONICAL_BRANDS[key] || brand.trim();
+}
+
 /**
  * Formats or normalizes any product title to comply with the standard:
  * "Группа товара + Бренд + Артикул"
  */
 export function formatProductName(product: ProductLike): string {
   let name = cleanLegacySuffixes(product.name || '');
-  const brand = (product.brand || '').trim();
-  const brandUpper = brand.toUpperCase();
+  const rawBrand = (product.brand || '').trim();
+  const canonicalBrand = getCanonicalBrand(rawBrand);
+  const brandUpper = rawBrand.toUpperCase();
 
   // If name is completely empty, construct from category, brand, and SKU
   if (!name) {
     const group = (product.category && SINGULAR_CATEGORY_MAP[product.category]) || product.category || 'Прибор';
-    return [group, brandUpper, product.sku].filter(Boolean).join(' ');
+    return [group, canonicalBrand, product.sku].filter(Boolean).join(' ');
   }
 
-  // 1. If name already has the brand and starts with Russian text (e.g. "Индукционная варочная панель ASKO HI ...", "Мельница для специй VARD ...")
-  if (brand && name.toUpperCase().includes(brandUpper) && /^[А-Яа-яЁё]/.test(name)) {
-    return name.replace(/\s+/g, ' ').trim();
+  // 1. If name already has the brand and starts with Russian text
+  if (rawBrand && name.toUpperCase().includes(brandUpper) && /^[А-Яа-яЁё]/.test(name)) {
+    // Replace uppercase or raw brand with canonical brand
+    const regex = new RegExp(`(^|\\s+)${brandUpper}(\\s+|$)`, 'i');
+    const normalized = name.replace(regex, `$1${canonicalBrand}$2`);
+    return normalized.replace(/\s+/g, ' ').trim();
   }
 
   // 2. Detect legacy inverted pattern: [Article] [Group]
-  // e.g. "MIH 45107F Варочная панель", "MG 3270TGB Варочная панель", "KWK 0908 G Чайник эл."
   const invertedMatch = name.match(/^(.*?)\s+([А-Яа-яЁё][а-яёА-ЯЁ\s\.-]+)$/);
-  if (invertedMatch && brand) {
+  if (invertedMatch && rawBrand) {
     const article = invertedMatch[1].trim();
     let group = invertedMatch[2].trim();
 
@@ -104,7 +134,7 @@ export function formatProductName(product: ProductLike): string {
       group = 'Газовая варочная панель';
     }
 
-    return `${group} ${brandUpper} ${article}`.trim();
+    return `${group} ${canonicalBrand} ${article}`.trim();
   }
 
   // 3. Fallback: if group cannot be extracted cleanly, use category
@@ -113,8 +143,9 @@ export function formatProductName(product: ProductLike): string {
   // Clean categoryGroup from name if it was embedded in the middle
   const cleanArticle = name
     .replace(new RegExp('(^|\\s+)' + categoryGroup + '(\\s+|$)', 'gi'), ' ')
+    .replace(new RegExp('(^|\\s+)' + brandUpper + '(\\s+|$)', 'gi'), ' ')
     .replace(/\s+/g, ' ')
     .trim();
 
-  return `${categoryGroup} ${brandUpper} ${cleanArticle}`.trim();
+  return `${categoryGroup} ${canonicalBrand} ${cleanArticle}`.trim();
 }
