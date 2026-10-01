@@ -58,7 +58,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Количество акционных подарков ограничено складским резервом производителя.",
       "Бесплатное бережное хранение техники на центральном складе СИМОНА до окончания ремонта."
 ],
-    participatingSkus: ["OKB 1680 GN MW", "OKB 1471 CGN", "OKB 1650 GN Steam", "HIB 67010 HID M", "HIB 97010 HID M", "KDI 60110", "KSI 17780 CVNF", "KFD 2402 Pro"],
+    participatingSkus: ["89083", "89082", "88802", "78850", "78681", "78960", "88695", "88705"],
     participatingProductSlugs: ["körting-okb-1680-gn-mw", "körting-okb-1471-cgn", "körting-okb-1650-gn-steam", "körting-hib-67010-hid-m", "körting-hib-97010-hid-m", "körting-kdi-60110", "körting-ksi-17780-cvnf", "körting-kfd-2402-pro"],
   },
   {
@@ -107,7 +107,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Все приборы в комплекте должны быть из разных товарных категорий актуального каталога.",
       "Скидки суммируются с действующими промо-ценами РРЦ на выделенный ассортимент."
 ],
-    participatingSkus: ["OKB 1680 GN MW", "OKB 1471 CGN", "OKB 1650 GN Steam", "HIB 67010 HID M", "HIB 97010 HID M", "KDI 60110", "KSI 17780 CVNF", "KFD 2402 Pro"],
+    participatingSkus: ["89083", "89082", "88802", "78850", "78681", "78960", "88695", "88705"],
     participatingProductSlugs: ["körting-okb-1680-gn-mw", "körting-okb-1471-cgn", "körting-okb-1650-gn-steam", "körting-hib-67010-hid-m", "körting-hib-97010-hid-m", "körting-kdi-60110", "körting-ksi-17780-cvnf", "körting-kfd-2402-pro"],
   },
   {
@@ -146,7 +146,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "При отсутствии акционного прибора на складе действует опция замены с доплатой разницы.",
       "Скидки суммируются с промо-ценами на выделенный ассортимент."
 ],
-    participatingSkus: ["OKB 1680 GN MW", "OKB 1471 CGN", "OKB 1650 GN Steam", "HIB 67010 HID M", "HIB 97010 HID M", "KDI 60110", "KSI 17780 CVNF", "KFD 2402 Pro"],
+    participatingSkus: ["89083", "89082", "88802", "78850", "78681", "78960", "88695", "88705"],
     participatingProductSlugs: ["körting-okb-1680-gn-mw", "körting-okb-1471-cgn", "körting-okb-1650-gn-steam", "körting-hib-67010-hid-m", "körting-hib-97010-hid-m", "körting-kdi-60110", "körting-ksi-17780-cvnf", "körting-kfd-2402-pro"],
   },
   {
@@ -179,7 +179,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Акционный прибор — варочные панели HIB 67010 HID M (60 см) или HIB 97010 HID M (90 см).",
       "Количество акционных варочных панелей на складе строго ограничено."
 ],
-    participatingSkus: ["OKB 1680 GN MW", "OKB 1471 CGN", "OKB 1650 GN Steam", "HIB 67010 HID M", "HIB 97010 HID M", "KDI 60110", "KSI 17780 CVNF", "KFD 2402 Pro"],
+    participatingSkus: ["89083", "89082", "88802", "78850", "78681", "78960", "88695", "88705"],
     participatingProductSlugs: ["körting-okb-1680-gn-mw", "körting-okb-1471-cgn", "körting-okb-1650-gn-steam", "körting-hib-67010-hid-m", "körting-hib-97010-hid-m", "körting-kdi-60110", "körting-ksi-17780-cvnf", "körting-kfd-2402-pro"],
   },
   {
@@ -212,7 +212,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Смесители и мойки участвуют из наличия на центральном складе в Москве.",
       "Аксессуары для моек (колландеры, дозаторы) в акции не участвуют."
 ],
-    participatingSkus: ["Gruppo Incasso Vision 50", "Mira Plus Isola 40", "Level One", "Brera", "Quantum", "Water 50 Copper", "Treviso Chrome"],
+    participatingSkus: ["88178", "88173", "88167", "88165", "80624", "88545", "83228"],
     participatingProductSlugs: ["falmec-gruppo-incasso-vision-50", "falmec-mira-plus-isola-40", "falmec-level-one", "falmec-brera", "falmec-quantum", "falmec-water-50-copper", "falmec-treviso-chrome"],
   },
   {
@@ -250,7 +250,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Подарок передается клиенту вместе с комплектом техники.",
       "Официальная гарантия производителя на прибор и подарок."
 ],
-    participatingSkus: ["Gruppo Incasso Vision 50", "Mira Plus Isola 40", "Level One", "Brera", "Quantum", "Water 50 Copper", "Treviso Chrome"],
+    participatingSkus: ["88178", "88173", "88167", "88165", "80624", "88545", "83228"],
     participatingProductSlugs: ["falmec-gruppo-incasso-vision-50", "falmec-mira-plus-isola-40", "falmec-level-one", "falmec-brera", "falmec-quantum", "falmec-water-50-copper", "falmec-treviso-chrome"],
   },
   {
@@ -283,7 +283,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Второй прибор — вытяжка Falmec с поддержкой пульта ДУ (Dialogue System).",
       "Скидка 20% рассчитывается на оба прибора в комплекте."
 ],
-    participatingSkus: ["Gruppo Incasso Vision 50", "Mira Plus Isola 40", "Level One", "Brera", "Quantum", "Water 50 Copper", "Treviso Chrome"],
+    participatingSkus: ["88178", "88173", "88167", "88165", "80624", "88545", "83228"],
     participatingProductSlugs: ["falmec-gruppo-incasso-vision-50", "falmec-mira-plus-isola-40", "falmec-level-one", "falmec-brera", "falmec-quantum", "falmec-water-50-copper", "falmec-treviso-chrome"],
   },
   {
@@ -326,7 +326,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Скидка суммируется в чеке при единовременной покупке.",
       "Бесплатная доставка и подъем на этаж службой СИМОНА."
 ],
-    participatingSkus: ["Gruppo Incasso Vision 50", "Mira Plus Isola 40", "Level One", "Brera", "Quantum", "Water 50 Copper", "Treviso Chrome"],
+    participatingSkus: ["88178", "88173", "88167", "88165", "80624", "88545", "83228"],
     participatingProductSlugs: ["falmec-gruppo-incasso-vision-50", "falmec-mira-plus-isola-40", "falmec-level-one", "falmec-brera", "falmec-quantum", "falmec-water-50-copper", "falmec-treviso-chrome"],
   },
   {
@@ -360,7 +360,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Все 4 прибора должны быть из разных товарных категорий.",
       "Скидки суммируются с промо-ценами на выделенный ассортимент."
 ],
-    participatingSkus: ["EO 620 PB", "IHE 6041 B", "BD 6010", "EBS 1001", "EWK 0904 G", "EHB 0301 B"],
+    participatingSkus: ["88726", "85590", "85594", "85591", "85634", "85617"],
     participatingProductSlugs: ["evelux-eo-620-pb", "evelux-ihe-6041-b", "evelux-bd-6010", "evelux-ebs-1001", "evelux-ewk-0904-g", "evelux-ehb-0301-b"],
   },
   {
@@ -408,7 +408,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Наличие духовки в заказе розницы может обсуждаться индивидуально.",
       "Все приборы в комплекте должны быть из разных категорий."
 ],
-    participatingSkus: ["EO 620 PB", "IHE 6041 B", "BD 6010", "EBS 1001", "EWK 0904 G", "EHB 0301 B"],
+    participatingSkus: ["88726", "85590", "85594", "85591", "85634", "85617"],
     participatingProductSlugs: ["evelux-eo-620-pb", "evelux-ihe-6041-b", "evelux-bd-6010", "evelux-ebs-1001", "evelux-ewk-0904-g", "evelux-ehb-0301-b"],
   },
   {
@@ -451,7 +451,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Сумма чека рассчитывается с учетом всех действующих скидок.",
       "Подарок выдается сразу при подтверждении заказа."
 ],
-    participatingSkus: ["EO 620 PB", "IHE 6041 B", "BD 6010", "EBS 1001", "EWK 0904 G", "EHB 0301 B"],
+    participatingSkus: ["88726", "85590", "85594", "85591", "85634", "85617"],
     participatingProductSlugs: ["evelux-eo-620-pb", "evelux-ihe-6041-b", "evelux-bd-6010", "evelux-ebs-1001", "evelux-ewk-0904-g", "evelux-ehb-0301-b"],
   },
   {
@@ -484,7 +484,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Цены в каталоге указаны с учетом специального предложения.",
       "Официальная гарантия производителя 3 года."
 ],
-    participatingSkus: ["VOB678X", "VIB642B", "VBD450", "VWS8614", "VSMPS26T", "VCPA1C"],
+    participatingSkus: ["89058", "89065", "89062", "89054", "84904", "84912"],
     participatingProductSlugs: ["vard-vob678x", "vard-vib642b", "vard-vbd450", "vard-vws8614", "vard-vsmps26t", "vard-vcpa1c"],
   },
   {
@@ -532,7 +532,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Скидка предоставляется на товар с наименьшей стоимостью в заказе.",
       "Акция может суммироваться с акцией на подарок (набор мельниц)."
 ],
-    participatingSkus: ["VOB678X", "VIB642B", "VBD450", "VWS8614", "VSMPS26T", "VCPA1C"],
+    participatingSkus: ["89058", "89065", "89062", "89054", "84904", "84912"],
     participatingProductSlugs: ["vard-vob678x", "vard-vib642b", "vard-vbd450", "vard-vws8614", "vard-vsmps26t", "vard-vcpa1c"],
   },
   {
@@ -566,7 +566,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Акция не суммируется с акцией на кофеварку.",
       "Подарок выдается при оформлении комплекта в салонах СИМОНА."
 ],
-    participatingSkus: ["VOB678X", "VIB642B", "VBD450", "VWS8614", "VSMPS26T", "VCPA1C"],
+    participatingSkus: ["89058", "89065", "89062", "89054", "84904", "84912"],
     participatingProductSlugs: ["vard-vob678x", "vard-vib642b", "vard-vbd450", "vard-vws8614", "vard-vsmps26t", "vard-vcpa1c"],
   },
   {
@@ -600,7 +600,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
       "Акция может накладываться на акцию «Каскад VARD».",
       "Подарок выдается вместе с заказом."
 ],
-    participatingSkus: ["VOB678X", "VIB642B", "VBD450", "VWS8614", "VSMPS26T", "VCPA1C"],
+    participatingSkus: ["89058", "89065", "89062", "89054", "84904", "84912"],
     participatingProductSlugs: ["vard-vob678x", "vard-vib642b", "vard-vbd450", "vard-vws8614", "vard-vsmps26t", "vard-vcpa1c"],
   },
   {

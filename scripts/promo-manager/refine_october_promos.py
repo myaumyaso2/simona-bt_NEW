@@ -13,56 +13,56 @@ canonical_brand_map = {
     'vard': 'VARD'
 }
 
-# Real model codes and canonical group for selected products
+# Real 1C numeric codes, factory model codes, and canonical group for selected products
 model_extractors = [
     # Körting
-    ('prod-korting-1', 'OKB 1680 GN MW', 'Духовой шкаф', 'Körting', 111490, 128213, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
-    ('prod-korting-2', 'OKB 1471 CGN', 'Духовой шкаф', 'Körting', 66990, 77038, ['https://simona-bt.ru/images/cms/data/photo_code/89082.jpg']),
-    ('prod-korting-3', 'OKB 1650 GN Steam', 'Духовой шкаф с паром', 'Körting', 116990, 134538, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
-    ('prod-korting-4', 'HIB 67010 HID M', 'Индукционная варочная панель', 'Körting', 64990, 74738, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
-    ('prod-korting-5', 'HIB 97010 HID M', 'Индукционная варочная панель', 'Körting', 89990, 103488, ['https://simona-bt.ru/images/cms/data/photo_code/89082.jpg']),
-    ('prod-korting-6', 'KDI 60110', 'Встраиваемая посудомоечная машина', 'Körting', 52990, 60938, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
-    ('prod-korting-7', 'KSI 17780 CVNF', 'Встраиваемый холодильник', 'Körting', 104990, 120738, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
-    ('prod-korting-8', 'KFD 2402 Pro', 'Дегидратор для продуктов', 'Körting', 25990, 29888, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
+    ('prod-korting-1', '89083', 'OKB 1680 GN MW', 'Духовой шкаф', 'Körting', 111490, 128213, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
+    ('prod-korting-2', '89082', 'OKB 1471 CGN', 'Духовой шкаф', 'Körting', 66990, 77038, ['https://simona-bt.ru/images/cms/data/photo_code/89082.jpg']),
+    ('prod-korting-3', '88802', 'OKB 1650 GN Steam', 'Духовой шкаф с паром', 'Körting', 116990, 134538, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
+    ('prod-korting-4', '78850', 'HIB 67010 HID M', 'Индукционная варочная панель', 'Körting', 64990, 74738, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
+    ('prod-korting-5', '78681', 'HIB 97010 HID M', 'Индукционная варочная панель', 'Körting', 89990, 103488, ['https://simona-bt.ru/images/cms/data/photo_code/89082.jpg']),
+    ('prod-korting-6', '78960', 'KDI 60110', 'Встраиваемая посудомоечная машина', 'Körting', 52990, 60938, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
+    ('prod-korting-7', '88695', 'KSI 17780 CVNF', 'Встраиваемый холодильник', 'Körting', 104990, 120738, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
+    ('prod-korting-8', '88705', 'KFD 2402 Pro', 'Дегидратор для продуктов', 'Körting', 25990, 29888, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
 
     # Falmec
-    ('prod-falmec-1', 'Gruppo Incasso Vision 50', 'Встраиваемая вытяжка', 'Falmec', 85680, 98531, ['https://simona-bt.ru/images/cms/data/photo_code/88178.jpg']),
-    ('prod-falmec-2', 'Mira Plus Isola 40', 'Островная вытяжка', 'Falmec', 153000, 175950, ['https://simona-bt.ru/images/cms/data/photo_code/88173.jpg']),
-    ('prod-falmec-3', 'Level One', 'Индукционная панель с вытяжкой', 'Falmec', 389000, 447350, ['https://simona-bt.ru/images/cms/data/photo_code/88178.jpg']),
-    ('prod-falmec-4', 'Brera', 'Индукционная панель с вытяжкой', 'Falmec', 429000, 493350, ['https://simona-bt.ru/images/cms/data/photo_code/88173.jpg']),
-    ('prod-falmec-5', 'Quantum', 'Индукционная панель с вытяжкой', 'Falmec', 359000, 412850, ['https://simona-bt.ru/images/cms/data/photo_code/88178.jpg']),
-    ('prod-falmec-6', 'Water 50 Copper', 'Кухонная мойка', 'Falmec', 68900, 79235, ['https://simona-bt.ru/images/cms/data/photo_code/88173.jpg']),
-    ('prod-falmec-7', 'Treviso Chrome', 'Смеситель кухонный', 'Falmec', 34500, 39675, ['https://simona-bt.ru/images/cms/data/photo_code/88178.jpg']),
+    ('prod-falmec-1', '88178', 'Gruppo Incasso Vision 50', 'Встраиваемая вытяжка', 'Falmec', 85680, 98531, ['https://simona-bt.ru/images/cms/data/photo_code/88178.jpg']),
+    ('prod-falmec-2', '88173', 'Mira Plus Isola 40', 'Островная вытяжка', 'Falmec', 153000, 175950, ['https://simona-bt.ru/images/cms/data/photo_code/88173.jpg']),
+    ('prod-falmec-3', '88167', 'Level One', 'Индукционная панель с вытяжкой', 'Falmec', 389000, 447350, ['https://simona-bt.ru/images/cms/data/photo_code/88178.jpg']),
+    ('prod-falmec-4', '88165', 'Brera', 'Индукционная панель с вытяжкой', 'Falmec', 429000, 493350, ['https://simona-bt.ru/images/cms/data/photo_code/88173.jpg']),
+    ('prod-falmec-5', '80624', 'Quantum', 'Индукционная панель с вытяжкой', 'Falmec', 359000, 412850, ['https://simona-bt.ru/images/cms/data/photo_code/88178.jpg']),
+    ('prod-falmec-6', '88545', 'Water 50 Copper', 'Кухонная мойка', 'Falmec', 68900, 79235, ['https://simona-bt.ru/images/cms/data/photo_code/88173.jpg']),
+    ('prod-falmec-7', '83228', 'Treviso Chrome', 'Смеситель кухонный', 'Falmec', 34500, 39675, ['https://simona-bt.ru/images/cms/data/photo_code/88178.jpg']),
 
     # Evelux
-    ('prod-evelux-1', 'EO 620 PB', 'Духовой шкаф', 'Evelux', 34990, 40238, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
-    ('prod-evelux-2', 'IHE 6041 B', 'Индукционная варочная панель', 'Evelux', 27990, 32188, ['https://simona-bt.ru/images/cms/data/photo_code/89082.jpg']),
-    ('prod-evelux-3', 'BD 6010', 'Встраиваемая посудомоечная машина', 'Evelux', 36990, 42538, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
-    ('prod-evelux-4', 'EBS 1001', 'Напольные весы', 'Evelux', 2490, 2863, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
-    ('prod-evelux-5', 'EWK 0904 G', 'Электрический чайник', 'Evelux', 3990, 4588, ['https://simona-bt.ru/images/cms/data/photo_code/89082.jpg']),
-    ('prod-evelux-6', 'EHB 0301 B', 'Погружной блендер', 'Evelux', 4990, 5738, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
+    ('prod-evelux-1', '88726', 'EO 620 PB', 'Духовой шкаф', 'Evelux', 34990, 40238, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
+    ('prod-evelux-2', '85590', 'IHE 6041 B', 'Индукционная варочная панель', 'Evelux', 27990, 32188, ['https://simona-bt.ru/images/cms/data/photo_code/89082.jpg']),
+    ('prod-evelux-3', '85594', 'BD 6010', 'Встраиваемая посудомоечная машина', 'Evelux', 36990, 42538, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
+    ('prod-evelux-4', '85591', 'EBS 1001', 'Напольные весы', 'Evelux', 2490, 2863, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
+    ('prod-evelux-5', '85634', 'EWK 0904 G', 'Электрический чайник', 'Evelux', 3990, 4588, ['https://simona-bt.ru/images/cms/data/photo_code/89082.jpg']),
+    ('prod-evelux-6', '85617', 'EHB 0301 B', 'Погружной блендер', 'Evelux', 4990, 5738, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
 
     # VARD
-    ('prod-vard-1', 'VOB678X', 'Духовой шкаф', 'VARD', 89990, 103488, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
-    ('prod-vard-2', 'VIB642B', 'Индукционная варочная панель', 'VARD', 59990, 68988, ['https://simona-bt.ru/images/cms/data/photo_code/89082.jpg']),
-    ('prod-vard-3', 'VBD450', 'Встраиваемая посудомоечная машина', 'VARD', 64990, 74738, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
-    ('prod-vard-4', 'VWS8614', 'Стиральная машина', 'VARD', 79990, 91988, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
-    ('prod-vard-5', 'VSMPS26T', 'Набор мельниц для специй', 'VARD', 8990, 10338, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
-    ('prod-vard-6', 'VCPA1C', 'Рожковая кофеварка эспрессо', 'VARD', 19990, 22988, ['https://simona-bt.ru/images/cms/data/photo_code/89082.jpg']),
+    ('prod-vard-1', '89058', 'VOB678X', 'Духовой шкаф', 'VARD', 89990, 103488, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
+    ('prod-vard-2', '89065', 'VIB642B', 'Индукционная варочная панель', 'VARD', 59990, 68988, ['https://simona-bt.ru/images/cms/data/photo_code/89082.jpg']),
+    ('prod-vard-3', '89062', 'VBD450', 'Встраиваемая посудомоечная машина', 'VARD', 64990, 74738, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
+    ('prod-vard-4', '89054', 'VWS8614', 'Стиральная машина', 'VARD', 79990, 91988, ['https://simona-bt.ru/images/cms/data/photo_code/88802.jpg']),
+    ('prod-vard-5', '84904', 'VSMPS26T', 'Набор мельниц для специй', 'VARD', 8990, 10338, ['https://simona-bt.ru/images/cms/data/photo_code/89083.jpg']),
+    ('prod-vard-6', '84912', 'VCPA1C', 'Рожковая кофеварка эспрессо', 'VARD', 19990, 22988, ['https://simona-bt.ru/images/cms/data/photo_code/89082.jpg']),
 ]
 
 # Generate standardized ProductItem objects
 brand_products = {}
 product_items_code = []
 
-for pid, sku, group, brand, price, old_price, images in model_extractors:
-    title = f"{group} {brand} {sku}"
-    slug = f"{brand.lower()}-{sku.lower().replace(' ', '-')}"
-    brand_products.setdefault(brand, []).append({'sku': sku, 'slug': slug})
+for pid, one_c_sku, model_code, group, brand, price, old_price, images in model_extractors:
+    title = f"{group} {brand} {model_code}"
+    slug = f"{brand.lower()}-{model_code.lower().replace(' ', '-')}"
+    brand_products.setdefault(brand, []).append({'sku': one_c_sku, 'slug': slug})
 
     item_code = f"""  {{
     id: '{pid}',
-    sku: '{sku}',
+    sku: '{one_c_sku}',
     name: '{title}',
     slug: '{slug}',
     brand: '{brand}',

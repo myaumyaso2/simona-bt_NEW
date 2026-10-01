@@ -3118,7 +3118,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-korting-1',
-    sku: 'OKB 1680 GN MW',
+    sku: '89083',
     name: 'Духовой шкаф Körting OKB 1680 GN MW',
     slug: 'körting-okb-1680-gn-mw',
     brand: 'Körting',
@@ -3139,7 +3139,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-korting-2',
-    sku: 'OKB 1471 CGN',
+    sku: '89082',
     name: 'Духовой шкаф Körting OKB 1471 CGN',
     slug: 'körting-okb-1471-cgn',
     brand: 'Körting',
@@ -3160,7 +3160,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-korting-3',
-    sku: 'OKB 1650 GN Steam',
+    sku: '88802',
     name: 'Духовой шкаф с паром Körting OKB 1650 GN Steam',
     slug: 'körting-okb-1650-gn-steam',
     brand: 'Körting',
@@ -3181,7 +3181,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-korting-4',
-    sku: 'HIB 67010 HID M',
+    sku: '78850',
     name: 'Индукционная варочная панель Körting HIB 67010 HID M',
     slug: 'körting-hib-67010-hid-m',
     brand: 'Körting',
@@ -3202,7 +3202,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-korting-5',
-    sku: 'HIB 97010 HID M',
+    sku: '78681',
     name: 'Индукционная варочная панель Körting HIB 97010 HID M',
     slug: 'körting-hib-97010-hid-m',
     brand: 'Körting',
@@ -3223,7 +3223,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-korting-6',
-    sku: 'KDI 60110',
+    sku: '78960',
     name: 'Встраиваемая посудомоечная машина Körting KDI 60110',
     slug: 'körting-kdi-60110',
     brand: 'Körting',
@@ -3244,7 +3244,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-korting-7',
-    sku: 'KSI 17780 CVNF',
+    sku: '88695',
     name: 'Встраиваемый холодильник Körting KSI 17780 CVNF',
     slug: 'körting-ksi-17780-cvnf',
     brand: 'Körting',
@@ -3265,7 +3265,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-korting-8',
-    sku: 'KFD 2402 Pro',
+    sku: '88705',
     name: 'Дегидратор для продуктов Körting KFD 2402 Pro',
     slug: 'körting-kfd-2402-pro',
     brand: 'Körting',
@@ -3286,7 +3286,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-falmec-1',
-    sku: 'Gruppo Incasso Vision 50',
+    sku: '88178',
     name: 'Встраиваемая вытяжка Falmec Gruppo Incasso Vision 50',
     slug: 'falmec-gruppo-incasso-vision-50',
     brand: 'Falmec',
@@ -3307,7 +3307,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-falmec-2',
-    sku: 'Mira Plus Isola 40',
+    sku: '88173',
     name: 'Островная вытяжка Falmec Mira Plus Isola 40',
     slug: 'falmec-mira-plus-isola-40',
     brand: 'Falmec',
@@ -3328,7 +3328,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-falmec-3',
-    sku: 'Level One',
+    sku: '88167',
     name: 'Индукционная панель с вытяжкой Falmec Level One',
     slug: 'falmec-level-one',
     brand: 'Falmec',
@@ -3349,7 +3349,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-falmec-4',
-    sku: 'Brera',
+    sku: '88165',
     name: 'Индукционная панель с вытяжкой Falmec Brera',
     slug: 'falmec-brera',
     brand: 'Falmec',
@@ -3370,7 +3370,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-falmec-5',
-    sku: 'Quantum',
+    sku: '80624',
     name: 'Индукционная панель с вытяжкой Falmec Quantum',
     slug: 'falmec-quantum',
     brand: 'Falmec',
@@ -3391,7 +3391,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-falmec-6',
-    sku: 'Water 50 Copper',
+    sku: '88545',
     name: 'Кухонная мойка Falmec Water 50 Copper',
     slug: 'falmec-water-50-copper',
     brand: 'Falmec',
@@ -3412,7 +3412,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-falmec-7',
-    sku: 'Treviso Chrome',
+    sku: '83228',
     name: 'Смеситель кухонный Falmec Treviso Chrome',
     slug: 'falmec-treviso-chrome',
     brand: 'Falmec',
@@ -3433,7 +3433,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-evelux-1',
-    sku: 'EO 620 PB',
+    sku: '88726',
     name: 'Духовой шкаф Evelux EO 620 PB',
     slug: 'evelux-eo-620-pb',
     brand: 'Evelux',
@@ -3454,7 +3454,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-evelux-2',
-    sku: 'IHE 6041 B',
+    sku: '85590',
     name: 'Индукционная варочная панель Evelux IHE 6041 B',
     slug: 'evelux-ihe-6041-b',
     brand: 'Evelux',
@@ -3475,7 +3475,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-evelux-3',
-    sku: 'BD 6010',
+    sku: '85594',
     name: 'Встраиваемая посудомоечная машина Evelux BD 6010',
     slug: 'evelux-bd-6010',
     brand: 'Evelux',
@@ -3496,7 +3496,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-evelux-4',
-    sku: 'EBS 1001',
+    sku: '85591',
     name: 'Напольные весы Evelux EBS 1001',
     slug: 'evelux-ebs-1001',
     brand: 'Evelux',
@@ -3517,7 +3517,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-evelux-5',
-    sku: 'EWK 0904 G',
+    sku: '85634',
     name: 'Электрический чайник Evelux EWK 0904 G',
     slug: 'evelux-ewk-0904-g',
     brand: 'Evelux',
@@ -3538,7 +3538,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-evelux-6',
-    sku: 'EHB 0301 B',
+    sku: '85617',
     name: 'Погружной блендер Evelux EHB 0301 B',
     slug: 'evelux-ehb-0301-b',
     brand: 'Evelux',
@@ -3559,7 +3559,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-vard-1',
-    sku: 'VOB678X',
+    sku: '89058',
     name: 'Духовой шкаф VARD VOB678X',
     slug: 'vard-vob678x',
     brand: 'VARD',
@@ -3580,7 +3580,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-vard-2',
-    sku: 'VIB642B',
+    sku: '89065',
     name: 'Индукционная варочная панель VARD VIB642B',
     slug: 'vard-vib642b',
     brand: 'VARD',
@@ -3601,7 +3601,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-vard-3',
-    sku: 'VBD450',
+    sku: '89062',
     name: 'Встраиваемая посудомоечная машина VARD VBD450',
     slug: 'vard-vbd450',
     brand: 'VARD',
@@ -3622,7 +3622,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-vard-4',
-    sku: 'VWS8614',
+    sku: '89054',
     name: 'Стиральная машина VARD VWS8614',
     slug: 'vard-vws8614',
     brand: 'VARD',
@@ -3643,7 +3643,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-vard-5',
-    sku: 'VSMPS26T',
+    sku: '84904',
     name: 'Набор мельниц для специй VARD VSMPS26T',
     slug: 'vard-vsmps26t',
     brand: 'VARD',
@@ -3664,7 +3664,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
   {
     id: 'prod-vard-6',
-    sku: 'VCPA1C',
+    sku: '84912',
     name: 'Рожковая кофеварка эспрессо VARD VCPA1C',
     slug: 'vard-vcpa1c',
     brand: 'VARD',
