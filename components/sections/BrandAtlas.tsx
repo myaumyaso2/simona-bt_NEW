@@ -73,8 +73,8 @@ function BrandCardItem({ brand }: { brand: BrandCardData }) {
         className="pointer-events-none absolute w-44 h-44 rounded-full bg-[radial-gradient(circle,rgba(0,181,186,0.32)_0%,transparent_70%)] opacity-0 -translate-x-1/2 -translate-y-1/2"
       />
 
-      {/* Brand Text Name (Clean Quiet Luxury Typography) */}
-      <span className="font-montserrat text-lg sm:text-xl font-bold text-white group-hover:text-simona-teal transition-colors tracking-wide relative z-10 leading-snug">
+      {/* Brand Text Name (Uppercase Architectural Typography - Quiet Luxury Exception) */}
+      <span className="font-montserrat text-lg sm:text-xl font-bold uppercase tracking-wider text-white group-hover:text-simona-teal transition-colors relative z-10 leading-snug">
         {brand.name}
       </span>
 
