@@ -113,6 +113,7 @@ export interface SiteContent {
     subtitle: string;
     subscribeCta: string;
     askQuestionCta: string;
+    channelUrl?: string;
   };
   designersPage: {
     badge: string;

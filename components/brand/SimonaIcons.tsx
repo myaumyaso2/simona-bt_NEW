@@ -756,5 +756,111 @@ export function SimonaIconPlus({ className = 'w-4 h-4', size, color, ...props }:
   );
 }
 
+/** Иконка закрытия / крестик */
+export function SimonaIconClose({ className = 'w-4 h-4', size, color, ...props }: SimonaIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width={size}
+      height={size}
+      className={className}
+      style={color ? { color } : undefined}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
+/** Иконка Play */
+export function SimonaIconPlay({ className = 'w-4 h-4', size, color, ...props }: SimonaIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      width={size}
+      height={size}
+      className={className}
+      style={color ? { color } : undefined}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <polygon points="5 3 19 12 5 21 5 3" />
+    </svg>
+  );
+}
+
+/** Иконка Просмотры (Глаз) */
+export function SimonaIconEye({ className = 'w-4 h-4', size, color, ...props }: SimonaIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width={size}
+      height={size}
+      className={className}
+      style={color ? { color } : undefined}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+/** Иконка Telegram / Самолетик */
+export function SimonaIconTelegram({ className = 'w-4 h-4', size, color, ...props }: SimonaIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      width={size}
+      height={size}
+      className={className}
+      style={color ? { color } : undefined}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M21.6 3.4a1.8 1.8 0 0 0-1.8-.3L2.7 10.2c-.7.3-1.1 1-1 1.8.1.7.6 1.3 1.3 1.5l4.8 1.4 1.8 5.7c.2.6.7 1 1.3 1 .4 0 .7-.1 1-.4l2.8-2.6 4.7 3.5c.4.3.9.4 1.4.3.5-.1.9-.5 1.1-1l3.5-16.1c.2-.7 0-1.4-.5-1.9zm-3.2 3.8-9 8.2-.5 2.1-.6-2.9 8.9-8.4c.3-.3.1-.7-.3-.6l-10.7 6.6-3.4-1 16.9-6.9.7 2.9z" />
+    </svg>
+  );
+}
+
+/** Иконка Внешняя ссылка */
+export function SimonaIconExternalLink({ className = 'w-4 h-4', size, color, ...props }: SimonaIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width={size}
+      height={size}
+      className={className}
+      style={color ? { color } : undefined}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      <polyline points="15 3 21 3 21 9" />
+      <line x1="10" y1="14" x2="21" y2="3" />
+    </svg>
+  );
+}
+
 
 

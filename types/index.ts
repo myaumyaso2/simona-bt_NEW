@@ -168,3 +168,15 @@ export interface ManufacturerPromo {
   isFeatured?: boolean;
 }
 
+export interface TelegramVideo {
+  id: string;
+  postId: number;
+  title: string;
+  description: string;
+  views: string;
+  date: string;
+  duration?: string;
+  thumbnail: string;
+  videoSrc?: string;
+  telegramUrl: string;
+}

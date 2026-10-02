@@ -8,11 +8,13 @@ import { ServiceContour } from '@/components/sections/ServiceContour';
 import { TelegramLiveSection } from '@/components/sections/TelegramLiveSection';
 import { ShowroomMapSection } from '@/components/sections/ShowroomMapSection';
 import { getDynamicBrandAtlas } from '@/lib/catalog/brandStats';
+import { getTelegramVideos } from '@/lib/telegram';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const brands = await getDynamicBrandAtlas();
+  const telegramVideos = getTelegramVideos();
 
   return (
     <div className="flex flex-col bg-[#111315] min-h-screen">
@@ -35,7 +37,7 @@ export default async function HomePage() {
       <ServiceContour />
 
       {/* 7. Telegram Live-контент per AGENTS.md 8.1 */}
-      <TelegramLiveSection />
+      <TelegramLiveSection initialVideos={telegramVideos} />
 
       {/* 8. Схема проезда (Яндекс.Карта с Luxury Dark Shader) per AGENTS.md 8.1 */}
       <ShowroomMapSection />

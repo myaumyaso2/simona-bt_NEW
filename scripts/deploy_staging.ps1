@@ -56,7 +56,7 @@ Write-Host "Upload complete." -ForegroundColor Green
 # 4. Upload deploy runner script
 Write-Host "Step 4: Executing remote deployment on server..." -ForegroundColor Yellow
 scp (Join-Path $PSScriptRoot "remote_deploy.sh") "${SSH_HOST}:/tmp/remote_deploy.sh"
-ssh $SSH_HOST "chmod +x /tmp/remote_deploy.sh && /tmp/remote_deploy.sh"
+ssh $SSH_HOST "chmod +x /tmp/remote_deploy.sh && FULL_IMPORT=$($FullImport.IsPresent) /tmp/remote_deploy.sh"
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Remote deployment failed."

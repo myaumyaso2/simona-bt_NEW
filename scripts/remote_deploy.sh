@@ -30,8 +30,10 @@ echo "🗄️ Initializing Prisma & PostgreSQL..."
 npx prisma generate
 npx prisma db push --skip-generate
 
-echo "💾 Importing updated catalog and characteristics into PostgreSQL..."
-npx tsx scripts/import_catalog_to_db.ts
+if [ "$FULL_IMPORT" = "True" ] || [ "$FULL_IMPORT" = "true" ]; then
+    echo "💾 Importing updated catalog and characteristics into PostgreSQL..."
+    npx tsx scripts/import_catalog_to_db.ts
+fi
 
 echo "🔨 Building Next.js production build..."
 npm run build

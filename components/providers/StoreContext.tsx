@@ -4,12 +4,16 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ProductItem, CartItem, ManufacturerPromo } from '@/types';
 import { trackEcommerceAddToCart, trackEcommerceRemoveFromCart } from '@/lib/analytics/tracker';
 
-interface VideoModalData {
+export interface VideoModalData {
   title: string;
   views: string;
   thumbnail: string;
   telegramUrl: string;
   videoUrl?: string;
+  postId?: number;
+  description?: string;
+  date?: string;
+  duration?: string;
 }
 
 interface ModalState {

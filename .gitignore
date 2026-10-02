@@ -37,4 +37,5 @@ next-env.d.ts
 # Storage and temporary sync files
 /storage/
 /tmp/
+/scratch/
 *.csv

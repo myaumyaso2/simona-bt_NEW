@@ -191,8 +191,9 @@
     "badge": "Telegram Live-канал",
     "title": "Живые видеообзоры техники из наших шоурумов",
     "subtitle": "Смотрите честные тесты новинок, гастрономические эксперименты шеф-поваров и закулисье салонов СИМОНА.",
-    "subscribeCta": "Подписаться на канал @simona_bt",
-    "askQuestionCta": "Задать вопрос в чат"
+    "subscribeCta": "Подписаться на @simona_sale",
+    "askQuestionCta": "Задать вопрос в чат",
+    "channelUrl": "https://t.me/simona_sale"
   },
   "designersPage": {
     "badge": "Дизайнерский клуб СИМОНА",
