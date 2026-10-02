@@ -774,82 +774,194 @@ export const SHOWROOM_CONFIGS: Record<'belinskogo-15' | 'belinskogo-11', Showroo
 ],
     mobilePhotos: [
       {
-            "id": "photo-1",
-            "number": "01",
-            "title": "Японский гранит Tetogranit",
-            "subtitle": "Экспозиция моек Omoikiri во всех фирменных цветах",
-            "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_01.webp"
+        "id": "photo-m1",
+        "number": "01",
+        "title": "Арт-панно и концептуальная зона Omoikiri",
+        "subtitle": "Японская эстетика и дизайн",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_01.webp"
       },
       {
-            "id": "photo-2",
-            "number": "02",
-            "title": "Смесители 2-в-1 под фильтр",
-            "subtitle": "Питьевая вода, гибкие изливы и встроенные дозаторы",
-            "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_02.webp"
+        "id": "photo-m2",
+        "number": "02",
+        "title": "Кухонные машины Körting Gourmet",
+        "subtitle": "Премиальная малая бытовая техника",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_02.webp"
       },
       {
-            "id": "photo-3",
-            "number": "03",
-            "title": "Встраиваемая техника Körting",
-            "subtitle": "Дизайнерские духовые шкафы и индукционные поверхности",
-            "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_03.webp"
+        "id": "photo-m3",
+        "number": "03",
+        "title": "Мойка и смеситель в оттенке светлое золото",
+        "subtitle": "PVD-покрытие и защита от царапин",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_03.webp"
       },
       {
-            "id": "photo-4",
-            "number": "04",
-            "title": "Мойки из стали и измельчители",
-            "subtitle": "Нержавеющая сталь AISI 304 и бесщеточные измельчители NAGARE",
-            "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_04.webp"
+        "id": "photo-m4",
+        "number": "04",
+        "title": "Геометрия чаши из благородной латуни",
+        "subtitle": "Интегрированный монтаж вровень со столешницей",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_04.webp"
       },
       {
-            "id": "photo-5",
-            "number": "05",
-            "title": "Кухонные аксессуары премиум",
-            "subtitle": "Магнитные доски, коландеры и ролл-маты для мойки",
-            "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_05.webp"
+        "id": "photo-m5",
+        "number": "05",
+        "title": "Колонна встраиваемой техники Körting",
+        "subtitle": "Контраст белого стекла и графита",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_05.webp"
       },
       {
-            "id": "photo-6",
-            "number": "06",
-            "title": "Кофе-лаундж консультаций",
-            "subtitle": "Индивидуальный подбор сантехники и встройки для кухни",
-            "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_06.webp"
+        "id": "photo-m6",
+        "number": "06",
+        "title": "Интегрированный холод и духовые шкафы",
+        "subtitle": "Линейка техники Körting в фасадах Nobilia",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_06.webp"
       },
       {
-            "id": "photo-7",
-            "number": "07",
-            "title": "Палитра PVD-покрытий Omoikiri",
-            "subtitle": "Цвета латунь, медь, вороненая сталь и платина",
-            "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_07.webp"
+        "id": "photo-m7",
+        "number": "07",
+        "title": "Системы сортировки отходов и мойки Omoikiri",
+        "subtitle": "Эргономика подмоечного пространства",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_07.webp"
       },
       {
-            "id": "photo-8",
-            "number": "08",
-            "title": "Винные шкафы и холод Körting",
-            "subtitle": "Элегантное встраиваемое охлаждение для напитков",
-            "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_08.webp"
+        "id": "photo-m8",
+        "number": "08",
+        "title": "Арт-мойка «Звездная ночь» Ван Гога",
+        "subtitle": "Коллекционная керамика Omoikiri Vincent",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_08.webp"
       },
       {
-            "id": "photo-9",
-            "number": "09",
-            "title": "Галерея вытяжек и варочных панелей",
-            "subtitle": "Ретро-коллекции 1889 и современный хай-тек",
-            "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_09.webp"
+        "id": "photo-m9",
+        "number": "09",
+        "title": "Экспозиция моек Omoikiri на Белинского",
+        "subtitle": "Коллекции Tetogranit, Artgranit и нержавеющая сталь",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_09.webp"
       },
       {
-            "id": "photo-10",
-            "number": "10",
-            "title": "Мойки из кварцевого композита Artgranit",
-            "subtitle": "Ударопрочность, термостойкость и защита от бактерий",
-            "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_10.webp"
+        "id": "photo-m10",
+        "number": "10",
+        "title": "Винные шкафы и прачечный комплекс Körting",
+        "subtitle": "Премиальное оснащение для дома",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_10.webp"
       },
       {
-            "id": "photo-11",
-            "number": "11",
-            "title": "Измельчители отходов NAGARE Slim",
-            "subtitle": "Компактная установка под мойку и тихая работа",
-            "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_11.webp"
+        "id": "photo-m11",
+        "number": "11",
+        "title": "Кухонный остров с арт-светильником",
+        "subtitle": "Островные решения и мойки подстольного монтажа",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_11.webp"
+      },
+      {
+        "id": "photo-m12",
+        "number": "12",
+        "title": "Панорама монобрендового корнера Omoikiri",
+        "subtitle": "Шоурум на ул. Белинского, 11/66",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_12.webp"
+      },
+      {
+        "id": "photo-m13",
+        "number": "13",
+        "title": "Центральный остров с керамикой Vincent",
+        "subtitle": "Эксклюзивные образцы и лаундж-пространство",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_13.webp"
+      },
+      {
+        "id": "photo-m14",
+        "number": "14",
+        "title": "Профессиональный смеситель Omoikiri Kanto",
+        "subtitle": "Гибкий шланг и два режима подачи воды",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_14.webp"
+      },
+      {
+        "id": "photo-m15",
+        "number": "15",
+        "title": "Фирменная посуда и аксессуары Körting",
+        "subtitle": "Капсульное дно для индукционных панелей",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_15.webp"
+      },
+      {
+        "id": "photo-m16",
+        "number": "16",
+        "title": "Лаундж-зона для встреч и консультаций",
+        "subtitle": "Комфортный подбор комплектов с экспертами",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_16.webp"
+      },
+      {
+        "id": "photo-m17",
+        "number": "17",
+        "title": "Японский гранит Tetogranit",
+        "subtitle": "Экспозиция моек Omoikiri во всех фирменных цветах",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_17.webp"
+      },
+      {
+        "id": "photo-m18",
+        "number": "18",
+        "title": "Смесители 2-в-1 под фильтр",
+        "subtitle": "Питьевая вода, гибкие изливы и встроенные дозаторы",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_18.webp"
+      },
+      {
+        "id": "photo-m19",
+        "number": "19",
+        "title": "Встраиваемая техника Körting",
+        "subtitle": "Дизайнерские духовые шкафы и индукционные поверхности",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_19.webp"
+      },
+      {
+        "id": "photo-m20",
+        "number": "20",
+        "title": "Мойки из стали и измельчители",
+        "subtitle": "Нержавеющая сталь AISI 304 и бесщеточные измельчители NAGARE",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_20.webp"
+      },
+      {
+        "id": "photo-m21",
+        "number": "21",
+        "title": "Кухонные аксессуары премиум",
+        "subtitle": "Магнитные доски, коландеры и ролл-маты для мойки",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_21.webp"
+      },
+      {
+        "id": "photo-m22",
+        "number": "22",
+        "title": "Кофе-лаундж консультаций",
+        "subtitle": "Индивидуальный подбор сантехники и встройки для кухни",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_22.webp"
+      },
+      {
+        "id": "photo-m23",
+        "number": "23",
+        "title": "Палитра PVD-покрытий Omoikiri",
+        "subtitle": "Цвета латунь, медь, вороненая сталь и платина",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_23.webp"
+      },
+      {
+        "id": "photo-m24",
+        "number": "24",
+        "title": "Винные шкафы и холод Körting",
+        "subtitle": "Элегантное встраиваемое охлаждение для напитков",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_24.webp"
+      },
+      {
+        "id": "photo-m25",
+        "number": "25",
+        "title": "Галерея вытяжек и варочных панелей",
+        "subtitle": "Ретро-коллекции 1889 и современный хай-тек",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_25.webp"
+      },
+      {
+        "id": "photo-m26",
+        "number": "26",
+        "title": "Мойки из кварцевого композита Artgranit",
+        "subtitle": "Ударопрочность, термостойкость и защита от бактерий",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_26.webp"
+      },
+      {
+        "id": "photo-m27",
+        "number": "27",
+        "title": "Измельчители отходов NAGARE Slim",
+        "subtitle": "Компактная установка под мойку и тихая работа",
+        "photo": "/showrooms/belinskogo-11/mobile/belinskogo-11_mobile_27.webp"
       }
-],
+    ],
   },
 };
