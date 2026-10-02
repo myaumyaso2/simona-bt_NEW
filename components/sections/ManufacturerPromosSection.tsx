@@ -142,7 +142,7 @@ export function ManufacturerPromosSection() {
           <div
             className="flex transition-transform duration-500 ease-out gap-6"
             style={{
-              transform: `translateX(-${currentIndex * (100 / itemsPerView + (itemsPerView === 1 ? 0 : 24 / itemsPerView))}%)`,
+              transform: `translateX(calc(-${currentIndex} * (100% + 24px) / ${itemsPerView}))`,
             }}
           >
             {promos.map((promo) => (
@@ -150,7 +150,7 @@ export function ManufacturerPromosSection() {
                 key={promo.id}
                 className="shrink-0"
                 style={{
-                  width: `calc(${100 / itemsPerView}% - ${(24 * (itemsPerView - 1)) / itemsPerView}px)`,
+                  width: `calc((100% - ${(itemsPerView - 1) * 24}px) / ${itemsPerView})`,
                 }}
               >
                 <PromoCard promo={promo} />
