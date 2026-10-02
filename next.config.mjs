@@ -41,6 +41,62 @@ const nextConfig = {
         destination: '/opt',
         permanent: true,
       },
+      // UMI.CMS Service pages 301 permanent redirects
+      {
+        source: '/politika',
+        destination: '/policy',
+        permanent: true,
+      },
+      {
+        source: '/politika/',
+        destination: '/policy',
+        permanent: true,
+      },
+      {
+        source: '/delivery_payment',
+        destination: '/delivery-payment',
+        permanent: true,
+      },
+      {
+        source: '/delivery_payment/',
+        destination: '/delivery-payment',
+        permanent: true,
+      },
+      {
+        source: '/service_warranty',
+        destination: '/warranty',
+        permanent: true,
+      },
+      {
+        source: '/service_warranty/',
+        destination: '/warranty',
+        permanent: true,
+      },
+      {
+        source: '/return_exchange_warranty',
+        destination: '/returns',
+        permanent: true,
+      },
+      {
+        source: '/return_exchange_warranty/',
+        destination: '/returns',
+        permanent: true,
+      },
+      {
+        source: '/nashli_deshevle_snizim_cenu',
+        destination: '/price-match',
+        permanent: true,
+      },
+      {
+        source: '/nashli_deshevle_snizim_cenu/',
+        destination: '/price-match',
+        permanent: true,
+      },
+      {
+        source: '/certificate/',
+        destination: '/certificate',
+        permanent: true,
+      },
       // UMI.CMS Promos section redirect
       {
         source: '/actions_sales',

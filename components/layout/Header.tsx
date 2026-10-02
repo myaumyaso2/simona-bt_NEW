@@ -334,6 +334,38 @@ export function Header({
             </Link>
           </div>
 
+          {/* Quick Service Links */}
+          <div className="grid grid-cols-2 gap-2 text-xs py-1 border-b border-[#2B313A] pb-2">
+            <Link
+              href="/delivery-payment"
+              onClick={() => handleMobileMenuToggle(false)}
+              className="py-1 text-[#87888A] hover:text-white transition-colors"
+            >
+              Доставка и оплата
+            </Link>
+            <Link
+              href="/warranty"
+              onClick={() => handleMobileMenuToggle(false)}
+              className="py-1 text-[#87888A] hover:text-white transition-colors"
+            >
+              Гарантия и сервис
+            </Link>
+            <Link
+              href="/returns"
+              onClick={() => handleMobileMenuToggle(false)}
+              className="py-1 text-[#87888A] hover:text-white transition-colors"
+            >
+              Возврат и обмен
+            </Link>
+            <Link
+              href="/certificate"
+              onClick={() => handleMobileMenuToggle(false)}
+              className="py-1 text-[#87888A] hover:text-white transition-colors"
+            >
+              Сертификаты
+            </Link>
+          </div>
+
           {/* Showroom Contacts & Booking Card */}
           <div className="p-3.5 rounded-xl bg-[#1E2228] border border-[#2B313A] space-y-2.5 text-xs text-[#87888A]">
             <div className="text-[11px] font-semibold text-[#D7D9DB]">Салоны в Нижнем Новгороде:</div>

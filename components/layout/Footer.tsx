@@ -7,6 +7,7 @@ import { Send, ArrowRight, ExternalLink } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaLogo } from '@/components/brand/SimonaLogo';
 import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
+import { SimonaIconPin } from '@/components/brand/SimonaIcons';
 import { useSiteContent } from '@/components/providers/ContentContext';
 
 export function Footer() {
@@ -72,12 +73,20 @@ export function Footer() {
                 </a>
               </div>
 
-              <div className="pt-1">
+              <div className="pt-2 flex flex-col space-y-1.5">
+                <Link
+                  href="/contacts"
+                  className="inline-flex items-center space-x-1.5 text-simona-teal hover:text-simona-teal-light font-medium transition-colors"
+                >
+                  <SimonaIconPin className="w-3.5 h-3.5" />
+                  <span>Все контакты и реквизиты</span>
+                </Link>
+
                 <a
                   href={content.contacts.telegramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center space-x-1.5 text-simona-teal hover:underline font-medium"
+                  className="inline-flex items-center space-x-1.5 text-[#87888A] hover:text-white transition-colors"
                 >
                   <Send className="w-3 h-3" />
                   <span>Telegram-консьерж</span>
@@ -86,7 +95,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Col 3: Navigation (2 Cols) */}
+          {/* Col 3: Navigation (3 Cols) */}
           <div className="lg:col-span-2 space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-[0.14em] text-white">
               {content.footer.navHeading}
@@ -104,27 +113,34 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#brands" className="text-[#87888A] hover:text-white transition-colors">
-                  Брендовый атлас
+                <Link href="/delivery-payment" className="text-[#87888A] hover:text-white transition-colors">
+                  Доставка и оплата
                 </Link>
               </li>
               <li>
-                <Link href="#service" className="text-[#87888A] hover:text-white transition-colors">
-                  Бесплатное хранение
+                <Link href="/services" className="text-[#87888A] hover:text-white transition-colors">
+                  Установка и хранение
                 </Link>
               </li>
               <li>
-                <Link href="#service" className="text-[#87888A] hover:text-white transition-colors">
-                  Установка и подключение
+                <Link href="/warranty" className="text-[#87888A] hover:text-white transition-colors">
+                  Гарантия и сервис
                 </Link>
               </li>
               <li>
-                <button
-                  onClick={() => openModal('QUICK_CONSULT')}
-                  className="text-[#87888A] hover:text-white transition-colors text-left"
-                >
-                  Оплата и согласование
-                </button>
+                <Link href="/returns" className="text-[#87888A] hover:text-white transition-colors">
+                  Возврат и обмен
+                </Link>
+              </li>
+              <li>
+                <Link href="/certificate" className="text-[#87888A] hover:text-white transition-colors">
+                  Подарочные сертификаты
+                </Link>
+              </li>
+              <li>
+                <Link href="/price-match" className="text-[#87888A] hover:text-white transition-colors">
+                  Гарантия лучшей цены
+                </Link>
               </li>
             </ul>
           </div>
@@ -157,26 +173,18 @@ export function Footer() {
           <p>{content.footer.copyright}</p>
 
           <div className="flex items-center space-x-6">
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                alert('Политика конфиденциальности: Данные обрабатываются в соответствии с 152-ФЗ.');
-              }}
+            <Link
+              href="/policy?tab=privacy"
               className="hover:text-white transition-colors"
             >
               {content.footer.privacyPolicyText}
-            </a>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                alert('Пользовательское соглашение: Условия использования цифровой витрины simona-bt.ru.');
-              }}
+            </Link>
+            <Link
+              href="/policy?tab=terms"
               className="hover:text-white transition-colors"
             >
               {content.footer.userAgreementText}
-            </a>
+            </Link>
           </div>
         </div>
       </div>
