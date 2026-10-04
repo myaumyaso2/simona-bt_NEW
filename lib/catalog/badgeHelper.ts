@@ -21,7 +21,7 @@ export function getDiscountBadgeInfo(product: {
       return {
         text,
         variant: 'wine',
-        className: 'bg-simona-wine/25 hover:bg-simona-wine/40 text-white border-simona-wine/50',
+        className: 'bg-[#8A151A]/85 hover:bg-[#8A151A]/95 text-white border border-[#A81C22]/60 shadow-md',
       };
     }
     if (product.badge.startsWith('ACTION:')) {
@@ -41,7 +41,7 @@ export function getDiscountBadgeInfo(product: {
       return {
         text: `-${discount}%`,
         variant: 'wine',
-        className: 'bg-simona-wine/25 hover:bg-simona-wine/40 text-white border-simona-wine/50',
+        className: 'bg-[#8A151A]/85 hover:bg-[#8A151A]/95 text-white border border-[#A81C22]/60 shadow-md',
       };
     }
   }

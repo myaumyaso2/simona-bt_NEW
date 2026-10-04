@@ -5,8 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { MANUFACTURER_PROMOS } from '@/data/promosData';
-import { SimonaIconSearch, SimonaIconCheck } from '@/components/brand/SimonaIcons';
+import { SimonaIconSearch, SimonaIconCheck, SimonaIconClock } from '@/components/brand/SimonaIcons';
 import { CategoryFacet } from '@/lib/productFeatures';
+import { useStore } from '@/components/providers/StoreContext';
+import { ManufacturerPromo } from '@/types';
 
 const accordionTransition = {
   duration: 0.3,
@@ -54,7 +56,10 @@ export function CatalogSidebar({
   categoryFacets = [],
   brandLock,
 }: CatalogSidebarProps) {
+  const { openModal } = useStore();
   const [promoOpen, setPromoOpen] = useState(true);
+  const [hoveredPromo, setHoveredPromo] = useState<{ promo: ManufacturerPromo; rect: DOMRect } | null>(null);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [brandSearch, setBrandSearch] = useState('');
   const [brandOpen, setBrandOpen] = useState(true);
   const [priceOpen, setPriceOpen] = useState(true);
@@ -189,11 +194,30 @@ export function CatalogSidebar({
                   {activePromos.map((promo) => {
                     const isChecked = filters.selectedPromos.includes(promo.slug);
                     const count = promoCounts[promo.slug] ?? 0;
+                    const promoTitleClean = promo.title.trim();
+                    const promoBrandClean = promo.brand.trim();
+                    const promoDisplayName = promoTitleClean.toLowerCase().startsWith(promoBrandClean.toLowerCase())
+                      ? promoTitleClean
+                      : `${promoBrandClean}. ${promoTitleClean}`;
+
                     return (
                       <label
                         key={promo.id}
                         onClick={() => togglePromo(promo.slug)}
-                        className="flex items-start justify-between text-xs cursor-pointer group/item py-1 px-1.5 rounded-lg hover:bg-white/[0.02] transition-colors"
+                        onMouseEnter={(e) => {
+                          if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          hoverTimeoutRef.current = setTimeout(() => {
+                            setHoveredPromo({ promo, rect });
+                          }, 150);
+                        }}
+                        onMouseLeave={() => {
+                          if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+                          hoverTimeoutRef.current = setTimeout(() => {
+                            setHoveredPromo(null);
+                          }, 200);
+                        }}
+                        className="flex items-start justify-between text-xs cursor-pointer group/item py-1.5 px-2 rounded-lg hover:bg-white/[0.04] transition-colors"
                       >
                         <div className="flex items-start space-x-2.5 min-w-0 pr-2">
                           <div
@@ -205,20 +229,15 @@ export function CatalogSidebar({
                           >
                             {isChecked && <SimonaIconCheck className="w-3 h-3 stroke-[2.5]" />}
                           </div>
-                          <div className="flex flex-col">
-                            <span
-                              className={`transition-colors leading-tight ${
-                                isChecked
-                                  ? 'text-white font-semibold'
-                                  : 'text-[#D7D9DB] group-hover/item:text-white'
-                              }`}
-                            >
-                              {promo.brand}: {promo.badgeText}
-                            </span>
-                            <span className="text-[10px] text-[#87888A] line-clamp-1 mt-0.5">
-                              {promo.title}
-                            </span>
-                          </div>
+                          <span
+                            className={`transition-colors leading-snug line-clamp-2 ${
+                              isChecked
+                                ? 'text-white font-semibold'
+                                : 'text-[#D7D9DB] group-hover/item:text-white'
+                            }`}
+                          >
+                            {promoDisplayName}
+                          </span>
                         </div>
                         <span className="text-[11px] text-[#87888A] font-mono shrink-0 pt-0.5">
                           ({count})
@@ -488,6 +507,56 @@ export function CatalogSidebar({
           </div>
         );
       })}
+
+      {/* Floating Hover Card with Brief Promo Terms (Desktop only) */}
+      {hoveredPromo && (
+        <div
+          style={{
+            position: 'fixed',
+            top: Math.max(16, Math.min(hoveredPromo.rect.top, (typeof window !== 'undefined' ? window.innerHeight : 800) - 340)),
+            left: hoveredPromo.rect.right + 12,
+            width: 320,
+          }}
+          className="z-[100] hidden lg:block p-4 rounded-2xl bg-[#16191D]/95 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl animate-fade-in pointer-events-auto"
+          onMouseEnter={() => {
+            if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+          }}
+          onMouseLeave={() => {
+            if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+            hoverTimeoutRef.current = setTimeout(() => {
+              setHoveredPromo(null);
+            }, 150);
+          }}
+        >
+          <div className="flex items-center justify-between text-[11px] text-simona-wine-light font-semibold mb-1.5">
+            <span className="truncate pr-2 font-mono uppercase">{hoveredPromo.promo.brand}</span>
+            <div className="flex items-center gap-1 shrink-0 text-[#D7D9DB]">
+              <SimonaIconClock className="w-3.5 h-3.5 text-simona-wine-light" />
+              <span>до {hoveredPromo.promo.endDate}</span>
+            </div>
+          </div>
+          <div className="text-sm font-montserrat font-bold text-white leading-snug mb-2">
+            {hoveredPromo.promo.title}
+          </div>
+          <p className="text-xs text-[#87888A] leading-relaxed line-clamp-3 mb-3 font-normal">
+            {hoveredPromo.promo.shortDescription}
+          </p>
+          <div className="pt-2.5 border-t border-[#2B313A] flex items-center justify-between">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                openModal('PROMO_TERMS', { promoData: hoveredPromo.promo });
+                setHoveredPromo(null);
+              }}
+              className="text-xs font-semibold text-simona-teal hover:text-simona-teal-light transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              <span>Подробнее об акции</span>
+              <span className="text-sm">→</span>
+            </button>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

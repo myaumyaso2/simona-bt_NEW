@@ -93,49 +93,59 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
   const discountBadge = getDiscountBadgeInfo(product);
   const showPromoBadge = Boolean(activePromo || discountBadge);
   const formattedTitle = formatProductName(product);
-  const badgeText = discountBadge ? discountBadge.text : 'АКЦИЯ';
+  const badgeText = discountBadge ? discountBadge.text : 'Акция';
   const badgeClass = discountBadge
     ? discountBadge.className
-    : 'bg-simona-wine/25 hover:bg-simona-wine/40 text-white border-simona-wine/50';
+    : 'bg-[#8A151A]/85 hover:bg-[#8A151A]/95 text-white border border-[#A81C22]/60 shadow-md';
 
   return (
-    <div className="group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 sm:p-5 transition-all duration-300 shadow-xl flex flex-col sm:flex-row gap-5 items-stretch">
+    <div className={`group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 sm:p-5 transition-all duration-300 shadow-xl flex flex-col sm:flex-row gap-5 items-stretch relative ${isTooltipOpen ? 'z-40' : 'z-10'}`}>
       {/* 1. Left Media Area: White Showcase Tablet with object-contain */}
-      <Link
-        href={`/product/${product.slug}`}
-        className="block relative w-full sm:w-52 sm:h-52 md:w-56 md:h-56 aspect-square shrink-0 rounded-xl overflow-hidden bg-white border border-white/10 group-hover:border-simona-teal/50 transition-colors p-3 flex items-center justify-center shadow-inner"
-      >
-        {/* Badges Stack (Top-Left): Status + Brand directly below */}
-        <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1.5 max-w-[85%]">
-          {/* Availability Badge */}
-          {physicalStatus === 'SHOWROOM' ? (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
-              На витрине
-            </span>
-          ) : physicalStatus === 'LOCAL_STOCK' ? (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
-              На складе
-            </span>
-          ) : physicalStatus === 'REMOTE_STOCK' ? (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
-              На удаленном складе
-            </span>
-          ) : (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-medium bg-[#16191D]/85 text-[#D7D9DB] border border-[#2B313A] backdrop-blur-md shadow-md">
-              Под заказ
-            </span>
-          )}
+      <div className="relative w-full sm:w-52 sm:h-52 md:w-56 md:h-56 aspect-square shrink-0 rounded-xl">
+        <Link
+          href={`/product/${product.slug}`}
+          className="block w-full h-full rounded-xl overflow-hidden bg-white border border-white/10 group-hover:border-simona-teal/50 transition-colors p-3 flex items-center justify-center shadow-inner"
+        >
+          {/* Badges Stack (Top-Left): Status + Brand directly below */}
+          <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1.5 max-w-[85%]">
+            {/* Availability Badge */}
+            {physicalStatus === 'SHOWROOM' ? (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
+                На витрине
+              </span>
+            ) : physicalStatus === 'LOCAL_STOCK' ? (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
+                На складе
+              </span>
+            ) : physicalStatus === 'REMOTE_STOCK' ? (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
+                На удаленном складе
+              </span>
+            ) : (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-medium bg-[#16191D]/85 text-[#D7D9DB] border border-[#2B313A] backdrop-blur-md shadow-md">
+                Под заказ
+              </span>
+            )}
 
-          {/* Brand Tag directly below */}
-          <span className="px-2.5 py-0.5 rounded-md bg-[#16191D]/90 backdrop-blur-md text-[10px] uppercase font-bold tracking-wider text-white border border-[#2B313A] shadow-md">
-            {product.brand}
-          </span>
-        </div>
+            {/* Brand Tag directly below */}
+            <span className="px-2.5 py-0.5 rounded-md bg-[#16191D]/90 backdrop-blur-md text-[10px] uppercase font-bold tracking-wider text-white border border-[#2B313A] shadow-md">
+              {product.brand}
+            </span>
+          </div>
 
-        {/* Promo / Discount Badge (Top-Right) per user rules & AGENTS.md */}
+          {/* Product Image (object-contain ensures zero clipping) */}
+          <img
+            src={mainImage}
+            alt={formattedTitle}
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 select-none"
+            loading="lazy"
+          />
+        </Link>
+
+        {/* Promo / Discount Badge (Top-Right) placed outside overflow-hidden */}
         {showPromoBadge && (
           <div
-            className="absolute top-2.5 right-2.5 z-20"
+            className="absolute top-2.5 right-2.5 z-30"
             onMouseEnter={() => setIsTooltipOpen(true)}
             onMouseLeave={() => setIsTooltipOpen(false)}
           >
@@ -168,20 +178,20 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
                       e.stopPropagation();
                       openModal('PROMO_TERMS', { promoData: activePromo });
                     }}
-                    className="absolute right-0 top-full mt-2 w-64 p-3 rounded-xl bg-[#16191D] border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl z-30 cursor-pointer text-left"
+                    className="absolute right-0 top-full mt-2 w-72 p-3.5 rounded-xl bg-[#16191D]/95 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl z-50 cursor-pointer text-left"
                   >
-                    <div className="flex items-center justify-between text-[10px] text-simona-wine-light font-semibold mb-1">
-                      <span>{activePromo.badgeText}</span>
+                    <div className="flex items-center justify-between text-[10.5px] text-simona-wine-light font-semibold mb-1">
+                      <span>{activePromo.brand}</span>
                       <span>до {activePromo.endDate}</span>
                     </div>
-                    <div className="text-xs font-montserrat font-bold text-white leading-tight mb-1 line-clamp-2">
+                    <div className="text-xs font-montserrat font-bold text-white leading-snug mb-1.5 line-clamp-2">
                       {activePromo.title}
                     </div>
-                    <p className="text-[11px] text-[#D7D9DB] line-clamp-2 leading-relaxed">
+                    <p className="text-[11px] text-[#D7D9DB] line-clamp-3 leading-relaxed mb-2 font-normal">
                       {activePromo.shortDescription}
                     </p>
-                    <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-simona-teal font-medium">
-                      <span>Узнать подробности</span>
+                    <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-simona-teal font-medium">
+                      <span>Подробнее об акции</span>
                       <span className="text-white text-xs">→</span>
                     </div>
                   </motion.div>
@@ -190,15 +200,7 @@ export function LuxuryProductListCard({ product }: LuxuryProductListCardProps) {
             )}
           </div>
         )}
-
-        {/* Product Image (object-contain ensures zero clipping) */}
-        <img
-          src={mainImage}
-          alt={formattedTitle}
-          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 select-none"
-          loading="lazy"
-        />
-      </Link>
+      </div>
 
       {/* 2. Middle Content & Specifications Area */}
       <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">

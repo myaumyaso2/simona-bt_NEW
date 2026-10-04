@@ -285,8 +285,8 @@ export function FastSearchModal() {
                           {statusCfg.badge}
                         </span>
                         {activePromo && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-simona-wine/25 text-white border border-simona-wine/50 backdrop-blur-md">
-                            <span>АКЦИЯ</span>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-[#8A151A]/85 text-white border border-[#A81C22]/60 backdrop-blur-md shadow-sm">
+                            <span>Акция</span>
                           </span>
                         )}
                       </div>
