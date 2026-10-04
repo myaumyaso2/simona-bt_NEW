@@ -514,7 +514,7 @@ export function CatalogSidebar({
           style={{
             position: 'fixed',
             top: Math.max(16, Math.min(hoveredPromo.rect.top, (typeof window !== 'undefined' ? window.innerHeight : 800) - 340)),
-            left: hoveredPromo.rect.right + 12,
+            left: (asideRef.current ? asideRef.current.getBoundingClientRect().right + 12 : hoveredPromo.rect.right + 24),
             width: 320,
           }}
           className="z-[100] hidden lg:block p-4 rounded-2xl bg-[#16191D]/95 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl animate-fade-in pointer-events-auto"
