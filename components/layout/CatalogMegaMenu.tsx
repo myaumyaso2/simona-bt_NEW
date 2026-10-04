@@ -301,7 +301,7 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
                     type="button"
                     onClick={() => handleScroll('left')}
                     aria-label="Прокрутить бренды влево"
-                    className="pointer-events-auto w-7 h-7 rounded-xl bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal hover:bg-[#252A32] flex items-center justify-center transition-all shadow-lg hover:shadow-simona-teal/20 cursor-pointer"
+                    className="pointer-events-auto w-7 h-7 rounded-lg bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal hover:bg-[#252A32] flex items-center justify-center transition-all shadow-md hover:shadow-simona-teal/20 cursor-pointer"
                   >
                     <SimonaIconChevronLeft className="w-3.5 h-3.5" />
                   </button>
@@ -345,7 +345,7 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
                     type="button"
                     onClick={() => handleScroll('right')}
                     aria-label="Прокрутить бренды вправо"
-                    className="pointer-events-auto w-7 h-7 rounded-xl bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal hover:bg-[#252A32] flex items-center justify-center transition-all shadow-lg hover:shadow-simona-teal/20 cursor-pointer"
+                    className="pointer-events-auto w-7 h-7 rounded-lg bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal hover:bg-[#252A32] flex items-center justify-center transition-all shadow-md hover:shadow-simona-teal/20 cursor-pointer"
                   >
                     <SimonaIconChevronRight className="w-3.5 h-3.5" />
                   </button>
