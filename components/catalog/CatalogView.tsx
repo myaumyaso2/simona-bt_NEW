@@ -446,7 +446,7 @@ export function CatalogView({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           {/* Left Desktop Sidebar (300px) */}
-          <div className="hidden lg:block sticky top-24 shrink-0">
+          <div className="hidden lg:block sticky top-24 shrink-0 z-30">
             <CatalogSidebar
               filters={filters}
               onFilterChange={handleFilterChange}

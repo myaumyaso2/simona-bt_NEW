@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
@@ -57,6 +58,10 @@ export function CatalogSidebar({
   brandLock,
 }: CatalogSidebarProps) {
   const { openModal } = useStore();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [promoOpen, setPromoOpen] = useState(true);
   const [hoveredPromo, setHoveredPromo] = useState<{ promo: ManufacturerPromo; rect: DOMRect } | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -508,8 +513,8 @@ export function CatalogSidebar({
         );
       })}
 
-      {/* Floating Hover Card with Brief Promo Terms (Desktop only) */}
-      {hoveredPromo && (
+      {/* Floating Hover Card with Brief Promo Terms (Rendered via Portal to document.body with z-[9999] to guarantee it renders ABOVE product cards) */}
+      {mounted && hoveredPromo && createPortal(
         <div
           style={{
             position: 'fixed',
@@ -517,7 +522,7 @@ export function CatalogSidebar({
             left: (asideRef.current ? asideRef.current.getBoundingClientRect().right + 12 : hoveredPromo.rect.right + 24),
             width: 320,
           }}
-          className="z-[100] hidden lg:block p-4 rounded-2xl bg-[#16191D]/95 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl animate-fade-in pointer-events-auto"
+          className="z-[9999] hidden lg:block p-4 rounded-2xl bg-[#16191D]/98 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl animate-fade-in pointer-events-auto"
           onMouseEnter={() => {
             if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
           }}
@@ -555,7 +560,8 @@ export function CatalogSidebar({
               <span className="text-sm">→</span>
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </aside>
   );
