@@ -454,7 +454,7 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
     participatingSkus: ["88726", "85590", "85594", "85591", "85634", "85617"],
     participatingProductSlugs: ["evelux-eo-620-pb", "evelux-ihe-6041-b", "evelux-bd-6010", "evelux-ebs-1001", "evelux-ewk-0904-g", "evelux-ehb-0301-b"],
   },
-  {
+    {
     id: 'promo-vard-top-models',
     slug: 'vard-vygoda-15-20-populyarnye-modeli',
     title: "Выгода 15-20% на популярные модели техники VARD",
@@ -469,23 +469,22 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
     bannerUrl: '/images/promos/promo-vard-top-models-thumb.jpg',
     thumbnailUrl: '/images/promos/promo-vard-top-models-thumb.jpg',
     heroBgUrl: '/images/promos/promo-vard-top-models-hero.jpg',
-    yandexBannerUrl: '/images/promos/promo-vard-top-models-yandex.jpg',
     shortDescription: "Специальные сниженные цены на бестселлеры крупной бытовой техники VARD: духовые шкафы, индукционные панели, вытяжки и посудомоечные машины.",
     fullDescription: "Премиальный комфорт и лаконичный дизайн техники VARD с прямой выгодой до 20%. Специальные условия на выделенный пул приборов бренда в салонах СИМОНА.",
     tiers: [
       {
-            "step": "Выделенный пул SKU",
-            "benefit": "–15% ... –20%",
-            "description": "Фиксированные специальные промо-цены на популярные модели"
+        step: "Выделенный пул SKU",
+        benefit: "–15% ... –20%",
+        description: "Фиксированные специальные промо-цены на популярные модели"
       }
-],
+    ],
     conditions: [
       "Спеццены действуют на выделенный ассортимент техники VARD в рознице.",
       "Цены в каталоге указаны с учетом специального предложения.",
       "Официальная гарантия производителя 3 года."
-],
-    participatingSkus: ["89058", "89065", "89062", "89054", "84904", "84912"],
-    participatingProductSlugs: ["vard-vob678x", "vard-vib642b", "vard-vbd450", "vard-vws8614", "vard-vsmps26t", "vard-vcpa1c"],
+    ],
+    participatingSkus: ["84891", "89688", "84918", "86805", "84924", "84923", "88143", "84903", "84904", "85833", "84888", "89062", "89064", "84898", "84910", "84911", "86803", "88505", "84914", "84915", "86804"],
+    participatingProductSlugs: ["vard-vmc-355hk", "vard-vdi-612lt", "vard-vdi-651c", "vard-wci-4ss", "vard-vic-177niw", "vard-vhgs-6434k", "vard-vhls-6434k", "vard-von-444b", "vard-voe-444i", "vard-voc-444hb", "vard-voe-442hb", "vard-vwf-514b", "vard-vwf-314", "vard-vwd-514s", "vard-vwd-414b", "vard-vth-61b", "vard-vwd-514sb"],
   },
   {
     id: 'promo-vard-cascade',
@@ -502,38 +501,37 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
     bannerUrl: '/images/promos/promo-vard-cascade-thumb.jpg',
     thumbnailUrl: '/images/promos/promo-vard-cascade-thumb.jpg',
     heroBgUrl: '/images/promos/promo-vard-cascade-hero.jpg',
-    yandexBannerUrl: '/images/promos/promo-vard-cascade-yandex.jpg',
     shortDescription: "Комплектная программа VARD: 25% скидка на второй, 50% на третий, 75% на четвертый и 100% на пятый предмет крупной бытовой техники в заказе.",
     fullDescription: "Ступенчатая каскадная выгода при комплексном заказе приборов VARD для новой кухни. Скидка начисляется на товар по наименьшей стоимости в чеке.",
     tiers: [
       {
-            "step": "2 любых прибора",
-            "benefit": "–25%",
-            "description": "Скидка 25% на наименьший по стоимости товар в чеке"
+        step: "2 любых прибора",
+        benefit: "–25%",
+        description: "Скидка 25% на наименьший по стоимости товар в чеке"
       },
       {
-            "step": "3 любых прибора",
-            "benefit": "–50%",
-            "description": "Скидка 50% на наименьший по стоимости товар в чеке"
+        step: "3 любых прибора",
+        benefit: "–50%",
+        description: "Скидка 50% на наименьший по стоимости товар в чеке"
       },
       {
-            "step": "4 любых прибора",
-            "benefit": "–75%",
-            "description": "Скидка 75% на наименьший по стоимости товар в чеке"
+        step: "4 любых прибора",
+        benefit: "–75%",
+        description: "Скидка 75% на наименьший по стоимости товар в чеке"
       },
       {
-            "step": "5 любых приборов",
-            "benefit": "–100%",
-            "description": "Скидка 100% на наименьший по стоимости товар в чеке"
+        step: "5 любых приборов",
+        benefit: "–100%",
+        description: "Скидка 100% на наименьший по стоимости товар в чеке"
       }
-],
+    ],
     conditions: [
       "В акции участвуют любые модели крупной бытовой техники VARD из акционного списка.",
       "Скидка предоставляется на товар с наименьшей стоимостью в заказе.",
       "Акция может суммироваться с акцией на подарок (набор мельниц)."
-],
-    participatingSkus: ["89058", "89065", "89062", "89054", "84904", "84912"],
-    participatingProductSlugs: ["vard-vob678x", "vard-vib642b", "vard-vbd450", "vard-vws8614", "vard-vsmps26t", "vard-vcpa1c"],
+    ],
+    participatingSkus: ["89687", "84908", "86810", "86809", "90148", "84891", "89688", "84919", "84918", "86805", "85827", "89051", "89052", "84924", "84923", "88145", "88143", "84903", "84902", "84900", "84905", "84904", "89053", "89054", "89055", "89056", "89057", "89058", "84890", "85835", "85833", "85834", "89060", "84888", "85832", "89062", "85831", "85830", "89059", "89064", "84889", "89061", "89063", "84887", "84886", "89065", "89066", "89067", "89068", "84899", "84898", "85829", "84896", "84897", "86807", "89690", "89689", "88149", "88150", "88151", "88152", "89692", "85836", "89691", "88502", "88504", "85828", "84920", "84894", "84895", "84893", "84892", "84910", "84909", "84911", "84912", "86804", "86803", "88505", "88506", "84914", "84913", "91654", "84916", "91656", "91657", "91658", "91655", "84921", "89071", "89279"],
+    participatingProductSlugs: ["vard-vcc-6k", "vard-vcc-5k", "vard-vmg-245pk", "vard-vmg-125pk", "vard-vmg-122pk", "vard-vmc-355hk", "vard-vdi-612lt", "vard-vdi-651c", "vard-vdi-451c", "vard-wci-4sstb", "vard-wci-4sstg", "vard-wci-4ss", "vard-vfi-177niw", "vard-vic-177niw", "vard-vhgs-6434k", "vard-vhg-6424x", "vard-vhls-9534k", "vard-vhls-6434k", "vard-vos-684sb", "vard-vos-684sg", "vard-vop-682b", "vard-vop-682g", "vard-voe-684b", "vard-voe-684g", "vard-von-564b", "vard-von-444b", "vard-von-564x", "vard-voe-554hb", "vard-voe-444i", "vard-von-444x", "vard-voc-444hb", "vard-von-441b", "vard-von-441x", "vard-voe-554hx", "vard-voe-442hb", "vard-voe-444b", "vard-voc-444hi", "vard-voe-442hx", "vard-voe-432b", "vard-voe-432y", "vard-vpe-681mb", "vard-vpe-681mg", "vard-vps-681mb", "vard-vps-681mg", "vard-vhi-9552k", "vard-vhi-6461x", "vard-vhi-6420b", "vard-vhi-6420x", "vard-vhi-3260k", "vard-vhh-8462b", "vard-vhh-6472b", "vard-vcpa1c", "vard-vcpa1v", "vard-vcpa1a", "vard-vcpa1o", "vard-vfg-665pk", "vard-vfg-664pk", "vard-vfg-661k", "vard-vsmps-26t", "vard-vsmps-15n", "vard-vrs-177ni", "vard-vhc-6464k", "vard-vhc-6464x", "vard-vhc-6421x", "vard-vhc-6421b", "vard-vwf-514b", "vard-vwf-514", "vard-vwf-314", "vard-vwf-494", "vard-vwd-514sb", "vard-vwd-514s", "vard-vwd-414b", "vard-vwd-414", "vard-vth-61b", "vard-vth-61", "vard-vth-58", "vard-vri-191m60bg", "vard-vri-192m54sx", "vard-vam-14b", "vard-vam-14g"],
   },
   {
     id: 'promo-vard-mill-gift',
@@ -547,27 +545,26 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
     startDate: '2026-10-01',
     endDate: '2026-10-31',
     isActive: true,
-    bannerUrl: '/images/promos/promo-vard-mill-gift-thumb.jpg',
-    thumbnailUrl: '/images/promos/promo-vard-mill-gift-thumb.jpg',
-    heroBgUrl: '/images/promos/promo-vard-mill-gift-hero.jpg',
-    yandexBannerUrl: '/images/promos/promo-vard-mill-gift-yandex.jpg',
+    bannerUrl: '/images/promos/promo-vard-mill-lifestyle-thumb.jpg',
+    thumbnailUrl: '/images/promos/promo-vard-mill-lifestyle-thumb.jpg',
+    heroBgUrl: '/images/promos/promo-vard-mill-lifestyle-hero.jpg',
     shortDescription: "При покупке от 3 любых единиц крупной бытовой техники VARD покупатель получает в подарок дизайнерский набор мельниц для специй VARD VSMPS26T.",
     fullDescription: "Акция для ценителей кулинарного искусства. Фирменный набор автоматических гравитационных мельниц для соли и перца VARD станет стильным украшением вашей кухни.",
     tiers: [
       {
-            "step": "от 3 приборов КБТ",
-            "benefit": "Набор мельниц VSMPS26T",
-            "description": "Автоматический набор гравитационных мельниц для специй VARD в подарок"
+        step: "от 3 приборов КБТ",
+        benefit: "Набор мельниц VSMPS26T",
+        description: "Автоматический набор гравитационных мельниц для специй VARD в подарок"
       }
-],
+    ],
     conditions: [
       "В акции участвует весь ассортимент крупной бытовой техники VARD.",
       "Акция может накладываться на акцию «Каскад VARD».",
       "Акция не суммируется с акцией на кофеварку.",
       "Подарок выдается при оформлении комплекта в салонах СИМОНА."
-],
-    participatingSkus: ["89058", "89065", "89062", "89054", "84904", "84912"],
-    participatingProductSlugs: ["vard-vob678x", "vard-vib642b", "vard-vbd450", "vard-vws8614", "vard-vsmps26t", "vard-vcpa1c"],
+    ],
+    participatingSkus: ["88502", "89687", "84908", "86810", "86809", "90148", "84891", "89688", "84919", "84918", "86805", "85827", "89051", "89052", "84924", "84923", "88145", "88143", "84903", "84902", "84900", "84905", "84904", "89053", "89054", "89055", "89056", "89057", "89058", "84890", "85835", "85833", "85834", "89060", "84888", "85832", "89062", "85831", "85830", "89059", "89064", "84889", "89061", "89063", "84887", "84886", "89065", "89066", "89067", "89068", "84899", "84898", "85829", "84896", "84897", "86807", "89690", "89689", "88149", "88150", "88151", "88152", "89692", "85836", "89691", "88504", "85828", "84920", "84894", "84895", "84893", "84892", "84910", "84909", "84911", "84912", "86804", "86803", "88505", "88506", "84914", "84913", "91654", "84916", "91656", "91657", "91658", "91655", "84921", "89071", "89279"],
+    participatingProductSlugs: ["vard-vsmps-26t", "vard-vcc-6k", "vard-vcc-5k", "vard-vmg-245pk", "vard-vmg-125pk", "vard-vmg-122pk", "vard-vmc-355hk", "vard-vdi-612lt", "vard-vdi-651c", "vard-vdi-451c", "vard-wci-4sstb", "vard-wci-4sstg", "vard-wci-4ss", "vard-vfi-177niw", "vard-vic-177niw", "vard-vhgs-6434k", "vard-vhg-6424x", "vard-vhls-9534k", "vard-vhls-6434k", "vard-vos-684sb", "vard-vos-684sg", "vard-vop-682b", "vard-vop-682g", "vard-voe-684b", "vard-voe-684g", "vard-von-564b", "vard-von-444b", "vard-von-564x", "vard-voe-554hb", "vard-voe-444i", "vard-von-444x", "vard-voc-444hb", "vard-von-441b", "vard-von-441x", "vard-voe-554hx", "vard-voe-442hb", "vard-voe-444b", "vard-voc-444hi", "vard-voe-442hx", "vard-voe-432b", "vard-voe-432y", "vard-vpe-681mb", "vard-vpe-681mg", "vard-vps-681mb", "vard-vps-681mg", "vard-vhi-9552k", "vard-vhi-6461x", "vard-vhi-6420b", "vard-vhi-6420x", "vard-vhi-3260k", "vard-vhh-8462b", "vard-vhh-6472b", "vard-vcpa1c", "vard-vcpa1v", "vard-vcpa1a", "vard-vcpa1o", "vard-vfg-665pk", "vard-vfg-664pk", "vard-vfg-661k", "vard-vsmps-15n", "vard-vrs-177ni", "vard-vhc-6464k", "vard-vhc-6464x", "vard-vhc-6421x", "vard-vhc-6421b", "vard-vwf-514b", "vard-vwf-514", "vard-vwf-314", "vard-vwf-494", "vard-vwd-514sb", "vard-vwd-514s", "vard-vwd-414b", "vard-vwd-414", "vard-vth-61b", "vard-vth-61", "vard-vth-58", "vard-vri-191m60bg", "vard-vri-192m54sx", "vard-vam-14b", "vard-vam-14g"],
   },
   {
     id: 'promo-vard-coffee-maker-gift',
@@ -581,29 +578,28 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
     startDate: '2026-10-01',
     endDate: '2026-10-31',
     isActive: true,
-    bannerUrl: '/images/promos/promo-vard-coffee-maker-gift-thumb.jpg',
-    thumbnailUrl: '/images/promos/promo-vard-coffee-maker-gift-thumb.jpg',
-    heroBgUrl: '/images/promos/promo-vard-coffee-maker-gift-hero.jpg',
-    yandexBannerUrl: '/images/promos/promo-vard-coffee-maker-gift-yandex.jpg',
+    bannerUrl: '/images/promos/promo-vard-coffee-lineup-thumb.jpg',
+    thumbnailUrl: '/images/promos/promo-vard-coffee-lineup-thumb.jpg',
+    heroBgUrl: '/images/promos/promo-vard-coffee-lineup-hero.jpg',
     shortDescription: "При покупке от 4 любых единиц крупной бытовой техники VARD — стильная рожковая кофеварка эспрессо VARD на выбор (VCPA1C, VCPA1V, VCPA1A или VCPA1O) в подарок.",
     fullDescription: "Ароматный кофе каждый день: при заказе полного комплекта техники VARD из 4 приборов покупатель получает итальянскую рожковую кофеварку с давлением 20 бар в подарок.",
     tiers: [
       {
-            "step": "от 4 приборов КБТ",
-            "benefit": "Кофеварка VCPA1C",
-            "description": "Рожковая кофеварка эспрессо VARD с давлением 20 бар на выбор по цвету в подарок"
+        step: "от 4 приборов КБТ",
+        benefit: "Кофеварка VCPA1",
+        description: "Рожковая кофеварка эспрессо VARD с давлением 20 бар на выбор по цвету в подарок"
       }
-],
+    ],
     conditions: [
       "В акции участвует весь ассортимент крупной бытовой техники VARD.",
       "Покупатель может выбрать любой доступный цвет корпуса кофеварки.",
       "Акция может накладываться на акцию «Каскад VARD».",
       "Подарок выдается вместе с заказом."
-],
-    participatingSkus: ["89058", "89065", "89062", "89054", "84904", "84912"],
-    participatingProductSlugs: ["vard-vob678x", "vard-vib642b", "vard-vbd450", "vard-vws8614", "vard-vsmps26t", "vard-vcpa1c"],
+    ],
+    participatingSkus: ["88149", "88150", "88151", "88152", "89687", "84908", "86810", "86809", "90148", "84891", "89688", "84919", "84918", "86805", "85827", "89051", "89052", "84924", "84923", "88145", "88143", "84903", "84902", "84900", "84905", "84904", "89053", "89054", "89055", "89056", "89057", "89058", "84890", "85835", "85833", "85834", "89060", "84888", "85832", "89062", "85831", "85830", "89059", "89064", "84889", "89061", "89063", "84887", "84886", "89065", "89066", "89067", "89068", "84899", "84898", "85829", "84896", "84897", "86807", "89690", "89689", "89692", "85836", "89691", "88502", "88504", "85828", "84920", "84894", "84895", "84893", "84892", "84910", "84909", "84911", "84912", "86804", "86803", "88505", "88506", "84914", "84913", "91654", "84916", "91656", "91657", "91658", "91655", "84921", "89071", "89279"],
+    participatingProductSlugs: ["vard-vcpa1c", "vard-vcpa1v", "vard-vcpa1a", "vard-vcpa1o", "vard-vcc-6k", "vard-vcc-5k", "vard-vmg-245pk", "vard-vmg-125pk", "vard-vmg-122pk", "vard-vmc-355hk", "vard-vdi-612lt", "vard-vdi-651c", "vard-vdi-451c", "vard-wci-4sstb", "vard-wci-4sstg", "vard-wci-4ss", "vard-vfi-177niw", "vard-vic-177niw", "vard-vhgs-6434k", "vard-vhg-6424x", "vard-vhls-9534k", "vard-vhls-6434k", "vard-vos-684sb", "vard-vos-684sg", "vard-vop-682b", "vard-vop-682g", "vard-voe-684b", "vard-voe-684g", "vard-von-564b", "vard-von-444b", "vard-von-564x", "vard-voe-554hb", "vard-voe-444i", "vard-von-444x", "vard-voc-444hb", "vard-von-441b", "vard-von-441x", "vard-voe-554hx", "vard-voe-442hb", "vard-voe-444b", "vard-voc-444hi", "vard-voe-442hx", "vard-voe-432b", "vard-voe-432y", "vard-vpe-681mb", "vard-vpe-681mg", "vard-vps-681mb", "vard-vps-681mg", "vard-vhi-9552k", "vard-vhi-6461x", "vard-vhi-6420b", "vard-vhi-6420x", "vard-vhi-3260k", "vard-vhh-8462b", "vard-vhh-6472b", "vard-vfg-665pk", "vard-vfg-664pk", "vard-vfg-661k", "vard-vsmps-26t", "vard-vsmps-15n", "vard-vrs-177ni", "vard-vhc-6464k", "vard-vhc-6464x", "vard-vhc-6421x", "vard-vhc-6421b", "vard-vwf-514b", "vard-vwf-514", "vard-vwf-314", "vard-vwf-494", "vard-vwd-514sb", "vard-vwd-514s", "vard-vwd-414b", "vard-vwd-414", "vard-vth-61b", "vard-vth-61", "vard-vth-58", "vard-vri-191m60bg", "vard-vri-192m54sx", "vard-vam-14b", "vard-vam-14g"],
   },
-  {
+{
     id: 'promo-smeg-bundle-archived',
     slug: 'smeg-skidki-na-komplekty',
     title: "Скидки до 20% на комплекты техники Smeg",
