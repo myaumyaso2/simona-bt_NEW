@@ -367,12 +367,13 @@ export function CatalogView({
 
   const dynamicDescription = useMemo(() => {
     if (initialBrand) {
-      const catName = currentBrandCategory?.menuTitle || currentBrandCategory?.title || 'приборов';
-      const totalBrandCount = rawProducts.length;
-      return `Официальная коллекция бытовой техники ${initialBrand.toUpperCase()} в категории «${catName}» (всего ${totalBrandCount} моделей бренда). ${brandInfo?.showroom || 'Флагманский салон: ул. Белинского, 15'}.`;
+      if (brandInfo?.heroText) {
+        return brandInfo.heroText;
+      }
+      return `Официальная бытовая техника ${initialBrand.toUpperCase()}. Сертифицированная европейская продукция с гарантией производителя в салонах «СИМОНА».`;
     }
     return categoryDescription;
-  }, [initialBrand, currentBrandCategory, rawProducts.length, brandInfo, categoryDescription]);
+  }, [initialBrand, brandInfo, categoryDescription]);
 
   return (
     <div className="bg-[#111315] min-h-screen text-white">

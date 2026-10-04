@@ -60,14 +60,14 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
             alt={promo.title}
             fill
             priority
-            className="object-cover object-right lg:object-center opacity-85"
+            className="object-cover object-right lg:object-center opacity-90 lg:opacity-100"
           />
           {/* Mobile Vignette: Deep overlay to guarantee white text readability */}
           <div className="lg:hidden absolute inset-0 bg-gradient-to-b from-[#111315]/90 via-[#111315]/65 to-[#111315]/95" />
           
-          {/* Desktop Left-to-Right Gradient: Left side is solid dark #111315 for text, right side fades to transparent for bright, clear photography */}
-          <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#111315] via-[#111315]/90 via-[50%] to-transparent" />
-          <div className="hidden lg:block absolute inset-0 bg-[radial-gradient(ellipse_65%_75%_at_20%_45%,rgba(17,19,21,0.92)_0%,transparent_100%)]" />
+          {/* Desktop Left-to-Right Gradient: Left side is solid dark #111315 for text, right side fades to transparent for bright, clear photography (Standard 50/50) */}
+          <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#111315] via-[#111315]/90 via-[48%] to-transparent" />
+          <div className="hidden lg:block absolute inset-0 bg-[radial-gradient(ellipse_60%_75%_at_15%_45%,rgba(17,19,21,0.85)_0%,transparent_100%)]" />
 
           {/* Edge fading for seamless section transitions */}
           <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#111315] to-transparent pointer-events-none" />
