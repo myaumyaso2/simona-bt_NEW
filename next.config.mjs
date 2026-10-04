@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  generateBuildId: async () => 'simona-build',
   skipTrailingSlashRedirect: true,
   experimental: {
     workerThreads: false,
