@@ -58,6 +58,7 @@ interface CatalogToolbarProps {
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
   onOpenMobileFilters: () => void;
+  isBrandPage?: boolean;
 }
 
 export function CatalogToolbar({
@@ -74,6 +75,7 @@ export function CatalogToolbar({
   viewMode,
   onViewModeChange,
   onOpenMobileFilters,
+  isBrandPage = false,
 }: CatalogToolbarProps) {
   const [isSortOpen, setIsSortOpen] = React.useState(false);
   const [openChipLabel, setOpenChipLabel] = React.useState<string | null>(null);
@@ -132,16 +134,17 @@ export function CatalogToolbar({
           </button>
 
           {/* Active Filter Chips */}
-          {filters.selectedBrands.map((brand) => (
-            <button
-              key={brand}
-              onClick={() => onRemoveBrand(brand)}
-              className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group cursor-pointer"
-            >
-              <span>{brand}</span>
-              <X className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
-            </button>
-          ))}
+          {!isBrandPage &&
+            filters.selectedBrands.map((brand) => (
+              <button
+                key={brand}
+                onClick={() => onRemoveBrand(brand)}
+                className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group cursor-pointer"
+              >
+                <span>{brand}</span>
+                <X className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
+              </button>
+            ))}
 
           {filters.selectedWidth && (
             <button

@@ -17,6 +17,12 @@ import { CatalogServiceContour } from './CatalogServiceContour';
 import { MobileFilterDrawer } from './MobileFilterDrawer';
 import { getCategoryFacets, matchProductFeature } from '@/lib/productFeatures';
 import { getProductPhysicalStatus } from '@/lib/utils';
+import { BrandCategoryNav } from './BrandCategoryNav';
+import {
+  getBrandCategoriesFromProducts,
+  getBrandInfo,
+  isProductInCategory,
+} from '@/lib/catalog/brandCategories';
 
 interface CatalogViewProps {
   initialProducts?: ProductItem[];
@@ -25,6 +31,7 @@ interface CatalogViewProps {
   categoryTitle?: string;
   categoryDescription?: string;
   initialBrand?: string;
+  initialCategorySlug?: string;
 }
 
 const PAGE_SIZE = 24;
@@ -35,11 +42,53 @@ export function CatalogView({
   categoryTitle,
   categoryDescription,
   initialBrand,
+  initialCategorySlug,
 }: CatalogViewProps = {}) {
   const searchParams = useSearchParams();
   const rawProducts = useMemo(() => {
     return initialProducts && initialProducts.length > 0 ? initialProducts : CATALOG_PRODUCTS;
   }, [initialProducts]);
+
+  // Brand mode calculations & category discovery
+  const brandCategories = useMemo(() => {
+    if (!initialBrand) return [];
+    return getBrandCategoriesFromProducts(rawProducts);
+  }, [initialBrand, rawProducts]);
+
+  const brandInfo = useMemo(() => {
+    if (!initialBrand) return null;
+    return getBrandInfo(initialBrand);
+  }, [initialBrand]);
+
+  const categoryParam = searchParams.get('category') || initialCategorySlug;
+  const [activeCategorySlug, setActiveCategorySlug] = useState<string>(() => {
+    if (categoryParam) return categoryParam;
+    if (initialBrand && brandCategories.length > 0) return brandCategories[0].slug;
+    return categorySlug || '';
+  });
+
+  // Keep activeCategorySlug synced if URL searchParams or brandCategories change
+  useEffect(() => {
+    if (initialBrand) {
+      const qCat = searchParams.get('category') || initialCategorySlug;
+      if (qCat) {
+        setActiveCategorySlug(qCat);
+      } else if (brandCategories.length > 0 && (!activeCategorySlug || !brandCategories.some((c) => c.slug === activeCategorySlug))) {
+        setActiveCategorySlug(brandCategories[0].slug);
+      }
+    }
+  }, [searchParams, initialCategorySlug, initialBrand, brandCategories, activeCategorySlug]);
+
+  const currentBrandCategory = useMemo(() => {
+    if (!initialBrand) return null;
+    return brandCategories.find((c) => c.slug === activeCategorySlug) || brandCategories[0] || null;
+  }, [initialBrand, brandCategories, activeCategorySlug]);
+
+  // Scoped products: in brand mode, strictly match the selected category!
+  const categoryProducts = useMemo(() => {
+    if (!initialBrand || !activeCategorySlug) return rawProducts;
+    return rawProducts.filter((p) => isProductInCategory(p, activeCategorySlug));
+  }, [rawProducts, initialBrand, activeCategorySlug]);
 
   const [activePhysicalTab, setActivePhysicalTab] = useState<PhysicalTabType>('ALL');
   const [sort, setSort] = useState<SortOption>('popular');
@@ -49,15 +98,15 @@ export function CatalogView({
 
   const brandParam = searchParams.get('brand') || initialBrand;
 
-  // Dynamic price bounds for the current category
+  // Dynamic price bounds strictly for the current category
   const priceBounds = useMemo(() => {
-    const prices = rawProducts.map((p) => p.price).filter((p) => p > 0);
+    const prices = categoryProducts.map((p) => p.price).filter((p) => p > 0);
     if (prices.length === 0) return { min: 0, max: 500000 };
     return {
       min: Math.floor(Math.min(...prices) / 1000) * 1000,
       max: Math.ceil(Math.max(...prices) / 1000) * 1000,
     };
-  }, [rawProducts]);
+  }, [categoryProducts]);
 
   const [filters, setFilters] = useState<FilterState>({
     selectedPromos: [],
@@ -100,6 +149,24 @@ export function CatalogView({
     }
   }, [searchParams, initialBrand]);
 
+  const handleCategorySelect = (slug: string) => {
+    setActiveCategorySlug(slug);
+    setCurrentPage(1);
+    setActivePhysicalTab('ALL');
+    setFilters((prev) => ({
+      ...prev,
+      selectedWidth: null,
+      selectedColor: null,
+      selectedFeatures: {},
+    }));
+
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('category', slug);
+      window.history.replaceState(null, '', url.pathname + url.search);
+    }
+  };
+
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
     setCurrentPage(1);
@@ -108,7 +175,7 @@ export function CatalogView({
   const handleResetFilters = () => {
     setFilters({
       selectedPromos: [],
-      selectedBrands: [],
+      selectedBrands: initialBrand ? [initialBrand] : [],
       priceMin: priceBounds.min,
       priceMax: priceBounds.max,
       selectedWidth: null,
@@ -140,32 +207,32 @@ export function CatalogView({
 
   // Dynamic category facets calculation based on current category selection
   const categoryFacets = useMemo(() => {
-    return getCategoryFacets(rawProducts, 8);
-  }, [rawProducts]);
+    return getCategoryFacets(categoryProducts, 8);
+  }, [categoryProducts]);
 
   // Dynamic promo count calculation for current category and tab (Zero Dead Ends)
   const promoCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     MANUFACTURER_PROMOS.forEach((promo) => {
-      const count = rawProducts.filter((product) => {
+      const count = categoryProducts.filter((product) => {
         return isProductInPromo(product, promo.slug);
       }).length;
       counts[promo.slug] = count;
     });
     return counts;
-  }, [rawProducts]);
+  }, [categoryProducts]);
 
   // Dynamic brand list with real counts for the category
   const availableBrands = useMemo(() => {
     const counts: Record<string, number> = {};
-    rawProducts.forEach((p) => {
+    categoryProducts.forEach((p) => {
       const b = p.brand?.trim() || 'СИМОНА';
       counts[b] = (counts[b] || 0) + 1;
     });
     return Object.entries(counts)
       .map(([id, count]) => ({ id, name: id, count }))
       .sort((a, b) => b.count - a.count);
-  }, [rawProducts]);
+  }, [categoryProducts]);
 
   const brandCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -177,7 +244,7 @@ export function CatalogView({
 
   // 1. Products filtered by sidebar criteria (promos, brands, price, dynamic facets) - WITHOUT physical presence tab
   const sidebarFilteredProducts = useMemo(() => {
-    return rawProducts.filter((product) => {
+    return categoryProducts.filter((product) => {
       // 0. Promo Filter (OR logic: product participates in ANY of the selected promos)
       if (filters.selectedPromos.length > 0) {
         const matchesPromo = filters.selectedPromos.some((promoSlug) =>
@@ -186,8 +253,9 @@ export function CatalogView({
         if (!matchesPromo) return false;
       }
 
-      // 1. Brand Filter (case-insensitive)
+      // 1. Brand Filter (case-insensitive) - only apply if not on brand page or multiple brands
       if (
+        !initialBrand &&
         filters.selectedBrands.length > 0 &&
         !filters.selectedBrands.some(
           (b) => b.trim().toUpperCase() === product.brand?.trim().toUpperCase()
@@ -213,7 +281,7 @@ export function CatalogView({
 
       return true;
     });
-  }, [rawProducts, filters]);
+  }, [categoryProducts, filters, initialBrand]);
 
   // 2. Dynamic presence counts based on current sidebar filters (Zero Dead Ends reactivity)
   const presenceCounts = useMemo(() => {
@@ -276,6 +344,10 @@ export function CatalogView({
   }, [filteredProducts, currentPage]);
 
   const dynamicTitle = useMemo(() => {
+    if (initialBrand) {
+      const catName = currentBrandCategory?.menuTitle || currentBrandCategory?.title || 'Техника';
+      return `${catName} ${initialBrand.toUpperCase()}`;
+    }
     if (!categoryTitle) return 'Каталог техники';
     if (filters.selectedBrands.length === 1) {
       const b = filters.selectedBrands[0];
@@ -291,26 +363,86 @@ export function CatalogView({
       return categoryTitle;
     }
     return categoryTitle;
-  }, [categoryTitle, filters.selectedBrands, initialBrand]);
+  }, [categoryTitle, filters.selectedBrands, initialBrand, currentBrandCategory]);
+
+  const dynamicDescription = useMemo(() => {
+    if (initialBrand) {
+      const catName = currentBrandCategory?.menuTitle || currentBrandCategory?.title || 'приборов';
+      const totalBrandCount = rawProducts.length;
+      return `Официальная коллекция бытовой техники ${initialBrand.toUpperCase()} в категории «${catName}» (всего ${totalBrandCount} моделей бренда). ${brandInfo?.showroom || 'Флагманский салон: ул. Белинского, 15'}.`;
+    }
+    return categoryDescription;
+  }, [initialBrand, currentBrandCategory, rawProducts.length, brandInfo, categoryDescription]);
 
   return (
     <div className="bg-[#111315] min-h-screen text-white">
-      {/* 1. Category Hero Block */}
+      {/* 1. Category Hero Block with raised Brand Categories Switcher */}
       <CatalogHero
         activePhysicalTab={activePhysicalTab}
         onSelectPhysicalTab={(tab) => {
           setActivePhysicalTab(tab);
           setCurrentPage(1);
         }}
-        totalCount={sidebarFilteredProducts.length}
+        totalCount={currentBrandCategory ? currentBrandCategory.count : sidebarFilteredProducts.length}
         presenceCounts={presenceCounts}
         categoryTitle={dynamicTitle}
-        categorySlug={categorySlug}
-        categoryDescription={categoryDescription}
+        categorySlug={activeCategorySlug || categorySlug}
+        categoryDescription={dynamicDescription}
+        brandName={initialBrand ? initialBrand.toUpperCase() : undefined}
+        brandCategories={initialBrand ? brandCategories : undefined}
+        activeCategorySlug={activeCategorySlug}
+        onSelectCategory={handleCategorySelect}
       />
 
+      {/* 1.5. Inventory Presence Tabs for Brand Page (lowered below Hero per user request) */}
+      {initialBrand && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+          <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
+            {[
+              { id: 'ALL' as const, label: 'Все', count: presenceCounts.ALL },
+              { id: 'SHOWROOM' as const, label: 'На витрине', count: presenceCounts.SHOWROOM },
+              { id: 'LOCAL_STOCK' as const, label: 'На складе', count: presenceCounts.LOCAL_STOCK },
+              { id: 'REMOTE_STOCK' as const, label: 'На удаленном складе', count: presenceCounts.REMOTE_STOCK },
+              { id: 'ON_ORDER' as const, label: 'Под заказ', count: presenceCounts.ON_ORDER },
+            ]
+              .filter((tab) => tab.id === 'ALL' || tab.count > 0)
+              .map((tab) => {
+                const isActive = activePhysicalTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActivePhysicalTab(tab.id);
+                      setCurrentPage(1);
+                    }}
+                    className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none ${
+                      isActive ? 'text-white' : 'text-[#87888A] hover:text-[#D7D9DB]'
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="presenceActiveTabBrand"
+                        className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <span>{tab.label}</span>
+                    <span
+                      className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
+                        isActive ? 'text-simona-teal font-semibold' : 'text-[#87888A] font-normal'
+                      }`}
+                    >
+                      ({tab.count})
+                    </span>
+                  </button>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
       {/* 2. Main Catalog Workspace: Split-Layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           {/* Left Desktop Sidebar (300px) */}
           <div className="hidden lg:block sticky top-24 shrink-0">
@@ -323,6 +455,7 @@ export function CatalogView({
               promoCounts={promoCounts}
               priceBounds={priceBounds}
               categoryFacets={categoryFacets}
+              brandLock={initialBrand ? initialBrand.toUpperCase() : undefined}
             />
           </div>
 
@@ -346,6 +479,7 @@ export function CatalogView({
               viewMode={viewMode}
               onViewModeChange={setViewMode}
               onOpenMobileFilters={() => setIsMobileFiltersOpen(true)}
+              isBrandPage={!!initialBrand}
             />
 
             {/* Active Promo Chips per AGENTS.md 8.2 & Grill-me Alignment */}
@@ -461,6 +595,7 @@ export function CatalogView({
         promoCounts={promoCounts}
         priceBounds={priceBounds}
         categoryFacets={categoryFacets}
+        brandLock={initialBrand ? initialBrand.toUpperCase() : undefined}
       />
     </div>
   );

@@ -4,10 +4,12 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
+import { BrandCategoryTab } from '@/lib/catalog/brandCategories';
+import { BrandCategoryNav } from './BrandCategoryNav';
 
 export type PhysicalTabType = 'ALL' | 'SHOWROOM' | 'LOCAL_STOCK' | 'REMOTE_STOCK' | 'ON_ORDER';
 
-interface PresenceTabItem {
+export interface PresenceTabItem {
   id: PhysicalTabType;
   label: string;
   count: number;
@@ -23,6 +25,10 @@ interface CatalogHeroProps {
   categoryTitle?: string;
   categorySlug?: string;
   categoryDescription?: string;
+  brandName?: string;
+  brandCategories?: BrandCategoryTab[];
+  activeCategorySlug?: string;
+  onSelectCategory?: (slug: string) => void;
 }
 
 export function CatalogHero({
@@ -32,6 +38,10 @@ export function CatalogHero({
   presenceCounts,
   categoryTitle = 'Каталог техники',
   categoryDescription = 'Официальные авторизованные поставки премиальной бытовой техники от ведущих европейских брендов.',
+  brandName,
+  brandCategories,
+  activeCategorySlug,
+  onSelectCategory,
 }: CatalogHeroProps) {
   const allTabs: PresenceTabItem[] = [
     { id: 'ALL', label: 'Все', count: presenceCounts?.ALL ?? totalCount },
@@ -54,19 +64,21 @@ export function CatalogHero({
     }
   }, [activePhysicalTab, presenceCounts, onSelectPhysicalTab]);
 
+  const hasBrandCategories = Boolean(brandCategories && brandCategories.length > 0 && onSelectCategory);
+
   return (
     <section className="pt-8 pb-6 border-b border-[#2B313A]/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* 1. Breadcrumbs */}
-        <nav aria-label="Хлебные крошки" className="flex items-center space-x-2 text-xs text-[#87888A] mb-4 font-normal">
+        {/* 1. Breadcrumbs: Clear & direct navigation (Zero redundant circular intermediate links) */}
+        <nav aria-label="Хлебные крошки" className="flex items-center space-x-2 text-xs text-[#87888A] mb-4 font-normal flex-wrap gap-y-1">
           <Link href="/" className="hover:text-white transition-colors">
             Главная
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-[#3E3D40]" />
+          <ChevronRight className="w-3.5 h-3.5 text-[#3E3D40] shrink-0" />
           <Link href="/catalog" className="hover:text-white transition-colors">
             Каталог
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-[#3E3D40]" />
+          <ChevronRight className="w-3.5 h-3.5 text-[#3E3D40] shrink-0" />
           <span className="text-[#D7D9DB] font-medium">{categoryTitle}</span>
         </nav>
 
@@ -85,39 +97,49 @@ export function CatalogHero({
           {categoryDescription}
         </p>
 
-        {/* 4. Physical Presence Tabs (Zero Dead Ends: hides 0-count tabs, with sliding pill animation) */}
-        <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
-          {presenceTabs.map((tab) => {
-            const isActive = activePhysicalTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => onSelectPhysicalTab(tab.id)}
-                className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none ${
-                  isActive
-                    ? 'text-white'
-                    : 'text-[#87888A] hover:text-[#D7D9DB]'
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="presenceActiveTab"
-                    className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
-                    transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-                  />
-                )}
-                <span>{tab.label}</span>
-                <span
-                  className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
-                    isActive ? 'text-simona-teal font-semibold' : 'text-[#87888A] font-normal'
+        {/* 4. Controls Slot: 
+             If Brand Page: Raised Brand Categories Switcher (exact style & animation of presence slider)
+             If General Catalog: Presence Tabs Slider */}
+        {hasBrandCategories && brandCategories && onSelectCategory ? (
+          <BrandCategoryNav
+            categories={brandCategories}
+            activeCategorySlug={activeCategorySlug || brandCategories[0].slug}
+            onSelectCategory={onSelectCategory}
+          />
+        ) : (
+          <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
+            {presenceTabs.map((tab) => {
+              const isActive = activePhysicalTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => onSelectPhysicalTab(tab.id)}
+                  className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none ${
+                    isActive
+                      ? 'text-white'
+                      : 'text-[#87888A] hover:text-[#D7D9DB]'
                   }`}
                 >
-                  ({tab.count})
-                </span>
-              </button>
-            );
-          })}
-        </div>
+                  {isActive && (
+                    <motion.div
+                      layoutId="presenceActiveTab"
+                      className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
+                      transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                    />
+                  )}
+                  <span>{tab.label}</span>
+                  <span
+                    className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
+                      isActive ? 'text-simona-teal font-semibold' : 'text-[#87888A] font-normal'
+                    }`}
+                  >
+                    ({tab.count})
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );

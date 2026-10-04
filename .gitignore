@@ -38,4 +38,6 @@ next-env.d.ts
 /storage/
 /tmp/
 /scratch/
+/data/promo_refs/
+next_build.tar.gz
 *.csv

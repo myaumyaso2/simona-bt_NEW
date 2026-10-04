@@ -34,27 +34,9 @@ interface CatalogPageProps {
 }
 
 export default async function CatalogPage({ searchParams }: CatalogPageProps) {
-  // Backward compatibility: If redirected or linked with ?category=slug, redirect to clean URL /catalog/[category]
-  if (searchParams?.category) {
-    const brandQuery = searchParams.brand ? `?brand=${encodeURIComponent(searchParams.brand)}` : '';
-    const directCat = getCategoryBySlug(searchParams.category);
-    if (directCat) {
-      redirect(`/catalog/${directCat.slug}${brandQuery}`);
-    }
-    const matchCat = CATALOG_CATEGORIES.find(
-      (c) =>
-        c.title.toLowerCase() === searchParams.category?.toLowerCase() ||
-        c.menuTitle.toLowerCase() === searchParams.category?.toLowerCase() ||
-        c.dbCategories.some((db) => db.toLowerCase() === searchParams.category?.toLowerCase())
-    );
-    if (matchCat) {
-      redirect(`/catalog/${matchCat.slug}${brandQuery}`);
-    }
-    redirect(`/catalog/${encodeURIComponent(searchParams.category)}${brandQuery}`);
-  }
-
-  // Brand Filter View: /catalog?brand=ASKO
+  // 1. Dedicated Brand Catalog View: /catalog?brand=BOSCH (supports optional &category=slug)
   if (searchParams?.brand) {
+    const brandUpper = searchParams.brand.toUpperCase();
     const { products, total } = await getCatalogProducts({
       brand: searchParams.brand,
       limit: 1500,
@@ -63,7 +45,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
     const breadcrumbs = [
       { name: 'Главная', url: '/' },
       { name: 'Каталог', url: '/catalog' },
-      { name: searchParams.brand, url: `/catalog?brand=${encodeURIComponent(searchParams.brand)}` },
+      { name: `Техника ${brandUpper}`, url: `/catalog?brand=${encodeURIComponent(searchParams.brand)}` },
     ];
 
     return (
@@ -73,13 +55,32 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
           <CatalogView
             initialProducts={products}
             totalCount={total}
-            categoryTitle={`Техника ${searchParams.brand}`}
-            categoryDescription={`Официальная коллекция бытовой техники ${searchParams.brand} в салонах и на центральном складе СИМОНА.`}
+            categoryTitle={`Техника ${brandUpper}`}
+            categoryDescription={`Официальная коллекция бытовой техники ${brandUpper} в салонах и на центральном складе СИМОНА.`}
             initialBrand={searchParams.brand}
+            initialCategorySlug={searchParams.category}
           />
         </Suspense>
       </>
     );
+  }
+
+  // 2. Backward compatibility: If redirected or linked with ?category=slug (without brand), redirect to clean URL /catalog/[category]
+  if (searchParams?.category) {
+    const directCat = getCategoryBySlug(searchParams.category);
+    if (directCat) {
+      redirect(`/catalog/${directCat.slug}`);
+    }
+    const matchCat = CATALOG_CATEGORIES.find(
+      (c) =>
+        c.title.toLowerCase() === searchParams.category?.toLowerCase() ||
+        c.menuTitle.toLowerCase() === searchParams.category?.toLowerCase() ||
+        c.dbCategories.some((db) => db.toLowerCase() === searchParams.category?.toLowerCase())
+    );
+    if (matchCat) {
+      redirect(`/catalog/${matchCat.slug}`);
+    }
+    redirect(`/catalog/${encodeURIComponent(searchParams.category)}`);
   }
 
   // Section Filter View: /catalog?section=vstraivaemaya-tehnika

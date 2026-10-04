@@ -80,7 +80,20 @@ export async function getCatalogProducts(options?: {
       where.category = { contains: options.category };
     }
     if (options?.brand) {
-      where.brand = options.brand;
+      const b = options.brand.trim();
+      const brandVariants = new Set<string>([
+        b,
+        b.toUpperCase(),
+        b.toLowerCase(),
+        b.charAt(0).toUpperCase() + b.slice(1).toLowerCase(),
+      ]);
+      if (b.toLowerCase().includes('korting') || b.toLowerCase().includes('körting')) {
+        brandVariants.add('KORTING');
+        brandVariants.add('KÖRTING');
+        brandVariants.add('Korting');
+        brandVariants.add('Körting');
+      }
+      where.brand = { in: Array.from(brandVariants) };
     }
 
     let orderByObj: any = { isFeatured: 'desc' };

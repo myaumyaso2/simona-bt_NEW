@@ -40,6 +40,7 @@ interface CatalogSidebarProps {
   categoryFacets?: CategoryFacet[];
   activeVariant?: 'sidebar_facets' | 'top_chips' | 'drawer';
   onOpenDrawer?: () => void;
+  brandLock?: string;
 }
 
 export function CatalogSidebar({
@@ -51,6 +52,7 @@ export function CatalogSidebar({
   promoCounts = {},
   priceBounds = { min: 0, max: 900000 },
   categoryFacets = [],
+  brandLock,
 }: CatalogSidebarProps) {
   const [promoOpen, setPromoOpen] = useState(true);
   const [brandSearch, setBrandSearch] = useState('');
@@ -231,8 +233,18 @@ export function CatalogSidebar({
         </div>
       )}
 
-      {/* 1. БРЕНД (Динамический для категории с поиском) */}
-      {effectiveBrands.length > 0 && (
+      {/* 1. БРЕНД (Привязка к бренду для страницы бренда или динамический выбор) */}
+      {brandLock ? (
+        <div className="border-b border-[#2B313A]/60 pb-4">
+          <div className="flex items-center justify-between py-1 text-xs">
+            <span className="text-[#87888A] font-medium">Производитель</span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-simona-teal/15 border border-simona-teal/30 text-simona-teal font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-simona-teal animate-pulse" />
+              {brandLock}
+            </span>
+          </div>
+        </div>
+      ) : effectiveBrands.length > 0 && (
         <div className="border-b border-[#2B313A]/60 pb-4">
           <button
             onClick={() => setBrandOpen(!brandOpen)}
