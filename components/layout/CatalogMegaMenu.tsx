@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SimonaIconChevronLeft, SimonaIconChevronRight } from '@/components/brand/SimonaIcons';
+import { getActiveCatalogBrands } from '@/data/catalogMegaMenuBrands';
 
 export interface CatalogMegaMenuProps {
   isOpen: boolean;
@@ -25,18 +28,6 @@ interface ColumnStructure {
   id: string;
   groups: CategoryGroup[];
 }
-
-const BRAND_BAR_ITEMS = [
-  { name: 'Bosch', href: '/brands/bosch' },
-  { name: 'Asko', href: '/brands/asko' },
-  { name: 'Liebherr', href: '/brands/liebherr' },
-  { name: 'Smeg', href: '/brands/smeg' },
-  { name: 'Miele', href: '/brands/miele' },
-  { name: 'Omoikiri', href: '/brands/omoikiri' },
-  { name: 'Elica', href: '/brands/elica' },
-  { name: 'Midea', href: '/brands/midea' },
-  { name: 'Körting', href: '/brands/korting' },
-];
 
 /**
  * 100% точные разделы и категории со старого сайта СИМОНА
@@ -198,6 +189,56 @@ const CATALOG_COLUMNS: ColumnStructure[] = [
 
 export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
+  const brandStripRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [currentBrand, setCurrentBrand] = useState<string>('');
+  const pathname = usePathname();
+
+  const brands = getActiveCatalogBrands();
+
+  // Проверка возможности прокрутки ленты брендов
+  const checkScroll = useCallback(() => {
+    const el = brandStripRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 6);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 6);
+  }, []);
+
+  // Синхронизация текущего активного бренда из URL
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const b = params.get('brand') || '';
+      setCurrentBrand(b.toUpperCase());
+    }
+  }, [pathname, isOpen]);
+
+  // Проверка скролла при открытии меню и ресайзе
+  useEffect(() => {
+    if (!isOpen) return;
+    const timer = setTimeout(checkScroll, 60);
+    window.addEventListener('resize', checkScroll);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', checkScroll);
+    };
+  }, [isOpen, checkScroll]);
+
+  // Автоскролл к выбранному бренду при открытии
+  useEffect(() => {
+    if (!isOpen || !currentBrand) return;
+    const timer = setTimeout(() => {
+      const el = brandStripRef.current;
+      if (!el) return;
+      const activeEl = el.querySelector<HTMLElement>(`[data-brand="${currentBrand}"]`);
+      if (activeEl) {
+        activeEl.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' });
+      }
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [isOpen, currentBrand]);
 
   // Закрытие по клавише Esc
   useEffect(() => {
@@ -210,6 +251,16 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    const el = brandStripRef.current;
+    if (!el) return;
+    const scrollAmount = Math.min(320, Math.max(220, el.clientWidth * 0.65));
+    el.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
+  };
 
   return (
     <AnimatePresence>
@@ -241,39 +292,78 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
             transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
             className="absolute top-full left-0 right-0 z-50 bg-[#14171B] border-b border-[#2B313A] shadow-[0_24px_50px_rgba(0,0,0,0.85)]"
           >
-            {/* BRAND BAR STRIP (РАВНОМЕРНО РАСПРЕДЕЛЕННЫЕ КЛЮЧЕВЫЕ БРЕНДЫ) */}
-        <div className="bg-[#111316] border-b border-[#2B313A] px-4 sm:px-8 py-2.5 flex items-center justify-between gap-3 sm:gap-4">
-          <div className="flex-1 flex items-center justify-between gap-2 overflow-x-auto no-scrollbar py-0.5">
-            {BRAND_BAR_ITEMS.map((brand) => (
-              <Link
-                key={brand.name}
-                href={brand.href}
-                onClick={onClose}
-                className="flex-1 min-w-[76px] sm:min-w-0 inline-flex items-center justify-center px-2 py-1.5 rounded-xl text-xs font-medium text-white bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal hover:text-simona-teal-light hover:shadow-[0_0_14px_rgba(0,151,156,0.35)] transition-all whitespace-nowrap text-center"
+            {/* BRAND BAR STRIP WITH FLOATING ARROWS (QUIET LUXURY STANDARDS) */}
+            <div className="relative bg-[#111316] border-b border-[#2B313A] px-3 sm:px-6 py-2 flex items-center justify-between gap-2 select-none">
+              {/* Левая плавающая стрелка с мягким градиентом */}
+              {canScrollLeft && (
+                <div className="hidden md:flex absolute left-3 sm:left-6 top-0 bottom-0 z-20 items-center pl-0.5 pr-8 bg-gradient-to-r from-[#111316] via-[#111316]/95 to-transparent pointer-events-none">
+                  <button
+                    type="button"
+                    onClick={() => handleScroll('left')}
+                    aria-label="Прокрутить бренды влево"
+                    className="pointer-events-auto w-7 h-7 rounded-xl bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal hover:bg-[#252A32] flex items-center justify-center transition-all shadow-lg hover:shadow-simona-teal/20 cursor-pointer"
+                  >
+                    <SimonaIconChevronLeft className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+
+              {/* Прокручиваемая лента всех активных брендов */}
+              <div
+                ref={brandStripRef}
+                onScroll={checkScroll}
+                className="flex-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 scroll-smooth touch-pan-x"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                {brand.name}
-              </Link>
-            ))}
+                {brands.map((brand) => {
+                  const isBrandActive =
+                    currentBrand === brand.name.toUpperCase() ||
+                    currentBrand === brand.slug.toUpperCase();
 
-            <Link
-              href="/brands"
-              onClick={onClose}
-              className="shrink-0 text-xs font-medium text-[#87888A] hover:text-white px-3 py-1.5 rounded-xl hover:bg-[#1E2228] border border-transparent hover:border-[#2B313A] transition-all whitespace-nowrap"
-            >
-              Все бренды →
-            </Link>
-          </div>
+                  return (
+                    <Link
+                      key={brand.name}
+                      data-brand={brand.name.toUpperCase()}
+                      href={`/catalog?brand=${encodeURIComponent(brand.slug)}`}
+                      onClick={onClose}
+                      className={`shrink-0 inline-flex items-center justify-center px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wider font-montserrat uppercase transition-all whitespace-nowrap text-center ${
+                        isBrandActive
+                          ? 'bg-simona-teal/20 text-simona-teal-light border border-simona-teal shadow-[0_0_12px_rgba(0,151,156,0.35)] font-bold'
+                          : 'text-white bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal hover:text-simona-teal-light hover:shadow-[0_0_14px_rgba(0,151,156,0.35)]'
+                      }`}
+                    >
+                      {brand.name}
+                    </Link>
+                  );
+                })}
+              </div>
 
-          <button
-            onClick={onClose}
-            aria-label="Закрыть каталог (Esc)"
-            className="w-8 h-8 rounded-xl border border-[#2B313A] bg-[#1E2228] text-[#87888A] hover:text-white hover:border-simona-teal flex items-center justify-center transition-all shrink-0 ml-1"
-          >
-            <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+              {/* Правая плавающая стрелка с мягким градиентом */}
+              {canScrollRight && (
+                <div className="hidden md:flex absolute right-12 sm:right-16 top-0 bottom-0 z-20 items-center pr-0.5 pl-8 bg-gradient-to-l from-[#111316] via-[#111316]/95 to-transparent pointer-events-none">
+                  <button
+                    type="button"
+                    onClick={() => handleScroll('right')}
+                    aria-label="Прокрутить бренды вправо"
+                    className="pointer-events-auto w-7 h-7 rounded-xl bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal hover:bg-[#252A32] flex items-center justify-center transition-all shadow-lg hover:shadow-simona-teal/20 cursor-pointer"
+                  >
+                    <SimonaIconChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+
+              {/* Кнопка закрытия мега-меню (Esc) */}
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Закрыть каталог (Esc)"
+                className="w-8 h-8 rounded-xl border border-[#2B313A] bg-[#1E2228] text-[#87888A] hover:text-white hover:border-simona-teal flex items-center justify-center transition-all shrink-0 ml-1 z-30"
+              >
+                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
         {/* 4 СБАЛАНСИРОВАННЫЕ КОЛОНКИ КАТАЛОГА (17 / 17 / 21 / 20) */}
         <div className="max-w-[1440px] mx-auto px-4 sm:px-8 py-4 sm:py-5 max-h-[calc(100vh-125px)] overflow-y-auto no-scrollbar">

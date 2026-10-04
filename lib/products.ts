@@ -93,6 +93,10 @@ export async function getCatalogProducts(options?: {
         brandVariants.add('Korting');
         brandVariants.add('Körting');
       }
+      if (b.toUpperCase() === 'SIEMENS') {
+        brandVariants.add('SIEMENS LV');
+        brandVariants.add('Siemens LV');
+      }
       where.brand = { in: Array.from(brandVariants) };
     }
 
