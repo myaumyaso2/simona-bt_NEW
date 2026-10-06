@@ -354,7 +354,7 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 4, scale: 0.95 }}
                       transition={{ duration: 0.18, ease: 'easeOut' }}
-                      className="absolute right-0 top-full mt-2 w-80 p-3 rounded-xl bg-[#16191D]/95 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl z-50 text-left"
+                      className="absolute right-0 top-full mt-2 w-[340px] p-3 rounded-xl bg-[#16191D]/95 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl z-50 text-left"
                     >
                       {productPromos.length === 1 && activePromo ? (
                         <div
@@ -410,18 +410,18 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
                                       : 'bg-white/[0.03] hover:bg-[#8A151A]/15 border-white/10 hover:border-simona-wine/50'
                                   }`}
                                 >
-                                  <div className="flex items-center justify-between text-[10.5px] mb-1 gap-1">
-                                    <div className="flex items-center gap-1 min-w-0">
-                                      <span className="px-1.5 py-0.2 rounded bg-simona-wine/40 text-simona-wine-light font-semibold text-[10px] shrink-0">
+                                  <div className="flex items-center justify-between text-[10.5px] mb-1.5 gap-2">
+                                    <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+                                      <span className="px-1.5 py-0.5 rounded bg-simona-wine/40 text-simona-wine-light font-semibold text-[10px] shrink-0">
                                         {promo.discountBadge || promo.badgeText || 'Акция'}
                                       </span>
                                       {isFiltered && (
-                                        <span className="px-1 py-0.2 rounded bg-simona-teal/20 text-simona-teal text-[9.5px] font-bold border border-simona-teal/40 shrink-0">
+                                        <span className="px-1.5 py-0.5 rounded bg-simona-teal/20 text-simona-teal text-[9.5px] font-bold border border-simona-teal/40 shrink-0">
                                           Выбрана в фильтре
                                         </span>
                                       )}
                                     </div>
-                                    <span className="text-[10px] text-[#87888A] shrink-0">
+                                    <span className="text-[10px] text-[#87888A] shrink-0 whitespace-nowrap">
                                       до {promo.endDate}
                                     </span>
                                   </div>
