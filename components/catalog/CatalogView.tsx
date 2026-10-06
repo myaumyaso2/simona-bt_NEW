@@ -493,20 +493,26 @@ export function CatalogView({
                 {filters.selectedPromos.map((slug) => {
                   const promo = MANUFACTURER_PROMOS.find((p) => p.slug === slug);
                   if (!promo) return null;
+                  const promoTitleClean = promo.title.trim();
+                  const promoBrandClean = promo.brand.trim();
+                  const promoDisplayName = promoTitleClean.toLowerCase().startsWith(promoBrandClean.toLowerCase())
+                    ? promoTitleClean
+                    : `${promoBrandClean}: ${promoTitleClean}`;
+
                   return (
                     <span
                       key={slug}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-simona-wine/25 text-white border border-simona-wine/50 text-xs font-medium shadow-sm backdrop-blur-md"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-simona-wine/25 text-white border border-simona-wine/50 text-xs font-medium shadow-sm backdrop-blur-md max-w-full"
                     >
-                      <span>
-                        {promo.brand}: {promo.badgeText}
+                      <span className="truncate max-w-[240px] sm:max-w-[340px]" title={promoDisplayName}>
+                        {promoDisplayName}
                       </span>
                       <button
                         onClick={() => {
                           const next = filters.selectedPromos.filter((s) => s !== slug);
                           handleFilterChange({ selectedPromos: next });
                         }}
-                        className="hover:bg-white/20 rounded-full p-0.5 transition-colors cursor-pointer"
+                        className="hover:bg-white/20 rounded-full p-0.5 transition-colors cursor-pointer shrink-0"
                         aria-label={`Удалить фильтр ${promo.title}`}
                       >
                         <X className="w-3 h-3" />
@@ -538,9 +544,17 @@ export function CatalogView({
               >
                 {paginatedProducts.map((product) =>
                   viewMode === 'grid' ? (
-                    <LuxuryProductCard key={product.id} product={product} />
+                    <LuxuryProductCard
+                      key={product.id}
+                      product={product}
+                      selectedPromos={filters.selectedPromos}
+                    />
                   ) : (
-                    <LuxuryProductListCard key={product.id} product={product} />
+                    <LuxuryProductListCard
+                      key={product.id}
+                      product={product}
+                      selectedPromos={filters.selectedPromos}
+                    />
                   )
                 )}
               </motion.div>

@@ -236,43 +236,50 @@ export function ProductBuyBox({
         </div>
       </div>
 
-      {/* 5.1. Accent Wine Manufacturer Promo Module */}
-      {activePromo ? (
-        <div className="rounded-xl border border-simona-wine/60 bg-simona-wine/10 p-4 sm:p-4.5 flex flex-col gap-2.5 shadow-lg relative overflow-hidden transition-all duration-300">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-simona-wine/15 rounded-full blur-2xl pointer-events-none" />
-
-          <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-simona-wine/25 text-white shadow-sm border border-simona-wine/50 backdrop-blur-md">
-              <span>
-                {activePromo.badgeText} ({formatBrandName(activePromo.brand)})
-              </span>
-            </span>
-            <div className="flex items-center gap-1.5 text-[11px] text-simona-wine-light font-medium">
-              <SimonaIconClock className="w-3 h-3 shrink-0" />
-              <span>до {activePromo.endDate}</span>
-            </div>
-          </div>
-
-          <div className="text-sm font-montserrat font-bold text-white leading-snug">
-            {activePromo.title}
-          </div>
-
-          <p className="text-xs text-[#D7D9DB] leading-relaxed line-clamp-2">
-            {activePromo.shortDescription}
-          </p>
-
-          <div className="pt-1 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => openModal('PROMO_TERMS', { promoData: activePromo })}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-simona-wine-light transition-colors group cursor-pointer"
+      {/* 5.1. Accent Wine Manufacturer Promo Modules */}
+      {productPromos.length > 0 ? (
+        <div className="space-y-3">
+          {productPromos.map((promo) => (
+            <div
+              key={promo.id}
+              className="rounded-xl border border-simona-wine/60 bg-simona-wine/10 p-4 sm:p-4.5 flex flex-col gap-2.5 shadow-lg relative overflow-hidden transition-all duration-300"
             >
-              <span className="underline decoration-simona-wine/60 underline-offset-4">
-                Подробнее об акции и подарках
-              </span>
-              <ArrowRight className="w-3.5 h-3.5 text-simona-wine-light group-hover:translate-x-0.5 transition-transform" />
-            </button>
-          </div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-simona-wine/15 rounded-full blur-2xl pointer-events-none" />
+
+              <div className="flex items-center justify-between gap-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-simona-wine/25 text-white shadow-sm border border-simona-wine/50 backdrop-blur-md">
+                  <span>
+                    {promo.discountBadge || promo.badgeText} ({formatBrandName(promo.brand)})
+                  </span>
+                </span>
+                <div className="flex items-center gap-1.5 text-[11px] text-simona-wine-light font-medium">
+                  <SimonaIconClock className="w-3 h-3 shrink-0" />
+                  <span>до {promo.endDate}</span>
+                </div>
+              </div>
+
+              <div className="text-sm font-montserrat font-bold text-white leading-snug">
+                {promo.title}
+              </div>
+
+              <p className="text-xs text-[#D7D9DB] leading-relaxed line-clamp-2">
+                {promo.shortDescription}
+              </p>
+
+              <div className="pt-1 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => openModal('PROMO_TERMS', { promoData: promo })}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-simona-wine-light transition-colors group cursor-pointer"
+                >
+                  <span className="underline decoration-simona-wine/60 underline-offset-4">
+                    Подробнее об акции и подарках
+                  </span>
+                  <ArrowRight className="w-3.5 h-3.5 text-simona-wine-light group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       ) : categoryPromo ? (
         <div className="rounded-xl border border-simona-wine/30 bg-simona-wine/5 p-3 sm:p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs shadow-sm">

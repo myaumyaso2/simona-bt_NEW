@@ -665,27 +665,45 @@ export function getPromosByBrand(brand: string): ManufacturerPromo[] {
   );
 }
 
-export function getPromosForProduct(product: ProductItem): ManufacturerPromo[] {
-  return MANUFACTURER_PROMOS.filter(
-    (promo) =>
-      promo.isActive !== false &&
-      (promo.participatingProductSlugs?.includes(product.slug) ||
-        (product.promoSlugs && product.promoSlugs.includes(promo.slug)) ||
-        (product.brand && promo.brand && product.brand.toLowerCase() === promo.brand.toLowerCase()))
+export function isProductMatchingPromo(promo: ManufacturerPromo, product: ProductItem): boolean {
+  if (promo.isActive === false) return false;
+
+  if (product.promoSlugs && product.promoSlugs.includes(promo.slug)) {
+    return true;
+  }
+
+  const hasSkus = Boolean(promo.participatingSkus && promo.participatingSkus.length > 0);
+  const hasSlugs = Boolean(promo.participatingProductSlugs && promo.participatingProductSlugs.length > 0);
+
+  if (hasSkus && promo.participatingSkus?.includes(product.sku)) {
+    return true;
+  }
+
+  if (hasSlugs && promo.participatingProductSlugs?.includes(product.slug)) {
+    return true;
+  }
+
+  // If promo has explicit SKU or slug restrictions, do not match general brand
+  if (hasSkus || hasSlugs) {
+    return false;
+  }
+
+  // Fallback to brand-wide match only for promos with no explicit SKU restriction
+  return Boolean(
+    product.brand &&
+      promo.brand &&
+      product.brand.trim().toLowerCase() === promo.brand.trim().toLowerCase()
   );
 }
 
+export function getPromosForProduct(product: ProductItem): ManufacturerPromo[] {
+  return MANUFACTURER_PROMOS.filter((promo) => isProductMatchingPromo(promo, product));
+}
+
 export function isProductInPromo(product: ProductItem, promoSlug: string): boolean {
-  return (
-    Boolean(product.promoSlugs?.includes(promoSlug)) ||
-    MANUFACTURER_PROMOS.some(
-      (p) =>
-        p.slug === promoSlug &&
-        p.isActive !== false &&
-        (p.participatingProductSlugs?.includes(product.slug) ||
-          p.brand.toLowerCase() === product.brand.toLowerCase())
-    )
-  );
+  const promo = MANUFACTURER_PROMOS.find((p) => p.slug === promoSlug);
+  if (!promo) return false;
+  return isProductMatchingPromo(promo, product);
 }
 
 export function getPromosForCategory(categoryName: string): ManufacturerPromo[] {

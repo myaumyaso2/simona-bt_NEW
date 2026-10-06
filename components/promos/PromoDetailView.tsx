@@ -222,7 +222,11 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
               {participatingProducts.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {participatingProducts.map((prod) => (
-                    <LuxuryProductCard key={prod.id} product={prod} />
+                    <LuxuryProductCard
+                      key={prod.id}
+                      product={prod}
+                      selectedPromos={[promo.slug]}
+                    />
                   ))}
                 </div>
               ) : (
