@@ -20,6 +20,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       smoothWheel: true,
       wheelMultiplier: 0.9,
       touchMultiplier: 1.5,
+      allowNestedScroll: true,
     });
 
     // Make lenis accessible globally if needed

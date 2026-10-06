@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProductItem } from '@/types';
@@ -173,6 +173,24 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
 
   const activePromo = productPromos[0];
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const promoListRef = useRef<HTMLDivElement>(null);
+
+  const handlePopoverWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    const el = promoListRef.current;
+    if (!el) return;
+
+    const isScrollingDown = e.deltaY > 0;
+    const isScrollingUp = e.deltaY < 0;
+    const canScrollDown = el.scrollTop + el.clientHeight < el.scrollHeight - 2;
+    const canScrollUp = el.scrollTop > 2;
+
+    if ((isScrollingDown && canScrollDown) || (isScrollingUp && canScrollUp)) {
+      e.stopPropagation();
+      if (e.target !== el && !el.contains(e.target as Node)) {
+        el.scrollTop += e.deltaY;
+      }
+    }
+  };
 
   const images = Array.isArray(product.images)
     ? product.images
@@ -354,6 +372,7 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 4, scale: 0.95 }}
                       transition={{ duration: 0.18, ease: 'easeOut' }}
+                      onWheel={handlePopoverWheel}
                       className="absolute right-0 top-full mt-2 w-[340px] p-3 rounded-xl bg-[#16191D]/95 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl z-50 text-left"
                     >
                       {productPromos.length === 1 && activePromo ? (
@@ -393,7 +412,10 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
                             <span className="text-[10px] text-[#87888A]">{product.brand}</span>
                           </div>
 
-                          <div className="space-y-2 max-h-[320px] overflow-y-auto pr-0.5 simona-sidebar-scrollbar">
+                          <div
+                            ref={promoListRef}
+                            className="space-y-2 max-h-[320px] overflow-y-auto pr-1.5 simona-promo-scrollbar overscroll-y-auto"
+                          >
                             {productPromos.map((promo) => {
                               const isFiltered = Boolean(selectedPromos?.includes(promo.slug));
                               return (

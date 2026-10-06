@@ -148,5 +148,32 @@ body {
   background-color: #00979C;
 }
 
+/* Quiet Luxury Promo Popover Scrollbar (4px, always visible, chained) */
+.simona-promo-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #3A414D #16191D;
+  overscroll-behavior: auto;
+}
+
+.simona-promo-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.simona-promo-scrollbar::-webkit-scrollbar-track {
+  background: #16191D;
+  border-radius: 9999px;
+}
+
+.simona-promo-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #3A414D;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.simona-promo-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #00979C;
+}
+
+
 
 
