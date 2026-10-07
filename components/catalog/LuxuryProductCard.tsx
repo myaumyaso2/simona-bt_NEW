@@ -287,13 +287,6 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
 
   return (
     <div className={`group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 transition-all duration-300 shadow-xl flex flex-col justify-between relative ${isTooltipOpen ? 'z-40' : 'z-10'}`}>
-      {/* Full-Tile Dimming Overlay when promo tooltip is open */}
-      <div
-        className={`absolute inset-0 rounded-2xl bg-black/65 backdrop-blur-[1.5px] pointer-events-none transition-opacity duration-200 z-20 ${
-          isTooltipOpen ? 'opacity-100' : 'opacity-0'
-        }`}
-      />
-
       <div>
         {/* Top Media Area (White Luxury Showcase Tablet with object-contain) */}
         <div className="relative aspect-[4/3] rounded-xl">
@@ -378,8 +371,8 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
                         onWheel={handlePopoverWheel}
                         className="absolute right-0 top-full mt-2 w-[340px] z-50 text-left"
                       >
-                        {/* Local Contour Backdrop Halo (Variant 2) */}
-                        <div className="absolute -inset-3.5 rounded-[20px] bg-black/75 backdrop-blur-md shadow-[0_25px_50px_-12px_rgba(0,0,0,0.95)] pointer-events-none" />
+                        {/* Soft Diffuse Shadow Halo (мягкий градиентный спад тени в 0 без жесткой границы плашки) */}
+                        <div className="absolute inset-0 rounded-2xl pointer-events-none -z-10 shadow-[0_0_50px_25px_rgba(0,0,0,0.85),0_20px_60px_10px_rgba(0,0,0,0.95)]" />
 
                         {/* Popover Card Content */}
                         <div className="relative p-3 rounded-xl bg-[#16191D]/95 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl">

@@ -896,8 +896,8 @@ export function CatalogSidebar({
           }}
           className="z-[9999] pointer-events-none animate-in fade-in zoom-in-95 duration-150"
         >
-          {/* Local Contour Backdrop Halo (Variant 2: мягкий ореол и подложка с блюром) */}
-          <div className="absolute -inset-3.5 rounded-[22px] bg-black/75 backdrop-blur-md shadow-[0_25px_50px_-12px_rgba(0,0,0,0.95)] pointer-events-none" />
+          {/* Soft Diffuse Shadow Halo (мягкий градиентный спад тени в 0 без жесткой границы плашки) */}
+          <div className="absolute inset-0 rounded-2xl pointer-events-none -z-10 shadow-[0_0_50px_25px_rgba(0,0,0,0.85),0_20px_60px_10px_rgba(0,0,0,0.95)]" />
 
           {/* Popover Card Content */}
           <div className="relative bg-[#16191D]/95 backdrop-blur-xl border border-simona-wine/60 rounded-2xl p-4 shadow-2xl shadow-black/80">
