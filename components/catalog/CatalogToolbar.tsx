@@ -46,6 +46,7 @@ function ListViewIcon({ className }: { className?: string }) {
 
 interface CatalogToolbarProps {
   filters: FilterState;
+  onRemoveGroup?: (group: string) => void;
   onRemoveBrand: (brand: string) => void;
   onRemoveWidth: () => void;
   onRemoveColor: () => void;
@@ -63,6 +64,7 @@ interface CatalogToolbarProps {
 
 export function CatalogToolbar({
   filters,
+  onRemoveGroup,
   onRemoveBrand,
   onRemoveWidth,
   onRemoveColor,
@@ -134,6 +136,18 @@ export function CatalogToolbar({
           </button>
 
           {/* Active Filter Chips */}
+          {filters.selectedGroups &&
+            filters.selectedGroups.map((group) => (
+              <button
+                key={group}
+                onClick={() => onRemoveGroup?.(group)}
+                className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-simona-teal/50 hover:border-rose-500/50 text-xs text-white transition group cursor-pointer"
+              >
+                <span className="font-medium text-simona-teal">{group}</span>
+                <X className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
+              </button>
+            ))}
+
           {!isBrandPage &&
             filters.selectedBrands.map((brand) => (
               <button

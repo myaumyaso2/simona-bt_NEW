@@ -15,6 +15,7 @@ model Product {
   brand           String
   category        String
   categoryType    String   @default("CATEGORY_B") // CATEGORY_A (E-com) or CATEGORY_B (O2O)
+  productGroup    String?                         // Группа товара 1С (столбец C 1C_import.csv)
   physicalStatus  String   @default("ON_ORDER")   // ACTIVE_KITCHEN, EXHIBITION_15, EXHIBITION_11, ON_ORDER
   price           Float
   oldPrice        Float?

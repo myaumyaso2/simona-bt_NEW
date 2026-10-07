@@ -4,6 +4,7 @@ import React from 'react';
 import { X } from 'lucide-react';
 import { CatalogSidebar, FilterState, BrandOption } from './CatalogSidebar';
 import { CategoryFacet } from '@/lib/productFeatures';
+import { ProductGroupOption } from '@/lib/catalog/productGroups';
 
 interface MobileFilterDrawerProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface MobileFilterDrawerProps {
   onFilterChange: (newFilters: Partial<FilterState>) => void;
   onResetFilters: () => void;
   totalFilteredCount: number;
+  availableGroups?: ProductGroupOption[];
   availableBrands?: BrandOption[];
   brandCounts?: Record<string, number>;
   promoCounts?: Record<string, number>;
@@ -27,6 +29,7 @@ export function MobileFilterDrawer({
   onFilterChange,
   onResetFilters,
   totalFilteredCount,
+  availableGroups,
   availableBrands,
   brandCounts,
   promoCounts,
@@ -66,6 +69,7 @@ export function MobileFilterDrawer({
             filters={filters}
             onFilterChange={onFilterChange}
             onResetFilters={onResetFilters}
+            availableGroups={availableGroups}
             availableBrands={availableBrands}
             brandCounts={brandCounts}
             promoCounts={promoCounts}

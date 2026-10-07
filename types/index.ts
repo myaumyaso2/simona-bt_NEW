@@ -62,6 +62,7 @@ export interface ProductItem {
   brand: string;
   category: string;
   categoryType: CategoryType;
+  productGroup?: string | null;
   physicalStatus: PhysicalStatus;
   price: number;
   oldPrice?: number | null;

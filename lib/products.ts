@@ -26,6 +26,7 @@ export function formatPrismaProduct(p: Product): ProductItem {
     brand: p.brand,
     category: p.category,
     categoryType: (p.categoryType as CategoryType) || 'CATEGORY_B',
+    productGroup: (p as any).productGroup || null,
     physicalStatus: (p.physicalStatus as PhysicalStatus) || (p.inStock ? 'LOCAL_STOCK' : 'ON_ORDER'),
     price: p.price,
     oldPrice: p.oldPrice,

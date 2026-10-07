@@ -36,6 +36,7 @@ async function main() {
       brand: p.brand || 'СИМОНА',
       category: p.category || 'Встраиваемая техника',
       categoryType: p.categoryType || 'CATEGORY_B',
+      productGroup: p.productGroup || null,
       physicalStatus: p.physicalStatus || (p.inStock ? 'LOCAL_STOCK' : 'ON_ORDER'),
       price: Number(p.price) || 0,
       oldPrice: p.oldPrice ? Number(p.oldPrice) : null,

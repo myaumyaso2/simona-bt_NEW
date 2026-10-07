@@ -23,6 +23,7 @@ import {
   getBrandInfo,
   isProductInCategory,
 } from '@/lib/catalog/brandCategories';
+import { getCategoryProductGroups, getProductGroup } from '@/lib/catalog/productGroups';
 
 interface CatalogViewProps {
   initialProducts?: ProductItem[];
@@ -108,7 +109,13 @@ export function CatalogView({
     };
   }, [categoryProducts]);
 
+  // Dynamic product groups from 1C column C / canonical titles
+  const availableGroups = useMemo(() => {
+    return getCategoryProductGroups(categoryProducts);
+  }, [categoryProducts]);
+
   const [filters, setFilters] = useState<FilterState>({
+    selectedGroups: [],
     selectedPromos: [],
     selectedBrands: brandParam ? [brandParam] : [],
     priceMin: priceBounds.min,
@@ -174,6 +181,7 @@ export function CatalogView({
 
   const handleResetFilters = () => {
     setFilters({
+      selectedGroups: [],
       selectedPromos: [],
       selectedBrands: initialBrand ? [initialBrand] : [],
       priceMin: priceBounds.min,
@@ -242,10 +250,18 @@ export function CatalogView({
     return counts;
   }, [availableBrands]);
 
-  // 1. Products filtered by sidebar criteria (promos, brands, price, dynamic facets) - WITHOUT physical presence tab
+  // 1. Products filtered by sidebar criteria (groups, promos, brands, price, dynamic facets) - WITHOUT physical presence tab
   const sidebarFilteredProducts = useMemo(() => {
     return categoryProducts.filter((product) => {
-      // 0. Promo Filter (OR logic: product participates in ANY of the selected promos)
+      // 0. Product Group Filter (Column C from 1C_import.csv)
+      if (filters.selectedGroups && filters.selectedGroups.length > 0) {
+        const pGroup = getProductGroup(product);
+        if (!filters.selectedGroups.includes(pGroup)) {
+          return false;
+        }
+      }
+
+      // 0.5. Promo Filter (OR logic: product participates in ANY of the selected promos)
       if (filters.selectedPromos.length > 0) {
         const matchesPromo = filters.selectedPromos.some((promoSlug) =>
           isProductInPromo(product, promoSlug)
@@ -451,6 +467,7 @@ export function CatalogView({
               filters={filters}
               onFilterChange={handleFilterChange}
               onResetFilters={handleResetFilters}
+              availableGroups={availableGroups}
               availableBrands={availableBrands}
               brandCounts={brandCounts}
               promoCounts={promoCounts}
@@ -465,6 +482,11 @@ export function CatalogView({
             {/* Toolbar with Active Chips and Sort */}
             <CatalogToolbar
               filters={filters}
+              onRemoveGroup={(group) =>
+                handleFilterChange({
+                  selectedGroups: filters.selectedGroups.filter((g) => g !== group),
+                })
+              }
               onRemoveBrand={(brand) =>
                 handleFilterChange({
                   selectedBrands: filters.selectedBrands.filter((b) => b.toUpperCase() !== brand.toUpperCase()),
@@ -605,6 +627,7 @@ export function CatalogView({
         onFilterChange={handleFilterChange}
         onResetFilters={handleResetFilters}
         totalFilteredCount={filteredProducts.length}
+        availableGroups={availableGroups}
         availableBrands={availableBrands}
         brandCounts={brandCounts}
         promoCounts={promoCounts}
