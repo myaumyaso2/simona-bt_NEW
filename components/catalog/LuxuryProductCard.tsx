@@ -203,7 +203,8 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
     'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80';
 
   const discountBadge = getDiscountBadgeInfo(product);
-  const showPromoBadge = Boolean(productPromos.length > 0 || discountBadge);
+  const hasPromos = productPromos.length > 0;
+  const showTopRightBadges = Boolean(hasPromos || discountBadge);
   const formattedTitle = formatProductName(product);
 
   const getPluralPromos = (count: number) => {
@@ -212,15 +213,9 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
     return `${count} акций`;
   };
 
-  const badgeText = discountBadge
-    ? discountBadge.text
-    : productPromos.length > 1
+  const promoBadgeText = productPromos.length > 1
     ? getPluralPromos(productPromos.length)
     : 'Акция';
-
-  const badgeClass = discountBadge
-    ? discountBadge.className
-    : 'bg-[#8A151A]/85 hover:bg-[#8A151A]/95 text-white border border-[#A81C22]/60 shadow-md';
 
   const chips = getProductChips(product);
   const physicalStatus = getProductPhysicalStatus(product);
@@ -333,41 +328,43 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
             />
           </Link>
 
-          {/* Promo / Discount Badge (Top-Right) placed outside overflow-hidden to prevent clipping */}
-          {showPromoBadge && (
-            <div
-              className="absolute top-2.5 right-2.5 z-30"
-              onMouseEnter={() => setIsTooltipOpen(true)}
-              onMouseLeave={() => setIsTooltipOpen(false)}
-            >
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (productPromos.length === 1 && activePromo) {
-                    openModal('PROMO_TERMS', { promoData: activePromo });
-                  } else if (productPromos.length > 1) {
-                    setIsTooltipOpen((prev) => !prev);
-                  }
-                }}
-                className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold border backdrop-blur-md shadow-md transition-all duration-200 cursor-pointer transform hover:scale-105 ${badgeClass}`}
-                title={
-                  productPromos.length > 1
-                    ? `Доступно ${productPromos.length} акций. Нажмите для выбора`
-                    : activePromo
-                    ? 'Нажмите для подробных условий акции'
-                    : 'Скидка'
-                }
-              >
-                <span>{badgeText}</span>
-              </button>
+          {/* Top-Right Badges Stack: Promo Badge (above) + Discount Badge (below) */}
+          {showTopRightBadges && (
+            <div className="absolute top-2.5 right-2.5 z-30 flex flex-col items-end gap-1.5">
+              {/* 1. Promo Badge (interactive, triggers multi-promo popover) */}
+              {hasPromos && (
+                <div
+                  className="relative"
+                  onMouseEnter={() => setIsTooltipOpen(true)}
+                  onMouseLeave={() => setIsTooltipOpen(false)}
+                >
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (productPromos.length === 1 && activePromo) {
+                        openModal('PROMO_TERMS', { promoData: activePromo });
+                      } else if (productPromos.length > 1) {
+                        setIsTooltipOpen((prev) => !prev);
+                      }
+                    }}
+                    className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold border backdrop-blur-md shadow-md transition-all duration-200 cursor-pointer transform hover:scale-105 bg-[#8A151A]/85 hover:bg-[#8A151A]/95 text-white border-[#A81C22]/60"
+                    title={
+                      productPromos.length > 1
+                        ? `Доступно ${productPromos.length} акций. Нажмите для выбора`
+                        : activePromo
+                        ? 'Нажмите для подробных условий акции'
+                        : 'Акция'
+                    }
+                  >
+                    <span>{promoBadgeText}</span>
+                  </button>
 
-              {/* Interactive Tooltip on Hover / Click (Variant 2) */}
-              {productPromos.length > 0 && (
-                <AnimatePresence>
-                  {isTooltipOpen && (
-                    <motion.div
+                  {/* Interactive Tooltip on Hover / Click (Variant 2) */}
+                  <AnimatePresence>
+                    {isTooltipOpen && (
+                      <motion.div
                       initial={{ opacity: 0, y: 6, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 4, scale: 0.95 }}
@@ -463,9 +460,20 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
                     </motion.div>
                   )}
                 </AnimatePresence>
-              )}
-            </div>
-          )}
+              </div>
+            )}
+
+            {/* 2. Discount Badge (informational % badge, positioned below promo badge) */}
+            {discountBadge && (
+              <span
+                className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold border backdrop-blur-md shadow-md select-none ${discountBadge.className}`}
+                title={`Скидка ${discountBadge.text}`}
+              >
+                {discountBadge.text}
+              </span>
+            )}
+          </div>
+        )}
         </div>
 
         {/* Content Area */}

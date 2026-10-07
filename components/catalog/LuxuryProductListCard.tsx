@@ -127,7 +127,8 @@ export function LuxuryProductListCard({ product, selectedPromos }: LuxuryProduct
   const physicalStatus = getProductPhysicalStatus(product);
 
   const discountBadge = getDiscountBadgeInfo(product);
-  const showPromoBadge = Boolean(productPromos.length > 0 || discountBadge);
+  const hasPromos = productPromos.length > 0;
+  const showTopRightBadges = Boolean(hasPromos || discountBadge);
   const formattedTitle = formatProductName(product);
 
   const getPluralPromos = (count: number) => {
@@ -136,15 +137,9 @@ export function LuxuryProductListCard({ product, selectedPromos }: LuxuryProduct
     return `${count} акций`;
   };
 
-  const badgeText = discountBadge
-    ? discountBadge.text
-    : productPromos.length > 1
+  const promoBadgeText = productPromos.length > 1
     ? getPluralPromos(productPromos.length)
     : 'Акция';
-
-  const badgeClass = discountBadge
-    ? discountBadge.className
-    : 'bg-[#8A151A]/85 hover:bg-[#8A151A]/95 text-white border border-[#A81C22]/60 shadow-md';
 
   return (
     <div className={`group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 sm:p-5 transition-all duration-300 shadow-xl flex flex-col sm:flex-row gap-5 items-stretch relative ${isTooltipOpen ? 'z-40' : 'z-10'}`}>
@@ -190,136 +185,149 @@ export function LuxuryProductListCard({ product, selectedPromos }: LuxuryProduct
           />
         </Link>
 
-        {/* Promo / Discount Badge (Top-Right) placed outside overflow-hidden */}
-        {showPromoBadge && (
-          <div
-            className="absolute top-2.5 right-2.5 z-30"
-            onMouseEnter={() => setIsTooltipOpen(true)}
-            onMouseLeave={() => setIsTooltipOpen(false)}
-          >
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (productPromos.length === 1 && activePromo) {
-                  openModal('PROMO_TERMS', { promoData: activePromo });
-                } else if (productPromos.length > 1) {
-                  setIsTooltipOpen((prev) => !prev);
-                }
-              }}
-              className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold border backdrop-blur-md shadow-md transition-all duration-200 cursor-pointer transform hover:scale-105 ${badgeClass}`}
-              title={
-                productPromos.length > 1
-                  ? `Доступно ${productPromos.length} акций. Нажмите для выбора`
-                  : activePromo
-                  ? 'Нажмите для подробных условий акции'
-                  : 'Скидка'
-              }
-            >
-              <span>{badgeText}</span>
-            </button>
+        {/* Top-Right Badges Stack: Promo Badge (above) + Discount Badge (below) */}
+        {showTopRightBadges && (
+          <div className="absolute top-2.5 right-2.5 z-30 flex flex-col items-end gap-1.5">
+            {/* 1. Promo Badge (interactive, triggers multi-promo popover) */}
+            {hasPromos && (
+              <div
+                className="relative"
+                onMouseEnter={() => setIsTooltipOpen(true)}
+                onMouseLeave={() => setIsTooltipOpen(false)}
+              >
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (productPromos.length === 1 && activePromo) {
+                      openModal('PROMO_TERMS', { promoData: activePromo });
+                    } else if (productPromos.length > 1) {
+                      setIsTooltipOpen((prev) => !prev);
+                    }
+                  }}
+                  className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold border backdrop-blur-md shadow-md transition-all duration-200 cursor-pointer transform hover:scale-105 bg-[#8A151A]/85 hover:bg-[#8A151A]/95 text-white border-[#A81C22]/60"
+                  title={
+                    productPromos.length > 1
+                      ? `Доступно ${productPromos.length} акций. Нажмите для выбора`
+                      : activePromo
+                      ? 'Нажмите для подробных условий акции'
+                      : 'Акция'
+                  }
+                >
+                  <span>{promoBadgeText}</span>
+                </button>
 
-            {/* Interactive Tooltip on Hover / Click (Variant 2) */}
-            {productPromos.length > 0 && (
-              <AnimatePresence>
-                {isTooltipOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 6, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                    transition={{ duration: 0.18, ease: 'easeOut' }}
-                    onWheel={handlePopoverWheel}
-                    className="absolute right-0 top-full mt-2 w-[340px] p-3 rounded-xl bg-[#16191D]/95 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl z-50 text-left"
-                  >
-                    {productPromos.length === 1 && activePromo ? (
-                      <div
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          openModal('PROMO_TERMS', { promoData: activePromo });
-                        }}
-                        className="p-1 cursor-pointer group"
-                      >
-                        <div className="flex items-center justify-between text-[10.5px] text-simona-wine-light font-semibold mb-1">
-                          <span className="px-1.5 py-0.2 rounded bg-simona-wine/30 border border-simona-wine/50 text-[10px]">
-                            {activePromo.discountBadge || activePromo.badgeText || activePromo.brand}
-                          </span>
-                          <span className="text-[10px] text-[#87888A]">до {activePromo.endDate}</span>
-                        </div>
-                        <div className="text-xs font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors leading-snug mb-1.5 line-clamp-2">
-                          {activePromo.title}
-                        </div>
-                        <p className="text-[11px] text-[#D7D9DB] line-clamp-2 leading-relaxed mb-2 font-normal">
-                          {activePromo.shortDescription}
-                        </p>
-                        <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-simona-teal font-medium">
-                          <span>Подробнее об акции</span>
-                          <span className="text-white text-xs group-hover:translate-x-1 transition-transform">→</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div>
-                        <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 text-xs">
-                          <span className="font-bold text-white flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-simona-wine animate-pulse" />
-                            <span>Доступные акции:</span>
-                            <span className="text-simona-wine-light font-semibold">{productPromos.length}</span>
-                          </span>
-                          <span className="text-[10px] text-[#87888A]">{product.brand}</span>
-                        </div>
-
+                {/* Interactive Tooltip on Hover / Click (Variant 2) */}
+                <AnimatePresence>
+                  {isTooltipOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                      transition={{ duration: 0.18, ease: 'easeOut' }}
+                      onWheel={handlePopoverWheel}
+                      className="absolute right-0 top-full mt-2 w-[340px] p-3 rounded-xl bg-[#16191D]/95 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl z-50 text-left"
+                    >
+                      {productPromos.length === 1 && activePromo ? (
                         <div
-                          ref={promoListRef}
-                          className="space-y-2 max-h-[320px] overflow-y-auto pr-1.5 simona-promo-scrollbar overscroll-y-auto"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            openModal('PROMO_TERMS', { promoData: activePromo });
+                          }}
+                          className="p-1 cursor-pointer group"
                         >
-                          {productPromos.map((promo) => {
-                            const isFiltered = Boolean(selectedPromos?.includes(promo.slug));
-                            return (
-                              <div
-                                key={promo.id}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  openModal('PROMO_TERMS', { promoData: promo });
-                                }}
-                                className={`p-2.5 rounded-lg border transition-all cursor-pointer group text-left ${
-                                  isFiltered
-                                    ? 'bg-simona-wine/20 border-simona-wine/70 hover:border-simona-wine ring-1 ring-simona-wine/40'
-                                    : 'bg-white/[0.03] hover:bg-[#8A151A]/15 border-white/10 hover:border-simona-wine/50'
-                                }`}
-                              >
-                                <div className="flex items-center justify-between text-[10.5px] mb-1.5 gap-2">
-                                  <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-                                    <span className="px-1.5 py-0.5 rounded bg-simona-wine/40 text-simona-wine-light font-semibold text-[10px] shrink-0">
-                                      {promo.discountBadge || promo.badgeText || 'Акция'}
-                                    </span>
-                                    {isFiltered && (
-                                      <span className="px-1.5 py-0.5 rounded bg-simona-teal/20 text-simona-teal text-[9.5px] font-bold border border-simona-teal/40 shrink-0">
-                                        Выбрана в фильтре
-                                      </span>
-                                    )}
-                                  </div>
-                                  <span className="text-[10px] text-[#87888A] shrink-0 whitespace-nowrap">
-                                    до {promo.endDate}
-                                  </span>
-                                </div>
-                                <div className="text-xs font-semibold text-white group-hover:text-white leading-snug line-clamp-2 mb-1">
-                                  {promo.title}
-                                </div>
-                                <div className="flex items-center justify-between text-[10.5px] text-simona-teal font-medium pt-1 border-t border-white/5">
-                                  <span>Условия предложения</span>
-                                  <span className="group-hover:translate-x-1 transition-transform text-white text-xs">→</span>
-                                </div>
-                              </div>
-                            );
-                          })}
+                          <div className="flex items-center justify-between text-[10.5px] text-simona-wine-light font-semibold mb-1">
+                            <span className="px-1.5 py-0.2 rounded bg-simona-wine/30 border border-simona-wine/50 text-[10px]">
+                              {activePromo.discountBadge || activePromo.badgeText || activePromo.brand}
+                            </span>
+                            <span className="text-[10px] text-[#87888A]">до {activePromo.endDate}</span>
+                          </div>
+                          <div className="text-xs font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors leading-snug mb-1.5 line-clamp-2">
+                            {activePromo.title}
+                          </div>
+                          <p className="text-[11px] text-[#D7D9DB] line-clamp-2 leading-relaxed mb-2 font-normal">
+                            {activePromo.shortDescription}
+                          </p>
+                          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-simona-teal font-medium">
+                            <span>Подробнее об акции</span>
+                            <span className="text-white text-xs group-hover:translate-x-1 transition-transform">→</span>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                      ) : (
+                        <div>
+                          <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 text-xs">
+                            <span className="font-bold text-white flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-simona-wine animate-pulse" />
+                              <span>Доступные акции:</span>
+                              <span className="text-simona-wine-light font-semibold">{productPromos.length}</span>
+                            </span>
+                            <span className="text-[10px] text-[#87888A]">{product.brand}</span>
+                          </div>
+
+                          <div
+                            ref={promoListRef}
+                            className="space-y-2 max-h-[320px] overflow-y-auto pr-1.5 simona-promo-scrollbar overscroll-y-auto"
+                          >
+                            {productPromos.map((promo) => {
+                              const isFiltered = Boolean(selectedPromos?.includes(promo.slug));
+                              return (
+                                <div
+                                  key={promo.id}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    openModal('PROMO_TERMS', { promoData: promo });
+                                  }}
+                                  className={`p-2.5 rounded-lg border transition-all cursor-pointer group text-left ${
+                                    isFiltered
+                                      ? 'bg-simona-wine/20 border-simona-wine/70 hover:border-simona-wine ring-1 ring-simona-wine/40'
+                                      : 'bg-white/[0.03] hover:bg-[#8A151A]/15 border-white/10 hover:border-simona-wine/50'
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between text-[10.5px] mb-1.5 gap-2">
+                                    <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+                                      <span className="px-1.5 py-0.5 rounded bg-simona-wine/40 text-simona-wine-light font-semibold text-[10px] shrink-0">
+                                        {promo.discountBadge || promo.badgeText || 'Акция'}
+                                      </span>
+                                      {isFiltered && (
+                                        <span className="px-1.5 py-0.5 rounded bg-simona-teal/20 text-simona-teal text-[9.5px] font-bold border border-simona-teal/40 shrink-0">
+                                          Выбрана в фильтре
+                                        </span>
+                                      )}
+                                    </div>
+                                    <span className="text-[10px] text-[#87888A] shrink-0 whitespace-nowrap">
+                                      до {promo.endDate}
+                                    </span>
+                                  </div>
+                                  <div className="text-xs font-semibold text-white group-hover:text-white leading-snug line-clamp-2 mb-1">
+                                    {promo.title}
+                                  </div>
+                                  <div className="flex items-center justify-between text-[10.5px] text-simona-teal font-medium pt-1 border-t border-white/5">
+                                    <span>Условия предложения</span>
+                                    <span className="group-hover:translate-x-1 transition-transform text-white text-xs">→</span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+
+            {/* 2. Discount Badge (informational % badge, positioned below promo badge) */}
+            {discountBadge && (
+              <span
+                className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold border backdrop-blur-md shadow-md select-none ${discountBadge.className}`}
+                title={`Скидка ${discountBadge.text}`}
+              >
+                {discountBadge.text}
+              </span>
             )}
           </div>
         )}

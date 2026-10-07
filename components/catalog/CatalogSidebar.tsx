@@ -520,9 +520,13 @@ export function CatalogSidebar({
             position: 'fixed',
             top: Math.max(16, Math.min(hoveredPromo.rect.top, (typeof window !== 'undefined' ? window.innerHeight : 800) - 340)),
             left: (asideRef.current ? asideRef.current.getBoundingClientRect().right + 12 : hoveredPromo.rect.right + 24),
-            width: 320,
+            width: 340,
           }}
-          className="z-[9999] hidden lg:block p-4 rounded-2xl bg-[#16191D]/98 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl animate-fade-in pointer-events-auto"
+          className="z-[9999] hidden lg:block p-3.5 rounded-xl bg-[#16191D]/98 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl animate-fade-in pointer-events-auto cursor-pointer group text-left"
+          onClick={() => {
+            openModal('PROMO_TERMS', { promoData: hoveredPromo.promo });
+            setHoveredPromo(null);
+          }}
           onMouseEnter={() => {
             if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
           }}
@@ -533,32 +537,24 @@ export function CatalogSidebar({
             }, 150);
           }}
         >
-          <div className="flex items-center justify-between text-[11px] text-simona-wine-light font-semibold mb-1.5">
-            <span className="truncate pr-2 font-mono uppercase">{hoveredPromo.promo.brand}</span>
-            <div className="flex items-center gap-1 shrink-0 text-[#D7D9DB]">
-              <SimonaIconClock className="w-3.5 h-3.5 text-simona-wine-light" />
-              <span>до {hoveredPromo.promo.endDate}</span>
-            </div>
+          <div className="flex items-center justify-between text-[10.5px] text-simona-wine-light font-semibold mb-1.5">
+            <span className="px-1.5 py-0.5 rounded bg-simona-wine/30 border border-simona-wine/50 text-[10px]">
+              {hoveredPromo.promo.discountBadge || hoveredPromo.promo.badgeText || hoveredPromo.promo.brand}
+            </span>
+            <span className="text-[10px] text-[#87888A] flex items-center gap-1">
+              <SimonaIconClock className="w-3 h-3 text-simona-wine-light" />
+              до {hoveredPromo.promo.endDate}
+            </span>
           </div>
-          <div className="text-sm font-montserrat font-bold text-white leading-snug mb-2">
+          <div className="text-xs font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors leading-snug mb-1.5 line-clamp-2">
             {hoveredPromo.promo.title}
           </div>
-          <p className="text-xs text-[#87888A] leading-relaxed line-clamp-3 mb-3 font-normal">
+          <p className="text-[11px] text-[#D7D9DB] leading-relaxed line-clamp-3 mb-2.5 font-normal">
             {hoveredPromo.promo.shortDescription}
           </p>
-          <div className="pt-2.5 border-t border-[#2B313A] flex items-center justify-between">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                openModal('PROMO_TERMS', { promoData: hoveredPromo.promo });
-                setHoveredPromo(null);
-              }}
-              className="text-xs font-semibold text-simona-teal hover:text-simona-teal-light transition-colors flex items-center gap-1 cursor-pointer"
-            >
-              <span>Подробнее об акции</span>
-              <span className="text-sm">→</span>
-            </button>
+          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-simona-teal font-medium">
+            <span>Подробнее об акции</span>
+            <span className="text-white text-xs group-hover:translate-x-1 transition-transform">→</span>
           </div>
         </div>,
         document.body
