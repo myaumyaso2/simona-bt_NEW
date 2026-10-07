@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -19,18 +19,31 @@ import { useStore } from '@/components/providers/StoreContext';
 
 interface PromoDetailViewProps {
   promo: ManufacturerPromo;
+  initialProducts?: ProductItem[];
 }
 
-export function PromoDetailView({ promo }: PromoDetailViewProps) {
+export function PromoDetailView({ promo, initialProducts }: PromoDetailViewProps) {
   const { openModal } = useStore();
+  const [visibleCount, setVisibleCount] = useState(12);
 
-  // Find participating products from the catalog
-  const participatingProducts = CATALOG_PRODUCTS.filter((prod) => {
-    if (promo.participatingProductSlugs && promo.participatingProductSlugs.length > 0) {
-      return promo.participatingProductSlugs.includes(prod.slug);
+  // Find participating products from the real DB or static fallback
+  const allProducts = useMemo(() => {
+    if (initialProducts && initialProducts.length > 0) {
+      return initialProducts;
     }
-    return prod.brand.toLowerCase() === promo.brand.toLowerCase();
-  });
+    return CATALOG_PRODUCTS.filter((prod) => {
+      if (promo.participatingSkus && promo.participatingSkus.length > 0) {
+        return promo.participatingSkus.includes(prod.sku);
+      }
+      if (promo.participatingProductSlugs && promo.participatingProductSlugs.length > 0) {
+        return promo.participatingProductSlugs.includes(prod.slug);
+      }
+      return prod.brand.toLowerCase() === promo.brand.toLowerCase();
+    });
+  }, [initialProducts, promo]);
+
+  const visibleProducts = allProducts.slice(0, visibleCount);
+  const remainingCount = allProducts.length - visibleCount;
 
   return (
     <div className="bg-[#111315] min-h-screen text-[#D7D9DB]">
@@ -201,10 +214,15 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
 
             {/* Participating Products Section */}
             <div>
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
                 <div>
                   <h2 className="text-xl font-semibold text-white tracking-tight">
                     Приборы, участвующие в акции
+                    {allProducts.length > 0 && (
+                      <span className="ml-2.5 text-xs text-[#87888A] font-normal font-mono">
+                        ({allProducts.length})
+                      </span>
+                    )}
                   </h2>
                   <p className="text-xs sm:text-sm text-[#87888A] mt-1">
                     Модели из каталога «СИМОНА», доступные к заказу на специальных условиях
@@ -212,23 +230,40 @@ export function PromoDetailView({ promo }: PromoDetailViewProps) {
                 </div>
 
                 <Link
-                  href="/catalog"
-                  className="text-xs text-simona-teal hover:text-white transition-colors"
+                  href={`/catalog?promos=${encodeURIComponent(promo.slug)}`}
+                  className="text-xs text-simona-teal hover:text-white transition-colors flex items-center gap-1 group shrink-0"
                 >
-                  Весь каталог →
+                  <span>В каталог по акции ({allProducts.length})</span>
+                  <span className="transform group-hover:translate-x-0.5 transition-transform">→</span>
                 </Link>
               </div>
 
-              {participatingProducts.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {participatingProducts.map((prod) => (
-                    <LuxuryProductCard
-                      key={prod.id}
-                      product={prod}
-                      selectedPromos={[promo.slug]}
-                    />
-                  ))}
-                </div>
+              {allProducts.length > 0 ? (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {visibleProducts.map((prod) => (
+                      <LuxuryProductCard
+                        key={prod.id}
+                        product={prod}
+                        selectedPromos={[promo.slug]}
+                      />
+                    ))}
+                  </div>
+
+                  {remainingCount > 0 && (
+                    <div className="mt-8 text-center">
+                      <button
+                        onClick={() => setVisibleCount((prev) => prev + 12)}
+                        className="px-6 py-3 rounded-xl bg-[#1E2228] hover:bg-[#252A32] border border-[#2B313A] hover:border-simona-teal/50 text-white text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer shadow-md inline-flex items-center gap-2"
+                      >
+                        <span>Показать еще (+{Math.min(12, remainingCount)} приборов)</span>
+                        <span className="text-[#87888A] font-mono text-[11px]">
+                          Осталось {remainingCount} из {allProducts.length}
+                        </span>
+                      </button>
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="p-8 rounded-2xl border border-[#2B313A] bg-[#16191D] text-center">
                   <p className="text-sm text-[#87888A]">

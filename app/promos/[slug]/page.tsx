@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MANUFACTURER_PROMOS, getPromoBySlug } from '@/data/promosData';
 import { PromoDetailView } from '@/components/promos/PromoDetailView';
+import { getPromoProducts } from '@/lib/products';
 
 interface PromoPageProps {
   params: {
@@ -41,12 +42,15 @@ export async function generateStaticParams() {
 
 export const dynamic = 'force-dynamic';
 
-export default function PromoPage({ params }: PromoPageProps) {
+export default async function PromoPage({ params }: PromoPageProps) {
   const promo = getPromoBySlug(params.slug);
 
   if (!promo) {
     notFound();
   }
 
-  return <PromoDetailView promo={promo} />;
+  const initialProducts = await getPromoProducts(promo);
+
+  return <PromoDetailView promo={promo} initialProducts={initialProducts} />;
 }
+

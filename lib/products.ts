@@ -1,5 +1,5 @@
 import { Product } from '@prisma/client';
-import { ProductItem, PhysicalStatus, CategoryType } from '@/types';
+import { ProductItem, PhysicalStatus, CategoryType, ManufacturerPromo } from '@/types';
 import { prisma } from './prisma';
 import { CATALOG_PRODUCTS } from '@/data/catalogData';
 
@@ -131,4 +131,57 @@ export async function getCatalogProducts(options?: {
     products: CATALOG_PRODUCTS.slice(0, options?.limit || 24),
     total: CATALOG_PRODUCTS.length,
   };
+}
+
+export async function getPromoProducts(promo: ManufacturerPromo): Promise<ProductItem[]> {
+  try {
+    const where: any = {};
+    if (promo.participatingSkus && promo.participatingSkus.length > 0) {
+      where.sku = { in: promo.participatingSkus };
+    } else if (promo.participatingProductSlugs && promo.participatingProductSlugs.length > 0) {
+      where.slug = { in: promo.participatingProductSlugs };
+    } else if (promo.brand) {
+      const b = promo.brand.trim();
+      const brandVariants = new Set<string>([
+        b,
+        b.toUpperCase(),
+        b.toLowerCase(),
+        b.charAt(0).toUpperCase() + b.slice(1).toLowerCase(),
+      ]);
+      if (b.toLowerCase().includes('korting') || b.toLowerCase().includes('körting')) {
+        brandVariants.add('KORTING');
+        brandVariants.add('KÖRTING');
+        brandVariants.add('Korting');
+        brandVariants.add('Körting');
+      }
+      where.brand = { in: Array.from(brandVariants) };
+    }
+
+    const items = await prisma.product.findMany({
+      where,
+      orderBy: [
+        { inStock: 'desc' },
+        { isFeatured: 'desc' },
+        { price: 'desc' },
+      ],
+      take: 100,
+    });
+
+    if (items.length > 0) {
+      return items.map(formatPrismaProduct);
+    }
+  } catch (e) {
+    console.error('Error fetching promo products from DB:', e);
+  }
+
+  // Fallback to static CATALOG_PRODUCTS
+  return CATALOG_PRODUCTS.filter((prod) => {
+    if (promo.participatingSkus && promo.participatingSkus.length > 0) {
+      return promo.participatingSkus.includes(prod.sku);
+    }
+    if (promo.participatingProductSlugs && promo.participatingProductSlugs.length > 0) {
+      return promo.participatingProductSlugs.includes(prod.slug);
+    }
+    return prod.brand.toLowerCase() === promo.brand.toLowerCase();
+  });
 }
