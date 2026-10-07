@@ -497,7 +497,7 @@ export function CatalogView({
                   const promoBrandClean = promo.brand.trim();
                   const promoDisplayName = promoTitleClean.toLowerCase().startsWith(promoBrandClean.toLowerCase())
                     ? promoTitleClean
-                    : `${promoBrandClean}: ${promoTitleClean}`;
+                    : `${promoBrandClean}. ${promoTitleClean}`;
 
                   return (
                     <span
