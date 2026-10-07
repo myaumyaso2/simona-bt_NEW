@@ -207,7 +207,7 @@ export function CatalogView({
 
   // Dynamic category facets calculation based on current category selection
   const categoryFacets = useMemo(() => {
-    return getCategoryFacets(categoryProducts, 8);
+    return getCategoryFacets(categoryProducts, 16);
   }, [categoryProducts]);
 
   // Dynamic promo count calculation for current category and tab (Zero Dead Ends)

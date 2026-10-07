@@ -5,8 +5,81 @@ export interface GroupedFeature {
   items: { label: string; value: string }[];
 }
 
+export type SemanticFeatureGroup =
+  | 'Основные параметры'
+  | 'Габариты и монтаж'
+  | 'Функции и режимы'
+  | 'Комфорт, уход и безопасность'
+  | 'Дополнительные характеристики';
+
+export const SEMANTIC_FEATURE_GROUPS: SemanticFeatureGroup[] = [
+  'Основные параметры',
+  'Габариты и монтаж',
+  'Функции и режимы',
+  'Комфорт, уход и безопасность',
+  'Дополнительные характеристики',
+];
+
 /**
- * Intelligent grouping of raw flat product specifications into 4 Quiet Luxury semantic sections:
+ * Categorizes a single specification label into one of the 4 core Quiet Luxury semantic groups.
+ */
+export function getFeatureSemanticGroup(label: string): SemanticFeatureGroup {
+  const l = label.toLowerCase().trim();
+
+  // 1. Габариты и монтаж (Dimensions, Niche, Weight, Power connections)
+  const dimKeywords = [
+    'высота', 'ширина', 'глубина', 'габарит', 'вес', 'монтаж', 'встройк', 
+    'ниши', 'размер', 'диаметр', 'длина', 'подключен', 'мощность', 'напряжение', 
+    'установка', 'встраиван', 'баз', 'вырез', 'фасад', 'короб', 'воздуховод', 
+    'потребляем', 'длина кабел', 'сетевой шнур', 'толщин'
+  ];
+  if (dimKeywords.some((k) => l.includes(k))) {
+    return 'Габариты и монтаж';
+  }
+
+  // 2. Комфорт, уход и безопасность (Protection, Noise, Cleaning, Sensors, Safety)
+  const comfortKeywords = [
+    'очистк', 'безопасн', 'дет', 'шум', 'освещен', 'фильтр', 'доводчик', 
+    'блокировк', 'стекл', 'комплект', 'уход', 'автоотключ', 'отключен', 'защит', 
+    'самодиагностик', 'индикатор', 'сенсор', 'газ-контрол', 'aquastop', 'аквастоп', 
+    'протечк', 'перелив', 'луч на полу', 'проекци', 'звуков', 'сигнал', 'дверц', 
+    'петл', 'плавн', 'дезодорир', 'угольн', 'остаточн', 'вентилятор охлажден', 
+    'холодный фронт', 'тройное остеклен', 'двойное остеклен'
+  ];
+  if (comfortKeywords.some((k) => l.includes(k))) {
+    return 'Комфорт, уход и безопасность';
+  }
+
+  // 3. Функции и режимы (Cooking modes, Burners, Speeds, Capacity, Automation)
+  const funcKeywords = [
+    'режим', 'функци', 'нагрев', 'пар', 'свч', 'гриль', 'конвекц', 'скорост', 
+    'производительн', 'конфор', 'индукц', 'таймер', 'температур', 'охлажден', 
+    'заморозк', 'отжим', 'программ', 'давлен', 'переключател', 'эллиптическ', 
+    'бустер', 'booster', 'bridge', 'мост', 'зона', 'чаш', 'излив', 'стру', 
+    'комплект посуд', 'ступен', 'автоприготовлен', 'рецепт', 'размороз', 
+    'термощуп', 'вертел', 'сушк', 'ионизац', 'суперзаморозк', 'суперохлажден', 
+    'биофреш', 'biofresh', 'nofrost', 'ноу фрост', 'управлен'
+  ];
+  if (funcKeywords.some((k) => l.includes(k))) {
+    return 'Функции и режимы';
+  }
+
+  // 4. Основные параметры (Type, Color, Brand, Country, Material, Series, Style)
+  const mainKeywords = [
+    'тип', 'цвет', 'страна', 'гарант', 'бренд', 'материал', 'объем', 'загрузк', 
+    'энергопотреблен', 'класс', 'серия', 'линейка', 'стиль', 'исполнение', 
+    'покрытие', 'форма', 'оборачиваем', 'коллекци', 'дизайн', 'поверхност', 
+    'отделк'
+  ];
+  if (mainKeywords.some((k) => l.includes(k))) {
+    return 'Основные параметры';
+  }
+
+  return 'Дополнительные характеристики';
+}
+
+/**
+ * Intelligent grouping of raw flat product specifications into Quiet Luxury semantic sections:
  * 1. Основные параметры (Brand, Country, Warranty, Color, Main Type, Capacity)
  * 2. Габариты и монтаж (Height, Width, Depth, Weight, Installation, Power, Niche)
  * 3. Функции и режимы (Heating modes, Speeds, Burners, Microwave, Steam, Programs)
@@ -15,7 +88,7 @@ export interface GroupedFeature {
 export function groupProductFeatures(features: ProductFeature[] = []): GroupedFeature[] {
   if (!features || features.length === 0) return [];
 
-  const groups: Record<string, { label: string; value: string }[]> = {
+  const groups: Record<SemanticFeatureGroup, { label: string; value: string }[]> = {
     'Основные параметры': [],
     'Габариты и монтаж': [],
     'Функции и режимы': [],
@@ -23,47 +96,15 @@ export function groupProductFeatures(features: ProductFeature[] = []): GroupedFe
     'Дополнительные характеристики': [],
   };
 
-  const dimKeywords = [
-    'высота', 'ширина', 'глубина', 'габарит', 'вес', 'монтаж', 'встройк', 
-    'ниши', 'размер', 'диаметр', 'длина', 'подключен', 'мощность', 'напряжение', 
-    'установка', 'встраиван'
-  ];
-  const funcKeywords = [
-    'режим', 'функци', 'нагрев', 'пар', 'свч', 'гриль', 'конвекц', 'скорост', 
-    'производительн', 'конфор', 'индукц', 'таймер', 'температур', 'охлажден', 
-    'заморозк', 'отжим', 'программ', 'давлен', 'переключател', 'эллиптическ'
-  ];
-  const comfortKeywords = [
-    'очистк', 'безопасн', 'дет', 'шум', 'освещен', 'фильтр', 'доводчик', 
-    'блокировк', 'стекл', 'комплект', 'уход', 'автоотключ', 'самодиагностик',
-    'индикатор', 'сенсор'
-  ];
-  const mainKeywords = [
-    'тип', 'цвет', 'страна', 'гарант', 'бренд', 'материал', 'управлен', 
-    'объем', 'загрузк', 'энергопотреблен', 'серия', 'линейка', 'стиль',
-    'исполнение', 'покрытие'
-  ];
-
   features.forEach((feat) => {
     if (!feat.value || feat.value === '-' || feat.value.trim() === '') return;
-    const l = feat.label.toLowerCase();
-
-    if (dimKeywords.some((k) => l.includes(k))) {
-      groups['Габариты и монтаж'].push(feat);
-    } else if (funcKeywords.some((k) => l.includes(k))) {
-      groups['Функции и режимы'].push(feat);
-    } else if (comfortKeywords.some((k) => l.includes(k))) {
-      groups['Комфорт, уход и безопасность'].push(feat);
-    } else if (mainKeywords.some((k) => l.includes(k))) {
-      groups['Основные параметры'].push(feat);
-    } else {
-      groups['Дополнительные характеристики'].push(feat);
-    }
+    const group = getFeatureSemanticGroup(feat.label);
+    groups[group].push(feat);
   });
 
-  return Object.entries(groups)
-    .filter(([_, items]) => items.length > 0)
-    .map(([groupName, items]) => ({ groupName, items }));
+  return SEMANTIC_FEATURE_GROUPS
+    .filter((g) => groups[g].length > 0)
+    .map((groupName) => ({ groupName, items: groups[groupName] }));
 }
 
 export interface KeySpecBadge {
@@ -145,10 +186,35 @@ export interface CategoryFacet {
   options: FacetOption[];
 }
 
+export interface GroupedCategoryFacets {
+  groupName: SemanticFeatureGroup;
+  facets: CategoryFacet[];
+}
+
+/**
+ * Groups catalog filter facets into canonical semantic groups.
+ */
+export function groupCategoryFacets(facets: CategoryFacet[]): GroupedCategoryFacets[] {
+  const map = new Map<SemanticFeatureGroup, CategoryFacet[]>();
+  SEMANTIC_FEATURE_GROUPS.forEach((g) => map.set(g, []));
+
+  facets.forEach((facet) => {
+    const group = getFeatureSemanticGroup(facet.label);
+    map.get(group)?.push(facet);
+  });
+
+  return SEMANTIC_FEATURE_GROUPS
+    .map((groupName) => ({
+      groupName,
+      facets: map.get(groupName) || [],
+    }))
+    .filter((g) => g.facets.length > 0);
+}
+
 /**
  * Computes top dynamic filter facets for the current product selection in catalog.
  */
-export function getCategoryFacets(products: ProductItem[], maxFacets = 8): CategoryFacet[] {
+export function getCategoryFacets(products: ProductItem[], maxFacets = 16): CategoryFacet[] {
   if (!products || products.length === 0) return [];
 
   // Exclude labels that are internal or raw dimensional decimals

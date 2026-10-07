@@ -7,7 +7,7 @@ import { ChevronDown } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { MANUFACTURER_PROMOS } from '@/data/promosData';
 import { SimonaIconSearch, SimonaIconCheck, SimonaIconClock } from '@/components/brand/SimonaIcons';
-import { CategoryFacet } from '@/lib/productFeatures';
+import { CategoryFacet, groupCategoryFacets } from '@/lib/productFeatures';
 import { useStore } from '@/components/providers/StoreContext';
 import { ManufacturerPromo } from '@/types';
 
@@ -75,6 +75,10 @@ export function CatalogSidebar({
     'Материал панели': true,
     'Цвет': true,
   });
+
+  const groupedFacets = useMemo(() => {
+    return groupCategoryFacets(categoryFacets);
+  }, [categoryFacets]);
 
   const asideRef = useRef<HTMLElement>(null);
 
@@ -430,85 +434,113 @@ export function CatalogSidebar({
         </AnimatePresence>
       </div>
 
-      {/* 3. ДИНАМИЧЕСКИЕ ХАРАКТЕРИСТИКИ КАТЕГОРИИ */}
-      {categoryFacets.map((facet) => {
-        const selectedVals = filters.selectedFeatures?.[facet.label] || [];
-        const open = isFacetOpen(facet.label);
+      {/* 3. ДИНАМИЧЕСКИЕ ХАРАКТЕРИСТИКИ КАТЕГОРИИ, СГРУППИРОВАННЫЕ ПО СМЫСЛОВЫМ БЛОКАМ */}
+      {groupedFacets.map((group) => {
+        const activeCountInGroup = group.facets.reduce((acc, f) => {
+          return acc + (filters.selectedFeatures?.[f.label]?.length || 0);
+        }, 0);
 
         return (
-          <div key={facet.label} className="border-b border-[#2B313A]/60 pb-4">
-            <button
-              type="button"
-              onClick={() => toggleFacetOpen(facet.label)}
-              className="w-full flex items-center justify-between text-sm font-semibold text-white py-1 group cursor-pointer transition-colors"
-            >
-              <div className="flex items-center gap-2 truncate max-w-[85%]">
-                <span className="truncate group-hover:text-white transition-colors">
-                  {facet.label}
+          <div key={group.groupName} className="pt-2 first:pt-0">
+            {/* Quiet Luxury Micro-Overline Header */}
+            <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#2B313A]/70">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-simona-teal shadow-[0_0_8px_rgba(0,151,156,0.6)]" />
+                <span className="text-[10px] font-bold tracking-wider uppercase text-simona-teal/90">
+                  {group.groupName}
                 </span>
-                {selectedVals.length > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-md bg-simona-teal text-white text-[10px] font-mono font-bold shrink-0">
-                    {selectedVals.length}
-                  </span>
-                )}
               </div>
-              <ChevronDown
-                className={`w-4 h-4 shrink-0 transition-transform duration-300 ${
-                  open ? 'rotate-180 text-simona-teal' : 'text-[#87888A] group-hover:text-simona-teal'
-                }`}
-              />
-            </button>
-
-            <AnimatePresence initial={false}>
-              {open && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={accordionTransition}
-                  className="overflow-hidden"
-                >
-                  <div className="pt-3 space-y-2 max-h-56 overflow-y-auto pr-1 scrollbar-thin">
-                    {facet.options.map((opt) => {
-                      const isChecked = selectedVals.includes(opt.value);
-                      return (
-                        <label
-                          key={opt.value}
-                          onClick={() => toggleFeatureValue(facet.label, opt.value)}
-                          className="flex items-center justify-between text-xs cursor-pointer py-0.5 group/opt"
-                        >
-                          <div className="flex items-center space-x-2.5 truncate pr-2">
-                            <div
-                              className={`w-4 h-4 rounded-[4px] border shrink-0 flex items-center justify-center transition-colors ${
-                                isChecked
-                                  ? 'bg-simona-teal border-simona-teal text-white'
-                                  : 'bg-[#1E2228] border-[#2B313A] group-hover/opt:border-simona-teal/60'
-                              }`}
-                            >
-                              {isChecked && (
-                                <SimonaIconCheck className="w-3 h-3 stroke-[2.5]" />
-                              )}
-                            </div>
-                            <span
-                              className={`text-[11.5px] truncate transition-colors ${
-                                isChecked
-                                  ? 'text-white font-medium'
-                                  : 'text-[#D7D9DB] group-hover/opt:text-white'
-                              }`}
-                            >
-                              {opt.value}
-                            </span>
-                          </div>
-                          <span className="text-[11px] text-[#87888A] font-mono shrink-0">
-                            [{opt.count}]
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </motion.div>
+              {activeCountInGroup > 0 && (
+                <span className="px-1.5 py-0.5 rounded-md bg-simona-teal text-white text-[10px] font-mono font-bold shadow-sm">
+                  {activeCountInGroup}
+                </span>
               )}
-            </AnimatePresence>
+            </div>
+
+            {/* Facets in this semantic group */}
+            <div className="space-y-0">
+              {group.facets.map((facet) => {
+                const selectedVals = filters.selectedFeatures?.[facet.label] || [];
+                const open = isFacetOpen(facet.label);
+
+                return (
+                  <div key={facet.label} className="border-b border-[#2B313A]/50 pb-3 mb-3 last:border-b-0 last:pb-1 last:mb-1">
+                    <button
+                      type="button"
+                      onClick={() => toggleFacetOpen(facet.label)}
+                      className="w-full flex items-center justify-between text-sm font-semibold text-white py-1 group cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center gap-2 truncate max-w-[85%]">
+                        <span className="truncate group-hover:text-white transition-colors">
+                          {facet.label}
+                        </span>
+                        {selectedVals.length > 0 && (
+                          <span className="px-1.5 py-0.2 rounded-md bg-simona-teal text-white text-[10px] font-mono font-bold shrink-0">
+                            {selectedVals.length}
+                          </span>
+                        )}
+                      </div>
+                      <ChevronDown
+                        className={`w-4 h-4 shrink-0 transition-transform duration-300 ${
+                          open ? 'rotate-180 text-simona-teal' : 'text-[#87888A] group-hover:text-simona-teal'
+                        }`}
+                      />
+                    </button>
+
+                    <AnimatePresence initial={false}>
+                      {open && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={accordionTransition}
+                          className="overflow-hidden"
+                        >
+                          <div className="pt-2 space-y-2 max-h-56 overflow-y-auto pr-1 scrollbar-thin">
+                            {facet.options.map((opt) => {
+                              const isChecked = selectedVals.includes(opt.value);
+                              return (
+                                <label
+                                  key={opt.value}
+                                  onClick={() => toggleFeatureValue(facet.label, opt.value)}
+                                  className="flex items-center justify-between text-xs cursor-pointer py-0.5 group/opt"
+                                >
+                                  <div className="flex items-center space-x-2.5 truncate pr-2">
+                                    <div
+                                      className={`w-4 h-4 rounded-[4px] border shrink-0 flex items-center justify-center transition-colors ${
+                                        isChecked
+                                          ? 'bg-simona-teal border-simona-teal text-white'
+                                          : 'bg-[#1E2228] border-[#2B313A] group-hover/opt:border-simona-teal/60'
+                                      }`}
+                                    >
+                                      {isChecked && (
+                                        <SimonaIconCheck className="w-3 h-3 stroke-[2.5]" />
+                                      )}
+                                    </div>
+                                    <span
+                                      className={`text-[11.5px] truncate transition-colors ${
+                                        isChecked
+                                          ? 'text-white font-medium'
+                                          : 'text-[#D7D9DB] group-hover/opt:text-white'
+                                      }`}
+                                    >
+                                      {opt.value}
+                                    </span>
+                                  </div>
+                                  <span className="text-[11px] text-[#87888A] font-mono shrink-0">
+                                    [{opt.count}]
+                                  </span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         );
       })}
