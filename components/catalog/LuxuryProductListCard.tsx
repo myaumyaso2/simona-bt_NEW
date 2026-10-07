@@ -15,6 +15,7 @@ import {
 import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
 import { extractKeySpecs } from '@/lib/productFeatures';
 import { formatProductName } from '@/lib/catalog/productTitle';
+import { ProductCardGallery } from './ProductCardGallery';
 
 interface LuxuryProductListCardProps {
   product: ProductItem;
@@ -150,7 +151,7 @@ export function LuxuryProductListCard({ product, selectedPromos }: LuxuryProduct
           className="block w-full h-full rounded-xl overflow-hidden bg-white border border-white/10 group-hover:border-simona-teal/50 transition-colors p-3 flex items-center justify-center shadow-inner"
         >
           {/* Badges Stack (Top-Left): Status + Brand directly below */}
-          <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1.5 max-w-[85%]">
+          <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1.5 max-w-[85%] pointer-events-none">
             {/* Availability Badge */}
             {physicalStatus === 'SHOWROOM' ? (
               <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
@@ -176,12 +177,10 @@ export function LuxuryProductListCard({ product, selectedPromos }: LuxuryProduct
             </span>
           </div>
 
-          {/* Product Image (object-contain ensures zero clipping) */}
-          <img
-            src={mainImage}
-            alt={formattedTitle}
-            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 select-none"
-            loading="lazy"
+          {/* Interactive Product Image Gallery with hover cursor tracking & mobile swipe */}
+          <ProductCardGallery
+            images={images}
+            title={formattedTitle}
           />
         </Link>
 

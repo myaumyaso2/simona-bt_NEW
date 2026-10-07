@@ -7,6 +7,7 @@ import { formatPrice, PHYSICAL_STATUS_CONFIG } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaIconCart, SimonaIconChef } from '@/components/brand/SimonaIcons';
 import { formatProductName } from '@/lib/catalog/productTitle';
+import { ProductCardGallery } from './ProductCardGallery';
 
 interface ProductCardProps {
   product: ProductItem;
@@ -33,25 +34,23 @@ export function ProductCard({ product }: ProductCardProps) {
           {/* Top Media Area */}
           <div className="relative aspect-[4/3] bg-[#F8F9FA] rounded-xl overflow-hidden flex items-center justify-center p-3 border border-black/[0.04]">
             {/* Physical Status Badge */}
-            <div className="absolute top-2.5 left-2.5 z-10 max-w-[62%]">
+            <div className="absolute top-2.5 left-2.5 z-10 max-w-[62%] pointer-events-none">
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold backdrop-blur-md truncate shadow-sm ${statusCfg.badgeClass}`}>
                 {statusCfg.badge}
               </span>
             </div>
 
             {/* Brand Tag */}
-            <div className="absolute top-2.5 right-2.5 z-10">
+            <div className="absolute top-2.5 right-2.5 z-10 pointer-events-none">
               <span className="px-2 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-[10px] uppercase font-bold tracking-wider text-[#16181B] border border-black/[0.08] shadow-sm shrink-0">
                 {product.brand}
               </span>
             </div>
 
-            {/* Product Image */}
-            <img
-              src={mainImage}
-              alt={formattedTitle}
-              className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
-              loading="lazy"
+            {/* Interactive Product Image Gallery */}
+            <ProductCardGallery
+              images={images}
+              title={formattedTitle}
             />
           </div>
 
