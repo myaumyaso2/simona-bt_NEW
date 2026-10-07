@@ -144,6 +144,13 @@ export function LuxuryProductListCard({ product, selectedPromos }: LuxuryProduct
 
   return (
     <div className={`group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 sm:p-5 transition-all duration-300 shadow-xl flex flex-col sm:flex-row gap-5 items-stretch relative ${isTooltipOpen ? 'z-40' : 'z-10'}`}>
+      {/* Full-Tile Dimming Overlay when promo tooltip is open */}
+      <div
+        className={`absolute inset-0 rounded-2xl bg-black/65 backdrop-blur-[1.5px] pointer-events-none transition-opacity duration-200 z-20 ${
+          isTooltipOpen ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
+
       {/* 1. Left Media Area: White Showcase Tablet with object-contain */}
       <div className="relative w-full sm:w-52 sm:h-52 md:w-56 md:h-56 aspect-square shrink-0 rounded-xl">
         <Link
