@@ -885,7 +885,7 @@ export function CatalogSidebar({
         </div>
       )}
 
-      {/* Floating Hover Card with Brief Promo Terms (Rendered via Portal) */}
+      {/* Floating Hover Card with Brief Promo Terms (Rendered via Portal with Variant 2 Halo) */}
       {mounted && hoveredPromo && createPortal(
         <div
           style={{
@@ -894,28 +894,34 @@ export function CatalogSidebar({
             left: `${hoveredPromo.rect.right + 12}px`,
             width: '320px',
           }}
-          className="z-[9999] bg-[#16191D]/95 backdrop-blur-xl border border-simona-wine/60 rounded-2xl p-4 shadow-2xl shadow-black/80 pointer-events-none animate-in fade-in zoom-in-95 duration-150"
+          className="z-[9999] pointer-events-none animate-in fade-in zoom-in-95 duration-150"
         >
-          <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-[#2B313A]">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-simona-wine-light font-mono">
-              {hoveredPromo.promo.brand}
-            </span>
-            <span className="text-[10px] text-[#87888A] font-mono flex items-center gap-1">
-              <SimonaIconClock className="w-3 h-3 text-simona-wine-light" />
-              {hoveredPromo.promo.endDate ? `до ${hoveredPromo.promo.endDate}` : 'Бессрочно'}
-            </span>
-          </div>
+          {/* Local Contour Backdrop Halo (Variant 2: мягкий ореол и подложка с блюром) */}
+          <div className="absolute -inset-3.5 rounded-[22px] bg-black/75 backdrop-blur-md shadow-[0_25px_50px_-12px_rgba(0,0,0,0.95)] pointer-events-none" />
 
-          <h5 className="text-xs font-montserrat font-bold text-white mb-2 leading-snug">
-            {hoveredPromo.promo.title}
-          </h5>
+          {/* Popover Card Content */}
+          <div className="relative bg-[#16191D]/95 backdrop-blur-xl border border-simona-wine/60 rounded-2xl p-4 shadow-2xl shadow-black/80">
+            <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-[#2B313A]">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-simona-wine-light font-mono">
+                {hoveredPromo.promo.brand}
+              </span>
+              <span className="text-[10px] text-[#87888A] font-mono flex items-center gap-1">
+                <SimonaIconClock className="w-3 h-3 text-simona-wine-light" />
+                {hoveredPromo.promo.endDate ? `до ${hoveredPromo.promo.endDate}` : 'Бессрочно'}
+              </span>
+            </div>
 
-          <p className="text-[11px] text-[#D7D9DB] leading-relaxed line-clamp-4 mb-3">
-            {hoveredPromo.promo.shortDescription}
-          </p>
+            <h5 className="text-xs font-montserrat font-bold text-white mb-2 leading-snug">
+              {hoveredPromo.promo.title}
+            </h5>
 
-          <div className="text-[10px] text-simona-wine-light font-medium flex items-center gap-1 bg-simona-wine/10 px-2 py-1 rounded-md border border-simona-wine/20">
-            <span>● Нажмите чекбокс, чтобы показать приборы акции</span>
+            <p className="text-[11px] text-[#D7D9DB] leading-relaxed line-clamp-4 mb-3">
+              {hoveredPromo.promo.shortDescription}
+            </p>
+
+            <div className="text-[10px] text-simona-wine-light font-medium flex items-center gap-1 bg-simona-wine/10 px-2 py-1 rounded-md border border-simona-wine/20">
+              <span>● Нажмите чекбокс, чтобы показать приборы акции</span>
+            </div>
           </div>
         </div>,
         document.body

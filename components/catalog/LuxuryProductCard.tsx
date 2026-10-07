@@ -367,105 +367,111 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
                     <span>{promoBadgeText}</span>
                   </button>
 
-                  {/* Interactive Tooltip on Hover / Click (Variant 2) */}
+                  {/* Interactive Tooltip on Hover / Click (Variant 2: мягкий ореол и подложка с блюром) */}
                   <AnimatePresence>
                     {isTooltipOpen && (
                       <motion.div
-                      initial={{ opacity: 0, y: 6, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                      transition={{ duration: 0.18, ease: 'easeOut' }}
-                      onWheel={handlePopoverWheel}
-                      className="absolute right-0 top-full mt-2 w-[340px] p-3 rounded-xl bg-[#16191D]/95 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl z-50 text-left"
-                    >
-                      {productPromos.length === 1 && activePromo ? (
-                        <div
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            openModal('PROMO_TERMS', { promoData: activePromo });
-                          }}
-                          className="p-1 cursor-pointer group"
-                        >
-                          <div className="flex items-center justify-between text-[10.5px] text-simona-wine-light font-semibold mb-1">
-                            <span className="px-1.5 py-0.2 rounded bg-simona-wine/30 border border-simona-wine/50 text-[10px]">
-                              {activePromo.discountBadge || activePromo.badgeText || activePromo.brand}
-                            </span>
-                            <span className="text-[10px] text-[#87888A]">до {activePromo.endDate}</span>
-                          </div>
-                          <div className="text-xs font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors leading-snug mb-1.5 line-clamp-2">
-                            {activePromo.title}
-                          </div>
-                          <p className="text-[11px] text-[#D7D9DB] line-clamp-2 leading-relaxed mb-2 font-normal">
-                            {activePromo.shortDescription}
-                          </p>
-                          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-simona-teal font-medium">
-                            <span>Подробнее об акции</span>
-                            <span className="text-white text-xs group-hover:translate-x-1 transition-transform">→</span>
-                          </div>
-                        </div>
-                      ) : (
-                        <div>
-                          <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 text-xs">
-                            <span className="font-bold text-white flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-simona-wine animate-pulse" />
-                              <span>Доступные акции:</span>
-                              <span className="text-simona-wine-light font-semibold">{productPromos.length}</span>
-                            </span>
-                            <span className="text-[10px] text-[#87888A]">{product.brand}</span>
-                          </div>
+                        initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                        transition={{ duration: 0.18, ease: 'easeOut' }}
+                        onWheel={handlePopoverWheel}
+                        className="absolute right-0 top-full mt-2 w-[340px] z-50 text-left"
+                      >
+                        {/* Local Contour Backdrop Halo (Variant 2) */}
+                        <div className="absolute -inset-3.5 rounded-[20px] bg-black/75 backdrop-blur-md shadow-[0_25px_50px_-12px_rgba(0,0,0,0.95)] pointer-events-none" />
 
-                          <div
-                            ref={promoListRef}
-                            className="space-y-2 max-h-[320px] overflow-y-auto pr-1.5 simona-promo-scrollbar overscroll-y-auto"
-                          >
-                            {productPromos.map((promo) => {
-                              const isFiltered = Boolean(selectedPromos?.includes(promo.slug));
-                              return (
-                                <div
-                                  key={promo.id}
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    openModal('PROMO_TERMS', { promoData: promo });
-                                  }}
-                                  className={`p-2.5 rounded-lg border transition-all cursor-pointer group text-left ${
-                                    isFiltered
-                                      ? 'bg-simona-wine/20 border-simona-wine/70 hover:border-simona-wine ring-1 ring-simona-wine/40'
-                                      : 'bg-white/[0.03] hover:bg-[#8A151A]/15 border-white/10 hover:border-simona-wine/50'
-                                  }`}
-                                >
-                                  <div className="flex items-center justify-between text-[10.5px] mb-1.5 gap-2">
-                                    <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-                                      <span className="px-1.5 py-0.5 rounded bg-simona-wine/40 text-simona-wine-light font-semibold text-[10px] shrink-0">
-                                        {promo.discountBadge || promo.badgeText || 'Акция'}
-                                      </span>
-                                      {isFiltered && (
-                                        <span className="px-1.5 py-0.5 rounded bg-simona-teal/20 text-simona-teal text-[9.5px] font-bold border border-simona-teal/40 shrink-0">
-                                          Выбрана в фильтре
+                        {/* Popover Card Content */}
+                        <div className="relative p-3 rounded-xl bg-[#16191D]/95 border border-simona-wine/60 text-white shadow-2xl backdrop-blur-2xl">
+                          {productPromos.length === 1 && activePromo ? (
+                            <div
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                openModal('PROMO_TERMS', { promoData: activePromo });
+                              }}
+                              className="p-1 cursor-pointer group"
+                            >
+                              <div className="flex items-center justify-between text-[10.5px] text-simona-wine-light font-semibold mb-1">
+                                <span className="px-1.5 py-0.2 rounded bg-simona-wine/30 border border-simona-wine/50 text-[10px]">
+                                  {activePromo.discountBadge || activePromo.badgeText || activePromo.brand}
+                                </span>
+                                <span className="text-[10px] text-[#87888A]">до {activePromo.endDate}</span>
+                              </div>
+                              <div className="text-xs font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors leading-snug mb-1.5 line-clamp-2">
+                                {activePromo.title}
+                              </div>
+                              <p className="text-[11px] text-[#D7D9DB] line-clamp-2 leading-relaxed mb-2 font-normal">
+                                {activePromo.shortDescription}
+                              </p>
+                              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-simona-teal font-medium">
+                                <span>Подробнее об акции</span>
+                                <span className="text-white text-xs group-hover:translate-x-1 transition-transform">→</span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 text-xs">
+                                <span className="font-bold text-white flex items-center gap-1.5">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-simona-wine animate-pulse" />
+                                  <span>Доступные акции:</span>
+                                  <span className="text-simona-wine-light font-semibold">{productPromos.length}</span>
+                                </span>
+                                <span className="text-[10px] text-[#87888A]">{product.brand}</span>
+                              </div>
+
+                              <div
+                                ref={promoListRef}
+                                className="space-y-2 max-h-[320px] overflow-y-auto pr-1.5 simona-promo-scrollbar overscroll-y-auto"
+                              >
+                                {productPromos.map((promo) => {
+                                  const isFiltered = Boolean(selectedPromos?.includes(promo.slug));
+                                  return (
+                                    <div
+                                      key={promo.id}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        openModal('PROMO_TERMS', { promoData: promo });
+                                      }}
+                                      className={`p-2.5 rounded-lg border transition-all cursor-pointer group text-left ${
+                                        isFiltered
+                                          ? 'bg-simona-wine/20 border-simona-wine/70 hover:border-simona-wine ring-1 ring-simona-wine/40'
+                                          : 'bg-white/[0.03] hover:bg-[#8A151A]/15 border-white/10 hover:border-simona-wine/50'
+                                      }`}
+                                    >
+                                      <div className="flex items-center justify-between text-[10.5px] mb-1.5 gap-2">
+                                        <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+                                          <span className="px-1.5 py-0.5 rounded bg-simona-wine/40 text-simona-wine-light font-semibold text-[10px] shrink-0">
+                                            {promo.discountBadge || promo.badgeText || 'Акция'}
+                                          </span>
+                                          {isFiltered && (
+                                            <span className="px-1.5 py-0.5 rounded bg-simona-teal/20 text-simona-teal text-[9.5px] font-bold border border-simona-teal/40 shrink-0">
+                                              Выбрана в фильтре
+                                            </span>
+                                          )}
+                                        </div>
+                                        <span className="text-[10px] text-[#87888A] shrink-0 whitespace-nowrap">
+                                          до {promo.endDate}
                                         </span>
-                                      )}
+                                      </div>
+                                      <div className="text-xs font-semibold text-white group-hover:text-white leading-snug line-clamp-2 mb-1">
+                                        {promo.title}
+                                      </div>
+                                      <div className="flex items-center justify-between text-[10.5px] text-simona-teal font-medium pt-1 border-t border-white/5">
+                                        <span>Условия предложения</span>
+                                        <span className="group-hover:translate-x-1 transition-transform text-white text-xs">→</span>
+                                      </div>
                                     </div>
-                                    <span className="text-[10px] text-[#87888A] shrink-0 whitespace-nowrap">
-                                      до {promo.endDate}
-                                    </span>
-                                  </div>
-                                  <div className="text-xs font-semibold text-white group-hover:text-white leading-snug line-clamp-2 mb-1">
-                                    {promo.title}
-                                  </div>
-                                  <div className="flex items-center justify-between text-[10.5px] text-simona-teal font-medium pt-1 border-t border-white/5">
-                                    <span>Условия предложения</span>
-                                    <span className="group-hover:translate-x-1 transition-transform text-white text-xs">→</span>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
               </div>
             )}
 
