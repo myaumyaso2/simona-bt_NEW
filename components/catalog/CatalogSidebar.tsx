@@ -72,6 +72,7 @@ export function CatalogSidebar({
   const [groupSearch, setGroupSearch] = useState('');
 
   const [promoOpen, setPromoOpen] = useState(true);
+  const [promoSearch, setPromoSearch] = useState('');
   const [hoveredPromo, setHoveredPromo] = useState<{ promo: ManufacturerPromo; rect: DOMRect } | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -199,6 +200,16 @@ export function CatalogSidebar({
     const count = promoCounts[promo.slug] ?? 0;
     return count > 0;
   });
+
+  const filteredPromos = useMemo(() => {
+    if (!promoSearch.trim()) return activePromos;
+    const q = promoSearch.toLowerCase().trim();
+    return activePromos.filter((p) => {
+      const title = p.title.toLowerCase();
+      const brand = p.brand.toLowerCase();
+      return title.includes(q) || brand.includes(q);
+    });
+  }, [activePromos, promoSearch]);
 
   const togglePromo = (promoSlug: string) => {
     const next = filters.selectedPromos.includes(promoSlug)
@@ -501,61 +512,78 @@ export function CatalogSidebar({
                 transition={accordionTransition}
                 className="overflow-hidden"
               >
-                <div className="pt-3 space-y-2">
-                  {activePromos.map((promo) => {
-                    const isChecked = filters.selectedPromos.includes(promo.slug);
-                    const count = promoCounts[promo.slug] ?? 0;
-                    const promoTitleClean = promo.title.trim();
-                    const promoBrandClean = promo.brand.trim();
-                    const promoDisplayName = promoTitleClean.toLowerCase().startsWith(promoBrandClean.toLowerCase())
-                      ? promoTitleClean
-                      : `${promoBrandClean}. ${promoTitleClean}`;
+                <div className="pt-3 space-y-3">
+                  {/* Search input if multiple promos */}
+                  {activePromos.length > 5 && (
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Найти акцию..."
+                        value={promoSearch}
+                        onChange={(e) => setPromoSearch(e.target.value)}
+                        className="w-full bg-[#1E2228] border border-[#2B313A] rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-[#87888A] focus:outline-none focus:border-simona-wine transition-colors"
+                      />
+                      <SimonaIconSearch className="w-3.5 h-3.5 text-[#87888A] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                  )}
 
-                    return (
-                      <label
-                        key={promo.id}
-                        onClick={() => togglePromo(promo.slug)}
-                        onMouseEnter={(e) => {
-                          if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-                          const rect = e.currentTarget.getBoundingClientRect();
-                          hoverTimeoutRef.current = setTimeout(() => {
-                            setHoveredPromo({ promo, rect });
-                          }, 150);
-                        }}
-                        onMouseLeave={() => {
-                          if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-                          hoverTimeoutRef.current = setTimeout(() => {
-                            setHoveredPromo(null);
-                          }, 200);
-                        }}
-                        className="flex items-start justify-between text-xs cursor-pointer group/item py-1.5 px-2 rounded-lg hover:bg-white/[0.04] transition-colors"
-                      >
-                        <div className="flex items-start space-x-2.5 min-w-0 pr-2">
-                          <div
-                            className={`w-4 h-4 rounded-[4px] border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
-                              isChecked
-                                ? 'bg-simona-wine border-simona-wine text-white shadow-sm'
-                                : 'bg-[#1E2228] border-[#2B313A] group-hover/item:border-simona-wine/60'
-                            }`}
-                          >
-                            {isChecked && <SimonaIconCheck className="w-3 h-3 stroke-[2.5]" />}
+                  {/* Promo Checkboxes with internal scrollbar */}
+                  <div className="space-y-2 max-h-56 overflow-y-auto pr-1 scrollbar-thin">
+                    {filteredPromos.map((promo) => {
+                      const isChecked = filters.selectedPromos.includes(promo.slug);
+                      const count = promoCounts[promo.slug] ?? 0;
+                      const promoTitleClean = promo.title.trim();
+                      const promoBrandClean = promo.brand.trim();
+                      const promoDisplayName = promoTitleClean.toLowerCase().startsWith(promoBrandClean.toLowerCase())
+                        ? promoTitleClean
+                        : `${promoBrandClean}. ${promoTitleClean}`;
+
+                      return (
+                        <label
+                          key={promo.id}
+                          onClick={() => togglePromo(promo.slug)}
+                          onMouseEnter={(e) => {
+                            if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            hoverTimeoutRef.current = setTimeout(() => {
+                              setHoveredPromo({ promo, rect });
+                            }, 150);
+                          }}
+                          onMouseLeave={() => {
+                            if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+                            hoverTimeoutRef.current = setTimeout(() => {
+                              setHoveredPromo(null);
+                            }, 200);
+                          }}
+                          className="flex items-start justify-between text-xs cursor-pointer group/item py-1.5 px-2 rounded-lg hover:bg-white/[0.04] transition-colors"
+                        >
+                          <div className="flex items-start space-x-2.5 min-w-0 pr-2">
+                            <div
+                              className={`w-4 h-4 rounded-[4px] border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                                isChecked
+                                  ? 'bg-simona-wine border-simona-wine text-white shadow-sm'
+                                  : 'bg-[#1E2228] border-[#2B313A] group-hover/item:border-simona-wine/60'
+                              }`}
+                            >
+                              {isChecked && <SimonaIconCheck className="w-3 h-3 stroke-[2.5]" />}
+                            </div>
+                            <span
+                              className={`transition-colors leading-snug line-clamp-2 ${
+                                isChecked
+                                  ? 'text-white font-semibold'
+                                  : 'text-[#D7D9DB] group-hover/item:text-white'
+                              }`}
+                            >
+                              {promoDisplayName}
+                            </span>
                           </div>
-                          <span
-                            className={`transition-colors leading-snug line-clamp-2 ${
-                              isChecked
-                                ? 'text-white font-semibold'
-                                : 'text-[#D7D9DB] group-hover/item:text-white'
-                            }`}
-                          >
-                            {promoDisplayName}
+                          <span className="text-[11px] text-[#87888A] font-mono shrink-0 pt-0.5">
+                            ({count})
                           </span>
-                        </div>
-                        <span className="text-[11px] text-[#87888A] font-mono shrink-0 pt-0.5">
-                          ({count})
-                        </span>
-                      </label>
-                    );
-                  })}
+                        </label>
+                      );
+                    })}
+                  </div>
                 </div>
               </motion.div>
             )}
