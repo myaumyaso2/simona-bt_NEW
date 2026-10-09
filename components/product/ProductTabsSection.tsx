@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ProductItem } from '@/types';
 import { groupProductFeatures } from '@/lib/productFeatures';
@@ -18,6 +20,7 @@ import {
   SimonaIconSearch,
   SimonaIconGuarantee,
   SimonaIconClock,
+  SimonaIconArrowRight,
 } from '@/components/brand/SimonaIcons';
 import { SectionBadge } from '@/components/ui/SectionBadge';
 import { formatBrandName } from '@/lib/formatters';
@@ -420,102 +423,82 @@ export function ProductTabsSection({
             </p>
           </div>
 
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Cards Grid in Homepage PromoCard Style */}
+          <div
+            className={`grid grid-cols-1 ${
+              allPromosToDisplay.length === 1
+                ? 'max-w-md'
+                : allPromosToDisplay.length === 2
+                ? 'md:grid-cols-2 max-w-4xl'
+                : 'md:grid-cols-2 lg:grid-cols-3'
+            } gap-6`}
+          >
             {allPromosToDisplay.map((promo) => (
-              <div
+              <Link
                 key={promo.id}
-                className="rounded-2xl border border-simona-wine/50 bg-[#16191D] p-6 sm:p-7 flex flex-col justify-between shadow-xl relative overflow-hidden group hover:border-simona-wine transition-all duration-300"
+                href={`/promos/${promo.slug}`}
+                className="group flex flex-col justify-between h-full min-h-[460px] rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-wine/60 transition-all duration-500 overflow-hidden shadow-xl"
               >
-                <div className="absolute top-0 right-0 w-48 h-48 bg-simona-wine/10 rounded-full blur-3xl pointer-events-none group-hover:bg-simona-wine/20 transition-all" />
+                {/* Visual Top Media */}
+                <div className="relative h-56 w-full overflow-hidden bg-[#111315]">
+                  <Image
+                    src={promo.thumbnailUrl || promo.bannerUrl}
+                    alt={promo.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                  {/* Cinematic gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#16191D] via-[#16191D]/40 to-transparent" />
 
-                <div>
-                  {/* Badges Row */}
-                  <div className="flex items-center justify-between gap-3 mb-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-bold bg-simona-wine/25 text-white shadow-sm border border-simona-wine/50 backdrop-blur-md">
-                      {promo.discountBadge || promo.badgeText} ({formatBrandName(promo.brand)})
+                  {/* Header Tags over Image */}
+                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
+                    {/* Brand Tag */}
+                    <span className="px-2.5 py-1 rounded-md bg-[#111315]/85 backdrop-blur-md border border-[#2B313A] text-xs font-semibold text-white uppercase tracking-wider shadow-sm">
+                      {promo.brand}
                     </span>
-                    <div className="flex items-center gap-1.5 text-xs text-simona-wine-light font-medium shrink-0">
-                      <SimonaIconClock className="w-3.5 h-3.5 shrink-0" />
-                      <span>до {promo.endDate}</span>
-                    </div>
+
+                    {/* Official Wine Promo Badge */}
+                    {(promo.badgeText || promo.discountBadge) && (
+                      <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-simona-wine/25 text-white text-xs font-semibold shadow-sm border border-simona-wine/50 backdrop-blur-md">
+                        <span>{promo.badgeText || promo.discountBadge}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Content Section */}
+                <div className="p-6 flex flex-col flex-1 justify-between">
+                  <div>
+                    {promo.subtitle && (
+                      <span className="text-xs uppercase tracking-wider text-[#87888A] font-medium">
+                        {promo.subtitle}
+                      </span>
+                    )}
+
+                    <h3 className="text-lg font-semibold text-white group-hover:text-white mt-1.5 leading-snug line-clamp-2">
+                      {promo.title}
+                    </h3>
+
+                    <p className="text-xs sm:text-sm text-[#87888A] mt-2.5 leading-relaxed line-clamp-2">
+                      {promo.shortDescription}
+                    </p>
                   </div>
 
-                  {/* Promo Title */}
-                  <h3 className="text-base sm:text-lg font-montserrat font-bold text-white mb-2 leading-snug">
-                    {promo.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-xs text-[#D7D9DB] leading-relaxed mb-4">
-                    {promo.fullDescription || promo.shortDescription}
-                  </p>
-
-                  {/* Tiers Grid (Ступени выгоды и подарков) */}
-                  {promo.tiers && promo.tiers.length > 0 && (
-                    <div className="mb-4 space-y-2">
-                      <div className="text-[11px] font-bold text-[#87888A] uppercase tracking-wider">
-                        Ступени подарков и выгоды:
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {promo.tiers.map((tier, tIdx) => (
-                          <div
-                            key={tIdx}
-                            className="p-3 rounded-xl bg-[#1E2228] border border-[#2B313A] flex flex-col gap-1"
-                          >
-                            <span className="text-xs font-bold text-simona-wine-light">{tier.step}</span>
-                            <span className="text-xs font-semibold text-white">
-                              {tier.benefit}
-                            </span>
-                            {tier.description && (
-                              <span className="text-[11px] text-[#87888A] leading-snug">
-                                {tier.description}
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
+                  {/* Footer info: Deadline and Arrow CTA */}
+                  <div className="pt-5 mt-5 border-t border-[#2B313A]/60 flex items-center justify-between">
+                    <div className="flex items-center space-x-1.5 text-xs text-[#87888A]">
+                      <SimonaIconClock className="w-3.5 h-3.5 text-simona-wine-light" />
+                      <span>до {promo.endDate}</span>
                     </div>
-                  )}
 
-                  {/* Conditions checklist */}
-                  {promo.conditions && promo.conditions.length > 0 && (
-                    <div className="mb-4 space-y-1.5 pt-2 border-t border-[#2B313A]/50">
-                      <div className="text-[11px] font-bold text-[#87888A] uppercase tracking-wider mb-1">
-                        Ключевые условия:
-                      </div>
-                      {promo.conditions.slice(0, 3).map((cond, cIdx) => (
-                        <div key={cIdx} className="flex items-start gap-2 text-xs text-[#D7D9DB]">
-                          <SimonaIconCheck className="w-3.5 h-3.5 text-simona-teal shrink-0 mt-0.5" />
-                          <span>{cond}</span>
-                        </div>
-                      ))}
+                    <div className="inline-flex items-center space-x-1 text-xs font-semibold text-simona-wine-light group-hover:text-white transition-colors">
+                      <span>Подробнее</span>
+                      <SimonaIconArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                     </div>
-                  )}
+                  </div>
                 </div>
-
-                {/* Footer Action buttons */}
-                <div className="pt-4 mt-auto border-t border-[#2B313A]/60 flex flex-wrap items-center justify-between gap-3">
-                  <button
-                    type="button"
-                    onClick={() => openModal('PROMO_TERMS', { promoData: promo })}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-simona-wine-light transition-colors group cursor-pointer"
-                  >
-                    <span className="underline decoration-simona-wine/60 underline-offset-4">
-                      Все официальные условия
-                    </span>
-                    <ArrowRight className="w-3.5 h-3.5 text-simona-wine-light group-hover:translate-x-0.5 transition-transform" />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => openModal('QUICK_CONSULT', { product })}
-                    className="px-3.5 py-1.5 rounded-xl bg-simona-wine/20 hover:bg-simona-wine/30 border border-simona-wine/40 text-white text-xs font-semibold transition-colors cursor-pointer"
-                  >
-                    Подобрать комплект по акции
-                  </button>
-                </div>
-              </div>
+              </Link>
             ))}
           </div>
 
