@@ -11,14 +11,10 @@ export interface TabItem {
 
 export function getProductTabs(product: ProductItem): TabItem[] {
   const tabs: TabItem[] = [
-    {
-      id: 'about',
-      label: product.technologies && product.technologies.length > 0 ? 'О технологиях' : 'О приборе',
-    },
     { id: 'specs', label: 'Характеристики' },
   ];
 
-  // Dynamic promos tab (Zero Dead Ends: only if promos exist for this product)
+  // 2. Dynamic promos tab (Zero Dead Ends: only if promos exist for this product)
   const productPromos = getPromosForProduct(product);
   const categoryPromos = getPromosForCategory(product.category);
   const brandCategoryPromo = !productPromos[0]
@@ -35,17 +31,18 @@ export function getProductTabs(product: ProductItem): TabItem[] {
     });
   }
 
-  // Zero Dead Ends: Only render Schematics tab if actual files exist
+  // 3. О приборе / О технологиях
+  tabs.push({
+    id: 'about',
+    label: product.technologies && product.technologies.length > 0 ? 'О технологиях' : 'О приборе',
+  });
+
+  // 4. Zero Dead Ends: Only render Schematics tab if actual files exist
   if (product.schematicPdfUrl || product.schematicDwgUrl) {
     tabs.push({ id: 'schematics', label: 'Схемы встройки (PDF/DWG)' });
   }
 
-  tabs.push({ id: 'bundle', label: 'Комплект в едином стиле' });
-
-  // Zero Dead Ends & Absolute Zero: Only show reviews if authentic reviews exist
-  if (product.reviews && product.reviews.length > 0) {
-    tabs.push({ id: 'reviews', label: `Отзывы (${product.reviews.length})` });
-  }
+  // Tabs 'bundle' and 'reviews' hidden per user request
 
   return tabs;
 }

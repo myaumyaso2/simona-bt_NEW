@@ -509,10 +509,10 @@ export function ProductTabsSection({
 
                   <button
                     type="button"
-                    onClick={() => onSelectTab('bundle')}
+                    onClick={() => openModal('QUICK_CONSULT', { product })}
                     className="px-3.5 py-1.5 rounded-xl bg-simona-wine/20 hover:bg-simona-wine/30 border border-simona-wine/40 text-white text-xs font-semibold transition-colors cursor-pointer"
                   >
-                    Собрать комплект
+                    Подобрать комплект по акции
                   </button>
                 </div>
               </div>

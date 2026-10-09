@@ -21,7 +21,7 @@ interface ProductDetailViewProps {
 
 export function ProductDetailView({ product }: ProductDetailViewProps) {
   const categorySlug = getCategorySlugByName(product.category);
-  const [activeTab, setActiveTab] = useState('about');
+  const [activeTab, setActiveTab] = useState('specs');
   const [isOneClickBuyOpen, setIsOneClickBuyOpen] = useState(false);
 
   useEffect(() => {
