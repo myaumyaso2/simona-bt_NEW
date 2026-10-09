@@ -37,12 +37,7 @@ export function getProductTabs(product: ProductItem): TabItem[] {
     label: product.technologies && product.technologies.length > 0 ? 'О технологиях' : 'О приборе',
   });
 
-  // 4. Zero Dead Ends: Only render Schematics tab if actual files exist
-  if (product.schematicPdfUrl || product.schematicDwgUrl) {
-    tabs.push({ id: 'schematics', label: 'Схемы встройки (PDF/DWG)' });
-  }
-
-  // Tabs 'bundle' and 'reviews' hidden per user request
+  // Tabs 'schematics', 'bundle' and 'reviews' hidden per user request
 
   return tabs;
 }
