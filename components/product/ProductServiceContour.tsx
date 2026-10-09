@@ -95,40 +95,12 @@ export function ProductServiceContour({ product }: ProductServiceContourProps) {
           </div>
         </div>
 
-        {/* Card 03: Профессиональная установка и подключение */}
+        {/* Card 03: Аккуратная доставка и самовывоз (с динамическими данными товара) */}
         <div className="p-6 sm:p-7 rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 transition-all duration-300 flex flex-col justify-between shadow-lg group">
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="font-montserrat text-3xl sm:text-4xl font-extrabold text-simona-teal tracking-tight group-hover:scale-105 transition-transform">
                 03
-              </span>
-              <span className="text-[11px] font-medium text-white/70 bg-white/5 px-2 py-0.5 rounded-md border border-white/10">
-                Гарантия
-              </span>
-            </div>
-
-            <h3 className="text-base font-montserrat font-bold text-white mb-2.5 group-hover:text-simona-teal transition-colors">
-              Профессиональная установка
-            </h3>
-
-            <p className="text-xs text-[#87888A] leading-relaxed">
-              Профессионально устанавливаем и подключаем встраиваемую бытовую технику строго по заводским регламентам брендов с сохранением официальной гарантии.
-            </p>
-          </div>
-
-          <div className="pt-5 mt-auto">
-            <div className="text-[11px] text-[#87888A]">
-              Сертифицированные специалисты
-            </div>
-          </div>
-        </div>
-
-        {/* Card 04: Аккуратная доставка и самовывоз (с динамическими данными товара) */}
-        <div className="p-6 sm:p-7 rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 transition-all duration-300 flex flex-col justify-between shadow-lg group">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="font-montserrat text-3xl sm:text-4xl font-extrabold text-simona-teal tracking-tight group-hover:scale-105 transition-transform">
-                04
               </span>
               <span className="text-[11px] font-medium text-simona-teal bg-simona-teal/10 px-2 py-0.5 rounded-md border border-simona-teal/20">
                 Своя служба
@@ -140,7 +112,7 @@ export function ProductServiceContour({ product }: ProductServiceContourProps) {
             </h3>
 
             <p className="text-xs text-[#87888A] leading-relaxed mb-3">
-              Собственная служба доставки. Бережный подъем в квартиру на этаж, распаковка и проверка целостности при вас.
+              Собственная служба доставки. Бережный подъем в квартиру на любой этаж, распаковка и проверка целостности при вас.
             </p>
 
             {/* Dynamic Product Logistics Pill */}
@@ -174,6 +146,34 @@ export function ProductServiceContour({ product }: ProductServiceContourProps) {
               <SimonaIconClock className="w-3.5 h-3.5 text-simona-teal shrink-0" />
               <span>Записаться на показ в салоне</span>
             </button>
+          </div>
+        </div>
+
+        {/* Card 04: Профессиональная установка и подключение */}
+        <div className="p-6 sm:p-7 rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 transition-all duration-300 flex flex-col justify-between shadow-lg group">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="font-montserrat text-3xl sm:text-4xl font-extrabold text-simona-teal tracking-tight group-hover:scale-105 transition-transform">
+                04
+              </span>
+              <span className="text-[11px] font-medium text-white/70 bg-white/5 px-2 py-0.5 rounded-md border border-white/10">
+                Гарантия
+              </span>
+            </div>
+
+            <h3 className="text-base font-montserrat font-bold text-white mb-2.5 group-hover:text-simona-teal transition-colors">
+              Профессиональная установка
+            </h3>
+
+            <p className="text-xs text-[#87888A] leading-relaxed">
+              Профессионально устанавливаем и подключаем встраиваемую бытовую технику строго по заводским регламентам брендов с сохранением официальной гарантии.
+            </p>
+          </div>
+
+          <div className="pt-5 mt-auto">
+            <div className="text-[11px] text-[#87888A]">
+              Сертифицированные специалисты
+            </div>
           </div>
         </div>
       </div>
