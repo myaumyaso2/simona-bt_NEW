@@ -6,7 +6,7 @@ import { ProductItem } from '@/types';
 import { groupProductFeatures } from '@/lib/productFeatures';
 import { formatPrice } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
-import { Plus } from 'lucide-react';
+import { Plus, ArrowRight } from 'lucide-react';
 import {
   SimonaIconCart,
   SimonaIconDownload,
@@ -17,11 +17,13 @@ import {
   SimonaIconSparkles,
   SimonaIconSearch,
   SimonaIconGuarantee,
+  SimonaIconClock,
 } from '@/components/brand/SimonaIcons';
 import { SectionBadge } from '@/components/ui/SectionBadge';
 import { formatBrandName } from '@/lib/formatters';
 import { getProductBundle } from '@/lib/productBundles';
 import { AccessoryItem } from '@/data/catalogData';
+import { getPromosForProduct, getPromosForCategory } from '@/data/promosData';
 
 interface ProductTabsSectionProps {
   product: ProductItem;
@@ -49,6 +51,26 @@ export function ProductTabsSection({
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
+
+  const productPromos = useMemo(() => getPromosForProduct(product), [product]);
+  const categoryPromos = useMemo(
+    () => getPromosForCategory(product.category),
+    [product.category]
+  );
+  const brandCategoryPromo = useMemo(() => {
+    if (productPromos.length > 0) return null;
+    return (
+      categoryPromos.find(
+        (p) => p.brand.toLowerCase() === (product.brand || '').toLowerCase()
+      ) || null
+    );
+  }, [productPromos, categoryPromos, product.brand]);
+
+  const allPromosToDisplay = useMemo(() => {
+    if (productPromos.length > 0) return productPromos;
+    if (brandCategoryPromo) return [brandCategoryPromo];
+    return [];
+  }, [productPromos, brandCategoryPromo]);
 
   const [specQuery, setSpecQuery] = useState('');
 
@@ -370,6 +392,153 @@ export function ProductTabsSection({
               )}
             </div>
           )}
+        </motion.div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB: АКЦИИ И ПОДАРКИ ПРОИЗВОДИТЕЛЯ (PROMOTIONS & GIFTS) */}
+      {/* ========================================================================= */}
+      {activeTab === 'promos' && allPromosToDisplay.length > 0 && (
+        <motion.div
+          key="tab-promos"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.3 }}
+          className="space-y-8"
+        >
+          {/* Header */}
+          <div className="space-y-3">
+            <SectionBadge variant="wine">
+              Официальные программы производителя
+            </SectionBadge>
+            <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
+              Действующие акции и подарки {brandFormatted} ({allPromosToDisplay.length})
+            </h2>
+            <p className="text-xs sm:text-sm text-[#87888A] max-w-2xl leading-relaxed text-left">
+              Специальные условия, ступени подарков и каскадные скидки официальных производителей техники при заказе в салонах и интернет-магазине СИМОНА.
+            </p>
+          </div>
+
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {allPromosToDisplay.map((promo) => (
+              <div
+                key={promo.id}
+                className="rounded-2xl border border-simona-wine/50 bg-[#16191D] p-6 sm:p-7 flex flex-col justify-between shadow-xl relative overflow-hidden group hover:border-simona-wine transition-all duration-300"
+              >
+                <div className="absolute top-0 right-0 w-48 h-48 bg-simona-wine/10 rounded-full blur-3xl pointer-events-none group-hover:bg-simona-wine/20 transition-all" />
+
+                <div>
+                  {/* Badges Row */}
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-bold bg-simona-wine/25 text-white shadow-sm border border-simona-wine/50 backdrop-blur-md">
+                      {promo.discountBadge || promo.badgeText} ({formatBrandName(promo.brand)})
+                    </span>
+                    <div className="flex items-center gap-1.5 text-xs text-simona-wine-light font-medium shrink-0">
+                      <SimonaIconClock className="w-3.5 h-3.5 shrink-0" />
+                      <span>до {promo.endDate}</span>
+                    </div>
+                  </div>
+
+                  {/* Promo Title */}
+                  <h3 className="text-base sm:text-lg font-montserrat font-bold text-white mb-2 leading-snug">
+                    {promo.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-xs text-[#D7D9DB] leading-relaxed mb-4">
+                    {promo.fullDescription || promo.shortDescription}
+                  </p>
+
+                  {/* Tiers Grid (Ступени выгоды и подарков) */}
+                  {promo.tiers && promo.tiers.length > 0 && (
+                    <div className="mb-4 space-y-2">
+                      <div className="text-[11px] font-bold text-[#87888A] uppercase tracking-wider">
+                        Ступени подарков и выгоды:
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {promo.tiers.map((tier, tIdx) => (
+                          <div
+                            key={tIdx}
+                            className="p-3 rounded-xl bg-[#1E2228] border border-[#2B313A] flex flex-col gap-1"
+                          >
+                            <span className="text-xs font-bold text-simona-wine-light">{tier.step}</span>
+                            <span className="text-xs font-semibold text-white">
+                              {tier.benefit}
+                            </span>
+                            {tier.description && (
+                              <span className="text-[11px] text-[#87888A] leading-snug">
+                                {tier.description}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Conditions checklist */}
+                  {promo.conditions && promo.conditions.length > 0 && (
+                    <div className="mb-4 space-y-1.5 pt-2 border-t border-[#2B313A]/50">
+                      <div className="text-[11px] font-bold text-[#87888A] uppercase tracking-wider mb-1">
+                        Ключевые условия:
+                      </div>
+                      {promo.conditions.slice(0, 3).map((cond, cIdx) => (
+                        <div key={cIdx} className="flex items-start gap-2 text-xs text-[#D7D9DB]">
+                          <SimonaIconCheck className="w-3.5 h-3.5 text-simona-teal shrink-0 mt-0.5" />
+                          <span>{cond}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer Action buttons */}
+                <div className="pt-4 mt-auto border-t border-[#2B313A]/60 flex flex-wrap items-center justify-between gap-3">
+                  <button
+                    type="button"
+                    onClick={() => openModal('PROMO_TERMS', { promoData: promo })}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-simona-wine-light transition-colors group cursor-pointer"
+                  >
+                    <span className="underline decoration-simona-wine/60 underline-offset-4">
+                      Все официальные условия
+                    </span>
+                    <ArrowRight className="w-3.5 h-3.5 text-simona-wine-light group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => onSelectTab('bundle')}
+                    className="px-3.5 py-1.5 rounded-xl bg-simona-wine/20 hover:bg-simona-wine/30 border border-simona-wine/40 text-white text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    Собрать комплект
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Simona Storage & Reservation Guarantee Banner */}
+          <div className="p-5 sm:p-6 rounded-2xl bg-[#16191D] border border-[#2B313A] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="text-xs font-bold text-white flex items-center gap-2">
+                <SimonaIconGuarantee className="w-4 h-4 text-simona-teal" />
+                <span>Подарки в наличии и бесплатное хранение</span>
+              </div>
+              <p className="text-xs text-[#87888A] max-w-xl">
+                Все подарки резервируются на складе СИМОНА в Нижнем Новгороде сразу при заказе. Доступно бесплатное бережное хранение техники до 6 месяцев до окончания вашего ремонта.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => openModal('QUICK_CONSULT', { product })}
+              className="px-4 py-2.5 rounded-xl bg-[#1E2228] hover:bg-[#2B313A] border border-[#2B313A] text-white text-xs font-semibold whitespace-nowrap transition cursor-pointer"
+            >
+              Уточнить у эксперта
+            </button>
+          </div>
         </motion.div>
       )}
 

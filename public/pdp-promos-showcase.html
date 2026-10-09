@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>СИМОНА — Наглядное сравнение 4 вариантов блока акций на PDP</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+      background-color: #0c0e10;
+      color: #F5F5F7;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .phone-frame {
+      width: 320px;
+      height: 700px;
+      border-radius: 36px;
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.9), 0 0 0 5px #22252a, 0 0 0 7px #16191d;
+      background-color: #111315;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    @media (min-width: 1440px) {
+      .phone-frame {
+        width: 340px;
+        height: 740px;
+      }
+    }
+    .bottom-sheet-enter {
+      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-6 lg:p-8 flex flex-col items-center justify-start text-sm">
+
+  <!-- Top Announcement Bar -->
+  <header class="w-full max-w-[1520px] mb-6 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 border-b border-[#2B313A] pb-5">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="w-2.5 h-2.5 rounded-full bg-[#8A151A] animate-pulse"></span>
+        <span class="text-[11px] font-bold tracking-wider text-[#8A151A] uppercase">СИМОНА • Quiet Luxury UI Лаборатория</span>
+        <span class="text-[11px] text-[#87888A]">|</span>
+        <span class="text-[11px] text-[#00979C] font-semibold">Сравнение эргономики смартфона (390px)</span>
+      </div>
+      <h1 class="text-xl md:text-2xl font-black text-white tracking-tight">
+        Наглядное сравнение 4 вариантов блока акций на странице товара
+      </h1>
+      <p class="text-xs text-[#87888A] mt-1 max-w-3xl leading-relaxed">
+        Задача: разместить 3 действующие акции VARD (каскадная скидка до 100%, кофеварка в подарок, набор мельниц) так, чтобы <strong>кнопка «Купить» не улетала за пределы первого экрана</strong> на смартфонах.
+      </p>
+    </div>
+
+    <!-- Live indicator badge -->
+    <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#16191D] border border-[#2B313A] text-xs">
+      <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+      <span class="text-[#D7D9DB]">Все 4 варианта синхронно на одном экране</span>
+    </div>
+  </header>
+
+  <!-- ======================================================== -->
+  <!-- VIEW MODE: ALL 4 VARIANTS SIDE BY SIDE -->
+  <!-- ======================================================== -->
+  <div id="all-variants-grid" class="w-full max-w-[1520px] grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 justify-items-center">
+
+    <!-- ---------------------------------------------------- -->
+    <!-- COLUMN 1: VARIANT 1 (SECTION + SNAP SWIPER) -->
+    <!-- ---------------------------------------------------- -->
+    <div class="flex flex-col items-center w-full max-w-[340px]">
+      <div class="w-full mb-3 text-center">
+        <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#00979C]/20 border border-[#00979C]/40 text-[#00979C] uppercase tracking-wider mb-1">
+          Вариант 1 • Рекомендуемый
+        </span>
+        <h3 class="text-sm font-bold text-white">Секция + Свайпер</h3>
+        <p class="text-[11px] text-[#87888A] mt-0.5">Микро-бейдж под ценой (40px) + Свайп-лента под сервисом</p>
+      </div>
+
+      <div class="phone-frame">
+        <!-- Phone Notch -->
+        <div class="h-8 w-full bg-[#111315] flex items-center justify-between px-5 pt-1 shrink-0 select-none text-[10px] text-white">
+          <span>09:41</span>
+          <div class="w-16 h-3 bg-black rounded-full"></div>
+          <span>100%</span>
+        </div>
+
+        <!-- Phone Scrollable Body -->
+        <div class="flex-1 overflow-y-auto no-scrollbar p-3 space-y-3 pb-8">
+          <!-- Top bar -->
+          <div class="text-[10px] text-[#87888A] flex justify-between border-b border-[#2B313A] pb-1.5">
+            <span>СИМОНА • Белинского 15</span>
+            <span class="text-emerald-400">В наличии</span>
+          </div>
+
+          <!-- Product Name & Image -->
+          <div>
+            <div class="text-[10px] text-[#87888A]">Духовой шкаф VARD</div>
+            <div class="text-xs font-bold text-white leading-snug">VARD VBO 762 B (Код: 89083)</div>
+          </div>
+
+          <div class="h-28 rounded-xl bg-gradient-to-b from-[#1E2228] to-[#16191D] border border-[#2B313A] flex items-center justify-center text-[10px] text-[#87888A]">
+            [ Фото прибора VARD ]
+          </div>
+
+          <!-- Price Box -->
+          <div class="p-2.5 rounded-xl bg-[#16191D] border border-[#2B313A]">
+            <div class="flex items-baseline justify-between">
+              <span class="text-lg font-extrabold text-white">94 990 ₽</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-[#8A151A] text-white">-13%</span>
+            </div>
+            <div class="text-[9px] text-[#00979C] underline mt-1">Нашли дешевле? Снизим цену!</div>
+          </div>
+
+          <!-- V1 BUYBOX PROMO TRIGGER (Compact 38px) -->
+          <div class="p-2 rounded-xl bg-[#8A151A]/15 border border-[#8A151A]/60 flex items-center justify-between text-[11px] shadow-sm">
+            <div class="flex items-center gap-1.5 text-white font-medium truncate">
+              <span>🏷️</span>
+              <span class="truncate">3 акции VARD: подарки и скидки</span>
+            </div>
+            <span class="text-[10px] text-[#00979C] font-bold shrink-0">Вниз ↓</span>
+          </div>
+
+          <!-- BUY CTA (IN VIEW!) -->
+          <div class="space-y-1.5">
+            <button class="w-full h-10 rounded-xl bg-[#00979C] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md">
+              <span>В корзину • 94 990 ₽</span>
+            </button>
+            <button class="w-full h-8 rounded-xl bg-[#16191D] border border-[#2B313A] text-white text-[11px] font-semibold">
+              Купить в 1 клик
+            </button>
+          </div>
+
+          <!-- Service Contour 01-04 -->
+          <div class="p-2 rounded-xl bg-[#16191D] border border-[#2B313A] text-[9px] text-[#87888A] space-y-1">
+            <div class="font-bold text-white/80">Сервисный стандарт:</div>
+            <div class="grid grid-cols-2 gap-1 text-[9px]">
+              <div><strong class="text-[#00979C]">01</strong> Эксперт</div>
+              <div><strong class="text-[#00979C]">02</strong> Хранение 6 мес.</div>
+              <div><strong class="text-[#00979C]">03</strong> Своя доставка</div>
+              <div><strong class="text-[#00979C]">04</strong> Установка</div>
+            </div>
+          </div>
+
+          <!-- V1 DEDICATED SECTION WITH HORIZONTAL SNAP SWIPER -->
+          <div class="p-2.5 rounded-xl bg-[#16191D] border border-[#8A151A]/50 space-y-2">
+            <div class="flex justify-between items-center text-[10px]">
+              <span class="font-bold text-white flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#8A151A]"></span>
+                Акции VARD (3)
+              </span>
+              <span class="text-[9px] text-[#87888A]">Свайп влево →</span>
+            </div>
+
+            <!-- Snap cards carousel -->
+            <div class="flex gap-2 overflow-x-auto no-scrollbar snap-x py-0.5">
+              <div class="snap-start shrink-0 w-[200px] p-2 rounded-lg bg-[#8A151A]/20 border border-[#8A151A]/60 text-[10px]">
+                <div class="font-bold text-white">Каскадная скидка 100%</div>
+                <div class="text-[9px] text-[#D7D9DB] mt-0.5 line-clamp-2">Скидка до 100% на 4-й прибор VARD в чеке.</div>
+                <div class="text-[#00979C] text-[9px] mt-1 underline">Условия →</div>
+              </div>
+              <div class="snap-start shrink-0 w-[200px] p-2 rounded-lg bg-[#8A151A]/20 border border-[#8A151A]/60 text-[10px]">
+                <div class="font-bold text-white">Кофеварка в подарок</div>
+                <div class="text-[9px] text-[#D7D9DB] mt-0.5 line-clamp-2">Рожковая кофеварка VARD при покупке духовки.</div>
+                <div class="text-[#00979C] text-[9px] mt-1 underline">Условия →</div>
+              </div>
+              <div class="snap-start shrink-0 w-[200px] p-2 rounded-lg bg-[#8A151A]/20 border border-[#8A151A]/60 text-[10px]">
+                <div class="font-bold text-white">Набор мельниц VARD</div>
+                <div class="text-[9px] text-[#D7D9DB] mt-0.5 line-clamp-2">Дизайнерский набор специй в подарок.</div>
+                <div class="text-[#00979C] text-[9px] mt-1 underline">Условия →</div>
+              </div>
+            </div>
+            <div class="text-center text-[9px] text-[#87888A]">• ○ ○</div>
+          </div>
+
+          <!-- Specs section -->
+          <div class="p-2 rounded-xl bg-[#16191D] border border-[#2B313A] text-[10px] space-y-1">
+            <div class="font-bold text-white">Характеристики</div>
+            <div class="text-[#87888A] flex justify-between"><span>Объем:</span> <span class="text-white">72 л</span></div>
+            <div class="text-[#87888A] flex justify-between"><span>Очистка:</span> <span class="text-white">Пиролиз</span></div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="mt-3 p-2.5 rounded-xl bg-[#16191D] border border-[#2B313A] text-[11px] text-[#87888A] w-full text-left space-y-1">
+        <div class="text-emerald-400 font-bold">✓ Плюсы:</div>
+        <div>• Кнопка «Купить» на 1-м экране</div>
+        <div>• Естественный свайп пальцем влево-вправо</div>
+        <div>• Все 3 акции видны без скрытых табов</div>
+      </div>
+    </div>
+
+
+    <!-- ---------------------------------------------------- -->
+    <!-- COLUMN 2: VARIANT 2 (NAV TAB IN MENU) -->
+    <!-- ---------------------------------------------------- -->
+    <div class="flex flex-col items-center w-full max-w-[340px]">
+      <div class="w-full mb-3 text-center">
+        <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white/10 border border-white/20 text-white/80 uppercase tracking-wider mb-1">
+          Вариант 2
+        </span>
+        <h3 class="text-sm font-bold text-white">Вкладка в табах</h3>
+        <p class="text-[11px] text-[#87888A] mt-0.5">Акции вынесены в меню табов «Акции (3)»</p>
+      </div>
+
+      <div class="phone-frame">
+        <div class="h-8 w-full bg-[#111315] flex items-center justify-between px-5 pt-1 shrink-0 select-none text-[10px] text-white">
+          <span>09:41</span>
+          <div class="w-16 h-3 bg-black rounded-full"></div>
+          <span>100%</span>
+        </div>
+
+        <div class="flex-1 overflow-y-auto no-scrollbar p-3 space-y-3 pb-8">
+          <div class="text-[10px] text-[#87888A] flex justify-between border-b border-[#2B313A] pb-1.5">
+            <span>СИМОНА • Белинского 15</span>
+            <span class="text-emerald-400">В наличии</span>
+          </div>
+
+          <div>
+            <div class="text-[10px] text-[#87888A]">Духовой шкаф VARD</div>
+            <div class="text-xs font-bold text-white leading-snug">VARD VBO 762 B (Код: 89083)</div>
+          </div>
+
+          <div class="h-28 rounded-xl bg-gradient-to-b from-[#1E2228] to-[#16191D] border border-[#2B313A] flex items-center justify-center text-[10px] text-[#87888A]">
+            [ Фото прибора VARD ]
+          </div>
+
+          <div class="p-2.5 rounded-xl bg-[#16191D] border border-[#2B313A]">
+            <div class="flex items-baseline justify-between">
+              <span class="text-lg font-extrabold text-white">94 990 ₽</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-[#8A151A] text-white">-13%</span>
+            </div>
+            <div class="text-[9px] text-[#00979C] underline mt-1">Нашли дешевле? Снизим цену!</div>
+          </div>
+
+          <!-- V2 TRIGGER -->
+          <div class="p-2 rounded-xl bg-[#16191D] border border-[#2B313A] flex items-center justify-between text-[11px]">
+            <span class="text-white font-medium">🏷️ Доступно 3 акции VARD</span>
+            <span class="text-[10px] text-[#8A151A] font-bold">В таб →</span>
+          </div>
+
+          <div class="space-y-1.5">
+            <button class="w-full h-10 rounded-xl bg-[#00979C] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md">
+              <span>В корзину • 94 990 ₽</span>
+            </button>
+            <button class="w-full h-8 rounded-xl bg-[#16191D] border border-[#2B313A] text-white text-[11px] font-semibold">
+              Купить в 1 клик
+            </button>
+          </div>
+
+          <div class="p-2 rounded-xl bg-[#16191D] border border-[#2B313A] text-[9px] text-[#87888A] space-y-1">
+            <div class="font-bold text-white/80">Сервисный стандарт:</div>
+            <div class="grid grid-cols-2 gap-1 text-[9px]">
+              <div><strong class="text-[#00979C]">01</strong> Эксперт</div>
+              <div><strong class="text-[#00979C]">02</strong> Хранение 6 мес.</div>
+              <div><strong class="text-[#00979C]">03</strong> Своя доставка</div>
+              <div><strong class="text-[#00979C]">04</strong> Установка</div>
+            </div>
+          </div>
+
+          <!-- V2 TAB NAV BAR -->
+          <div class="border-y border-[#2B313A] py-1.5 flex gap-3 text-[10px] overflow-x-auto no-scrollbar font-medium">
+            <span class="text-[#87888A]">О приборе</span>
+            <span class="text-[#87888A]">Характеристики</span>
+            <span class="text-[#8A151A] font-bold border-b border-[#8A151A] pb-0.5">Акции (3)</span>
+            <span class="text-[#87888A]">Комплект</span>
+          </div>
+
+          <!-- V2 ACTIVE TAB CONTENT -->
+          <div class="p-2.5 rounded-xl bg-[#8A151A]/10 border border-[#8A151A]/40 space-y-2 text-[10px]">
+            <div class="font-bold text-white">1. Каскадная скидка до 100%</div>
+            <div class="text-[9px] text-[#D7D9DB]">Скидка на 4-й прибор VARD в едином комплекте.</div>
+
+            <div class="font-bold text-white pt-1 border-t border-[#8A151A]/20">2. Кофеварка VARD в подарок</div>
+            <div class="text-[9px] text-[#D7D9DB]">Рожковая кофеварка при заказе духовки.</div>
+
+            <div class="font-bold text-white pt-1 border-t border-[#8A151A]/20">3. Набор мельниц для специй</div>
+            <div class="text-[9px] text-[#D7D9DB]">Дизайнерский дуэт мельниц в подарок.</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="mt-3 p-2.5 rounded-xl bg-[#16191D] border border-[#2B313A] text-[11px] text-[#87888A] w-full text-left space-y-1">
+        <div class="text-white/90 font-bold">⚖️ Особенности:</div>
+        <div>• Структурная чистота страницы</div>
+        <div>• Минус: если клиент не кликнул в таб, он не увидит подарки</div>
+      </div>
+    </div>
+
+
+    <!-- ---------------------------------------------------- -->
+    <!-- COLUMN 3: VARIANT 3 (MICRO SLIDER IN BUYBOX) -->
+    <!-- ---------------------------------------------------- -->
+    <div class="flex flex-col items-center w-full max-w-[340px]">
+      <div class="w-full mb-3 text-center">
+        <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white/10 border border-white/20 text-white/80 uppercase tracking-wider mb-1">
+          Вариант 3
+        </span>
+        <h3 class="text-sm font-bold text-white">Микро-слайдер в BuyBox</h3>
+        <p class="text-[11px] text-[#87888A] mt-0.5">Строго 1 карточка со стрелками &lt; 1 из 3 &gt; над кнопкой</p>
+      </div>
+
+      <div class="phone-frame">
+        <div class="h-8 w-full bg-[#111315] flex items-center justify-between px-5 pt-1 shrink-0 select-none text-[10px] text-white">
+          <span>09:41</span>
+          <div class="w-16 h-3 bg-black rounded-full"></div>
+          <span>100%</span>
+        </div>
+
+        <div class="flex-1 overflow-y-auto no-scrollbar p-3 space-y-3 pb-8">
+          <div class="text-[10px] text-[#87888A] flex justify-between border-b border-[#2B313A] pb-1.5">
+            <span>СИМОНА • Белинского 15</span>
+            <span class="text-emerald-400">В наличии</span>
+          </div>
+
+          <div>
+            <div class="text-[10px] text-[#87888A]">Духовой шкаф VARD</div>
+            <div class="text-xs font-bold text-white leading-snug">VARD VBO 762 B (Код: 89083)</div>
+          </div>
+
+          <div class="h-28 rounded-xl bg-gradient-to-b from-[#1E2228] to-[#16191D] border border-[#2B313A] flex items-center justify-center text-[10px] text-[#87888A]">
+            [ Фото прибора VARD ]
+          </div>
+
+          <div class="p-2.5 rounded-xl bg-[#16191D] border border-[#2B313A]">
+            <div class="flex items-baseline justify-between">
+              <span class="text-lg font-extrabold text-white">94 990 ₽</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-[#8A151A] text-white">-13%</span>
+            </div>
+            <div class="text-[9px] text-[#00979C] underline mt-1">Нашли дешевле? Снизим цену!</div>
+          </div>
+
+          <!-- V3 MICRO SLIDER IN BUYBOX (~90px height) -->
+          <div class="p-2.5 rounded-xl bg-[#8A151A]/15 border border-[#8A151A]/60 space-y-1">
+            <div class="flex items-center justify-between text-[9px]">
+              <span class="px-1.5 py-0.2 rounded bg-[#8A151A] text-white font-bold">Скидка до 100%</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[#87888A]">1 из 3</span>
+                <span class="w-4 h-4 rounded bg-white/10 text-white flex items-center justify-center font-bold">‹</span>
+                <span class="w-4 h-4 rounded bg-white/10 text-white flex items-center justify-center font-bold">›</span>
+              </div>
+            </div>
+            <div class="text-[11px] font-bold text-white leading-snug">Каскадная скидка на комплект</div>
+            <p class="text-[10px] text-[#D7D9DB] line-clamp-1">Скидка до 100% на четвертый прибор VARD в едином чеке.</p>
+          </div>
+
+          <div class="space-y-1.5">
+            <button class="w-full h-10 rounded-xl bg-[#00979C] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md">
+              <span>В корзину • 94 990 ₽</span>
+            </button>
+            <button class="w-full h-8 rounded-xl bg-[#16191D] border border-[#2B313A] text-white text-[11px] font-semibold">
+              Купить в 1 клик
+            </button>
+          </div>
+
+          <div class="p-2 rounded-xl bg-[#16191D] border border-[#2B313A] text-[9px] text-[#87888A] space-y-1">
+            <div class="font-bold text-white/80">Сервисный стандарт:</div>
+            <div class="grid grid-cols-2 gap-1 text-[9px]">
+              <div><strong class="text-[#00979C]">01</strong> Эксперт</div>
+              <div><strong class="text-[#00979C]">02</strong> Хранение 6 мес.</div>
+              <div><strong class="text-[#00979C]">03</strong> Своя доставка</div>
+              <div><strong class="text-[#00979C]">04</strong> Установка</div>
+            </div>
+          </div>
+
+          <div class="p-2 rounded-xl bg-[#16191D] border border-[#2B313A] text-[10px] space-y-1">
+            <div class="font-bold text-white">Характеристики</div>
+            <div class="text-[#87888A] flex justify-between"><span>Объем:</span> <span class="text-white">72 л</span></div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="mt-3 p-2.5 rounded-xl bg-[#16191D] border border-[#2B313A] text-[11px] text-[#87888A] w-full text-left space-y-1">
+        <div class="text-white/90 font-bold">⚖️ Особенности:</div>
+        <div>• Акция сразу у цены</div>
+        <div>• Минус: видно только 1 акцию, кнопка смещается на 90px вниз</div>
+      </div>
+    </div>
+
+
+    <!-- ---------------------------------------------------- -->
+    <!-- COLUMN 4: VARIANT 4 (MOBILE BOTTOM SHEET) -->
+    <!-- ---------------------------------------------------- -->
+    <div class="flex flex-col items-center w-full max-w-[340px]">
+      <div class="w-full mb-3 text-center">
+        <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white/10 border border-white/20 text-white/80 uppercase tracking-wider mb-1">
+          Вариант 4
+        </span>
+        <h3 class="text-sm font-bold text-white">Мобильная шторка</h3>
+        <p class="text-[11px] text-[#87888A] mt-0.5">Ультра-компактный триггер (36px) + Bottom Sheet снизу</p>
+      </div>
+
+      <div class="phone-frame">
+        <div class="h-8 w-full bg-[#111315] flex items-center justify-between px-5 pt-1 shrink-0 select-none text-[10px] text-white">
+          <span>09:41</span>
+          <div class="w-16 h-3 bg-black rounded-full"></div>
+          <span>100%</span>
+        </div>
+
+        <div class="flex-1 overflow-y-auto no-scrollbar p-3 space-y-3 pb-8">
+          <div class="text-[10px] text-[#87888A] flex justify-between border-b border-[#2B313A] pb-1.5">
+            <span>СИМОНА • Белинского 15</span>
+            <span class="text-emerald-400">В наличии</span>
+          </div>
+
+          <div>
+            <div class="text-[10px] text-[#87888A]">Духовой шкаф VARD</div>
+            <div class="text-xs font-bold text-white leading-snug">VARD VBO 762 B (Код: 89083)</div>
+          </div>
+
+          <div class="h-28 rounded-xl bg-gradient-to-b from-[#1E2228] to-[#16191D] border border-[#2B313A] flex items-center justify-center text-[10px] text-[#87888A]">
+            [ Фото прибора VARD ]
+          </div>
+
+          <div class="p-2.5 rounded-xl bg-[#16191D] border border-[#2B313A]">
+            <div class="flex items-baseline justify-between">
+              <span class="text-lg font-extrabold text-white">94 990 ₽</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-[#8A151A] text-white">-13%</span>
+            </div>
+            <div class="text-[9px] text-[#00979C] underline mt-1">Нашли дешевле? Снизим цену!</div>
+          </div>
+
+          <!-- V4 TRIGGER (Micro pill 34px) -->
+          <div class="p-2 rounded-xl bg-[#8A151A]/15 border border-[#8A151A]/50 flex items-center justify-between text-[11px]">
+            <div class="flex items-center gap-1.5 text-white font-medium">
+              <span>🎁</span>
+              <span>3 подарка и спеццены от VARD</span>
+            </div>
+            <span class="text-[10px] text-[#00979C] font-bold">Шторка ›</span>
+          </div>
+
+          <div class="space-y-1.5">
+            <button class="w-full h-10 rounded-xl bg-[#00979C] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md">
+              <span>В корзину • 94 990 ₽</span>
+            </button>
+            <button class="w-full h-8 rounded-xl bg-[#16191D] border border-[#2B313A] text-white text-[11px] font-semibold">
+              Купить в 1 клик
+            </button>
+          </div>
+
+          <div class="p-2 rounded-xl bg-[#16191D] border border-[#2B313A] text-[9px] text-[#87888A] space-y-1">
+            <div class="font-bold text-white/80">Сервисный стандарт:</div>
+            <div class="grid grid-cols-2 gap-1 text-[9px]">
+              <div><strong class="text-[#00979C]">01</strong> Эксперт</div>
+              <div><strong class="text-[#00979C]">02</strong> Хранение 6 мес.</div>
+              <div><strong class="text-[#00979C]">03</strong> Своя доставка</div>
+              <div><strong class="text-[#00979C]">04</strong> Установка</div>
+            </div>
+          </div>
+
+          <div class="p-2 rounded-xl bg-[#16191D] border border-[#2B313A] text-[10px] space-y-1">
+            <div class="font-bold text-white">Характеристики</div>
+            <div class="text-[#87888A] flex justify-between"><span>Объем:</span> <span class="text-white">72 л</span></div>
+          </div>
+
+        </div>
+
+        <!-- Embedded Mini Bottom Sheet Mockup (shown active) -->
+        <div class="absolute inset-x-0 bottom-0 bg-[#16191D] border-t-2 border-[#8A151A] rounded-t-2xl p-2.5 shadow-2xl text-[10px] z-20">
+          <div class="w-6 h-0.5 bg-white/30 rounded-full mx-auto mb-1.5"></div>
+          <div class="flex justify-between items-center font-bold text-white mb-1">
+            <span>🎁 Акции и подарки VARD (3)</span>
+            <span class="text-[9px] text-[#87888A]">✕</span>
+          </div>
+          <div class="space-y-1 text-[9px] text-[#D7D9DB]">
+            <div class="p-1 rounded bg-[#8A151A]/20">✓ Каскадная скидка до 100%</div>
+            <div class="p-1 rounded bg-[#8A151A]/20">✓ Рожковая кофеварка в подарок</div>
+            <div class="p-1 rounded bg-[#8A151A]/20">✓ Набор мельниц для специй</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mt-3 p-2.5 rounded-xl bg-[#16191D] border border-[#2B313A] text-[11px] text-[#87888A] w-full text-left space-y-1">
+        <div class="text-white/90 font-bold">⚖️ Особенности:</div>
+        <div>• Первый экран максимально сжат</div>
+        <div>• Мобильный жест, но требует клика для просмотра</div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

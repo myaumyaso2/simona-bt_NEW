@@ -27,6 +27,15 @@ interface ProductBuyBoxProps {
   onNavigateToTab: (tabId: string) => void;
 }
 
+function pluralizePromosInLocative(n: number): string {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) {
+    return 'акции';
+  }
+  return 'акциях';
+}
+
 export function ProductBuyBox({
   product,
   onOpenOneClickBuy,
@@ -64,6 +73,9 @@ export function ProductBuyBox({
         (p) => p.brand.toLowerCase() === (product.brand || '').toLowerCase()
       ) || null
     : null;
+
+  const promosCount = productPromos.length > 0 ? productPromos.length : categoryPromo ? 1 : 0;
+  const hasPromos = promosCount > 0;
 
   const hasMultipleColors = Boolean(product.colors && product.colors.length > 1);
   const colors = product.colors || [];
@@ -232,87 +244,63 @@ export function ProductBuyBox({
           </div>
         </div>
 
-        {/* Best Price Guarantee trigger */}
-        <div className="pt-2 border-t border-[#2B313A]/50 flex items-center justify-between text-xs">
-          <button
-            type="button"
-            onClick={() => openModal('PRICE_MATCH', { product })}
-            className="inline-flex items-center gap-1.5 text-xs text-[#87888A] hover:text-white transition-colors cursor-pointer group"
-          >
-            <SimonaIconTag className="w-3.5 h-3.5 text-simona-teal group-hover:scale-110 transition-transform" />
-            <span className="underline decoration-[#2B313A] group-hover:decoration-simona-teal underline-offset-4">
-              Нашли дешевле? Снизим цену!
-            </span>
-          </button>
-          <span className="text-[11px] text-[#87888A]">Гарантия лучшей цены</span>
+        {/* Secondary Service & Promo Triggers inside Price Box */}
+        <div className="pt-3 border-t border-[#2B313A]/50 flex flex-col gap-2.5 text-xs">
+          {/* 1. Promo link: Товар участвует в N акциях -> переход в таб акций */}
+          {hasPromos && (
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => onNavigateToTab('promos')}
+                className="inline-flex items-center gap-2 text-xs text-white hover:text-simona-wine-light transition-colors cursor-pointer group text-left"
+              >
+                <span className="w-2 h-2 rounded-full bg-simona-wine shrink-0 group-hover:scale-125 transition-transform animate-pulse" />
+                <span className="font-semibold underline decoration-simona-wine/50 group-hover:decoration-simona-wine-light underline-offset-4">
+                  Товар участвует в {promosCount} {pluralizePromosInLocative(promosCount)}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigateToTab('promos')}
+                className="text-[11px] font-medium text-simona-wine-light hover:text-white transition-colors cursor-pointer flex items-center gap-1 group"
+              >
+                <span>Условия и подарки</span>
+                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            </div>
+          )}
+
+          {/* 2. Consultation link: Получить консультацию по прибору */}
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => openModal('QUICK_CONSULT', { product })}
+              className="inline-flex items-center gap-2 text-xs text-[#87888A] hover:text-white transition-colors cursor-pointer group text-left"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-simona-teal shrink-0 group-hover:scale-125 transition-transform" />
+              <span className="underline decoration-[#2B313A] group-hover:decoration-simona-teal underline-offset-4">
+                Получить консультацию по прибору
+              </span>
+            </button>
+            <span className="text-[11px] text-[#87888A]">Эксперт СИМОНА</span>
+          </div>
+
+          {/* 3. Best Price Guarantee trigger */}
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => openModal('PRICE_MATCH', { product })}
+              className="inline-flex items-center gap-1.5 text-xs text-[#87888A] hover:text-white transition-colors cursor-pointer group text-left"
+            >
+              <SimonaIconTag className="w-3.5 h-3.5 text-simona-teal group-hover:scale-110 transition-transform" />
+              <span className="underline decoration-[#2B313A] group-hover:decoration-simona-teal underline-offset-4">
+                Нашли дешевле? Снизим цену!
+              </span>
+            </button>
+            <span className="text-[11px] text-[#87888A]">Гарантия лучшей цены</span>
+          </div>
         </div>
       </div>
-
-      {/* 5.1. Accent Wine Manufacturer Promo Modules */}
-      {productPromos.length > 0 ? (
-        <div className="space-y-3">
-          {productPromos.map((promo) => (
-            <div
-              key={promo.id}
-              className="rounded-xl border border-simona-wine/60 bg-simona-wine/10 p-4 sm:p-4.5 flex flex-col gap-2.5 shadow-lg relative overflow-hidden transition-all duration-300"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-simona-wine/15 rounded-full blur-2xl pointer-events-none" />
-
-              <div className="flex items-center justify-between gap-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-simona-wine/25 text-white shadow-sm border border-simona-wine/50 backdrop-blur-md">
-                  <span>
-                    {promo.discountBadge || promo.badgeText} ({formatBrandName(promo.brand)})
-                  </span>
-                </span>
-                <div className="flex items-center gap-1.5 text-[11px] text-simona-wine-light font-medium">
-                  <SimonaIconClock className="w-3 h-3 shrink-0" />
-                  <span>до {promo.endDate}</span>
-                </div>
-              </div>
-
-              <div className="text-sm font-montserrat font-bold text-white leading-snug">
-                {promo.title}
-              </div>
-
-              <p className="text-xs text-[#D7D9DB] leading-relaxed line-clamp-2">
-                {promo.shortDescription}
-              </p>
-
-              <div className="pt-1 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => openModal('PROMO_TERMS', { promoData: promo })}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-simona-wine-light transition-colors group cursor-pointer"
-                >
-                  <span className="underline decoration-simona-wine/60 underline-offset-4">
-                    Подробнее об акции и подарках
-                  </span>
-                  <ArrowRight className="w-3.5 h-3.5 text-simona-wine-light group-hover:translate-x-0.5 transition-transform" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : categoryPromo ? (
-        <div className="rounded-xl border border-simona-wine/30 bg-simona-wine/5 p-3 sm:p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs shadow-sm">
-          <div className="flex items-center gap-2 text-[#D7D9DB]">
-            <span className="w-1.5 h-1.5 rounded-full bg-simona-wine shrink-0" />
-            <span>
-              Для бренда <strong className="text-white font-semibold">{brandFormatted}</strong> действует акция:{' '}
-              <strong className="text-simona-wine-light">
-                {categoryPromo.badgeText}
-              </strong>
-            </span>
-          </div>
-          <Link
-            href={`/catalog?promo=${encodeURIComponent(categoryPromo.slug)}`}
-            className="inline-flex items-center gap-1 text-simona-wine-light hover:text-white font-semibold whitespace-nowrap transition-colors group shrink-0"
-          >
-            <span>Смотреть условия</span>
-            <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-          </Link>
-        </div>
-      ) : null}
 
       {/* 6. Action Row: Buy/Cart + Wishlist + Compare + 1-Click Buy */}
       <div className="flex flex-col gap-3">
