@@ -6,7 +6,6 @@ import { ProductItem } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { extractKeySpecs } from '@/lib/productFeatures';
 import { useStore } from '@/components/providers/StoreContext';
-import { ArrowRight } from 'lucide-react';
 import {
   SimonaIconCart,
   SimonaIconHeart,
@@ -15,6 +14,9 @@ import {
   SimonaIconStar,
   SimonaIconCheck,
   SimonaIconTag,
+  SimonaIconGift,
+  SimonaIconChatConsult,
+  SimonaIconArrowRight,
 } from '@/components/brand/SimonaIcons';
 import { getPromosForProduct, getPromosForCategory } from '@/data/promosData';
 import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
@@ -245,60 +247,53 @@ export function ProductBuyBox({
         </div>
 
         {/* Secondary Service & Promo Triggers inside Price Box */}
-        <div className="pt-3 border-t border-[#2B313A]/50 flex flex-col gap-2.5 text-xs">
+        <div className="pt-2 border-t border-[#2B313A]/50 divide-y divide-[#2B313A]/40 text-xs">
           {/* 1. Promo link: Товар участвует в N акциях -> переход в таб акций */}
           {hasPromos && (
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => onNavigateToTab('promos')}
-                className="inline-flex items-center gap-2 text-xs text-white hover:text-simona-wine-light transition-colors cursor-pointer group text-left"
-              >
-                <span className="w-2 h-2 rounded-full bg-simona-wine shrink-0 group-hover:scale-125 transition-transform animate-pulse" />
-                <span className="font-semibold underline decoration-simona-wine/50 group-hover:decoration-simona-wine-light underline-offset-4">
+            <button
+              type="button"
+              onClick={() => onNavigateToTab('promos')}
+              className="w-full flex items-center justify-between py-2 sm:py-2.5 group cursor-pointer text-left transition-colors"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <SimonaIconGift className="w-4 h-4 text-simona-wine-light shrink-0 group-hover:scale-110 transition-transform" />
+                <span className="font-semibold text-simona-wine-light group-hover:text-white transition-colors truncate">
                   Товар участвует в {promosCount} {pluralizePromosInLocative(promosCount)}
                 </span>
-              </button>
-              <button
-                type="button"
-                onClick={() => onNavigateToTab('promos')}
-                className="text-[11px] font-medium text-simona-wine-light hover:text-white transition-colors cursor-pointer flex items-center gap-1 group"
-              >
-                <span>Условия и подарки</span>
-                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-              </button>
-            </div>
+              </div>
+              <SimonaIconArrowRight className="w-3.5 h-3.5 text-simona-wine-light/70 group-hover:text-white group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+            </button>
           )}
 
           {/* 2. Consultation link: Получить консультацию по прибору */}
-          <div className="flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => openModal('QUICK_CONSULT', { product })}
-              className="inline-flex items-center gap-2 text-xs text-[#87888A] hover:text-white transition-colors cursor-pointer group text-left"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-simona-teal shrink-0 group-hover:scale-125 transition-transform" />
-              <span className="underline decoration-[#2B313A] group-hover:decoration-simona-teal underline-offset-4">
+          <button
+            type="button"
+            onClick={() => openModal('QUICK_CONSULT', { product })}
+            className="w-full flex items-center justify-between py-2 sm:py-2.5 group cursor-pointer text-left transition-colors"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <SimonaIconChatConsult className="w-4 h-4 text-simona-teal shrink-0 group-hover:scale-110 transition-transform" />
+              <span className="text-[#87888A] group-hover:text-white transition-colors truncate">
                 Получить консультацию по прибору
               </span>
-            </button>
-            <span className="text-[11px] text-[#87888A]">Эксперт СИМОНА</span>
-          </div>
+            </div>
+            <SimonaIconArrowRight className="w-3.5 h-3.5 text-[#87888A] group-hover:text-white group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+          </button>
 
           {/* 3. Best Price Guarantee trigger */}
-          <div className="flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => openModal('PRICE_MATCH', { product })}
-              className="inline-flex items-center gap-1.5 text-xs text-[#87888A] hover:text-white transition-colors cursor-pointer group text-left"
-            >
-              <SimonaIconTag className="w-3.5 h-3.5 text-simona-teal group-hover:scale-110 transition-transform" />
-              <span className="underline decoration-[#2B313A] group-hover:decoration-simona-teal underline-offset-4">
+          <button
+            type="button"
+            onClick={() => openModal('PRICE_MATCH', { product })}
+            className="w-full flex items-center justify-between py-2 sm:py-2.5 group cursor-pointer text-left transition-colors"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <SimonaIconTag className="w-4 h-4 text-simona-teal shrink-0 group-hover:scale-110 transition-transform" />
+              <span className="text-[#87888A] group-hover:text-white transition-colors truncate">
                 Нашли дешевле? Снизим цену!
               </span>
-            </button>
-            <span className="text-[11px] text-[#87888A]">Гарантия лучшей цены</span>
-          </div>
+            </div>
+            <SimonaIconArrowRight className="w-3.5 h-3.5 text-[#87888A] group-hover:text-white group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+          </button>
         </div>
       </div>
 
