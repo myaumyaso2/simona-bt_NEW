@@ -29,6 +29,7 @@ interface ModalState {
     | 'AUTH'
     | 'EQUIPMENT_SELECTION'
     | 'PROMO_TERMS'
+    | 'PRICE_MATCH'
     | null;
   product?: ProductItem | null;
   preferredShowroom?: string;
