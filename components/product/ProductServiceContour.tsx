@@ -9,10 +9,8 @@ import {
   SimonaIconDelivery,
   SimonaIconPin,
   SimonaIconClock,
-  SimonaIconPhoneSolid,
   SimonaIconArrowRight,
 } from '@/components/brand/SimonaIcons';
-import { useSiteContent } from '@/components/providers/ContentContext';
 
 interface ProductServiceContourProps {
   product: ProductItem;
@@ -20,34 +18,18 @@ interface ProductServiceContourProps {
 
 export function ProductServiceContour({ product }: ProductServiceContourProps) {
   const { openModal } = useStore();
-  const content = useSiteContent();
   const o2oInfo = useMemo(() => getProductO2OInfo(product), [product]);
 
   return (
-    <section className="w-full max-w-[1280px] mx-auto px-4 sm:px-6 pt-4 pb-14 border-t border-[#2B313A]">
-      {/* Header: Quiet Luxury Asymmetrical Split */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pt-4">
-        <div className="max-w-2xl text-left">
-          <SectionBadge variant="teal" className="mb-3">
-            Сервисный стандарт СИМОНА
-          </SectionBadge>
-          <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
-            Надежное сопровождение на каждом этапе
-          </h2>
-          <p className="mt-2 text-xs sm:text-sm text-[#87888A] leading-relaxed">
-            Мы не просто доставляем технику — обеспечиваем полный цикл заботы: от персонального подбора до первого приготовления на вашей кухне.
-          </p>
-        </div>
-
-        <div className="shrink-0 self-start md:self-end">
-          <a
-            href={`tel:${content.contacts.phoneRaw}`}
-            className="inline-flex items-center space-x-2 text-xs sm:text-sm font-medium text-[#D7D9DB] hover:text-white transition-colors py-2.5 px-4 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 shadow-sm"
-          >
-            <SimonaIconPhoneSolid className="w-3.5 h-3.5 text-simona-teal" />
-            <span>Консультация эксперта: {content.contacts.phone}</span>
-          </a>
-        </div>
+    <section className="w-full max-w-[1280px] mx-auto px-4 sm:px-6 pt-5 pb-12 border-t border-[#2B313A]">
+      {/* Header: Concise Quiet Luxury Badge */}
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <SectionBadge variant="teal">
+          Сервисный стандарт СИМОНА
+        </SectionBadge>
+        <span className="text-[11px] font-medium text-[#87888A] tracking-wider uppercase hidden sm:inline-block">
+          30+ лет на рынке
+        </span>
       </div>
 
       {/* 4 Cards Grid: 01 Expert, 02 Storage, 03 Installation, 04 Delivery */}
