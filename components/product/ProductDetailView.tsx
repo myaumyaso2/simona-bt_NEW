@@ -9,7 +9,6 @@ import { ProductBuyBox } from './ProductBuyBox';
 import { ProductServiceContour } from './ProductServiceContour';
 import { ProductStickySubNav } from './ProductStickySubNav';
 import { ProductTabsSection } from './ProductTabsSection';
-import { ProductShowroomBlock } from './ProductShowroomBlock';
 import { ProductMobileBottomBar } from './ProductMobileBottomBar';
 import { OneClickBuyModal } from './OneClickBuyModal';
 import { ChevronRight, ArrowLeft } from 'lucide-react';
@@ -107,9 +106,6 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
           activeTab={activeTab}
           onSelectTab={setActiveTab}
         />
-
-        {/* 6. Architectural Showroom Showcase */}
-        <ProductShowroomBlock product={product} />
       </div>
 
       {/* 7. Mobile Floating Sticky Bottom Bar (390px) */}

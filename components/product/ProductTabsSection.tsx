@@ -18,7 +18,6 @@ import {
   SimonaIconCheck,
   SimonaIconSparkles,
   SimonaIconSearch,
-  SimonaIconGuarantee,
   SimonaIconClock,
   SimonaIconArrowRight,
 } from '@/components/brand/SimonaIcons';
@@ -502,26 +501,6 @@ export function ProductTabsSection({
             ))}
           </div>
 
-          {/* Simona Storage & Reservation Guarantee Banner */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-[#16191D] border border-[#2B313A] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="text-xs font-bold text-white flex items-center gap-2">
-                <SimonaIconGuarantee className="w-4 h-4 text-simona-teal" />
-                <span>Подарки в наличии и бесплатное хранение</span>
-              </div>
-              <p className="text-xs text-[#87888A] max-w-xl">
-                Все подарки резервируются на складе СИМОНА в Нижнем Новгороде сразу при заказе. Доступно бесплатное бережное хранение техники до 6 месяцев до окончания вашего ремонта.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => openModal('QUICK_CONSULT', { product })}
-              className="px-4 py-2.5 rounded-xl bg-[#1E2228] hover:bg-[#2B313A] border border-[#2B313A] text-white text-xs font-semibold whitespace-nowrap transition cursor-pointer"
-            >
-              Уточнить у эксперта
-            </button>
-          </div>
         </motion.div>
       )}
 
