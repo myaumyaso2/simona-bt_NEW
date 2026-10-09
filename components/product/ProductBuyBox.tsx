@@ -11,8 +11,6 @@ import {
   SimonaIconCart,
   SimonaIconHeart,
   SimonaIconCompare,
-  SimonaIconDelivery,
-  SimonaIconPin,
   SimonaIconClock,
   SimonaIconStar,
   SimonaIconCheck,
@@ -21,7 +19,6 @@ import {
 import { getPromosForProduct, getPromosForCategory } from '@/data/promosData';
 import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
 import { formatBrandName } from '@/lib/formatters';
-import { getProductO2OInfo } from '@/lib/productO2O';
 import { formatProductName } from '@/lib/catalog/productTitle';
 
 interface ProductBuyBoxProps {
@@ -57,7 +54,6 @@ export function ProductBuyBox({
 
   const brandFormatted = formatBrandName(product.brand);
   const formattedTitle = formatProductName(product);
-  const o2oInfo = useMemo(() => getProductO2OInfo(product), [product]);
 
   const productPromos = getPromosForProduct(product);
   const activePromo = productPromos[0];
@@ -389,101 +385,6 @@ export function ProductBuyBox({
         >
           Купить в 1 клик
         </button>
-      </div>
-
-      {/* 7. Integrated Service Standards & Logistics Block (Double-Bezel 01 / 02 / 03) */}
-      <div className="pt-4 border-t border-[#2B313A] flex flex-col gap-3">
-        <div className="flex items-center justify-between text-[11px] font-semibold text-[#87888A] tracking-wider">
-          <span>Сервисный стандарт СИМОНА</span>
-          <span className="text-simona-teal font-medium">30+ лет на рынке</span>
-        </div>
-
-        <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-3.5 flex flex-col gap-3 text-xs shadow-md">
-          {/* 01 Бесплатное бережное хранение на складе */}
-          <div className="flex items-start gap-2.5 pb-2.5 border-b border-[#2B313A]/60">
-            <span className="font-montserrat font-bold text-xs text-simona-teal shrink-0 mt-0.5">
-              01
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="text-white font-semibold flex items-center justify-between gap-1">
-                <span>Бесплатное бережное хранение</span>
-                <span className="text-[10px] text-simona-teal bg-simona-teal/10 px-1.5 py-0.5 rounded border border-simona-teal/20 font-medium">
-                  0 ₽
-                </span>
-              </div>
-              <p className="text-[#87888A] text-[11px] leading-relaxed mt-0.5 font-normal">
-                Резервируйте технику по фиксированной цене на теплом складе до окончания ремонта кухни
-              </p>
-            </div>
-          </div>
-
-          {/* 02 Профессиональная установка и подключение */}
-          <div className="flex items-start gap-2.5 pb-2.5 border-b border-[#2B313A]/60">
-            <span className="font-montserrat font-bold text-xs text-simona-teal shrink-0 mt-0.5">
-              02
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="text-white font-semibold">
-                Профессиональная установка и подключение
-              </div>
-              <p className="text-[#87888A] text-[11px] leading-relaxed mt-0.5 font-normal">
-                Монтаж строго по заводским регламентам брендов с сохранением полной гарантии
-              </p>
-            </div>
-          </div>
-
-          {/* 03 Аккуратная доставка и самовывоз */}
-          <div className="flex items-start gap-2.5">
-            <span className="font-montserrat font-bold text-xs text-simona-teal shrink-0 mt-0.5">
-              03
-            </span>
-            <div className="flex-1 min-w-0 space-y-2">
-              <div className="text-white font-semibold">
-                Аккуратная доставка собственной службой
-              </div>
-
-              {/* Delivery Details */}
-              <div className="flex items-start gap-2 text-[#D7D9DB] text-[11px] bg-[#16191D] p-2 rounded-lg border border-[#2B313A]/70">
-                <SimonaIconDelivery className="w-3.5 h-3.5 text-simona-teal shrink-0 mt-0.5" />
-                <div>
-                  <span className="text-[#87888A]">Доставка по Нижнему Новгороду: </span>
-                  <span className="text-white font-medium">{o2oInfo.deliveryText.time}</span>
-                  <span className="text-[#87888A]"> — {o2oInfo.deliveryText.details}</span>
-                </div>
-              </div>
-
-              {/* Pickup Details (Unified Brand Teal) */}
-              <div className="flex items-start gap-2 text-[#D7D9DB] text-[11px] bg-[#16191D] p-2 rounded-lg border border-[#2B313A]/70">
-                <SimonaIconPin className="w-3.5 h-3.5 text-simona-teal shrink-0 mt-0.5" />
-                <div>
-                  <span className="text-[#87888A]">Самовывоз: </span>
-                  <span className="text-white font-medium">{o2oInfo.pickupText.time}</span>
-                  <span className="text-[#87888A]"> — {o2oInfo.pickupText.location}</span>
-                </div>
-              </div>
-
-              {/* Showroom Consultation Link */}
-              <div className="flex items-start gap-2 text-[11px] pt-0.5">
-                <SimonaIconClock className="w-3.5 h-3.5 text-simona-teal shrink-0 mt-0.5" />
-                <div className="text-[#87888A]">
-                  <span>Консультация: {o2oInfo.consultationText} — </span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      openModal('SHOWROOM_VISIT', {
-                        product,
-                        preferredShowroom: o2oInfo.showroomId,
-                      })
-                    }
-                    className="text-simona-teal hover:text-simona-teal-light underline font-medium cursor-pointer"
-                  >
-                    Записаться на показ
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

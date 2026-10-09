@@ -6,10 +6,10 @@ import { ProductItem } from '@/types';
 import { trackEcommerceDetail } from '@/lib/analytics/tracker';
 import { ProductHeroGallery } from './ProductHeroGallery';
 import { ProductBuyBox } from './ProductBuyBox';
+import { ProductServiceContour } from './ProductServiceContour';
 import { ProductStickySubNav } from './ProductStickySubNav';
 import { ProductTabsSection } from './ProductTabsSection';
 import { ProductShowroomBlock } from './ProductShowroomBlock';
-import { ProductWhiteGloveService } from './ProductWhiteGloveService';
 import { ProductMobileBottomBar } from './ProductMobileBottomBar';
 import { OneClickBuyModal } from './OneClickBuyModal';
 import { ChevronRight, ArrowLeft } from 'lucide-react';
@@ -89,7 +89,10 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
           </div>
         </section>
 
-        {/* 3. Sticky Sub-Navigation Bar */}
+        {/* 3. Service Standard Contour (Horizontal Full-Width Block) */}
+        <ProductServiceContour product={product} />
+
+        {/* 4. Sticky Sub-Navigation Bar */}
         <div id="product-tabs-nav">
           <ProductStickySubNav
             product={product}
@@ -98,18 +101,15 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
           />
         </div>
 
-        {/* 4. Interactive Tabs Section */}
+        {/* 5. Interactive Tabs Section */}
         <ProductTabsSection
           product={product}
           activeTab={activeTab}
           onSelectTab={setActiveTab}
         />
 
-        {/* 5. Architectural Showroom Showcase */}
+        {/* 6. Architectural Showroom Showcase */}
         <ProductShowroomBlock product={product} />
-
-        {/* 6. White Glove Service Contour */}
-        <ProductWhiteGloveService />
       </div>
 
       {/* 7. Mobile Floating Sticky Bottom Bar (390px) */}
