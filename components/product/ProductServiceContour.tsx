@@ -1,16 +1,11 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React from 'react';
+import Link from 'next/link';
 import { ProductItem } from '@/types';
-import { getProductO2OInfo } from '@/lib/productO2O';
 import { useStore } from '@/components/providers/StoreContext';
 import { SectionBadge } from '@/components/ui/SectionBadge';
-import {
-  SimonaIconDelivery,
-  SimonaIconPin,
-  SimonaIconClock,
-  SimonaIconArrowRight,
-} from '@/components/brand/SimonaIcons';
+import { SimonaIconArrowRight } from '@/components/brand/SimonaIcons';
 
 interface ProductServiceContourProps {
   product: ProductItem;
@@ -18,7 +13,9 @@ interface ProductServiceContourProps {
 
 export function ProductServiceContour({ product }: ProductServiceContourProps) {
   const { openModal } = useStore();
-  const o2oInfo = useMemo(() => getProductO2OInfo(product), [product]);
+
+  const cardClasses =
+    'p-6 sm:p-7 rounded-2xl bg-[#16191D] hover:bg-[#1B1F25] border border-[#2B313A] hover:border-simona-teal/70 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-simona-teal/10 transition-all duration-300 flex flex-col justify-between shadow-lg group';
 
   return (
     <section className="w-full max-w-[1280px] mx-auto px-4 sm:px-6 pt-5 pb-12 border-t border-[#2B313A]">
@@ -32,10 +29,10 @@ export function ProductServiceContour({ product }: ProductServiceContourProps) {
         </span>
       </div>
 
-      {/* 4 Cards Grid: 01 Expert, 02 Storage, 03 Installation, 04 Delivery */}
+      {/* 4 Cards Grid: 01 Expert, 02 Storage, 03 Delivery, 04 Installation */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-        {/* Card 01: Персональный эксперт (1-е место по согласованию) */}
-        <div className="p-6 sm:p-7 rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 transition-all duration-300 flex flex-col justify-between shadow-lg group">
+        {/* Card 01: Персональный эксперт */}
+        <div className={cardClasses}>
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="font-montserrat text-3xl sm:text-4xl font-extrabold text-simona-teal tracking-tight group-hover:scale-105 transition-transform">
@@ -62,13 +59,13 @@ export function ProductServiceContour({ product }: ProductServiceContourProps) {
               className="inline-flex items-center gap-1.5 text-xs text-simona-teal hover:text-simona-teal-light font-semibold transition-colors group/btn cursor-pointer"
             >
               <span>Задать вопрос эксперту</span>
-              <SimonaIconArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
+              <SimonaIconArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
 
         {/* Card 02: Хранение до конца ремонта */}
-        <div className="p-6 sm:p-7 rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 transition-all duration-300 flex flex-col justify-between shadow-lg group">
+        <div className={cardClasses}>
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="font-montserrat text-3xl sm:text-4xl font-extrabold text-simona-teal tracking-tight group-hover:scale-105 transition-transform">
@@ -95,8 +92,8 @@ export function ProductServiceContour({ product }: ProductServiceContourProps) {
           </div>
         </div>
 
-        {/* Card 03: Аккуратная доставка и самовывоз (с динамическими данными товара) */}
-        <div className="p-6 sm:p-7 rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 transition-all duration-300 flex flex-col justify-between shadow-lg group">
+        {/* Card 03: Аккуратная доставка и самовывоз */}
+        <div className={cardClasses}>
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="font-montserrat text-3xl sm:text-4xl font-extrabold text-simona-teal tracking-tight group-hover:scale-105 transition-transform">
@@ -111,52 +108,30 @@ export function ProductServiceContour({ product }: ProductServiceContourProps) {
               Аккуратная доставка и самовывоз
             </h3>
 
-            <p className="text-xs text-[#87888A] leading-relaxed mb-3">
+            <p className="text-xs text-[#87888A] leading-relaxed">
               Собственная служба доставки. Бережный подъем в квартиру на любой этаж, распаковка и проверка целостности при вас.
             </p>
-
-            {/* Dynamic Product Logistics Pill */}
-            <div className="space-y-1.5 text-[11px] bg-[#111315] p-2.5 rounded-xl border border-[#2B313A]">
-              <div className="flex items-start gap-1.5 text-[#D7D9DB]">
-                <SimonaIconDelivery className="w-3.5 h-3.5 text-simona-teal shrink-0 mt-0.5" />
-                <span className="leading-snug">
-                  <strong className="text-white font-medium">Доставка по НН:</strong> {o2oInfo.deliveryText.time}
-                </span>
-              </div>
-              <div className="flex items-start gap-1.5 text-[#D7D9DB]">
-                <SimonaIconPin className="w-3.5 h-3.5 text-simona-teal shrink-0 mt-0.5" />
-                <span className="leading-snug">
-                  <strong className="text-white font-medium">Самовывоз:</strong> {o2oInfo.pickupText.time} (ул. Коминтерна, 27)
-                </span>
-              </div>
-            </div>
           </div>
 
-          <div className="pt-3 mt-auto">
-            <button
-              type="button"
-              onClick={() =>
-                openModal('SHOWROOM_VISIT', {
-                  product,
-                  preferredShowroom: o2oInfo.showroomId,
-                })
-              }
-              className="inline-flex items-center gap-1.5 text-xs text-simona-teal hover:text-simona-teal-light font-medium underline underline-offset-4 cursor-pointer"
+          <div className="pt-5 mt-auto">
+            <Link
+              href="/delivery-payment"
+              className="inline-flex items-center gap-1.5 text-xs text-simona-teal hover:text-simona-teal-light font-semibold transition-colors group/btn cursor-pointer"
             >
-              <SimonaIconClock className="w-3.5 h-3.5 text-simona-teal shrink-0" />
-              <span>Записаться на показ в салоне</span>
-            </button>
+              <span>Доставка и самовывоз</span>
+              <SimonaIconArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </div>
 
-        {/* Card 04: Профессиональная установка и подключение */}
-        <div className="p-6 sm:p-7 rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 transition-all duration-300 flex flex-col justify-between shadow-lg group">
+        {/* Card 04: Профессиональная установка */}
+        <div className={cardClasses}>
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="font-montserrat text-3xl sm:text-4xl font-extrabold text-simona-teal tracking-tight group-hover:scale-105 transition-transform">
                 04
               </span>
-              <span className="text-[11px] font-medium text-white/70 bg-white/5 px-2 py-0.5 rounded-md border border-white/10">
+              <span className="text-[11px] font-medium text-simona-teal bg-simona-teal/10 px-2 py-0.5 rounded-md border border-simona-teal/20">
                 Гарантия
               </span>
             </div>
@@ -171,9 +146,13 @@ export function ProductServiceContour({ product }: ProductServiceContourProps) {
           </div>
 
           <div className="pt-5 mt-auto">
-            <div className="text-[11px] text-[#87888A]">
-              Сертифицированные специалисты
-            </div>
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-1.5 text-xs text-simona-teal hover:text-simona-teal-light font-semibold transition-colors group/btn cursor-pointer"
+            >
+              <span>Установка и сервис</span>
+              <SimonaIconArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </div>
       </div>
