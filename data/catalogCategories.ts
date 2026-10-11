@@ -42,7 +42,18 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "SMEG",
       "GRAUDE",
       "EVELUX",
-      "ELICA"
+      "ELICA",
+      "ASKO",
+      "BERTAZZONI",
+      "BOSCH",
+      "MIDEA",
+      "VARD",
+      "GORENJE",
+      "FALMEC",
+      "MIELE",
+      "KUPPERSBERG",
+      "SIEMENS",
+      "INDESIT"
     ],
     "badge": "Тест-драйв на Активной кухне"
   },
@@ -67,7 +78,18 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "SMEG",
       "ASKO",
       "GRAUDE",
-      "KUPPERSBERG"
+      "KUPPERSBERG",
+      "BERTAZZONI",
+      "EVELUX",
+      "VARD",
+      "BOSCH",
+      "MIDEA",
+      "MIELE",
+      "GORENJE",
+      "ELICA",
+      "SIEMENS",
+      "NEFF",
+      "INDESIT"
     ],
     "badge": "Тест-драйв на Активной кухне"
   },
@@ -92,7 +114,17 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "FALMEC",
       "ELIKOR",
       "KORTING",
-      "JETAIR"
+      "JETAIR",
+      "EVELUX",
+      "GRAUDE",
+      "FRANKE",
+      "BERTAZZONI",
+      "MIDEA",
+      "GORENJE",
+      "SMEG",
+      "ASKO",
+      "VARD",
+      "KUPPERSBERG"
     ],
     "badge": "Экспозиция в салоне"
   },
@@ -117,7 +149,15 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "KORTING",
       "BOSCH",
       "SMEG",
-      "MIDEA"
+      "MIDEA",
+      "EVELUX",
+      "ASKO",
+      "GRAUDE",
+      "MIELE",
+      "BERTAZZONI",
+      "VARD",
+      "GORENJE",
+      "NEFF"
     ],
     "badge": "Флагманские серии"
   },
@@ -138,11 +178,17 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     "countNum": 97,
     "image": "https://simona-bt.ru/images/cms/data/photo_code/84891.jpg",
     "featuredBrands": [
-      "SMEG",
       "KORTING",
+      "SMEG",
       "KUPPERSBERG",
       "BOSCH",
-      "GORENJE"
+      "EVELUX",
+      "GORENJE",
+      "GRAUDE",
+      "VARD",
+      "BERTAZZONI",
+      "ASKO",
+      "MIELE"
     ]
   },
   {
@@ -164,9 +210,10 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     "featuredBrands": [
       "ASKO",
       "VARD",
-      "MIELE",
       "KORTING",
-      "BOSCH"
+      "MIELE",
+      "BOSCH",
+      "GRAUDE"
     ],
     "badge": "Дегустация в салоне"
   },
@@ -189,8 +236,8 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     "featuredBrands": [
       "SMEG",
       "KORTING",
-      "MIDEA",
-      "EVELUX"
+      "EVELUX",
+      "MIDEA"
     ]
   },
   {
@@ -214,7 +261,15 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "KORTING",
       "ASKO",
       "BERTAZZONI",
-      "SMEG"
+      "SMEG",
+      "GRAUDE",
+      "MIDEA",
+      "EVELUX",
+      "VARD",
+      "KUPPERSBERG",
+      "NEFF",
+      "BOSCH",
+      "GORENJE"
     ],
     "badge": "Экспозиция в Белинского 15"
   },
@@ -282,8 +337,10 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "SMEG",
       "ASKO",
       "BERTAZZONI",
+      "KORTING",
       "VARD",
-      "KORTING"
+      "GRAUDE",
+      "ELICA"
     ]
   },
   {
@@ -325,11 +382,17 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     "countNum": 139,
     "image": "https://simona-bt.ru/images/cms/data/photo_code/89051.jpg",
     "featuredBrands": [
-      "Dunavox",
+      "DUNAVOX",
       "LIEBHERR",
-      "MEYVEL",
       "KORTING",
-      "CASO"
+      "CASO",
+      "MEYVEL",
+      "VARD",
+      "SMEG",
+      "KUPPERSBERG",
+      "ELICA",
+      "ASKO",
+      "GRAUDE"
     ],
     "badge": "Экспозиция в Белинского 15"
   },
@@ -354,7 +417,8 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "LONGRAN",
       "FRANKE",
       "SMEG",
-      "FALMEC"
+      "FALMEC",
+      "ALVEUS"
     ],
     "badge": "Салон OMOIKIRI Белинского 11/66"
   },
@@ -427,7 +491,17 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "HIBERG",
       "ASKO",
       "SCHULTHESS",
-      "VARD"
+      "VARD",
+      "JACKYS",
+      "EVELUX",
+      "MIELE",
+      "BOSCH",
+      "SMEG",
+      "BEKO",
+      "GORENJE",
+      "MIDEA",
+      "AEG",
+      "SIEMENS"
     ],
     "badge": "Флагманские серии"
   },
@@ -452,7 +526,17 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "SMEG",
       "KORTING",
       "MEYVEL",
-      "JACKYS"
+      "JACKYS",
+      "ASKO",
+      "BOSCH",
+      "MIDEA",
+      "EVELUX",
+      "VARD",
+      "GORENJE",
+      "CASO",
+      "INDESIT",
+      "KUPPERSBERG",
+      "GRAUDE"
     ],
     "badge": "Центральный склад"
   },
@@ -523,7 +607,14 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "SCHULTHESS",
       "HIBERG",
       "KORTING",
-      "MIELE"
+      "MIELE",
+      "VARD",
+      "MIDEA",
+      "JACKYS",
+      "EVELUX",
+      "BOSCH",
+      "HAIER",
+      "SMEG"
     ],
     "badge": "Экспозиция в Белинского 15"
   },
@@ -548,7 +639,9 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "SMEG",
       "MIDEA",
       "KORTING",
-      "EVELUX"
+      "EVELUX",
+      "STEBA",
+      "KUPPERSBERG"
     ]
   },
   {
@@ -589,10 +682,11 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     "image": "https://simona-bt.ru/images/cms/data/photo_code/80120.jpg",
     "featuredBrands": [
       "MEYVEL",
-      "Dunavox",
+      "DUNAVOX",
       "LIEBHERR",
       "CASO",
-      "SMEG"
+      "SMEG",
+      "ASKO"
     ],
     "badge": "Экспозиция в Белинского 15"
   },
@@ -634,8 +728,8 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     "countNum": 2,
     "image": "https://simona-bt.ru/images/cms/data/photo_code/91746.jpg",
     "featuredBrands": [
-      "ELECTROLUX",
-      "DAICHI"
+      "DAICHI",
+      "ELECTROLUX"
     ]
   },
   {
@@ -700,8 +794,10 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "STATUS",
       "SMEG",
       "OMOIKIRI",
+      "ASKO",
       "NACHTMANN",
-      "ASKO"
+      "CASO",
+      "KORTING"
     ]
   },
   {
@@ -747,7 +843,13 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "KORTING",
       "CASO",
       "ROMMELSBACHER",
-      "BUGATTI"
+      "BUGATTI",
+      "STEBA",
+      "EVELUX",
+      "STATUS",
+      "BLACK+DECKER",
+      "OMOIKIRI",
+      "BOSCH"
     ]
   },
   {
@@ -771,7 +873,8 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "KORTING",
       "VARD",
       "EVELUX",
-      "ROMMELSBACHER"
+      "ROMMELSBACHER",
+      "CASO"
     ]
   },
   {
@@ -970,8 +1073,9 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "SMEG",
       "KORTING",
       "EVELUX",
+      "CASO",
       "STEBA",
-      "CASO"
+      "BOSCH"
     ],
     "badge": "Экспозиция в Белинского 15"
   },
@@ -993,8 +1097,8 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     "image": "https://simona-bt.ru/images/cms/data/photo_code/86659.jpg",
     "featuredBrands": [
       "SMEG",
-      "STEBA",
-      "ROMMELSBACHER"
+      "ROMMELSBACHER",
+      "STEBA"
     ]
   },
   {
@@ -1077,8 +1181,8 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     "image": "https://simona-bt.ru/images/cms/data/photo_code/63927.jpg",
     "featuredBrands": [
       "ROMMELSBACHER",
-      "STEBA",
-      "CASO"
+      "CASO",
+      "STEBA"
     ]
   },
   {
@@ -1106,9 +1210,11 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     "featuredBrands": [
       "STEBA",
       "CASO",
-      "SMEG",
       "ROMMELSBACHER",
-      "KORTING"
+      "SMEG",
+      "KORTING",
+      "VARD",
+      "EVELUX"
     ]
   },
   {
@@ -1172,8 +1278,8 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     "image": "https://simona-bt.ru/images/cms/data/photo_code/85982.jpg",
     "featuredBrands": [
       "LAURASTAR",
-      "PHILIPS",
-      "BLACK+DECKER"
+      "BLACK+DECKER",
+      "PHILIPS"
     ]
   },
   {
@@ -1277,7 +1383,14 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "FALMEC",
       "KORTING",
       "BERTAZZONI",
-      "FABER"
+      "EVELUX",
+      "FABER",
+      "ELIKOR",
+      "ASKO",
+      "GAGGENAU",
+      "JETAIR",
+      "SMEG",
+      "MIDEA"
     ],
     "badge": "В наличии на складе"
   },
@@ -1347,8 +1460,8 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     "featuredBrands": [
       "SMEG",
       "BERTAZZONI",
-      "MIELE",
       "ASKO",
+      "MIELE",
       "ELICA"
     ]
   },
@@ -1396,7 +1509,10 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "ELICA",
       "BERTAZZONI",
       "STEBA",
-      "VARD"
+      "VARD",
+      "GORENJE",
+      "FRANKE",
+      "KUPPERSBUSCH"
     ]
   },
   {
@@ -1420,7 +1536,10 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
       "ASKO",
       "KORTING",
       "VARD",
-      "JACKYS"
+      "JACKYS",
+      "BOSCH",
+      "MIELE",
+      "SMEG"
     ]
   },
   {
@@ -1441,8 +1560,8 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     "image": "https://simona-bt.ru/images/cms/data/photo_code/77723.jpg",
     "featuredBrands": [
       "SMEG",
-      "STATUS",
-      "CASO"
+      "CASO",
+      "STATUS"
     ]
   },
   {
@@ -1587,8 +1706,12 @@ export function getCategorySlugByName(name?: string): string {
   const found = CATALOG_CATEGORIES.find(
     (c) =>
       c.dbCategories.some((db) => db.toLowerCase() === lower) ||
-      c.title.toLowerCase().includes(lower) ||
-      c.menuTitle.toLowerCase().includes(lower)
+      c.title.toLowerCase() === lower ||
+      c.menuTitle.toLowerCase() === lower
   );
-  return found?.slug || 'varochnye-paneli';
+  return found ? found.slug : 'varochnye-paneli';
+}
+
+export function getCategoryByDbName(dbCategory: string): CatalogCategory | undefined {
+  return CATALOG_CATEGORIES.find((c) => c.dbCategories.includes(dbCategory));
 }

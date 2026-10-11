@@ -243,7 +243,7 @@ export function CatalogHubView() {
                         </div>
 
                         {/* Featured Brands Pills: up to 3 lines */}
-                        <div className="flex flex-wrap items-start gap-1.5 min-h-[4.75rem]">
+                        <div className="flex flex-wrap items-start content-start gap-1.5 h-[4.75rem] max-h-[4.75rem] overflow-hidden">
                           {cat.featuredBrands.map((brand) => (
                             <span
                               key={brand}
