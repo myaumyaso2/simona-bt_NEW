@@ -1,41 +1,28 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useStore } from '@/components/providers/StoreContext';
 import { SectionBadge } from '@/components/ui/SectionBadge';
+import { LuxuryProductCard } from '@/components/catalog/LuxuryProductCard';
 import {
-  SimonaIconCart,
   SimonaIconHeart,
   SimonaIconGuarantee,
-  SimonaIconPin,
   SimonaIconClock,
-  SimonaIconPercent,
-  SimonaIconPhoneSolid,
   SimonaIconCheckCircle,
   SimonaIconBuilding,
   SimonaIconPackage,
-  SimonaIconSearch,
 } from '@/components/brand/SimonaIcons';
 import {
   User,
-  MapPin,
-  Calendar,
-  CreditCard,
   ArrowRight,
-  FileText,
-  Truck,
-  ExternalLink,
-  ChevronRight,
-  Briefcase,
-  AlertCircle,
 } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 
 import { useSearchParams } from 'next/navigation';
 import { ProductItem } from '@/types';
 
-type TabType = 'orders' | 'wishlist' | 'data' | 'b2b' | 'visits';
+type TabType = 'orders' | 'wishlist' | 'data';
 
 interface OrderItem {
   productId: string;
@@ -67,8 +54,9 @@ interface OrderRecord {
 
 function ProfileContent() {
   const searchParams = useSearchParams();
-  const initialTab = (searchParams.get('tab') as TabType) || 'orders';
-  const { wishlist, toggleWishlist, addToCart } = useStore();
+  const rawTab = searchParams.get('tab') as TabType;
+  const initialTab: TabType = rawTab === 'wishlist' || rawTab === 'data' ? rawTab : 'orders';
+  const { wishlist } = useStore();
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [wishlistProducts, setWishlistProducts] = useState<ProductItem[]>([]);
   const [loadingWishlist, setLoadingWishlist] = useState(false);
@@ -100,6 +88,11 @@ function ProfileContent() {
     loadWishlist();
   }, [wishlist]);
 
+  // Immediate filtering when items are removed from wishlist
+  const displayedWishlistProducts = useMemo(() => {
+    return wishlistProducts.filter((p) => wishlist.includes(p.id));
+  }, [wishlistProducts, wishlist]);
+
   // Client Data State
   const [clientPhone, setClientPhone] = useState('+7 (920) 012-34-56');
   const [clientName, setClientName] = useState('Ольга Николаевна');
@@ -111,16 +104,12 @@ function ProfileContent() {
   // Orders State
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
-  const [searchPhone, setSearchPhone] = useState('');
 
   // Fetch orders from API
-  const fetchOrders = async (phoneQuery?: string) => {
+  const fetchOrders = async () => {
     setLoadingOrders(true);
     try {
-      const url = phoneQuery
-        ? `/api/profile/orders?phone=${encodeURIComponent(phoneQuery)}`
-        : '/api/profile/orders';
-      const res = await fetch(url);
+      const res = await fetch('/api/profile/orders');
       const data = await res.json();
       if (data.success && Array.isArray(data.orders)) {
         setOrders(data.orders);
@@ -135,13 +124,6 @@ function ProfileContent() {
   useEffect(() => {
     fetchOrders();
   }, []);
-
-  const handleSearchOrders = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchPhone.trim()) {
-      fetchOrders(searchPhone.trim());
-    }
-  };
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
@@ -223,7 +205,7 @@ function ProfileContent() {
               Кабинет СИМОНА
             </h1>
             <p className="text-sm text-[#87888A] max-w-xl">
-              Управление заказами премиальной бытовой техники, сохраненные подборки, спецификации и условия Архитектурного клуба.
+              Управление заказами бытовой техники, сохраненные подборки и персональные данные.
             </p>
           </div>
 
@@ -236,7 +218,7 @@ function ProfileContent() {
               <div className="text-xs font-semibold text-white">{clientName}</div>
               <div className="text-[11px] text-simona-teal font-medium flex items-center space-x-1">
                 <SimonaIconGuarantee className="w-3 h-3 inline" />
-                <span>Премиальный статус • B2B партнер</span>
+                <span>Премиальный клиент</span>
               </div>
             </div>
           </div>
@@ -279,57 +261,11 @@ function ProfileContent() {
             <User className="w-4 h-4" />
             <span>Персональные данные</span>
           </button>
-
-          <button
-            onClick={() => setActiveTab('b2b')}
-            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition shrink-0 ${
-              activeTab === 'b2b'
-                ? 'bg-simona-teal text-white shadow-md shadow-simona-teal/20'
-                : 'bg-[#16191D] text-[#87888A] hover:text-white border border-[#2B313A]'
-            }`}
-          >
-            <Briefcase className="w-4 h-4" />
-            <span>B2B / Архитекторам</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('visits')}
-            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition shrink-0 ${
-              activeTab === 'visits'
-                ? 'bg-simona-teal text-white shadow-md shadow-simona-teal/20'
-                : 'bg-[#16191D] text-[#87888A] hover:text-white border border-[#2B313A]'
-            }`}
-          >
-            <Calendar className="w-4 h-4" />
-            <span>Визиты и Тест-драйвы</span>
-          </button>
         </div>
 
         {/* Tab 1: Orders */}
         {activeTab === 'orders' && (
           <div className="space-y-6">
-            {/* Search orders filter */}
-            <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
-                <h3 className="text-sm font-semibold text-white">Поиск по номеру телефона</h3>
-                <p className="text-xs text-[#87888A]">Найдите историю заказов, оформленных в салоне или на сайте</p>
-              </div>
-              <form onSubmit={handleSearchOrders} className="flex items-center space-x-2 w-full sm:w-auto">
-                <input
-                  type="text"
-                  value={searchPhone}
-                  onChange={(e) => setSearchPhone(e.target.value)}
-                  placeholder="+7 (900) 000-00-00"
-                  className="px-4 py-2.5 rounded-xl bg-[#1E2228] border border-[#2B313A] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-simona-teal w-full sm:w-64"
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-2.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold transition shrink-0"
-                >
-                  <SimonaIconSearch className="w-4 h-4" />
-                </button>
-              </form>
-            </div>
 
             {/* Orders List */}
             {loadingOrders ? (
@@ -402,20 +338,6 @@ function ProfileContent() {
                         </div>
                       ))}
                     </div>
-
-                    {/* Order Action Footer */}
-                    <div className="pt-4 mt-2 flex items-center justify-between flex-wrap gap-2 text-xs">
-                      <div className="text-[11px] text-[#87888A]">
-                        Куратор заказа: Флагманский салон на Белинского, 15 • Телефон (831) 423-76-00
-                      </div>
-                      <a
-                        href="tel:+78314237600"
-                        className="text-simona-teal hover:underline font-semibold flex items-center space-x-1"
-                      >
-                        <SimonaIconPhoneSolid className="w-3.5 h-3.5 inline" />
-                        <span>Связаться с менеджером</span>
-                      </a>
-                    </div>
                   </div>
                 ))}
               </div>
@@ -426,7 +348,9 @@ function ProfileContent() {
         {/* Tab 2: Wishlist */}
         {activeTab === 'wishlist' && (
           <div className="space-y-6">
-            {wishlist.length === 0 ? (
+            {loadingWishlist && wishlistProducts.length === 0 ? (
+              <div className="text-center py-16 text-xs text-[#87888A]">Загрузка избранного...</div>
+            ) : displayedWishlistProducts.length === 0 ? (
               <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-12 text-center">
                 <SimonaIconHeart className="w-12 h-12 text-[#87888A] mx-auto mb-4" />
                 <h3 className="text-base font-semibold text-white mb-1">Список избранного пуст</h3>
@@ -442,50 +366,9 @@ function ProfileContent() {
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {wishlistProducts.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-4 flex flex-col justify-between group hover:border-simona-teal/50 transition shadow-md"
-                  >
-                    <div>
-                      <div className="relative aspect-square w-full rounded-xl bg-[#1E2228] overflow-hidden mb-3">
-                        <img
-                          src={item.images?.[0] || '/images/products/placeholder.webp'}
-                          alt={item.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                        />
-                        <button
-                          onClick={() => toggleWishlist(item.id)}
-                          className="absolute top-2.5 right-2.5 w-8 h-8 rounded-xl bg-black/60 border border-white/10 flex items-center justify-center text-white/80 hover:text-red-400 hover:bg-black/80 transition"
-                          title="Удалить из избранного"
-                        >
-                          ✕
-                        </button>
-                      </div>
-
-                      <div className="text-[11px] font-semibold text-simona-teal uppercase tracking-wider mb-1">
-                        {item.brand}
-                      </div>
-                      <h4 className="text-sm font-semibold text-white leading-snug line-clamp-2 mb-2">
-                        {item.name}
-                      </h4>
-                      <div className="text-xs text-[#87888A] mb-3">Код товара: {item.sku}</div>
-                    </div>
-
-                    <div className="pt-3 border-t border-[#2B313A] flex items-center justify-between">
-                      <div className="text-base font-montserrat font-bold text-white">
-                        {formatPrice(item.price)}
-                      </div>
-                      <button
-                        onClick={() => addToCart(item)}
-                        className="px-4 py-2 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold uppercase tracking-wider transition flex items-center space-x-1.5"
-                      >
-                        <SimonaIconCart className="w-3.5 h-3.5" />
-                        <span>В корзину</span>
-                      </button>
-                    </div>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {displayedWishlistProducts.map((item) => (
+                  <LuxuryProductCard key={item.id} product={item} />
                 ))}
               </div>
             )}
@@ -572,119 +455,6 @@ function ProfileContent() {
                 )}
               </div>
             </form>
-          </div>
-        )}
-
-        {/* Tab 4: B2B / Designers */}
-        {activeTab === 'b2b' && (
-          <div className="space-y-6">
-            <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 sm:p-8">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-[#2B313A]">
-                <div>
-                  <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30 text-xs font-semibold mb-2">
-                    <SimonaIconPercent className="w-3.5 h-3.5 text-amber-300" />
-                    <span>Участник Архитектурного Клуба СИМОНА</span>
-                  </div>
-                  <h3 className="text-xl font-montserrat font-bold text-white">
-                    Дизайн-партнер: Студия интерьера «Арх-Концепт»
-                  </h3>
-                  <p className="text-xs text-[#87888A] mt-1">
-                    Индивидуальная партнерская шкала скидок до 20%, технический контроль встройки и персональный менеджер.
-                  </p>
-                </div>
-
-                <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-4 flex items-center space-x-4">
-                  <div className="w-12 h-12 rounded-xl bg-simona-teal/20 text-simona-teal flex items-center justify-center font-bold text-lg font-montserrat">
-                    20%
-                  </div>
-                  <div className="text-xs">
-                    <span className="text-[#87888A] block">Базовый дисконт на комплекты:</span>
-                    <span className="text-white font-bold text-sm">Премиум-встройка и мойки</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Personal Manager Card */}
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-5">
-                  <div className="text-xs font-semibold text-simona-teal uppercase tracking-wider mb-2">
-                    Ваш персональный куратор
-                  </div>
-                  <h4 className="text-base font-bold text-white mb-1">Мария Воронина</h4>
-                  <p className="text-xs text-[#87888A] mb-4">
-                    Ведущий эксперт по подбору и установке встраиваемой техники, координации с фабриками кухонь.
-                  </p>
-                  <div className="space-y-1.5 text-xs text-zinc-300">
-                    <div>📞 Телефон / WhatsApp: <a href="tel:+78314237600" className="text-white hover:text-simona-teal">+7 (831) 423-76-00 (доб. 104)</a></div>
-                    <div>✉️ Прямая почта: <span className="text-white">b2b@simona-bt.ru</span></div>
-                  </div>
-                </div>
-
-                <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-5 flex flex-col justify-between">
-                  <div>
-                    <div className="text-xs font-semibold text-simona-teal uppercase tracking-wider mb-2">
-                      Загрузка спецификаций и схем
-                    </div>
-                    <p className="text-xs text-[#87888A] mb-4 leading-relaxed">
-                      Отправьте нам PDF-план расстановки или чертеж кухонного гарнитура. Мы проверим вентканалы, электрические мощности и подготовим спецификацию с 3D-моделями за 24 часа.
-                    </p>
-                  </div>
-                  <Link
-                    href="/designers"
-                    className="inline-flex items-center justify-center space-x-2 px-5 py-3 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-bold uppercase tracking-wider transition shadow-md"
-                  >
-                    <span>Загрузить проект на расчет</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 5: Visits & Test-drives */}
-        {activeTab === 'visits' && (
-          <div className="space-y-6">
-            <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 sm:p-8">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#2B313A]">
-                <div>
-                  <h3 className="text-xl font-montserrat font-bold text-white">
-                    Записи на демонстрацию и тест-драйв
-                  </h3>
-                  <p className="text-xs text-[#87888A] mt-1">
-                    Флагманский салон на ул. Белинского, 15: Активная кухня, винные дегустации и проверка приборов в работе.
-                  </p>
-                </div>
-                <Link
-                  href="/showrooms"
-                  className="px-5 py-3 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-bold uppercase tracking-wider transition shrink-0"
-                >
-                  Забронировать визит
-                </Link>
-              </div>
-
-              {/* Sample Upcoming Visit */}
-              <div className="mt-6 space-y-4">
-                <div className="bg-[#1E2228] border border-simona-teal/30 rounded-xl p-5 relative overflow-hidden">
-                  <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
-                    <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-simona-teal/15 text-simona-teal border border-simona-teal/30 text-xs font-semibold">
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span>Предстоящий визит</span>
-                    </span>
-                    <span className="text-xs text-zinc-400">Суббота, 15:00</span>
-                  </div>
-                  <h4 className="text-base font-bold text-white mb-1">
-                    Тест-драйв духовых шкафов и индукции Miele / ASKO
-                  </h4>
-                  <p className="text-xs text-[#87888A] mb-3">
-                    Место: Флагман «СИМОНА», г. Нижний Новгород, ул. Белинского, 15 («Активная кухня»).
-                  </p>
-                  <div className="text-[11px] text-zinc-300">
-                    Эксперт шоурума встретит вас с чашкой премиального кофе, покажет пар и термощуп в реальной готовке и продемонстрирует тишину работы приборов.
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         )}
       </div>
