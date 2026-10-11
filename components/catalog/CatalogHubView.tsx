@@ -6,13 +6,11 @@ import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CATALOG_CATEGORIES } from '@/data/catalogCategories';
 import { SectionBadge } from '@/components/ui/SectionBadge';
-import { useStore } from '@/components/providers/StoreContext';
 import { CatalogServiceContour } from './CatalogServiceContour';
 import { CatalogSectionSlider, CatalogSectionItem } from './CatalogSectionSlider';
 import {
   SimonaIconChevronRight,
   SimonaIconArrowRight,
-  SimonaIconSearch,
   SimonaIconSparkles,
 } from '@/components/brand/SimonaIcons';
 
@@ -104,19 +102,7 @@ const BRAND_STRIP = [
   { name: 'VARD', slug: 'vard', country: 'Россия / Европа' },
 ];
 
-function formatModelsBadge(countStr: string, countNum: number): string {
-  const mod10 = countNum % 10;
-  const mod100 = countNum % 100;
-  let word = 'моделей';
-  if (mod100 < 11 || mod100 > 14) {
-    if (mod10 === 1) word = 'модель';
-    else if (mod10 >= 2 && mod10 <= 4) word = 'модели';
-  }
-  return `${countStr} ${word}`;
-}
-
 export function CatalogHubView() {
-  const { openModal } = useStore();
   const searchParams = useSearchParams();
 
   const initialTab = searchParams.get('tab');
@@ -149,10 +135,6 @@ export function CatalogHubView() {
       window.history.replaceState(null, '', url.pathname + (url.search ? url.search : ''));
     }
   }, []);
-
-  const currentSectionMeta = useMemo(() => {
-    return CATALOG_SECTIONS.find((s) => s.id === activeSection) || CATALOG_SECTIONS[0];
-  }, [activeSection]);
 
   const sectionSliderItems: CatalogSectionItem[] = useMemo(() => {
     return CATALOG_SECTIONS.map((sec) => ({
@@ -188,51 +170,19 @@ export function CatalogHubView() {
             <span className="text-[#D7D9DB] font-medium">Каталог</span>
           </nav>
 
-          {/* Title & Badge */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6">
-            <div className="max-w-3xl text-left">
-              <SectionBadge variant="teal" className="mb-3.5">
-                Каталог премиальной техники
-              </SectionBadge>
+          {/* Title & SectionBadge */}
+          <div className="mb-6 max-w-4xl text-left">
+            <SectionBadge variant="teal" className="mb-3.5">
+              КАТАЛОГ СИМОНЫ
+            </SectionBadge>
 
-              <div className="flex flex-wrap items-baseline gap-3 sm:gap-4 mb-3">
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-bold text-white tracking-tight">
-                  {activeSection === 'all' ? 'Коллекция приборов' : currentSectionMeta.title}
-                </h1>
-                <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-[#16191D] border border-[#2B313A] text-simona-teal shadow-sm">
-                  {activeSection === 'all'
-                    ? '8 000+ SKU'
-                    : formatModelsBadge(currentSectionMeta.badgeCount, currentSectionMeta.itemCount)}
-                </span>
-              </div>
-
-              <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
-                {currentSectionMeta.description}
-              </p>
-            </div>
-
-            {/* Quick Search Button (Double-Bezel island) */}
-            <div className="shrink-0 w-full md:w-auto">
-              <button
-                type="button"
-                onClick={() => openModal('SEARCH')}
-                className="w-full md:w-80 p-1.5 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 transition-all duration-300 group flex items-center justify-between shadow-lg text-left cursor-pointer"
-              >
-                <div className="flex items-center space-x-3 px-3 py-1.5">
-                  <SimonaIconSearch className="w-4 h-4 text-[#87888A] group-hover:text-simona-teal transition-colors" />
-                  <span className="text-xs text-[#87888A] group-hover:text-[#D7D9DB] transition-colors truncate">
-                    Поиск по артикулу, бренду...
-                  </span>
-                </div>
-                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono text-[#87888A] bg-[#1E2228] border border-[#2B313A]/70">
-                  ⌘K
-                </span>
-              </button>
-            </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-bold text-white tracking-tight">
+              Категории бытовой техники, аксессуары и средства по уходу
+            </h1>
           </div>
 
           {/* Catalog Global Sections Slider: Replaces legacy availability chips with brand-grade pill navigation */}
-          <div className="pt-2">
+          <div className="pt-1">
             <CatalogSectionSlider
               sections={sectionSliderItems}
               activeSectionId={activeSection}
