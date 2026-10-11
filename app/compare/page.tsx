@@ -199,15 +199,30 @@ export default function ComparePage() {
           {/* Controls: DiffOnly Toggle + Clear Category */}
           {categoryProducts.length > 0 && (
             <div className="flex items-center flex-wrap gap-3">
-              <label className="flex items-center space-x-2 bg-[#16191D] border border-[#2B313A] px-3.5 py-2.5 rounded-xl cursor-pointer select-none text-xs text-zinc-300 hover:border-simona-teal transition">
-                <input
-                  type="checkbox"
-                  checked={diffOnly}
-                  onChange={(e) => setDiffOnly(e.target.checked)}
-                  className="rounded text-simona-teal focus:ring-0 bg-[#1E2228] border-[#2B313A] w-4 h-4 cursor-pointer"
-                />
-                <span>Только различия</span>
-              </label>
+              <button
+                type="button"
+                onClick={() => setDiffOnly((prev) => !prev)}
+                className="flex items-center space-x-2.5 bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 px-3.5 py-2.5 rounded-xl cursor-pointer select-none text-xs text-zinc-300 hover:text-white transition group/diff"
+              >
+                <div
+                  className={`w-4 h-4 rounded-[4px] border shrink-0 flex items-center justify-center transition-colors ${
+                    diffOnly
+                      ? 'bg-simona-teal border-simona-teal text-white shadow-sm'
+                      : 'bg-[#1E2228] border-[#2B313A] group-hover/diff:border-simona-teal/60'
+                  }`}
+                >
+                  {diffOnly && <SimonaIconCheck className="w-3 h-3 stroke-[2.5]" />}
+                </div>
+                <span
+                  className={
+                    diffOnly
+                      ? 'text-white font-medium'
+                      : 'text-zinc-300 group-hover/diff:text-white'
+                  }
+                >
+                  Только различия
+                </span>
+              </button>
 
               <button
                 onClick={() => clearCompareCategory(activeCategory)}
