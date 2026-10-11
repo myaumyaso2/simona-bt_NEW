@@ -348,7 +348,7 @@ export function ProductBuyBox({
 
           {/* Compare Button */}
           <button
-            onClick={() => toggleCompare(product.id)}
+            onClick={() => toggleCompare(product.id, product.category)}
             aria-label={inCompare ? 'Удалить из сравнения' : 'Добавить к сравнению'}
             title={inCompare ? 'В сравнении' : 'В сравнение'}
             className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0 cursor-pointer ${

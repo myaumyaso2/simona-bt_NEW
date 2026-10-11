@@ -443,7 +443,7 @@ export function LuxuryProductListCard({ product, selectedPromos }: LuxuryProduct
 
           {/* Compare */}
           <button
-            onClick={() => toggleCompare(product.id)}
+            onClick={() => toggleCompare(product.id, product.category)}
             aria-label={inCompare ? 'Удалить из сравнения' : 'Добавить в сравнение'}
             title={inCompare ? 'В сравнении' : 'В сравнение'}
             className={`w-10 h-10 rounded-xl flex items-center justify-center transition shrink-0 cursor-pointer ${

@@ -1,8 +1,10 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import Link from 'next/link';
 import { ProductItem, CartItem, ManufacturerPromo } from '@/types';
 import { trackEcommerceAddToCart, trackEcommerceRemoveFromCart } from '@/lib/analytics/tracker';
+import { SimonaIconArrowRight } from '@/components/brand/SimonaIcons';
 
 export interface VideoModalData {
   title: string;
@@ -35,6 +37,15 @@ interface ModalState {
   preferredShowroom?: string;
   videoData?: VideoModalData | null;
   promoData?: ManufacturerPromo | null;
+}
+
+interface ToastData {
+  message: string;
+  action?: {
+    label: string;
+    href?: string;
+    onClick?: () => void;
+  };
 }
 
 interface StoreContextType {
@@ -70,8 +81,11 @@ interface StoreContextType {
 
   // Compare state
   compare: string[];
-  toggleCompare: (productId: string) => void;
+  compareCategories: Record<string, string>;
+  toggleCompare: (productId: string, category?: string) => void;
   isInCompare: (productId: string) => boolean;
+  clearCompareCategory: (category: string) => void;
+  updateCompareCategories: (mapping: Record<string, string>) => void;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -82,6 +96,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [compare, setCompare] = useState<string[]>([]);
+  const [compareCategories, setCompareCategories] = useState<Record<string, string>>({});
 
   // Load cart, wishlist, compare from localStorage on mount
   useEffect(() => {
@@ -94,6 +109,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
       const savedCompare = localStorage.getItem('simona_compare');
       if (savedCompare) setCompare(JSON.parse(savedCompare));
+
+      const savedCompareCategories = localStorage.getItem('simona_compare_categories');
+      if (savedCompareCategories) setCompareCategories(JSON.parse(savedCompareCategories));
     } catch (e) {
       console.error('Error loading stored items:', e);
     }
@@ -126,13 +144,25 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     }
   }, [compare]);
 
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  // Save compareCategories to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('simona_compare_categories', JSON.stringify(compareCategories));
+    } catch (e) {
+      console.error('Error saving compare categories:', e);
+    }
+  }, [compareCategories]);
 
-  const showToast = (message: string) => {
-    setToastMessage(message);
+  const [toast, setToast] = useState<ToastData | null>(null);
+
+  const showToast = (
+    message: string,
+    action?: { label: string; href?: string; onClick?: () => void }
+  ) => {
+    setToast({ message, action });
     setTimeout(() => {
-      setToastMessage((cur) => (cur === message ? null : cur));
-    }, 4500);
+      setToast((cur) => (cur?.message === message ? null : cur));
+    }, 5500);
   };
 
   const openModal = (
@@ -211,17 +241,60 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const isInWishlist = (productId: string) => wishlist.includes(productId);
 
-  const toggleCompare = (productId: string) => {
+  const toggleCompare = (productId: string, category?: string) => {
     setCompare((prev) => {
       if (prev.includes(productId)) {
         return prev.filter((id) => id !== productId);
       }
-      if (prev.length >= 4) {
-        showToast('В сравнении может быть не более 4 приборов. Удалите один из них, чтобы добавить новый.');
-        return prev;
+
+      const effectiveCategory = category || compareCategories[productId];
+      if (effectiveCategory) {
+        // Count products currently in compare belonging to this category
+        const inThisCategory = prev.filter(
+          (id) => compareCategories[id] === effectiveCategory
+        );
+        if (inThisCategory.length >= 4) {
+          showToast(
+            `В категории «${effectiveCategory}» уже добавлено максимум 4 прибора. Удалите один из них в разделе сравнения, чтобы добавить новый.`,
+            { label: 'В сравнение', href: '/compare' }
+          );
+          return prev;
+        }
       }
+
+      // If category is provided, store it in compareCategories
+      if (category) {
+        setCompareCategories((prevCats) => ({
+          ...prevCats,
+          [productId]: category,
+        }));
+      }
+
       return [...prev, productId];
     });
+  };
+
+  const clearCompareCategory = (category: string) => {
+    setCompare((prev) => {
+      const remaining = prev.filter((id) => compareCategories[id] !== category);
+      return remaining;
+    });
+    setCompareCategories((prev) => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach((id) => {
+        if (updated[id] === category) {
+          delete updated[id];
+        }
+      });
+      return updated;
+    });
+  };
+
+  const updateCompareCategories = (mapping: Record<string, string>) => {
+    setCompareCategories((prev) => ({
+      ...prev,
+      ...mapping,
+    }));
   };
 
   const isInCompare = (productId: string) => compare.includes(productId);
@@ -253,20 +326,49 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         toggleWishlist,
         isInWishlist,
         compare,
+        compareCategories,
         toggleCompare,
         isInCompare,
+        clearCompareCategory,
+        updateCompareCategories,
       }}
     >
       {children}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-[100] max-w-md bg-[#16191D] border border-simona-wine/80 text-white p-4 rounded-xl shadow-2xl backdrop-blur-xl flex items-start gap-3 transition-all duration-300 animate-in fade-in slide-in-from-bottom-3">
-          <div className="w-2 h-2 rounded-full bg-simona-wine mt-1.5 shrink-0 animate-pulse" />
-          <div className="text-xs sm:text-sm font-medium leading-relaxed">
-            {toastMessage}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-[100] max-w-md bg-[#16191D]/95 border border-simona-teal/50 text-white p-4 rounded-xl shadow-2xl backdrop-blur-xl flex items-start gap-3 transition-all duration-300 animate-in fade-in slide-in-from-bottom-3">
+          <div className="w-2.5 h-2.5 rounded-full bg-simona-teal mt-1 shrink-0 animate-pulse shadow-sm shadow-simona-teal/50" />
+          <div className="flex-1 space-y-2">
+            <div className="text-xs sm:text-sm font-medium leading-relaxed text-zinc-200">
+              {toast.message}
+            </div>
+            {toast.action && (
+              <div>
+                {toast.action.href ? (
+                  <Link
+                    href={toast.action.href}
+                    onClick={() => setToast(null)}
+                    className="inline-flex items-center space-x-1.5 text-xs font-semibold text-simona-teal hover:text-simona-teal-light transition group"
+                  >
+                    <span>{toast.action.label}</span>
+                    <SimonaIconArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => {
+                      toast.action?.onClick?.();
+                      setToast(null);
+                    }}
+                    className="inline-flex items-center space-x-1.5 text-xs font-semibold text-simona-teal hover:text-simona-teal-light transition"
+                  >
+                    <span>{toast.action.label}</span>
+                  </button>
+                )}
+              </div>
+            )}
           </div>
           <button
-            onClick={() => setToastMessage(null)}
-            className="text-[#87888A] hover:text-white transition-colors ml-auto text-xs shrink-0"
+            onClick={() => setToast(null)}
+            className="text-[#87888A] hover:text-white transition-colors ml-auto text-xs shrink-0 cursor-pointer p-1"
             aria-label="Закрыть уведомление"
           >
             ✕

@@ -11,6 +11,7 @@ import {
   SimonaIconCart,
   SimonaIconHeart,
   SimonaIconCompare,
+  SimonaIconClose,
 } from '@/components/brand/SimonaIcons';
 import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
 import { formatProductName } from '@/lib/catalog/productTitle';
@@ -135,9 +136,16 @@ function getProductChips(product: ProductItem): string[] {
 interface LuxuryProductCardProps {
   product: ProductItem;
   selectedPromos?: string[];
+  showCompareRemove?: boolean;
+  onRemoveFromCompare?: () => void;
 }
 
-export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCardProps) {
+export function LuxuryProductCard({
+  product,
+  selectedPromos,
+  showCompareRemove = false,
+  onRemoveFromCompare,
+}: LuxuryProductCardProps) {
   const {
     openModal,
     addToCart,
@@ -258,7 +266,7 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
 
       {/* Compare Button */}
       <button
-        onClick={() => toggleCompare(product.id)}
+        onClick={() => toggleCompare(product.id, product.category)}
         aria-label={inCompare ? 'Удалить из сравнения' : 'Добавить в сравнение'}
         title={inCompare ? 'В сравнении' : 'В сравнение'}
         className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0 cursor-pointer ${
@@ -290,6 +298,26 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
       <div>
         {/* Top Media Area (White Luxury Showcase Tablet with object-contain) */}
         <div className="relative aspect-[4/3] rounded-xl">
+          {showCompareRemove && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (onRemoveFromCompare) {
+                  onRemoveFromCompare();
+                } else {
+                  toggleCompare(product.id, product.category);
+                }
+              }}
+              className="absolute top-2.5 right-2.5 z-40 w-8 h-8 rounded-xl bg-[#16191D]/90 hover:bg-simona-wine border border-[#2B313A] hover:border-simona-wine text-[#87888A] hover:text-white flex items-center justify-center transition-all duration-200 cursor-pointer shadow-xl backdrop-blur-md group/remove"
+              title="Удалить из сравнения"
+              aria-label="Удалить из сравнения"
+            >
+              <SimonaIconClose className="w-3.5 h-3.5 group-hover/remove:scale-110 transition-transform" />
+            </button>
+          )}
+
           <Link
             href={`/product/${product.slug}`}
             className="block w-full h-full bg-white rounded-xl overflow-hidden p-3 border border-white/10 group-hover:border-simona-teal/50 transition-colors shadow-inner flex items-center justify-center"
@@ -329,7 +357,7 @@ export function LuxuryProductCard({ product, selectedPromos }: LuxuryProductCard
 
           {/* Top-Right Badges Stack: Promo Badge (above) + Discount Badge (below) */}
           {showTopRightBadges && (
-            <div className="absolute top-2.5 right-2.5 z-30 flex flex-col items-end gap-1.5">
+            <div className={`absolute top-2.5 ${showCompareRemove ? 'right-12' : 'right-2.5'} z-30 flex flex-col items-end gap-1.5`}>
               {/* 1. Promo Badge (interactive, triggers multi-promo popover) */}
               {hasPromos && (
                 <div

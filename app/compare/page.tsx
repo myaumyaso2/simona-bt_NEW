@@ -1,31 +1,41 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { useStore } from '@/components/providers/StoreContext';
 import { SectionBadge } from '@/components/ui/SectionBadge';
+import { LuxuryProductCard } from '@/components/catalog/LuxuryProductCard';
 import {
   SimonaIconCompare,
-  SimonaIconCart,
-  SimonaIconHeart,
-  SimonaIconGuarantee,
   SimonaIconDownload,
   SimonaIconCheck,
+  SimonaIconPlus,
+  SimonaIconArrowRight,
+  SimonaIconChevronLeft,
+  SimonaIconChevronRight,
+  SimonaIconTrash,
 } from '@/components/brand/SimonaIcons';
-import {
-  X,
-  Plus,
-  ArrowRight,
-} from 'lucide-react';
-import { formatPrice } from '@/lib/utils';
+import { getProductPhysicalStatus } from '@/lib/utils';
 import { ProductItem } from '@/types';
 
 export default function ComparePage() {
-  const { compare, toggleCompare, addToCart, isInCart, wishlist, toggleWishlist, isInWishlist } = useStore();
+  const {
+    compare,
+    toggleCompare,
+    clearCompareCategory,
+    updateCompareCategories,
+  } = useStore();
+
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [diffOnly, setDiffOnly] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string>('');
 
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  // 1. Fetch products batch when compare IDs change
   useEffect(() => {
     if (compare.length === 0) {
       setProducts([]);
@@ -43,6 +53,15 @@ export default function ComparePage() {
         const data = await res.json();
         if (data.success && Array.isArray(data.products)) {
           setProducts(data.products);
+
+          // Synchronize cached category map in StoreContext
+          const categoryMap: Record<string, string> = {};
+          data.products.forEach((p: ProductItem) => {
+            if (p.id && p.category) {
+              categoryMap[p.id] = p.category;
+            }
+          });
+          updateCompareCategories(categoryMap);
         }
       } catch (err) {
         console.error('Failed to load comparison products:', err);
@@ -52,64 +71,207 @@ export default function ComparePage() {
     };
 
     fetchBatch();
-  }, [compare]);
+  }, [compare, updateCompareCategories]);
 
-  // Aggregate all unique feature labels across compared products
-  const allFeatureLabels = Array.from(
-    new Set(
-      products.flatMap((p) => (p.features || []).map((f) => f.label))
-    )
-  );
+  // 2. Derive unique categories currently in compare
+  const categories = useMemo(() => {
+    const list: string[] = [];
+    products.forEach((p) => {
+      const cat = p.category || 'Без категории';
+      if (!list.includes(cat)) {
+        list.push(cat);
+      }
+    });
+    return list;
+  }, [products]);
 
-  // Filter feature labels if diffOnly is checked
-  const displayedFeatureLabels = diffOnly
-    ? allFeatureLabels.filter((label) => {
-        const values = products.map((p) => {
-          const found = (p.features || []).find((f) => f.label === label);
-          return found ? found.value : '—';
-        });
-        return new Set(values).size > 1;
-      })
-    : allFeatureLabels;
+  // 3. Keep activeCategory in sync with available categories
+  useEffect(() => {
+    if (categories.length > 0) {
+      if (!activeCategory || !categories.includes(activeCategory)) {
+        setActiveCategory(categories[0]);
+      }
+    } else {
+      setActiveCategory('');
+    }
+  }, [categories, activeCategory]);
+
+  // 4. Products for currently selected category (max 4 per category)
+  const categoryProducts = useMemo(() => {
+    if (!activeCategory) return [];
+    return products
+      .filter((p) => (p.category || 'Без категории') === activeCategory)
+      .slice(0, 4);
+  }, [products, activeCategory]);
+
+  // 5. Category slider scroll monitoring
+  const updateScrollButtons = () => {
+    const el = sliderRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    updateScrollButtons();
+    const el = sliderRef.current;
+    if (!el) return;
+
+    const handleResize = () => updateScrollButtons();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [categories]);
+
+  const scrollSlider = (direction: 'left' | 'right') => {
+    const el = sliderRef.current;
+    if (!el) return;
+    const scrollAmount = 260;
+    el.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
+    setTimeout(updateScrollButtons, 300);
+  };
+
+  // 6. Aggregate feature labels across products in the active category
+  const allFeatureLabels = useMemo(() => {
+    return Array.from(
+      new Set(
+        categoryProducts.flatMap((p) => (p.features || []).map((f) => f.label))
+      )
+    );
+  }, [categoryProducts]);
+
+  // 7. Filter feature labels if diffOnly is toggled
+  const displayedFeatureLabels = useMemo(() => {
+    if (!diffOnly) return allFeatureLabels;
+    return allFeatureLabels.filter((label) => {
+      const values = categoryProducts.map((p) => {
+        const found = (p.features || []).find((f) => f.label === label);
+        return found ? found.value : '—';
+      });
+      return new Set(values).size > 1;
+    });
+  }, [allFeatureLabels, categoryProducts, diffOnly]);
 
   return (
     <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-10">
+      <div className="max-w-7xl mx-auto space-y-8">
         
-        {/* Header */}
+        {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#2B313A] pb-6">
           <div className="text-left space-y-2">
             <SectionBadge variant="teal" text="Технический анализ характеристик" />
             <h1 className="text-3xl sm:text-4xl font-montserrat font-bold text-white tracking-tight">
-              Сравнение моделей ({products.length} из 4)
+              {activeCategory
+                ? `Сравнение: ${activeCategory} (${categoryProducts.length} из 4)`
+                : `Сравнение моделей (${products.length})`}
             </h1>
             <p className="text-xs sm:text-sm text-[#87888A] max-w-xl">
-              Детальное сопоставление габаритов, монтажных требований и функционала приборов премиальных брендов.
+              {activeCategory
+                ? `Детальное сопоставление габаритов, монтажных требований и функционала приборов в категории «${activeCategory}».`
+                : 'Детальное сопоставление габаритов, монтажных требований и функционала приборов премиальных брендов.'}
             </p>
           </div>
 
-          {/* Controls */}
-          {products.length > 1 && (
-            <div className="flex items-center space-x-3">
-              <label className="flex items-center space-x-2 bg-[#16191D] border border-[#2B313A] px-3.5 py-2.5 rounded-xl cursor-pointer select-none text-xs text-zinc-300 hover:border-simona-teal">
+          {/* Controls: DiffOnly Toggle + Clear Category */}
+          {categoryProducts.length > 0 && (
+            <div className="flex items-center flex-wrap gap-3">
+              <label className="flex items-center space-x-2 bg-[#16191D] border border-[#2B313A] px-3.5 py-2.5 rounded-xl cursor-pointer select-none text-xs text-zinc-300 hover:border-simona-teal transition">
                 <input
                   type="checkbox"
                   checked={diffOnly}
                   onChange={(e) => setDiffOnly(e.target.checked)}
-                  className="rounded text-simona-teal focus:ring-0"
+                  className="rounded text-simona-teal focus:ring-0 bg-[#1E2228] border-[#2B313A] w-4 h-4 cursor-pointer"
                 />
                 <span>Только различия</span>
               </label>
 
               <button
-                onClick={() => compare.forEach((id) => toggleCompare(id))}
-                className="text-xs text-[#87888A] hover:text-red-400 transition"
+                onClick={() => clearCompareCategory(activeCategory)}
+                className="inline-flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl bg-[#16191D] border border-[#2B313A] text-xs text-[#87888A] hover:text-red-400 hover:border-red-500/40 hover:bg-red-500/10 transition cursor-pointer"
+                title={`Очистить приборы в категории «${activeCategory}»`}
               >
-                Очистить все
+                <SimonaIconTrash className="w-3.5 h-3.5" />
+                <span>Очистить эту категорию</span>
               </button>
             </div>
           )}
         </div>
+
+        {/* Categories Horizontal Slider Strip (when 1 or more categories present) */}
+        {categories.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-semibold tracking-wider uppercase text-[#87888A]">
+                Категории в сравнении ({categories.length})
+              </span>
+              <span className="text-[11px] text-[#87888A]">
+                Максимум 4 прибора на категорию
+              </span>
+            </div>
+
+            <div className="relative flex items-center gap-2">
+              {canScrollLeft && (
+                <button
+                  type="button"
+                  onClick={() => scrollSlider('left')}
+                  className="w-9 h-9 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal text-[#87888A] hover:text-white flex items-center justify-center transition shrink-0 cursor-pointer shadow-lg z-10"
+                  aria-label="Прокрутить категории влево"
+                >
+                  <SimonaIconChevronLeft className="w-4 h-4" />
+                </button>
+              )}
+
+              <div
+                ref={sliderRef}
+                onScroll={updateScrollButtons}
+                className="flex items-center gap-2.5 overflow-x-auto no-scrollbar scroll-smooth py-1 px-0.5 flex-1"
+              >
+                {categories.map((cat) => {
+                  const count = products.filter(
+                    (p) => (p.category || 'Без категории') === cat
+                  ).length;
+                  const isActive = cat === activeCategory;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setActiveCategory(cat)}
+                      className={`px-4 py-2.5 rounded-xl text-xs font-medium tracking-wide transition-all duration-200 shrink-0 flex items-center space-x-2.5 cursor-pointer border ${
+                        isActive
+                          ? 'bg-simona-teal/20 border-simona-teal text-white shadow-md shadow-simona-teal/20 font-semibold'
+                          : 'bg-[#16191D] border-[#2B313A] text-zinc-400 hover:text-white hover:border-zinc-600'
+                      }`}
+                    >
+                      <span>{cat}</span>
+                      <span
+                        className={`text-[10px] px-2 py-0.5 rounded-md font-mono ${
+                          isActive
+                            ? 'bg-simona-teal text-white font-bold'
+                            : 'bg-[#1E2228] text-zinc-400 border border-[#2B313A]'
+                        }`}
+                      >
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {canScrollRight && (
+                <button
+                  type="button"
+                  onClick={() => scrollSlider('right')}
+                  className="w-9 h-9 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal text-[#87888A] hover:text-white flex items-center justify-center transition shrink-0 cursor-pointer shadow-lg z-10"
+                  aria-label="Прокрутить категории вправо"
+                >
+                  <SimonaIconChevronRight className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Empty State */}
         {products.length === 0 ? (
@@ -121,153 +283,197 @@ export default function ComparePage() {
               Список сравнения пуст
             </h2>
             <p className="text-xs sm:text-sm text-[#87888A] leading-relaxed">
-              Добавляйте интересующие приборы в сравнение прямо из каталога с помощью иконки со шкалой, чтобы наглядно сопоставить их функционал, схемы встройки и габариты.
+              Добавляйте интересующие приборы в сравнение прямо из каталога с помощью иконки со шкалой, чтобы наглядно сопоставить их функционал, схемы встройки и габариты. В каждой категории можно сравнивать до 4 моделей одновременно.
             </p>
             <div className="pt-2">
               <Link
                 href="/catalog"
-                className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-bold uppercase tracking-wider transition shadow-lg shadow-simona-teal/20"
+                className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-bold uppercase tracking-wider transition shadow-lg shadow-simona-teal/20 cursor-pointer"
               >
                 <span>Перейти в каталог</span>
-                <ArrowRight className="w-4 h-4" />
+                <SimonaIconArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
         ) : (
-          /* Comparison Table */
-          <div className="overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-zinc-700">
-            <div className="min-w-[800px]">
+          /* Comparison Matrix Table with Sticky Parameter Column */
+          <div className="overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-zinc-700 rounded-2xl border border-[#2B313A] bg-[#16191D]/40">
+            <div className="min-w-max divide-y divide-[#2B313A]/60">
               
-              {/* Products Top Cards Grid */}
-              <div className="grid grid-cols-5 gap-4 pb-6 border-b border-[#2B313A]">
-                <div className="p-4 flex flex-col justify-end">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-[#87888A]">
-                    Параметр
-                  </span>
+              {/* Product Cards Row */}
+              <div className="flex items-stretch p-4 bg-[#111315]/80">
+                {/* Sticky Parameter Header */}
+                <div className="w-60 sm:w-64 min-w-[240px] sticky left-0 z-30 bg-[#111315] border-r border-[#2B313A] pr-4 pl-2 flex flex-col justify-between py-2 shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-simona-teal block mb-1">
+                      {activeCategory}
+                    </span>
+                    <h3 className="text-sm font-semibold text-white">
+                      Модели для сравнения
+                    </h3>
+                  </div>
+                  <div className="text-[11px] text-[#87888A] space-y-1">
+                    <p>До 4 моделей в категории</p>
+                    <p className="text-zinc-500">
+                      Листайте таблицу вправо для просмотра всех приборов
+                    </p>
+                  </div>
                 </div>
 
-                {products.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-4 flex flex-col justify-between relative group"
-                  >
-                    {/* Delete button */}
-                    <button
-                      onClick={() => toggleCompare(item.id)}
-                      className="absolute top-2.5 right-2.5 w-8 h-8 rounded-xl bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-red-400 flex items-center justify-center transition cursor-pointer"
-                      title="Удалить из сравнения"
+                {/* Compared Products Cards */}
+                <div className="flex items-stretch gap-4 pl-4">
+                  {categoryProducts.map((item) => (
+                    <div
+                      key={item.id}
+                      className="w-72 sm:w-80 min-w-[280px] shrink-0 flex flex-col"
                     >
-                      <X className="w-4 h-4" />
-                    </button>
-
-                    <div>
-                      {/* Image */}
-                      <div className="relative aspect-square w-full rounded-xl bg-[#1E2228] overflow-hidden mb-3">
-                        <img
-                          src={item.images?.[0] || '/images/products/placeholder.webp'}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-
-                      <div className="text-[10px] font-semibold text-simona-teal uppercase tracking-wider mb-1">
-                        {item.brand}
-                      </div>
-
-                      <Link href={`/product/${item.slug}`}>
-                        <h3 className="text-xs font-semibold text-white hover:text-simona-teal transition line-clamp-2 leading-snug mb-1">
-                          {item.name}
-                        </h3>
-                      </Link>
-
-                      <div className="text-[10px] text-[#87888A] mb-3">
-                        Код товара: {item.sku}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="text-base font-montserrat font-bold text-white mb-3">
-                        {formatPrice(item.price)}
-                      </div>
-
-                      <button
-                        onClick={() => addToCart(item)}
-                        className="w-full py-2.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-[11px] font-semibold uppercase tracking-wider transition flex items-center justify-center space-x-1.5"
-                      >
-                        <SimonaIconCart className="w-3.5 h-3.5" />
-                        <span>{isInCart(item.id) ? 'В корзине' : 'Купить'}</span>
-                      </button>
-                    </div>
-                  </div>
-                ))}
-
-                {/* Slot to add another product if less than 4 */}
-                {products.length < 4 && (
-                  <Link
-                    href="/catalog"
-                    className="border-2 border-dashed border-[#2B313A] hover:border-simona-teal/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center transition group text-[#87888A] hover:text-white"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-[#16191D] flex items-center justify-center mb-3 group-hover:scale-110 transition">
-                      <Plus className="w-5 h-5 text-simona-teal" />
-                    </div>
-                    <span className="text-xs font-semibold block">Добавить прибор</span>
-                    <span className="text-[10px] text-[#87888A] mt-1">из каталога (до 4 шт.)</span>
-                  </Link>
-                )}
-              </div>
-
-              {/* Main Attributes Rows */}
-              <div className="divide-y divide-[#2B313A]/60 text-xs">
-                
-                {/* Row: Availability */}
-                <div className="grid grid-cols-5 gap-4 py-3.5 items-center">
-                  <div className="font-semibold text-zinc-400 pl-2">Наличие и статус</div>
-                  {products.map((p) => (
-                    <div key={p.id}>
-                      <span className="inline-block px-2 py-0.5 rounded-md bg-[#1E2228] border border-[#2B313A] text-[11px] text-zinc-300">
-                        {p.inStock ? 'На складе (1-2 дня)' : 'Под заказ из Европы'}
-                      </span>
+                      <LuxuryProductCard
+                        product={item}
+                        showCompareRemove={true}
+                        onRemoveFromCompare={() =>
+                          toggleCompare(item.id, item.category)
+                        }
+                      />
                     </div>
                   ))}
-                </div>
 
-                {/* Row: Dimensions */}
-                <div className="grid grid-cols-5 gap-4 py-3.5 items-center">
-                  <div className="font-semibold text-zinc-400 pl-2">Габариты прибора (Ш×В×Г)</div>
-                  {products.map((p) => (
-                    <div key={p.id} className="text-white font-mono">
+                  {/* Empty Slot to add another product up to 4 */}
+                  {categoryProducts.length < 4 && (
+                    <div className="w-72 sm:w-80 min-w-[280px] shrink-0 flex">
+                      <Link
+                        href={`/catalog?category=${encodeURIComponent(
+                          activeCategory
+                        )}`}
+                        className="w-full border-2 border-dashed border-[#2B313A] hover:border-simona-teal/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center transition group text-[#87888A] hover:text-white bg-[#16191D]/30 hover:bg-[#16191D]/60 cursor-pointer min-h-[460px]"
+                      >
+                        <div className="w-12 h-12 rounded-xl bg-[#1E2228] border border-[#2B313A] group-hover:border-simona-teal/50 flex items-center justify-center mb-3 group-hover:scale-110 transition shadow-lg">
+                          <SimonaIconPlus className="w-5 h-5 text-simona-teal" />
+                        </div>
+                        <span className="text-sm font-semibold text-white block">
+                          Добавить прибор
+                        </span>
+                        <span className="text-xs text-[#87888A] mt-1.5 max-w-[200px] leading-relaxed">
+                          в категории «{activeCategory}» (еще{' '}
+                          {4 - categoryProducts.length} из 4)
+                        </span>
+                        <span className="mt-4 px-3 py-1.5 rounded-lg bg-simona-teal/15 text-simona-teal text-[11px] font-semibold border border-simona-teal/30 group-hover:bg-simona-teal group-hover:text-white transition">
+                          Выбрать в каталоге
+                        </span>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Row: Availability Status */}
+              <div className="flex items-center min-w-max py-3.5 hover:bg-[#1E2228]/20 transition">
+                <div className="w-60 sm:w-64 min-w-[240px] sticky left-0 z-20 bg-[#111315] font-semibold text-xs text-zinc-400 pl-4 pr-4 border-r border-[#2B313A] shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
+                  Наличие и статус
+                </div>
+                <div className="flex items-center gap-4 pl-4">
+                  {categoryProducts.map((p) => {
+                    const status = getProductPhysicalStatus(p);
+                    return (
+                      <div key={p.id} className="w-72 sm:w-80 min-w-[280px] shrink-0">
+                        {status === 'SHOWROOM' ? (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-[#16191D] text-simona-teal border border-simona-teal/40">
+                            На витрине
+                          </span>
+                        ) : status === 'LOCAL_STOCK' ? (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-[#16191D] text-simona-teal border border-simona-teal/40">
+                            На складе
+                          </span>
+                        ) : status === 'REMOTE_STOCK' ? (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-[#16191D] text-simona-teal border border-simona-teal/40">
+                            На удаленном складе
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-medium bg-[#1E2228] text-zinc-300 border border-[#2B313A]">
+                            Под заказ
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                  {categoryProducts.length < 4 && (
+                    <div className="w-72 sm:w-80 min-w-[280px] shrink-0 text-zinc-600">
+                      —
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Row: Dimensions */}
+              <div className="flex items-center min-w-max py-3.5 hover:bg-[#1E2228]/20 transition">
+                <div className="w-60 sm:w-64 min-w-[240px] sticky left-0 z-20 bg-[#111315] font-semibold text-xs text-zinc-400 pl-4 pr-4 border-r border-[#2B313A] shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
+                  Габариты прибора (Ш×В×Г)
+                </div>
+                <div className="flex items-center gap-4 pl-4">
+                  {categoryProducts.map((p) => (
+                    <div
+                      key={p.id}
+                      className="w-72 sm:w-80 min-w-[280px] shrink-0 text-xs text-white font-mono"
+                    >
                       {p.dimensions || '59.5 × 59.5 × 56.4 см'}
                     </div>
                   ))}
+                  {categoryProducts.length < 4 && (
+                    <div className="w-72 sm:w-80 min-w-[280px] shrink-0 text-zinc-600">
+                      —
+                    </div>
+                  )}
                 </div>
+              </div>
 
-                {/* Row: Schematic PDF */}
-                <div className="grid grid-cols-5 gap-4 py-3.5 items-center">
-                  <div className="font-semibold text-zinc-400 pl-2">Схема встройки</div>
-                  {products.map((p) => (
-                    <div key={p.id}>
-                      <a
-                        href={p.schematicPdfUrl || '#'}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center space-x-1 text-[11px] text-simona-teal hover:underline"
-                      >
-                        <SimonaIconDownload className="w-3.5 h-3.5" />
-                        <span>Чертеж ниши (PDF)</span>
-                      </a>
+              {/* Row: Schematic PDF */}
+              <div className="flex items-center min-w-max py-3.5 hover:bg-[#1E2228]/20 transition">
+                <div className="w-60 sm:w-64 min-w-[240px] sticky left-0 z-20 bg-[#111315] font-semibold text-xs text-zinc-400 pl-4 pr-4 border-r border-[#2B313A] shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
+                  Схема встройки
+                </div>
+                <div className="flex items-center gap-4 pl-4">
+                  {categoryProducts.map((p) => (
+                    <div key={p.id} className="w-72 sm:w-80 min-w-[280px] shrink-0 text-xs">
+                      {p.schematicPdfUrl ? (
+                        <a
+                          href={p.schematicPdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center space-x-1.5 text-xs text-simona-teal hover:underline"
+                        >
+                          <SimonaIconDownload className="w-3.5 h-3.5" />
+                          <span>Чертеж ниши (PDF)</span>
+                        </a>
+                      ) : (
+                        <span className="text-zinc-500">По запросу</span>
+                      )}
                     </div>
                   ))}
+                  {categoryProducts.length < 4 && (
+                    <div className="w-72 sm:w-80 min-w-[280px] shrink-0 text-zinc-600">
+                      —
+                    </div>
+                  )}
                 </div>
+              </div>
 
-                {/* Dynamic Features Rows */}
-                {displayedFeatureLabels.map((label) => (
-                  <div key={label} className="grid grid-cols-5 gap-4 py-3.5 items-center">
-                    <div className="font-semibold text-zinc-400 pl-2">{label}</div>
-                    {products.map((p) => {
+              {/* Dynamic Feature Rows */}
+              {displayedFeatureLabels.map((label) => (
+                <div
+                  key={label}
+                  className="flex items-center min-w-max py-3.5 hover:bg-[#1E2228]/20 transition"
+                >
+                  <div className="w-60 sm:w-64 min-w-[240px] sticky left-0 z-20 bg-[#111315] font-semibold text-xs text-zinc-400 pl-4 pr-4 border-r border-[#2B313A] shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
+                    {label}
+                  </div>
+                  <div className="flex items-center gap-4 pl-4">
+                    {categoryProducts.map((p) => {
                       const feat = (p.features || []).find((f) => f.label === label);
                       const val = feat ? feat.value : '—';
                       return (
-                        <div key={p.id} className="text-white">
+                        <div
+                          key={p.id}
+                          className="w-72 sm:w-80 min-w-[280px] shrink-0 text-xs text-white"
+                        >
                           {val === 'Да' || val === 'Есть' ? (
                             <span className="text-emerald-400 font-semibold flex items-center space-x-1">
                               <SimonaIconCheck className="w-3.5 h-3.5" />
@@ -281,9 +487,14 @@ export default function ComparePage() {
                         </div>
                       );
                     })}
+                    {categoryProducts.length < 4 && (
+                      <div className="w-72 sm:w-80 min-w-[280px] shrink-0 text-zinc-600">
+                        —
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
