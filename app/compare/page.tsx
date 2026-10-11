@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { useStore } from '@/components/providers/StoreContext';
 import { SectionBadge } from '@/components/ui/SectionBadge';
 import { LuxuryProductCard } from '@/components/catalog/LuxuryProductCard';
@@ -109,7 +110,7 @@ export default function ComparePage() {
     const el = sliderRef.current;
     if (!el) return;
     setCanScrollLeft(el.scrollLeft > 4);
-    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
   };
 
   useEffect(() => {
@@ -122,10 +123,31 @@ export default function ComparePage() {
     return () => window.removeEventListener('resize', handleResize);
   }, [categories]);
 
+  // Smooth scroll active category pill into view when activeCategory changes
+  useEffect(() => {
+    const el = sliderRef.current;
+    if (!el) return;
+    const activeBtn = el.querySelector<HTMLButtonElement>(
+      `[data-category="${activeCategory}"]`
+    );
+    if (activeBtn) {
+      const containerRect = el.getBoundingClientRect();
+      const btnRect = activeBtn.getBoundingClientRect();
+      if (btnRect.left < containerRect.left || btnRect.right > containerRect.right) {
+        activeBtn.scrollIntoView({
+          behavior: 'smooth',
+          inline: 'center',
+          block: 'nearest',
+        });
+      }
+    }
+    updateScrollButtons();
+  }, [activeCategory]);
+
   const scrollSlider = (direction: 'left' | 'right') => {
     const el = sliderRef.current;
     if (!el) return;
-    const scrollAmount = 260;
+    const scrollAmount = Math.max(180, el.clientWidth * 0.5);
     el.scrollBy({
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth',
@@ -199,34 +221,30 @@ export default function ComparePage() {
           )}
         </div>
 
-        {/* Categories Horizontal Slider Strip (when 1 or more categories present) */}
+        {/* Categories Slider (Brand Category Nav Single-Pill Bar Style) */}
         {categories.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold tracking-wider uppercase text-[#87888A]">
-                Категории в сравнении ({categories.length})
-              </span>
-              <span className="text-[11px] text-[#87888A]">
-                Максимум 4 прибора на категорию
-              </span>
-            </div>
-
-            <div className="relative flex items-center gap-2">
+          <div className="relative max-w-full flex items-center">
+            <div className="relative inline-flex items-center max-w-full rounded-xl">
+              {/* Left Chevron Button with Soft Gradient Fade */}
               {canScrollLeft && (
-                <button
-                  type="button"
-                  onClick={() => scrollSlider('left')}
-                  className="w-9 h-9 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal text-[#87888A] hover:text-white flex items-center justify-center transition shrink-0 cursor-pointer shadow-lg z-10"
-                  aria-label="Прокрутить категории влево"
-                >
-                  <SimonaIconChevronLeft className="w-4 h-4" />
-                </button>
+                <div className="flex absolute left-0 top-0 bottom-0 z-20 items-center pl-1 pr-7 bg-gradient-to-r from-[#16191D] via-[#16191D]/90 to-transparent pointer-events-none rounded-l-xl">
+                  <button
+                    type="button"
+                    onClick={() => scrollSlider('left')}
+                    aria-label="Прокрутить категории влево"
+                    className="pointer-events-auto w-7 h-7 rounded-lg bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal hover:bg-[#252A32] flex items-center justify-center transition-all shadow-md hover:shadow-simona-teal/20 cursor-pointer shrink-0"
+                  >
+                    <SimonaIconChevronLeft className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               )}
 
+              {/* Scrollable Category Pills */}
               <div
                 ref={sliderRef}
                 onScroll={updateScrollButtons}
-                className="flex items-center gap-2.5 overflow-x-auto no-scrollbar scroll-smooth py-1 px-0.5 flex-1"
+                className="relative inline-flex items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1 overflow-x-auto no-scrollbar scroll-smooth max-w-full select-none"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
                 {categories.map((cat) => {
                   const count = products.filter(
@@ -237,37 +255,52 @@ export default function ComparePage() {
                     <button
                       key={cat}
                       type="button"
+                      data-category={cat}
                       onClick={() => setActiveCategory(cat)}
-                      className={`px-4 py-2.5 rounded-xl text-xs font-medium tracking-wide transition-all duration-200 shrink-0 flex items-center space-x-2.5 cursor-pointer border ${
+                      className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none shrink-0 ${
                         isActive
-                          ? 'bg-simona-teal/20 border-simona-teal text-white shadow-md shadow-simona-teal/20 font-semibold'
-                          : 'bg-[#16191D] border-[#2B313A] text-zinc-400 hover:text-white hover:border-zinc-600'
+                          ? 'text-white'
+                          : 'text-[#87888A] hover:text-[#D7D9DB]'
                       }`}
                     >
+                      {isActive && (
+                        <motion.div
+                          layoutId="compareCategoryActiveTab"
+                          className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
+                          transition={{
+                            type: 'spring',
+                            stiffness: 450,
+                            damping: 35,
+                          }}
+                        />
+                      )}
                       <span>{cat}</span>
                       <span
-                        className={`text-[10px] px-2 py-0.5 rounded-md font-mono ${
+                        className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
                           isActive
-                            ? 'bg-simona-teal text-white font-bold'
-                            : 'bg-[#1E2228] text-zinc-400 border border-[#2B313A]'
+                            ? 'text-simona-teal font-semibold'
+                            : 'text-[#87888A] font-normal'
                         }`}
                       >
-                        {count}
+                        ({count})
                       </span>
                     </button>
                   );
                 })}
               </div>
 
+              {/* Right Chevron Button with Soft Gradient Fade */}
               {canScrollRight && (
-                <button
-                  type="button"
-                  onClick={() => scrollSlider('right')}
-                  className="w-9 h-9 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal text-[#87888A] hover:text-white flex items-center justify-center transition shrink-0 cursor-pointer shadow-lg z-10"
-                  aria-label="Прокрутить категории вправо"
-                >
-                  <SimonaIconChevronRight className="w-4 h-4" />
-                </button>
+                <div className="flex absolute right-0 top-0 bottom-0 z-20 items-center pr-1 pl-7 bg-gradient-to-l from-[#16191D] via-[#16191D]/90 to-transparent pointer-events-none rounded-r-xl">
+                  <button
+                    type="button"
+                    onClick={() => scrollSlider('right')}
+                    aria-label="Прокрутить категории вправо"
+                    className="pointer-events-auto w-7 h-7 rounded-lg bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white hover:border-simona-teal hover:bg-[#252A32] flex items-center justify-center transition-all shadow-md hover:shadow-simona-teal/20 cursor-pointer shrink-0"
+                  >
+                    <SimonaIconChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               )}
             </div>
           </div>
@@ -302,23 +335,8 @@ export default function ComparePage() {
               
               {/* Product Cards Row */}
               <div className="flex items-stretch p-4 bg-[#111315]/80">
-                {/* Sticky Parameter Header */}
-                <div className="w-60 sm:w-64 min-w-[240px] sticky left-0 z-30 bg-[#111315] border-r border-[#2B313A] pr-4 pl-2 flex flex-col justify-between py-2 shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
-                  <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-simona-teal block mb-1">
-                      {activeCategory}
-                    </span>
-                    <h3 className="text-sm font-semibold text-white">
-                      Модели для сравнения
-                    </h3>
-                  </div>
-                  <div className="text-[11px] text-[#87888A] space-y-1">
-                    <p>До 4 моделей в категории</p>
-                    <p className="text-zinc-500">
-                      Листайте таблицу вправо для просмотра всех приборов
-                    </p>
-                  </div>
-                </div>
+                {/* Clean Transparent Spacer Column to keep vertical grid alignment with parameter rows below */}
+                <div className="w-60 sm:w-64 min-w-[240px] sticky left-0 z-30 bg-[#111315] border-r border-[#2B313A]/60 shadow-[4px_0_12px_rgba(0,0,0,0.5)] pointer-events-none" />
 
                 {/* Compared Products Cards */}
                 <div className="flex items-stretch gap-4 pl-4">
@@ -337,28 +355,28 @@ export default function ComparePage() {
                     </div>
                   ))}
 
-                  {/* Empty Slot to add another product up to 4 */}
+                  {/* Empty Slot to add another product up to 4: exactly same dimensions as LuxuryProductCard */}
                   {categoryProducts.length < 4 && (
-                    <div className="w-72 sm:w-80 min-w-[280px] shrink-0 flex">
+                    <div className="w-72 sm:w-80 min-w-[280px] shrink-0 flex flex-col">
                       <Link
                         href={`/catalog?category=${encodeURIComponent(
                           activeCategory
                         )}`}
-                        className="w-full border-2 border-dashed border-[#2B313A] hover:border-simona-teal/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center transition group text-[#87888A] hover:text-white bg-[#16191D]/30 hover:bg-[#16191D]/60 cursor-pointer min-h-[460px]"
+                        className="w-full h-full border-2 border-dashed border-[#2B313A] hover:border-simona-teal/60 rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 group text-[#87888A] hover:text-white bg-[#16191D]/40 hover:bg-[#16191D]/70 cursor-pointer shadow-xl"
                       >
-                        <div className="w-12 h-12 rounded-xl bg-[#1E2228] border border-[#2B313A] group-hover:border-simona-teal/50 flex items-center justify-center mb-3 group-hover:scale-110 transition shadow-lg">
-                          <SimonaIconPlus className="w-5 h-5 text-simona-teal" />
+                        <div className="w-14 h-14 rounded-2xl bg-[#1E2228] border border-[#2B313A] group-hover:border-simona-teal/50 flex items-center justify-center mb-4 group-hover:scale-105 transition shadow-lg">
+                          <SimonaIconPlus className="w-6 h-6 text-simona-teal" />
                         </div>
-                        <span className="text-sm font-semibold text-white block">
+                        <span className="text-base font-semibold text-white block mb-1">
                           Добавить прибор
                         </span>
-                        <span className="text-xs text-[#87888A] mt-1.5 max-w-[200px] leading-relaxed">
+                        <span className="text-xs text-[#87888A] max-w-[200px] leading-relaxed">
                           в категории «{activeCategory}» (еще{' '}
                           {4 - categoryProducts.length} из 4)
                         </span>
-                        <span className="mt-4 px-3 py-1.5 rounded-lg bg-simona-teal/15 text-simona-teal text-[11px] font-semibold border border-simona-teal/30 group-hover:bg-simona-teal group-hover:text-white transition">
+                        <div className="mt-6 px-4 py-2 rounded-xl bg-simona-teal/15 text-simona-teal text-xs font-semibold border border-simona-teal/30 group-hover:bg-simona-teal group-hover:text-white transition-all shadow-md shadow-simona-teal/10">
                           Выбрать в каталоге
-                        </span>
+                        </div>
                       </Link>
                     </div>
                   )}
