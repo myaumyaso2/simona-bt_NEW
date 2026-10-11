@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CATALOG_CATEGORIES } from '@/data/catalogCategories';
 import { SectionBadge } from '@/components/ui/SectionBadge';
@@ -11,7 +11,6 @@ import { CatalogSectionSlider, CatalogSectionItem } from './CatalogSectionSlider
 import {
   SimonaIconChevronRight,
   SimonaIconArrowRight,
-  SimonaIconSparkles,
 } from '@/components/brand/SimonaIcons';
 
 interface SectionMeta {
@@ -89,20 +88,8 @@ const CATALOG_SECTIONS: SectionMeta[] = [
   },
 ];
 
-const BRAND_STRIP = [
-  { name: 'Miele', slug: 'miele', country: 'Германия' },
-  { name: 'ASKO', slug: 'asko', country: 'Швеция' },
-  { name: 'Liebherr', slug: 'liebherr', country: 'Германия' },
-  { name: 'SMEG', slug: 'smeg', country: 'Италия' },
-  { name: 'Bertazzoni', slug: 'bertazzoni', country: 'Италия' },
-  { name: 'Falmec', slug: 'falmec', country: 'Италия' },
-  { name: 'OMOIKIRI', slug: 'omoikiri', country: 'Япония' },
-  { name: 'Körting', slug: 'korting', country: 'Германия' },
-  { name: 'Schulthess', slug: 'schulthess', country: 'Швейцария' },
-  { name: 'VARD', slug: 'vard', country: 'Россия / Европа' },
-];
-
 export function CatalogHubView() {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const initialTab = searchParams.get('tab');
@@ -245,12 +232,18 @@ export function CatalogHubView() {
                         {/* Featured Brands Pills: up to 3 lines */}
                         <div className="flex flex-wrap items-start content-start gap-1.5 h-[4.75rem] max-h-[4.75rem] overflow-hidden">
                           {cat.featuredBrands.map((brand) => (
-                            <span
+                            <button
                               key={brand}
-                              className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#1E2228]/80 text-[#D7D9DB] border border-[#2B313A]/60"
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                router.push(`/catalog?brand=${encodeURIComponent(brand)}&category=${cat.slug}`);
+                              }}
+                              className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#1E2228]/80 text-[#D7D9DB] border border-[#2B313A]/60 hover:border-simona-teal hover:text-white hover:bg-[#252A32] cursor-pointer transition-all duration-200 active:scale-95 select-none"
                             >
                               {brand}
-                            </span>
+                            </button>
                           ))}
                         </div>
                       </div>
@@ -263,82 +256,7 @@ export function CatalogHubView() {
         </div>
       </section>
 
-      {/* 3. Authorized European Brand Wall Strip */}
-      <section className="py-10 border-t border-[#2B313A]/50 bg-[#16191D]/40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-simona-teal mb-1">
-                Официальные поставки
-              </p>
-              <h3 className="text-lg font-montserrat font-bold text-white tracking-tight">
-                Авторизованные европейские бренды в каталоге
-              </h3>
-            </div>
-            <Link
-              href="/brands"
-              className="inline-flex items-center space-x-1.5 text-xs font-medium text-simona-teal hover:text-simona-teal-light transition-colors group"
-            >
-              <span>Все бренды и сертификаты</span>
-              <SimonaIconArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-            {BRAND_STRIP.map((brand) => (
-              <Link
-                key={brand.slug}
-                href={`/brands/${brand.slug}`}
-                className="p-3.5 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 hover:bg-[#1E2228] transition-all group flex flex-col justify-between"
-              >
-                <span className="text-sm font-semibold text-white group-hover:text-simona-teal transition-colors">
-                  {brand.name}
-                </span>
-                <span className="text-[11px] text-[#87888A] mt-1">
-                  {brand.country}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 4. Manufacturer Promos Wine Accent Strip (#8A151A) */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-simona-wine/40 bg-gradient-to-r from-simona-wine/20 via-[#16191D] to-[#16191D] p-6 sm:p-8 lg:p-10 relative overflow-hidden shadow-2xl">
-            {/* Ambient Wine Glow */}
-            <div className="absolute top-0 right-0 w-80 h-80 bg-simona-wine/15 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-              <div className="max-w-2xl space-y-2">
-                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-simona-wine/30 border border-simona-wine/50 text-white text-xs font-semibold">
-                  <SimonaIconSparkles className="w-3.5 h-3.5 text-white" />
-                  <span>Официальные промо-программы производителей</span>
-                </div>
-                <h3 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
-                  Специальные условия и подарки от европейских фабрик
-                </h3>
-                <p className="text-xs sm:text-sm text-[#D7D9DB]/80 leading-relaxed">
-                  Подарочные комплекты по уходу ASKO Scandinavian Care, специальные выгоды на флагманские духовые шкафы Miele Generation 7000 и расширенная гарантия 5 лет на винные шкафы Liebherr.
-                </p>
-              </div>
-
-              <div className="shrink-0 flex flex-col sm:flex-row gap-3">
-                <Link
-                  href="/promos"
-                  className="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-simona-wine hover:bg-simona-wine-hover text-white text-xs font-semibold tracking-wide transition-all duration-200 shadow-lg shadow-simona-wine/25 active:scale-95"
-                >
-                  <span>Смотреть все акции</span>
-                  <SimonaIconArrowRight className="w-4 h-4 ml-2" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Service Contour */}
+      {/* 2. Service Contour */}
       <CatalogServiceContour />
     </div>
   );
