@@ -88,10 +88,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
           </div>
         </section>
 
-        {/* 3. Service Standard Contour (Horizontal Full-Width Block) */}
-        <ProductServiceContour product={product} />
-
-        {/* 4. Sticky Sub-Navigation Bar */}
+        {/* 3. Sticky Sub-Navigation Bar */}
         <div id="product-tabs-nav">
           <ProductStickySubNav
             product={product}
@@ -100,12 +97,15 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
           />
         </div>
 
-        {/* 5. Interactive Tabs Section */}
+        {/* 4. Interactive Tabs Section */}
         <ProductTabsSection
           product={product}
           activeTab={activeTab}
           onSelectTab={setActiveTab}
         />
+
+        {/* 5. Service Standard Contour (Horizontal Full-Width Block) */}
+        <ProductServiceContour product={product} />
       </div>
 
       {/* 7. Mobile Floating Sticky Bottom Bar (390px) */}
