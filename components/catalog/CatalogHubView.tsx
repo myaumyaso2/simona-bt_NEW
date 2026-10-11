@@ -212,7 +212,7 @@ export function CatalogHubView() {
                 >
                   <Link
                     href={`/catalog/${cat.slug}`}
-                    className="group relative rounded-2xl overflow-hidden border border-[#2B313A] hover:border-simona-teal/60 bg-[#16191D] p-6 sm:p-7 flex flex-col justify-end min-h-[290px] sm:min-h-[320px] h-full transition-all duration-500 shadow-xl"
+                    className="group relative rounded-2xl overflow-hidden border border-[#2B313A] hover:border-simona-teal/60 bg-[#16191D] p-6 sm:p-7 flex flex-col justify-end min-h-[340px] sm:min-h-[360px] h-full transition-all duration-500 shadow-xl"
                   >
                     {/* Photo Background & Parallax Overlay */}
                     <div className="absolute inset-0 z-0 overflow-hidden">
@@ -224,39 +224,27 @@ export function CatalogHubView() {
                       <div className="absolute inset-0 bg-gradient-to-t from-[#111315] via-[#16191D]/85 to-transparent pointer-events-none" />
                     </div>
 
-                    {/* Top Badge Strip (if present) */}
-                    {cat.badge && (
-                      <div className="absolute top-5 left-5 z-10">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-[#111315]/80 backdrop-blur-md border border-[#2B313A] text-simona-teal shadow-md">
-                          {cat.badge}
-                        </span>
-                      </div>
-                    )}
-
                     {/* Card Content Core */}
-                    <div className="relative z-10 space-y-2.5">
-                      <div className="flex items-center justify-between gap-2">
-                        <h2 className="text-xl sm:text-2xl font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors tracking-tight">
+                    <div className="relative z-10 space-y-3">
+                      <div className="flex items-start justify-between gap-3 min-h-[3.5rem]">
+                        <h2 className="text-xl sm:text-2xl font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors tracking-tight leading-snug">
                           {cat.title}
                         </h2>
-                        {/* Nested Island Button with Spring Micro-Physics */}
-                        <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-simona-teal group-hover:border-simona-teal transition-all duration-300">
-                          <SimonaIconArrowRight className="w-4 h-4 text-white group-hover:translate-x-0.5 transition-transform" />
-                        </div>
+                        <SimonaIconArrowRight className="w-5 h-5 text-white/70 group-hover:text-simona-teal group-hover:translate-x-1.5 transition-all duration-300 shrink-0 mt-1" />
                       </div>
 
-                      <p className="text-xs sm:text-sm text-[#87888A] line-clamp-2 max-w-xl leading-relaxed">
+                      <p className="text-xs sm:text-sm text-[#87888A] line-clamp-3 min-h-[3.75rem] leading-relaxed">
                         {cat.desc}
                       </p>
 
-                      <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-[#2B313A]/50">
-                        <span className="text-xs font-semibold text-simona-teal font-mono">
+                      <div className="pt-3 border-t border-[#2B313A]/50 space-y-2">
+                        <div className="text-xs font-semibold text-simona-teal font-mono">
                           {cat.count}
-                        </span>
+                        </div>
 
-                        {/* Featured Brands Pills */}
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          {cat.featuredBrands.slice(0, 4).map((brand) => (
+                        {/* Featured Brands Pills: up to 3 lines */}
+                        <div className="flex flex-wrap items-start gap-1.5 min-h-[4.75rem]">
+                          {cat.featuredBrands.map((brand) => (
                             <span
                               key={brand}
                               className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#1E2228]/80 text-[#D7D9DB] border border-[#2B313A]/60"
