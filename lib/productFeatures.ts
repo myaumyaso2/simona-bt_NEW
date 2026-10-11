@@ -113,63 +113,194 @@ export interface KeySpecBadge {
 }
 
 /**
- * Extracts 3-4 key highlight specifications for the ProductBuyBox capsule.
+ * Normalizes units and cleans up label brackets (e.g. "Высота (см)" -> label: "Высота", value: "190.6 см")
+ */
+function formatSpecItem(rawLabel: string, rawValue: string): KeySpecBadge {
+  const label = rawLabel.replace(/\s*\(.*?\)/, '').trim();
+  let value = rawValue.trim();
+  const lLower = rawLabel.toLowerCase();
+
+  // Add unit if pure number and unit missing
+  if (/^\d+(\.\d+)?$/.test(value)) {
+    if (lLower.includes('(см)') || lLower.includes('высота') || lLower.includes('ширина') || lLower.includes('глубина')) {
+      value += ' см';
+    } else if (lLower.includes('(мм)')) {
+      value += ' мм';
+    } else if (lLower.includes('объем') || lLower.includes('(л)')) {
+      value += ' л';
+    } else if (lLower.includes('загрузк') || lLower.includes('(кг)') || lLower.includes('вес')) {
+      value += ' кг';
+    } else if (lLower.includes('производит') || lLower.includes('м³/ч') || lLower.includes('м3/ч')) {
+      value += ' м³/ч';
+    } else if (lLower.includes('шум') || lLower.includes('(дб)')) {
+      value += ' дБ';
+    } else if (lLower.includes('мощность') || lLower.includes('(вт)')) {
+      value += ' Вт';
+    } else if (lLower.includes('отжим') || lLower.includes('об/мин')) {
+      value += ' об/мин';
+    } else if (lLower.includes('комплект')) {
+      value += ' компл.';
+    }
+  }
+
+  return { label, value };
+}
+
+function isValidDimensions(dim?: string | null): boolean {
+  if (!dim || typeof dim !== 'string') return false;
+  const d = dim.trim();
+  if (d === '' || d === '-' || /0\s*[×x*]\s*0\s*[×x*]\s*0/i.test(d)) return false;
+  return true;
+}
+
+/**
+ * Extracts 3-4 key highlight specifications for the ProductBuyBox capsule,
+ * tailored to specific categories with an intelligent fallback guaranteeing full 4-slot coverage.
  */
 export function extractKeySpecs(product: ProductItem): KeySpecBadge[] {
   const specs: KeySpecBadge[] = [];
-  const feats = product.features || [];
+  const feats = (product.features || []).filter(
+    (f) => f && f.value && f.value !== '-' && f.value.trim() !== ''
+  );
 
-  // 1. Dimensions / Width
-  const widthFeat = feats.find((f) => f.label.toLowerCase().includes('ширина'));
-  if (widthFeat && widthFeat.value) {
-    const val = widthFeat.value.includes('см') ? widthFeat.value : `${widthFeat.value} см`;
-    specs.push({ label: 'Ширина', value: val });
-  } else if (product.dimensions) {
-    specs.push({ label: 'Габариты', value: product.dimensions });
-  }
+  const usedLabels = new Set<string>();
 
-  // 2. Capacity / Volume / Performance / Burners / Load
-  const capFeat = feats.find((f) => {
-    const l = f.label.toLowerCase();
-    return (
-      l.includes('объем') ||
-      l.includes('производительн') ||
-      l.includes('всего конфорок') ||
-      l.includes('количество чаш') ||
-      l.includes('загрузка')
-    );
-  });
-  if (capFeat && capFeat.value) {
-    const cleanLabel = capFeat.label.replace(/\s*\(.*\)/, '').trim();
-    let val = capFeat.value;
-    if (/^\d+(\.\d+)?$/.test(val)) {
-      if (cleanLabel.toLowerCase().includes('объем')) val += ' л';
-      else if (cleanLabel.toLowerCase().includes('загрузк')) val += ' кг';
-      else if (cleanLabel.toLowerCase().includes('производит')) val += ' м³/ч';
+  const addSpec = (feat?: { label: string; value: string }) => {
+    if (!feat || specs.length >= 4) return false;
+    const norm = feat.label.toLowerCase().trim();
+    if (usedLabels.has(norm)) return false;
+    usedLabels.add(norm);
+    specs.push(formatSpecItem(feat.label, feat.value));
+    return true;
+  };
+
+  const findFeat = (...preds: (string | ((l: string) => boolean))[]) => {
+    for (const pred of preds) {
+      const match = feats.find((f) => {
+        const l = f.label.toLowerCase().trim();
+        return !usedLabels.has(l) && (typeof pred === 'string' ? l.includes(pred) : pred(l));
+      });
+      if (match) return match;
     }
-    specs.push({ label: cleanLabel, value: val });
+    return undefined;
+  };
+
+  const cat = (product.category || '').toLowerCase();
+
+  // 1. REFRIGERATORS & FREEZERS
+  if (cat.includes('холодильн') || cat.includes('морозил') || cat.includes('винн')) {
+    // Height prioritized for kitchen integration
+    const heightFeat = findFeat('высота');
+    if (heightFeat) {
+      addSpec(heightFeat);
+    } else if (isValidDimensions(product.dimensions)) {
+      specs.push({ label: 'Габариты', value: product.dimensions! });
+    }
+    addSpec(findFeat('общий объем', 'объем холодильной', 'объем морозильной', 'объем'));
+    addSpec(findFeat('no frost', 'размороз'));
+    addSpec(findFeat('зона свежести', 'управление', 'количество камер', 'шум'));
+  }
+  // 2. OVENS & COOKERS
+  else if (cat.includes('духов') || cat.includes('плит')) {
+    addSpec(findFeat('объем'));
+    addSpec(findFeat('очистк'));
+    addSpec(findFeat('управление'));
+    addSpec(findFeat('режим', 'конвекц', 'гриль', 'ширина'));
+  }
+  // 3. HOBS / COOKTOPS
+  else if (cat.includes('варочн')) {
+    const widthFeat = findFeat('ширина');
+    if (widthFeat) {
+      addSpec(widthFeat);
+    } else if (isValidDimensions(product.dimensions)) {
+      specs.push({ label: 'Габариты', value: product.dimensions! });
+    }
+    addSpec(findFeat('всего конфорок', 'конфор', 'зон'));
+    addSpec(findFeat('материал панели', 'материал'));
+    addSpec(findFeat('управление', 'мощность'));
+  }
+  // 4. HOODS
+  else if (cat.includes('вытяжк')) {
+    addSpec(findFeat('производит', 'м³/ч'));
+    const widthFeat = findFeat('ширина');
+    if (widthFeat) {
+      addSpec(widthFeat);
+    } else if (isValidDimensions(product.dimensions)) {
+      specs.push({ label: 'Габариты', value: product.dimensions! });
+    }
+    addSpec(findFeat('уровень шума', 'шум'));
+    addSpec(findFeat('управление', 'скорост', 'режим'));
+  }
+  // 5. DISHWASHERS
+  else if (cat.includes('посудомо')) {
+    addSpec(findFeat('комплект', 'вместим'));
+    const widthFeat = findFeat('ширина');
+    if (widthFeat) {
+      addSpec(widthFeat);
+    } else if (isValidDimensions(product.dimensions)) {
+      specs.push({ label: 'Габариты', value: product.dimensions! });
+    }
+    addSpec(findFeat('защита от протечек', 'протечк', 'aquastop', 'аквастоп'));
+    addSpec(findFeat('уровень шума', 'шум', 'программ', 'управление'));
+  }
+  // 6. WASHING & DRYING MACHINES
+  else if (cat.includes('стиральн') || cat.includes('сушильн')) {
+    addSpec(findFeat('загрузк'));
+    addSpec(findFeat('скорость отжима', 'отжим'));
+    addSpec(findFeat('управление'));
+    addSpec(findFeat('глубина', 'ширина', 'класс энерго'));
+  }
+  // 7. SINKS
+  else if (cat.includes('мойк')) {
+    const widthFeat = findFeat('ширина', 'размер');
+    if (widthFeat) {
+      addSpec(widthFeat);
+    } else if (isValidDimensions(product.dimensions)) {
+      specs.push({ label: 'Габариты', value: product.dimensions! });
+    }
+    addSpec(findFeat('материал'));
+    addSpec(findFeat('количество чаш', 'чаш'));
+    addSpec(findFeat('крыло', 'форма', 'монтаж', 'база'));
+  }
+  // 8. TAPS & FAUCETS
+  else if (cat.includes('смесител')) {
+    addSpec(findFeat('материал', 'покрыт', 'цвет'));
+    addSpec(findFeat('высота излива', 'излив', 'высота'));
+    addSpec(findFeat('выдвижной', 'фильтр'));
+    addSpec(findFeat('управление', 'тип картриджа'));
   }
 
-  // 3. Key technology / Mode / Cleaning / Material
-  const techFeat = feats.find((f) => {
-    const l = f.label.toLowerCase();
-    return (
-      l.includes('очистк') ||
-      l.includes('режимы работы') ||
-      l.includes('материал') ||
-      l.includes('управление') ||
-      l.includes('переключател')
-    );
-  });
-  if (techFeat && techFeat.value) {
-    const cleanLabel = techFeat.label.replace(/\s*\(.*\)/, '').trim();
-    specs.push({ label: cleanLabel, value: techFeat.value });
+  // GENERAL FALLBACK PASS
+  if (specs.length < 4) {
+    if (!specs.some((s) => s.label.toLowerCase().includes('ширин') || s.label.toLowerCase().includes('габарит') || s.label.toLowerCase().includes('высот'))) {
+      const dim = findFeat('ширина', 'высота');
+      if (dim) addSpec(dim);
+      else if (isValidDimensions(product.dimensions)) specs.push({ label: 'Габариты', value: product.dimensions! });
+    }
   }
 
-  // 4. Country of origin or Warranty
-  const countryFeat = feats.find((f) => f.label.toLowerCase().includes('страна'));
-  if (countryFeat && countryFeat.value && specs.length < 4) {
-    specs.push({ label: 'Страна', value: countryFeat.value });
+  if (specs.length < 4) {
+    addSpec(findFeat('объем', 'производит', 'загрузк', 'мощность'));
+  }
+
+  if (specs.length < 4) {
+    addSpec(findFeat('управление', 'материал', 'очистк', 'режим'));
+  }
+
+  // GUARANTEED INTELLIGENT BACKFILL TO 4 ITEMS
+  if (specs.length < 4) {
+    const excludeLabels = new Set([
+      'бренд', 'цена', 'код', 'артикул', 'id', 'модель', 'название', 'описание',
+      'код товара', 'артикул производителя'
+    ]);
+
+    for (const f of feats) {
+      if (specs.length >= 4) break;
+      const l = f.label.toLowerCase().trim();
+      if (!excludeLabels.has(l) && !usedLabels.has(l)) {
+        addSpec(f);
+      }
+    }
   }
 
   return specs.slice(0, 4);
