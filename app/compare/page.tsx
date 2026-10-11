@@ -183,11 +183,11 @@ export default function ComparePage() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#2B313A] pb-6">
           <div className="text-left space-y-2">
-            <SectionBadge variant="teal" text="Технический анализ характеристик" />
+            <SectionBadge variant="teal" text="СРАВНЕНИЕ ВНУТРИ КАТЕГОРИИ" />
             <h1 className="text-3xl sm:text-4xl font-montserrat font-bold text-white tracking-tight">
               {activeCategory
-                ? `Сравнение: ${activeCategory} (${categoryProducts.length} из 4)`
-                : `Сравнение моделей (${products.length})`}
+                ? `${activeCategory} (${categoryProducts.length} из 4)`
+                : `Модели (${products.length})`}
             </h1>
             <p className="text-xs sm:text-sm text-[#87888A] max-w-xl">
               {activeCategory
@@ -329,21 +329,21 @@ export default function ComparePage() {
             </div>
           </div>
         ) : (
-          /* Comparison Matrix Table with Sticky Parameter Column */
+          /* Comparison Matrix Table with Synchronized Column Alignment */
           <div className="overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-zinc-700 rounded-2xl border border-[#2B313A] bg-[#16191D]/40">
-            <div className="min-w-max divide-y divide-[#2B313A]/60">
+            <div className="w-full min-w-max divide-y divide-[#2B313A]/60">
               
-              {/* Product Cards Row */}
-              <div className="flex items-stretch p-4 bg-[#111315]/80">
-                {/* Clean Transparent Spacer Column to keep vertical grid alignment with parameter rows below */}
-                <div className="w-60 sm:w-64 min-w-[240px] sticky left-0 z-30 bg-[#111315] border-r border-[#2B313A]/60 shadow-[4px_0_12px_rgba(0,0,0,0.5)] pointer-events-none" />
+              {/* Product Cards Row (Clean transparent spacer, adaptive column width, zero graphite overlay) */}
+              <div className="flex items-stretch p-4 gap-4">
+                {/* Completely Transparent Left Spacer (No background, No border, No shadow) */}
+                <div className="w-56 sm:w-60 min-w-[210px] shrink-0 pointer-events-none" />
 
-                {/* Compared Products Cards */}
-                <div className="flex items-stretch gap-4 pl-4">
+                {/* Compared Products Cards Container */}
+                <div className="flex items-stretch gap-4 flex-1">
                   {categoryProducts.map((item) => (
                     <div
                       key={item.id}
-                      className="w-72 sm:w-80 min-w-[280px] shrink-0 flex flex-col"
+                      className="flex-1 min-w-[270px] max-w-[320px] shrink-0 flex flex-col"
                     >
                       <LuxuryProductCard
                         product={item}
@@ -355,9 +355,9 @@ export default function ComparePage() {
                     </div>
                   ))}
 
-                  {/* Empty Slot to add another product up to 4: exactly same dimensions as LuxuryProductCard */}
+                  {/* Empty Slot to add another product up to 4: perfectly fits inside container active area */}
                   {categoryProducts.length < 4 && (
-                    <div className="w-72 sm:w-80 min-w-[280px] shrink-0 flex flex-col">
+                    <div className="flex-1 min-w-[270px] max-w-[320px] shrink-0 flex flex-col">
                       <Link
                         href={`/catalog?category=${encodeURIComponent(
                           activeCategory
@@ -384,15 +384,15 @@ export default function ComparePage() {
               </div>
 
               {/* Row: Availability Status */}
-              <div className="flex items-center min-w-max py-3.5 hover:bg-[#1E2228]/20 transition">
-                <div className="w-60 sm:w-64 min-w-[240px] sticky left-0 z-20 bg-[#111315] font-semibold text-xs text-zinc-400 pl-4 pr-4 border-r border-[#2B313A] shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
+              <div className="flex items-center min-w-max p-3.5 gap-4 hover:bg-[#1E2228]/20 transition">
+                <div className="w-56 sm:w-60 min-w-[210px] sticky left-0 z-20 bg-[#111315] font-semibold text-xs text-zinc-400 pl-4 pr-4 border-r border-[#2B313A]/60 shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
                   Наличие и статус
                 </div>
-                <div className="flex items-center gap-4 pl-4">
+                <div className="flex items-center gap-4 flex-1">
                   {categoryProducts.map((p) => {
                     const status = getProductPhysicalStatus(p);
                     return (
-                      <div key={p.id} className="w-72 sm:w-80 min-w-[280px] shrink-0">
+                      <div key={p.id} className="flex-1 min-w-[270px] max-w-[320px] shrink-0 text-xs">
                         {status === 'SHOWROOM' ? (
                           <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-[#16191D] text-simona-teal border border-simona-teal/40">
                             На витрине
@@ -414,7 +414,7 @@ export default function ComparePage() {
                     );
                   })}
                   {categoryProducts.length < 4 && (
-                    <div className="w-72 sm:w-80 min-w-[280px] shrink-0 text-zinc-600">
+                    <div className="flex-1 min-w-[270px] max-w-[320px] shrink-0 text-zinc-600 text-xs">
                       —
                     </div>
                   )}
@@ -422,21 +422,21 @@ export default function ComparePage() {
               </div>
 
               {/* Row: Dimensions */}
-              <div className="flex items-center min-w-max py-3.5 hover:bg-[#1E2228]/20 transition">
-                <div className="w-60 sm:w-64 min-w-[240px] sticky left-0 z-20 bg-[#111315] font-semibold text-xs text-zinc-400 pl-4 pr-4 border-r border-[#2B313A] shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
+              <div className="flex items-center min-w-max p-3.5 gap-4 hover:bg-[#1E2228]/20 transition">
+                <div className="w-56 sm:w-60 min-w-[210px] sticky left-0 z-20 bg-[#111315] font-semibold text-xs text-zinc-400 pl-4 pr-4 border-r border-[#2B313A]/60 shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
                   Габариты прибора (Ш×В×Г)
                 </div>
-                <div className="flex items-center gap-4 pl-4">
+                <div className="flex items-center gap-4 flex-1">
                   {categoryProducts.map((p) => (
                     <div
                       key={p.id}
-                      className="w-72 sm:w-80 min-w-[280px] shrink-0 text-xs text-white font-mono"
+                      className="flex-1 min-w-[270px] max-w-[320px] shrink-0 text-xs text-white font-mono"
                     >
                       {p.dimensions || '59.5 × 59.5 × 56.4 см'}
                     </div>
                   ))}
                   {categoryProducts.length < 4 && (
-                    <div className="w-72 sm:w-80 min-w-[280px] shrink-0 text-zinc-600">
+                    <div className="flex-1 min-w-[270px] max-w-[320px] shrink-0 text-zinc-600 text-xs">
                       —
                     </div>
                   )}
@@ -444,13 +444,13 @@ export default function ComparePage() {
               </div>
 
               {/* Row: Schematic PDF */}
-              <div className="flex items-center min-w-max py-3.5 hover:bg-[#1E2228]/20 transition">
-                <div className="w-60 sm:w-64 min-w-[240px] sticky left-0 z-20 bg-[#111315] font-semibold text-xs text-zinc-400 pl-4 pr-4 border-r border-[#2B313A] shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
+              <div className="flex items-center min-w-max p-3.5 gap-4 hover:bg-[#1E2228]/20 transition">
+                <div className="w-56 sm:w-60 min-w-[210px] sticky left-0 z-20 bg-[#111315] font-semibold text-xs text-zinc-400 pl-4 pr-4 border-r border-[#2B313A]/60 shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
                   Схема встройки
                 </div>
-                <div className="flex items-center gap-4 pl-4">
+                <div className="flex items-center gap-4 flex-1">
                   {categoryProducts.map((p) => (
-                    <div key={p.id} className="w-72 sm:w-80 min-w-[280px] shrink-0 text-xs">
+                    <div key={p.id} className="flex-1 min-w-[270px] max-w-[320px] shrink-0 text-xs">
                       {p.schematicPdfUrl ? (
                         <a
                           href={p.schematicPdfUrl}
@@ -467,7 +467,7 @@ export default function ComparePage() {
                     </div>
                   ))}
                   {categoryProducts.length < 4 && (
-                    <div className="w-72 sm:w-80 min-w-[280px] shrink-0 text-zinc-600">
+                    <div className="flex-1 min-w-[270px] max-w-[320px] shrink-0 text-zinc-600 text-xs">
                       —
                     </div>
                   )}
@@ -478,19 +478,19 @@ export default function ComparePage() {
               {displayedFeatureLabels.map((label) => (
                 <div
                   key={label}
-                  className="flex items-center min-w-max py-3.5 hover:bg-[#1E2228]/20 transition"
+                  className="flex items-center min-w-max p-3.5 gap-4 hover:bg-[#1E2228]/20 transition"
                 >
-                  <div className="w-60 sm:w-64 min-w-[240px] sticky left-0 z-20 bg-[#111315] font-semibold text-xs text-zinc-400 pl-4 pr-4 border-r border-[#2B313A] shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
+                  <div className="w-56 sm:w-60 min-w-[210px] sticky left-0 z-20 bg-[#111315] font-semibold text-xs text-zinc-400 pl-4 pr-4 border-r border-[#2B313A]/60 shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
                     {label}
                   </div>
-                  <div className="flex items-center gap-4 pl-4">
+                  <div className="flex items-center gap-4 flex-1">
                     {categoryProducts.map((p) => {
                       const feat = (p.features || []).find((f) => f.label === label);
                       const val = feat ? feat.value : '—';
                       return (
                         <div
                           key={p.id}
-                          className="w-72 sm:w-80 min-w-[280px] shrink-0 text-xs text-white"
+                          className="flex-1 min-w-[270px] max-w-[320px] shrink-0 text-xs text-white"
                         >
                           {val === 'Да' || val === 'Есть' ? (
                             <span className="text-emerald-400 font-semibold flex items-center space-x-1">
@@ -506,7 +506,7 @@ export default function ComparePage() {
                       );
                     })}
                     {categoryProducts.length < 4 && (
-                      <div className="w-72 sm:w-80 min-w-[280px] shrink-0 text-zinc-600">
+                      <div className="flex-1 min-w-[270px] max-w-[320px] shrink-0 text-zinc-600 text-xs">
                         —
                       </div>
                     )}
