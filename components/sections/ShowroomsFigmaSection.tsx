@@ -471,9 +471,6 @@ export function ShowroomsFigmaSection() {
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none pointer-events-none"
                 />
 
-                {/* Dark Vignette Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#111315]/95 via-[#111315]/30 to-transparent pointer-events-none transition-opacity duration-300 group-hover:opacity-90" />
-
                 {/* Number Badge at Top Left */}
                 <div className="absolute top-4 left-4 pointer-events-none z-10">
                   <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-[#111315]/85 backdrop-blur-md border border-white/10 text-[11px] font-bold text-simona-teal tracking-wider">
@@ -507,16 +504,6 @@ export function ShowroomsFigmaSection() {
                       <line x1="3" y1="21" x2="10" y2="14" />
                     </svg>
                   </button>
-                </div>
-
-                {/* Bottom Information Card */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 pointer-events-none z-10">
-                  <p className="text-[10px] sm:text-[11px] font-semibold text-simona-teal uppercase tracking-widest mb-1 opacity-90 line-clamp-1">
-                    {item.subtitle}
-                  </p>
-                  <h3 className="text-base sm:text-lg lg:text-xl font-montserrat font-bold text-white tracking-tight group-hover:text-simona-teal transition-colors line-clamp-2">
-                    {item.title}
-                  </h3>
                 </div>
               </div>
             );
@@ -635,30 +622,12 @@ export function ShowroomsFigmaSection() {
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.9 }}
                           transition={{ duration: 0.2 }}
-                          className="px-2.5 py-1 rounded-lg bg-simona-teal/20 text-simona-teal border border-simona-teal/30 text-xs font-bold"
+                          className="px-3 py-1.5 rounded-lg bg-simona-teal/20 text-simona-teal border border-simona-teal/30 text-xs font-mono font-bold"
                         >
                           {activeLightboxPhoto.number} /{' '}
                           {photos.length < 10 ? `0${photos.length}` : photos.length}
                         </motion.span>
                       </AnimatePresence>
-                      <div>
-                        <AnimatePresence mode="wait">
-                          <motion.div
-                            key={`title-${activeLightboxPhoto.id}`}
-                            initial={{ opacity: 0, y: 4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -4 }}
-                            transition={{ duration: 0.22 }}
-                          >
-                            <h4 className="text-base sm:text-lg font-montserrat font-bold text-white">
-                              {activeLightboxPhoto.title}
-                            </h4>
-                            <p className="text-xs text-[#87888A] hidden sm:block">
-                              {activeLightboxPhoto.subtitle}
-                            </p>
-                          </motion.div>
-                        </AnimatePresence>
-                      </div>
                     </div>
 
                     <button
