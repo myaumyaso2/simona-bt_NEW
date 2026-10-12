@@ -134,7 +134,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/price-match" className="text-[#87888A] hover:text-white transition-colors">
-                  Гарантия лучшей цены
+                  Нашли дешевле? Снизим цену!
                 </Link>
               </li>
             </ul>
