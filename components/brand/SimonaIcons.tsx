@@ -906,3 +906,130 @@ export function SimonaIconChatConsult({ className = 'w-4 h-4', size, color, ...p
 
 
 
+
+/** Банковская карта (Оплата онлайн / POS-терминал) */
+export function SimonaIconCreditCard({ className = 'w-5 h-5', size, color, ...props }: SimonaIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width={size}
+      height={size}
+      className={className}
+      style={color ? { color } : undefined}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <rect width="20" height="14" x="2" y="5" rx="2" />
+      <line x1="2" x2="22" y1="10" y2="10" />
+    </svg>
+  );
+}
+
+/** Система быстрых платежей / QR-код */
+export function SimonaIconQrCode({ className = 'w-5 h-5', size, color, ...props }: SimonaIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width={size}
+      height={size}
+      className={className}
+      style={color ? { color } : undefined}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <rect width="5" height="5" x="3" y="3" rx="1" />
+      <rect width="5" height="5" x="16" y="3" rx="1" />
+      <rect width="5" height="5" x="3" y="16" rx="1" />
+      <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
+      <path d="M21 21v.01" />
+      <path d="M12 7v3a2 2 0 0 1-2 2H7" />
+      <path d="M3 12h.01" />
+      <path d="M12 3h.01" />
+      <path d="M12 16v.01" />
+      <path d="M16 12h1" />
+      <path d="M21 12v.01" />
+      <path d="M12 21v-1" />
+    </svg>
+  );
+}
+
+/** Наличные деньги / Банкнота */
+export function SimonaIconBanknote({ className = 'w-5 h-5', size, color, ...props }: SimonaIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width={size}
+      height={size}
+      className={className}
+      style={color ? { color } : undefined}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <rect width="20" height="12" x="2" y="6" rx="2" />
+      <circle cx="12" cy="12" r="2" />
+      <path d="M6 12h.01M18 12h.01" />
+    </svg>
+  );
+}
+
+/** Защита / Страхование / 54-ФЗ */
+export function SimonaIconShieldCheck({ className = 'w-5 h-5', size, color, ...props }: SimonaIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width={size}
+      height={size}
+      className={className}
+      style={color ? { color } : undefined}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  );
+}
+
+/** Информационная подсказка / Info */
+export function SimonaIconInfo({ className = 'w-4 h-4', size, color, ...props }: SimonaIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width={size}
+      height={size}
+      className={className}
+      style={color ? { color } : undefined}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4" />
+      <path d="M12 8h.01" />
+    </svg>
+  );
+}

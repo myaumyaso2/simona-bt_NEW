@@ -152,6 +152,7 @@ export interface SiteContent {
     title: string;
     subtitle: string;
   };
+  deliveryPaymentPage: DeliveryPaymentPageContent;
   footer: {
     brandTagline: string;
     kuhniLinkText: string;
@@ -163,5 +164,90 @@ export interface SiteContent {
     copyright: string;
     privacyPolicyText: string;
     userAgreementText: string;
+  };
+}
+
+export interface DeliveryTariffItem {
+  units: string;
+  price: string;
+}
+
+export interface DeliveryZone {
+  title: string;
+  subtitle: string;
+  cities: string;
+  tariffs: DeliveryTariffItem[];
+}
+
+export interface DeliveryRuleItem {
+  num: string;
+  title: string;
+  desc: string;
+}
+
+export interface PaymentMethodItem {
+  id: string;
+  title: string;
+  desc: string;
+  details?: string[];
+  note?: string;
+}
+
+export interface DeliveryPaymentPageContent {
+  badge: string;
+  title: string;
+  subtitle: string;
+  heroNotice: string;
+  selfPickup: {
+    badge: string;
+    title: string;
+    address: string;
+    office: string;
+    territory: string;
+    passCode: string;
+    scheduleWeekday: string;
+    scheduleSaturday: string;
+    scheduleSunday: string;
+    storageNotice: string;
+  };
+  nnDelivery: {
+    badge: string;
+    title: string;
+    lead: string;
+    schedule: string;
+    intervalNote: string;
+    tariffs: DeliveryTariffItem[];
+    sideBySideNote: string;
+  };
+  oblastDelivery: {
+    badge: string;
+    title: string;
+    lead: string;
+    schedule: string;
+    sideBySideNote: string;
+    over100kmNote: string;
+    zones: DeliveryZone[];
+  };
+  rules: {
+    badge: string;
+    title: string;
+    lead: string;
+    items: DeliveryRuleItem[];
+  };
+  intercityTK: {
+    badge: string;
+    title: string;
+    lead: string;
+    terms: string[];
+    docsFiz: string;
+    docsYur: string;
+    damageNotice: string;
+  };
+  paymentMethods: {
+    badge: string;
+    title: string;
+    subtitle: string;
+    prepaymentNotice: string;
+    items: PaymentMethodItem[];
   };
 }

@@ -73,6 +73,39 @@ export function getSiteContent(): SiteContent {
       },
       showroomsPage: { ...defaultSiteContent.showroomsPage, ...(parsed.showroomsPage || {}) },
       promosPage: { ...defaultSiteContent.promosPage, ...(parsed.promosPage || {}) },
+      deliveryPaymentPage: {
+        ...defaultSiteContent.deliveryPaymentPage,
+        ...(parsed.deliveryPaymentPage || {}),
+        selfPickup: {
+          ...defaultSiteContent.deliveryPaymentPage.selfPickup,
+          ...(parsed.deliveryPaymentPage?.selfPickup || {}),
+        },
+        nnDelivery: {
+          ...defaultSiteContent.deliveryPaymentPage.nnDelivery,
+          ...(parsed.deliveryPaymentPage?.nnDelivery || {}),
+          tariffs: parsed.deliveryPaymentPage?.nnDelivery?.tariffs || defaultSiteContent.deliveryPaymentPage.nnDelivery.tariffs,
+        },
+        oblastDelivery: {
+          ...defaultSiteContent.deliveryPaymentPage.oblastDelivery,
+          ...(parsed.deliveryPaymentPage?.oblastDelivery || {}),
+          zones: parsed.deliveryPaymentPage?.oblastDelivery?.zones || defaultSiteContent.deliveryPaymentPage.oblastDelivery.zones,
+        },
+        rules: {
+          ...defaultSiteContent.deliveryPaymentPage.rules,
+          ...(parsed.deliveryPaymentPage?.rules || {}),
+          items: parsed.deliveryPaymentPage?.rules?.items || defaultSiteContent.deliveryPaymentPage.rules.items,
+        },
+        intercityTK: {
+          ...defaultSiteContent.deliveryPaymentPage.intercityTK,
+          ...(parsed.deliveryPaymentPage?.intercityTK || {}),
+          terms: parsed.deliveryPaymentPage?.intercityTK?.terms || defaultSiteContent.deliveryPaymentPage.intercityTK.terms,
+        },
+        paymentMethods: {
+          ...defaultSiteContent.deliveryPaymentPage.paymentMethods,
+          ...(parsed.deliveryPaymentPage?.paymentMethods || {}),
+          items: parsed.deliveryPaymentPage?.paymentMethods?.items || defaultSiteContent.deliveryPaymentPage.paymentMethods.items,
+        },
+      },
       footer: { ...defaultSiteContent.footer, ...(parsed.footer || {}) },
     };
 
