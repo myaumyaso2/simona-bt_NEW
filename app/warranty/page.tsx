@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { SectionBadge } from '@/components/ui/SectionBadge';
 import {
   SimonaIconGuarantee,
@@ -19,6 +20,13 @@ import {
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { trackGoal } from '@/lib/analytics/tracker';
 import { useSiteContent } from '@/components/providers/ContentContext';
+
+const RETURN_TABS = [
+  { id: 'distance', label: 'Интернет-магазин (7 дней)' },
+  { id: 'offline', label: 'Покупка в салоне (офлайн)' },
+  { id: 'defect', label: 'Производственный брак' },
+  { id: 'expert', label: 'Сроки и экспертиза' },
+] as const;
 
 const tocItems = [
   { id: 'protection', num: '01.', label: 'Стандарты заводской защиты' },
@@ -324,161 +332,153 @@ ______________________________________________________________________
           {/* Editorial Architectural Underline Tab Bar */}
           <div className="relative border-b border-[#2B313A]">
             <div className="flex items-center gap-6 sm:gap-10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-0 pr-8">
-              <button
-                type="button"
-                onClick={() => setActiveReturnTab('distance')}
-                className={`pb-3 sm:pb-3.5 -mb-[1px] text-xs sm:text-sm whitespace-nowrap transition-all border-b-2 font-medium ${
-                  activeReturnTab === 'distance'
-                    ? 'border-simona-teal text-white font-semibold'
-                    : 'border-transparent text-[#87888A] hover:text-[#D7D9DB]'
-                }`}
-              >
-                Интернет-магазин (7 дней)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveReturnTab('offline')}
-                className={`pb-3 sm:pb-3.5 -mb-[1px] text-xs sm:text-sm whitespace-nowrap transition-all border-b-2 font-medium ${
-                  activeReturnTab === 'offline'
-                    ? 'border-simona-teal text-white font-semibold'
-                    : 'border-transparent text-[#87888A] hover:text-[#D7D9DB]'
-                }`}
-              >
-                Покупка в салоне (офлайн)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveReturnTab('defect')}
-                className={`pb-3 sm:pb-3.5 -mb-[1px] text-xs sm:text-sm whitespace-nowrap transition-all border-b-2 font-medium ${
-                  activeReturnTab === 'defect'
-                    ? 'border-simona-teal text-white font-semibold'
-                    : 'border-transparent text-[#87888A] hover:text-[#D7D9DB]'
-                }`}
-              >
-                Производственный брак
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveReturnTab('expert')}
-                className={`pb-3 sm:pb-3.5 -mb-[1px] text-xs sm:text-sm whitespace-nowrap transition-all border-b-2 font-medium ${
-                  activeReturnTab === 'expert'
-                    ? 'border-simona-teal text-white font-semibold'
-                    : 'border-transparent text-[#87888A] hover:text-[#D7D9DB]'
-                }`}
-              >
-                Сроки и экспертиза
-              </button>
+              {RETURN_TABS.map((tab) => {
+                const isActive = activeReturnTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveReturnTab(tab.id)}
+                    className={`relative pb-3.5 text-xs sm:text-sm whitespace-nowrap transition-colors font-medium ${
+                      isActive
+                        ? 'text-white font-semibold'
+                        : 'text-[#87888A] hover:text-[#D7D9DB]'
+                    }`}
+                  >
+                    <span>{tab.label}</span>
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeReturnTabUnderline"
+                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-simona-teal shadow-[0_-1px_6px_rgba(0,151,156,0.4)]"
+                        transition={{
+                          type: 'tween',
+                          duration: 0.3,
+                          ease: [0.32, 0.72, 0, 1],
+                        }}
+                      />
+                    )}
+                  </button>
+                );
+              })}
             </div>
             {/* Subtle Right Fade Gradient on mobile scroll */}
             <div className="sm:hidden absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-[#16191D] to-transparent pointer-events-none" />
           </div>
 
-          {/* Tab 1: Distance */}
-          {activeReturnTab === 'distance' && (
-            <div className="space-y-4 text-xs text-zinc-300 leading-relaxed text-left">
-              <div className="p-4 rounded-2xl bg-[#1E2228] border border-[#2B313A]">
-                <strong className="text-white text-sm block mb-1">
-                  {data.returnsSection.distanceTitle}
-                </strong>
-                <span>{data.returnsSection.distanceDesc}</span>
-              </div>
+          {/* Animated Tab Content Container */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeReturnTab}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
+            >
+              {/* Tab 1: Distance */}
+              {activeReturnTab === 'distance' && (
+                <div className="space-y-4 text-xs text-zinc-300 leading-relaxed text-left">
+                  <div className="p-4 rounded-xl bg-[#1E2228] border border-[#2B313A]">
+                    <strong className="text-white text-sm block mb-1">
+                      {data.returnsSection.distanceTitle}
+                    </strong>
+                    <span>{data.returnsSection.distanceDesc}</span>
+                  </div>
 
-              <div className="space-y-2 pt-2">
-                <h4 className="text-sm font-bold text-white">Требования к возврату надлежащего качества:</h4>
-                <ul className="space-y-1.5 pl-2">
-                  {data.returnsSection.distancePoints?.map((pt, pIdx) => (
-                    <li key={pIdx} className="flex items-start gap-2">
-                      <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0 mt-0.5" />
-                      <span>{pt}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
-
-          {/* Tab 2: Offline */}
-          {activeReturnTab === 'offline' && (
-            <div className="space-y-4 text-xs text-zinc-300 leading-relaxed text-left">
-              <div className="p-4 rounded-2xl bg-[#1E2228] border border-[#2B313A]">
-                <strong className="text-white text-sm block mb-1">
-                  {data.returnsSection.offlineTitle}
-                </strong>
-                <span>{data.returnsSection.offlineDesc}</span>
-              </div>
-              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-200">
-                Постановление Правительства РФ от 10.11.2011 № 924 относит холодильники, стиральные машины, духовые шкафы, варочные панели и кухонные комбайны к технически сложным товарам. Обмен исправного прибора после покупки в торговом зале законом не предусмотрен.
-              </div>
-            </div>
-          )}
-
-          {/* Tab 3: Defect */}
-          {activeReturnTab === 'defect' && (
-            <div className="space-y-4 text-xs text-zinc-300 leading-relaxed text-left">
-              <div className="p-4 rounded-2xl bg-[#1E2228] border border-[#2B313A]">
-                <strong className="text-white text-sm block mb-1">
-                  {data.returnsSection.defectTitle}
-                </strong>
-                <span>{data.returnsSection.defectDesc}</span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                <div className="p-4 rounded-2xl bg-[#1E2228]/60 border border-[#2B313A] space-y-2">
-                  <span className="text-simona-teal font-semibold text-xs block">В первые 15 дней с момента покупки:</span>
-                  <ul className="space-y-1.5 pl-2 text-zinc-300">
-                    {data.returnsSection.defectPoints15Days?.map((pt, pIdx) => (
-                      <li key={pIdx} className="flex items-start gap-2">
-                        <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0 mt-0.5" />
-                        <span>{pt}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="space-y-2 pt-2">
+                    <h4 className="text-sm font-bold text-white">Требования к возврату надлежащего качества:</h4>
+                    <ul className="space-y-1.5 pl-2">
+                      {data.returnsSection.distancePoints?.map((pt, pIdx) => (
+                        <li key={pIdx} className="flex items-start gap-2">
+                          <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0 mt-0.5" />
+                          <span>{pt}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
+              )}
 
-                <div className="p-4 rounded-2xl bg-[#1E2228]/60 border border-[#2B313A] space-y-2">
-                  <span className="text-simona-teal font-semibold text-xs block">По истечении 15 дней:</span>
-                  <ul className="space-y-1.5 pl-2 text-zinc-300">
-                    {data.returnsSection.defectPointsAfter15Days?.map((pt, pIdx) => (
-                      <li key={pIdx} className="flex items-start gap-2">
-                        <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0 mt-0.5" />
-                        <span>{pt}</span>
-                      </li>
-                    ))}
-                  </ul>
+              {/* Tab 2: Offline */}
+              {activeReturnTab === 'offline' && (
+                <div className="space-y-4 text-xs text-zinc-300 leading-relaxed text-left">
+                  <div className="p-4 rounded-xl bg-[#1E2228] border border-[#2B313A]">
+                    <strong className="text-white text-sm block mb-1">
+                      {data.returnsSection.offlineTitle}
+                    </strong>
+                    <span>{data.returnsSection.offlineDesc}</span>
+                  </div>
+                  <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-200">
+                    Постановление Правительства РФ от 10.11.2011 № 924 относит холодильники, стиральные машины, духовые шкафы, варочные панели и кухонные комбайны к технически сложным товарам. Обмен исправного прибора после покупки в торговом зале законом не предусмотрен.
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
+              )}
 
-          {/* Tab 4: Expert & Periods */}
-          {activeReturnTab === 'expert' && (
-            <div className="space-y-4 text-xs text-zinc-300 leading-relaxed text-left">
-              <div className="p-4 rounded-2xl bg-[#1E2228] border border-[#2B313A]">
-                <strong className="text-white text-sm block mb-1">
-                  {data.returnsSection.expertTitle}
-                </strong>
-                <span>{data.returnsSection.expertDesc}</span>
-              </div>
+              {/* Tab 3: Defect */}
+              {activeReturnTab === 'defect' && (
+                <div className="space-y-4 text-xs text-zinc-300 leading-relaxed text-left">
+                  <div className="p-4 rounded-xl bg-[#1E2228] border border-[#2B313A]">
+                    <strong className="text-white text-sm block mb-1">
+                      {data.returnsSection.defectTitle}
+                    </strong>
+                    <span>{data.returnsSection.defectDesc}</span>
+                  </div>
 
-              <div className="space-y-2 pt-2">
-                <h4 className="text-sm font-bold text-white">Сроки удовлетворения требований (ЗоЗПП РФ):</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {data.returnsSection.periods?.map((item, pIdx) => (
-                    <div key={pIdx} className="p-4 rounded-2xl bg-[#1E2228]/60 border border-[#2B313A] space-y-2">
-                      <span className="inline-block px-2 py-0.5 rounded-md bg-simona-teal/15 text-simona-teal font-mono font-bold text-xs">
-                        {item.period}
-                      </span>
-                      <div className="font-semibold text-white">{item.title}</div>
-                      <p className="text-[11px] text-[#87888A] leading-relaxed">{item.desc}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div className="p-4 rounded-xl bg-[#1E2228]/60 border border-[#2B313A] space-y-2">
+                      <span className="text-simona-teal font-semibold text-xs block">В первые 15 дней с момента покупки:</span>
+                      <ul className="space-y-1.5 pl-2 text-zinc-300">
+                        {data.returnsSection.defectPoints15Days?.map((pt, pIdx) => (
+                          <li key={pIdx} className="flex items-start gap-2">
+                            <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0 mt-0.5" />
+                            <span>{pt}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  ))}
+
+                    <div className="p-4 rounded-xl bg-[#1E2228]/60 border border-[#2B313A] space-y-2">
+                      <span className="text-simona-teal font-semibold text-xs block">По истечении 15 дней:</span>
+                      <ul className="space-y-1.5 pl-2 text-zinc-300">
+                        {data.returnsSection.defectPointsAfter15Days?.map((pt, pIdx) => (
+                          <li key={pIdx} className="flex items-start gap-2">
+                            <SimonaIconCheck className="w-4 h-4 text-simona-teal shrink-0 mt-0.5" />
+                            <span>{pt}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
+              )}
+
+              {/* Tab 4: Expert & Periods */}
+              {activeReturnTab === 'expert' && (
+                <div className="space-y-4 text-xs text-zinc-300 leading-relaxed text-left">
+                  <div className="p-4 rounded-xl bg-[#1E2228] border border-[#2B313A]">
+                    <strong className="text-white text-sm block mb-1">
+                      {data.returnsSection.expertTitle}
+                    </strong>
+                    <span>{data.returnsSection.expertDesc}</span>
+                  </div>
+
+                  <div className="space-y-2 pt-2">
+                    <h4 className="text-sm font-bold text-white">Сроки удовлетворения требований (ЗоЗПП РФ):</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {data.returnsSection.periods?.map((item, pIdx) => (
+                        <div key={pIdx} className="p-4 rounded-xl bg-[#1E2228]/60 border border-[#2B313A] space-y-2">
+                          <span className="inline-block px-2 py-0.5 rounded-md bg-simona-teal/15 text-simona-teal font-mono font-bold text-xs">
+                            {item.period}
+                          </span>
+                          <div className="font-semibold text-white">{item.title}</div>
+                          <p className="text-[11px] text-[#87888A] leading-relaxed">{item.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
 
           {/* Blank Download Banner */}
           <div className="p-5 rounded-2xl bg-[#1E2228] border border-[#2B313A] flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
