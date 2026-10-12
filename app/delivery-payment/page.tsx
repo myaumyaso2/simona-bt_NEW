@@ -21,6 +21,15 @@ import {
   SimonaIconInfo,
 } from '@/components/brand/SimonaIcons';
 
+const tocItems = [
+  { id: 'pickup', num: '01.', label: 'Самовывоз со склада' },
+  { id: 'nn-delivery', num: '02.', label: 'Доставка по Нижнему Новгороду' },
+  { id: 'oblast-delivery', num: '03.', label: 'Доставка по Нижегородской области' },
+  { id: 'rules', num: '04.', label: 'Правила доставки и приемки' },
+  { id: 'intercity', num: '05.', label: 'Доставка по регионам России (ТК)' },
+  { id: 'payment', num: '06.', label: 'Способы оплаты заказа' },
+];
+
 export default function DeliveryPaymentPage() {
   const content = useSiteContent();
   const data = content.deliveryPaymentPage;
@@ -28,6 +37,25 @@ export default function DeliveryPaymentPage() {
   if (!data) {
     return null;
   }
+
+  const scrollToSection = (id: string) => {
+    if (typeof window === 'undefined') return;
+
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    const lenis = (window as any).__simonaLenis;
+    if (lenis && typeof lenis.scrollTo === 'function') {
+      lenis.scrollTo(target, { offset: -100, duration: 1.2 });
+    } else {
+      const top = target.getBoundingClientRect().top + window.pageYOffset - 100;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+
+    if (window.history && window.history.pushState) {
+      window.history.pushState(null, '', `#${id}`);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-24 px-4 sm:px-6 lg:px-8">
@@ -37,7 +65,7 @@ export default function DeliveryPaymentPage() {
         <section className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-12 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-3xl text-left space-y-4">
+          <div className="max-w-4xl text-left space-y-5">
             <SectionBadge variant="teal">
               {data.badge}
             </SectionBadge>
@@ -61,56 +89,37 @@ export default function DeliveryPaymentPage() {
               </div>
             </div>
 
-            {/* Quick Anchor Navigation */}
-            <div className="flex flex-wrap gap-2 pt-2">
-              <a
-                href="#pickup"
-                className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[#1E2228] hover:bg-[#252B33] border border-[#2B313A] text-white text-xs font-medium tracking-wide transition hover:border-simona-teal/40"
-              >
-                <SimonaIconBuilding className="w-3.5 h-3.5 text-simona-teal" />
-                <span>Самовывоз</span>
-              </a>
-              <a
-                href="#nn-delivery"
-                className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[#1E2228] hover:bg-[#252B33] border border-[#2B313A] text-white text-xs font-medium tracking-wide transition hover:border-simona-teal/40"
-              >
-                <SimonaIconDelivery className="w-3.5 h-3.5 text-simona-teal" />
-                <span>Нижний Новгород</span>
-              </a>
-              <a
-                href="#oblast-delivery"
-                className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[#1E2228] hover:bg-[#252B33] border border-[#2B313A] text-white text-xs font-medium tracking-wide transition hover:border-simona-teal/40"
-              >
-                <SimonaIconDelivery className="w-3.5 h-3.5 text-simona-teal" />
-                <span>Область</span>
-              </a>
-              <a
-                href="#rules"
-                className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[#1E2228] hover:bg-[#252B33] border border-[#2B313A] text-white text-xs font-medium tracking-wide transition hover:border-simona-teal/40"
-              >
-                <SimonaIconInfo className="w-3.5 h-3.5 text-simona-teal" />
-                <span>Правила приемки</span>
-              </a>
-              <a
-                href="#intercity"
-                className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[#1E2228] hover:bg-[#252B33] border border-[#2B313A] text-white text-xs font-medium tracking-wide transition hover:border-simona-teal/40"
-              >
-                <SimonaIconShieldCheck className="w-3.5 h-3.5 text-simona-teal" />
-                <span>Регионы РФ</span>
-              </a>
-              <a
-                href="#payment"
-                className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[#1E2228] hover:bg-[#252B33] border border-[#2B313A] text-white text-xs font-medium tracking-wide transition hover:border-simona-teal/40"
-              >
-                <SimonaIconCreditCard className="w-3.5 h-3.5 text-simona-teal" />
-                <span>Способы оплаты</span>
-              </a>
+            {/* Table of Contents / Quick Navigation */}
+            <div className="pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1 p-4 sm:p-5 rounded-xl bg-[#1E2228] border border-[#2B313A]">
+                {tocItems.map((item) => (
+                  <a
+                    key={item.id}
+                    href={`#${item.id}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToSection(item.id);
+                    }}
+                    className="flex items-center justify-between py-2 sm:py-2.5 border-b border-[#2B313A]/50 last:border-b-0 md:[&:nth-last-child(2)]:border-b-0 text-xs sm:text-sm text-left group transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="text-xs font-mono font-semibold text-simona-teal shrink-0">
+                        {item.num}
+                      </span>
+                      <span className="font-medium text-[#D7D9DB] group-hover:text-white truncate transition-colors">
+                        {item.label}
+                      </span>
+                    </div>
+                    <SimonaIconArrowRight className="w-3.5 h-3.5 text-[#87888A] group-hover:text-simona-teal group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
         {/* 2. Self-pickup from Warehouse */}
-        <section id="pickup" className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
+        <section id="pickup" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
           <div className="text-left space-y-2 border-b border-[#2B313A] pb-4">
             <SectionBadge variant="teal">
               {data.selfPickup.badge}
@@ -197,7 +206,7 @@ export default function DeliveryPaymentPage() {
         </section>
 
         {/* 3. Nizhny Novgorod Delivery */}
-        <section id="nn-delivery" className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
+        <section id="nn-delivery" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
           <div className="text-left space-y-2 border-b border-[#2B313A] pb-4">
             <SectionBadge variant="teal">
               {data.nnDelivery.badge}
@@ -269,7 +278,7 @@ export default function DeliveryPaymentPage() {
         </section>
 
         {/* 4. Nizhny Novgorod Oblast Delivery */}
-        <section id="oblast-delivery" className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
+        <section id="oblast-delivery" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
           <div className="text-left space-y-2 border-b border-[#2B313A] pb-4">
             <SectionBadge variant="teal">
               {data.oblastDelivery.badge}
@@ -334,7 +343,7 @@ export default function DeliveryPaymentPage() {
         </section>
 
         {/* 5. Operational Rules & Inspection («Обратите внимание!») */}
-        <section id="rules" className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
+        <section id="rules" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
           <div className="text-left space-y-2 border-b border-[#2B313A] pb-4">
             <SectionBadge variant="teal">
               {data.rules.badge}
@@ -368,7 +377,7 @@ export default function DeliveryPaymentPage() {
         </section>
 
         {/* 6. Intercity Delivery Across Russia */}
-        <section id="intercity" className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
+        <section id="intercity" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
           <div className="text-left space-y-2 border-b border-[#2B313A] pb-4">
             <SectionBadge variant="teal">
               {data.intercityTK.badge}
@@ -432,7 +441,7 @@ export default function DeliveryPaymentPage() {
         </section>
 
         {/* 7. Payment Methods */}
-        <section id="payment" className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
+        <section id="payment" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
           <div className="text-left space-y-2 border-b border-[#2B313A] pb-4">
             <SectionBadge variant="teal">
               {data.paymentMethods.badge}
