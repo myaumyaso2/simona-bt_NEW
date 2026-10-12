@@ -19,6 +19,17 @@ import { useAnalyticsData } from '@/lib/analytics/utm';
 import { trackGoal } from '@/lib/analytics/tracker';
 import { useSiteContent } from '@/components/providers/ContentContext';
 
+const tocItems = [
+  { id: 'installation', num: '01.', label: 'Установка и подключение' },
+  { id: 'scheme-audit', num: '02.', label: 'Сверка схем под проект кухни' },
+  { id: 'storage', num: '03.', label: 'Бесплатное хранение на складе' },
+  { id: 'delivery', num: '04.', label: 'Аккуратная доставка и занос' },
+  { id: 'pdf-guide', num: '05.', label: 'Регламент монтажа (PDF)' },
+  { id: 'order-service', num: '06.', label: 'Оставить заявку на монтаж' },
+];
+
+const pillarAnchorIds = ['installation', 'scheme-audit', 'storage', 'delivery'];
+
 export default function ServicesPage() {
   const content = useSiteContent();
   const data = content.servicesPage;
@@ -32,6 +43,25 @@ export default function ServicesPage() {
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  const scrollToSection = (id: string) => {
+    if (typeof window === 'undefined') return;
+
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    const lenis = (window as any).__simonaLenis;
+    if (lenis && typeof lenis.scrollTo === 'function') {
+      lenis.scrollTo(target, { offset: -100, duration: 1.2 });
+    } else {
+      const top = target.getBoundingClientRect().top + window.pageYOffset - 100;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+
+    if (window.history && window.history.pushState) {
+      window.history.pushState(null, '', `#${id}`);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,10 +111,10 @@ export default function ServicesPage() {
       <div className="max-w-7xl mx-auto space-y-16">
         
         {/* 1. Hero Header */}
-        <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl sm:rounded-3xl p-6 sm:p-12 relative overflow-hidden">
+        <section className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-12 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-3xl text-left space-y-4">
+          <div className="max-w-4xl text-left space-y-5">
             <SectionBadge variant="teal">
               {data.badge}
             </SectionBadge>
@@ -94,25 +124,35 @@ export default function ServicesPage() {
             <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
               {data.subtitle}
             </p>
-            <div className="flex flex-wrap gap-3 pt-2">
-              <a
-                href="#order-service"
-                className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wide transition shadow-lg shadow-simona-teal/20"
-              >
-                <span>{data.ctaButton}</span>
-                <SimonaIconArrowRight className="w-4 h-4" />
-              </a>
-              <a
-                href={data.pdfGuide?.fileUrl || '/files/SIMONA_podklyuchenie.pdf'}
-                download="SIMONA_podklyuchenie.pdf"
-                className="inline-flex items-center space-x-2 px-5 py-3.5 rounded-xl bg-[#1E2228] hover:bg-[#252B33] border border-[#2B313A] text-white text-xs font-semibold tracking-wide transition hover:border-simona-teal/40"
-              >
-                <SimonaIconDownload className="w-4 h-4 text-simona-teal" />
-                <span>Памятка монтажа (PDF)</span>
-              </a>
+
+            {/* Table of Contents / Quick Navigation */}
+            <div className="pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1 p-4 sm:p-5 rounded-xl bg-[#1E2228] border border-[#2B313A]">
+                {tocItems.map((item) => (
+                  <a
+                    key={item.id}
+                    href={`#${item.id}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToSection(item.id);
+                    }}
+                    className="flex items-center justify-between py-2 sm:py-2.5 border-b border-[#2B313A]/50 last:border-b-0 md:[&:nth-last-child(2)]:border-b-0 text-xs sm:text-sm text-left group transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="text-xs font-mono font-semibold text-simona-teal shrink-0">
+                        {item.num}
+                      </span>
+                      <span className="font-medium text-[#D7D9DB] group-hover:text-white truncate transition-colors">
+                        {item.label}
+                      </span>
+                    </div>
+                    <SimonaIconArrowRight className="w-3.5 h-3.5 text-[#87888A] group-hover:text-simona-teal group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* 2. 4 Pillars of Service */}
         <div className="space-y-6">
@@ -127,7 +167,8 @@ export default function ServicesPage() {
             {data.pillars?.map((pillar, idx) => (
               <div
                 key={idx}
-                className="bg-[#16191D] border border-[#2B313A] rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:border-simona-teal/50 transition-all shadow-xl"
+                id={pillarAnchorIds[idx]}
+                className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-8 flex flex-col justify-between hover:border-simona-teal/50 transition-all shadow-xl"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
@@ -179,7 +220,7 @@ export default function ServicesPage() {
 
         {/* 3. Official PDF Guide Card */}
         {data.pdfGuide && (
-          <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl sm:rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+          <div id="pdf-guide" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-8 relative overflow-hidden">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="space-y-2 max-w-2xl text-left">
                 <SectionBadge variant="teal">
@@ -209,7 +250,7 @@ export default function ServicesPage() {
         )}
 
         {/* 4. Order Service Form */}
-        <div id="order-service" className="bg-[#16191D] border border-[#2B313A] rounded-2xl sm:rounded-3xl p-6 sm:p-10">
+        <div id="order-service" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10">
           <div className="max-w-2xl mx-auto">
             <div className="text-left space-y-2 mb-8">
               <SectionBadge variant="teal">
