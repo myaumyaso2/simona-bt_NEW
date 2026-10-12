@@ -110,6 +110,24 @@ export function getSiteContent(): SiteContent {
           items: parsed.deliveryPaymentPage?.paymentMethods?.items || defaultSiteContent.deliveryPaymentPage.paymentMethods.items,
         },
       },
+      priceMatchPage: {
+        ...((defaultSiteContent as any).priceMatchPage || {}),
+        ...(parsed.priceMatchPage || {}),
+        steps: parsed.priceMatchPage?.steps || (defaultSiteContent as any).priceMatchPage?.steps || [],
+      },
+      certificatePage: {
+        ...((defaultSiteContent as any).certificatePage || {}),
+        ...(parsed.certificatePage || {}),
+        salonBlock: {
+          ...((defaultSiteContent as any).certificatePage?.salonBlock || {}),
+          ...(parsed.certificatePage?.salonBlock || {}),
+        },
+        rulesSection: {
+          ...((defaultSiteContent as any).certificatePage?.rulesSection || {}),
+          ...(parsed.certificatePage?.rulesSection || {}),
+          rules: parsed.certificatePage?.rulesSection?.rules || (defaultSiteContent as any).certificatePage?.rulesSection?.rules || [],
+        },
+      },
       footer: { ...defaultSiteContent.footer, ...(parsed.footer || {}) },
     };
 

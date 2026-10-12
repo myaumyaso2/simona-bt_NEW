@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { AlertCircle, Link as LinkIcon } from 'lucide-react';
 import {
   SimonaIconCheckCircle,
   SimonaIconTag,
   SimonaIconTelegram,
   SimonaIconMax,
+  SimonaIconInfo,
 } from '@/components/brand/SimonaIcons';
 import { useStore } from '@/components/providers/StoreContext';
 import { LuxuryModalShell } from '@/components/modals/LuxuryModalShell';
@@ -104,12 +104,12 @@ export function PriceMatchModal() {
       onClose={handleClose}
       maxWidth="max-w-xl"
       padding="p-5 sm:p-7"
-      badgeText={!success ? 'Гарантия лучшей цены' : undefined}
+      badgeText={!success ? 'Честные цены в Нижнем Новгороде' : undefined}
       badgeVariant="teal"
       title={!success ? 'Нашли дешевле? Снизим цену!' : undefined}
       subtitle={
         !success
-          ? 'Пришлите нам ссылку на этот товар в другом магазине, и мы сделаем цену еще выгоднее.'
+          ? 'Пришлите нам ссылку на этот товар в другом магазине — мы постараемся сделать более выгодное предложение.'
           : undefined
       }
     >
@@ -186,7 +186,7 @@ export function PriceMatchModal() {
                   placeholder="https://market... или ссылка на сайт магазина"
                   className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 transition font-medium"
                 />
-                <LinkIcon className="w-4 h-4 text-[#87888A] absolute left-3 top-3 pointer-events-none" />
+                <SimonaIconTag className="w-4 h-4 text-[#87888A] absolute left-3 top-3 pointer-events-none" />
               </div>
             </div>
 
@@ -266,7 +266,7 @@ export function PriceMatchModal() {
             {/* Error banner */}
             {error && (
               <div className="flex items-center space-x-2 text-rose-400 bg-rose-500/10 border border-rose-500/20 px-3.5 py-2 rounded-xl text-xs">
-                <AlertCircle className="w-4 h-4 shrink-0" />
+                <SimonaIconInfo className="w-4 h-4 shrink-0" />
                 <span>{error}</span>
               </div>
             )}

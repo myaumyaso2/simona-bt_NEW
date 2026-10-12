@@ -150,6 +150,8 @@ export interface SiteContent {
     subtitle: string;
   };
   deliveryPaymentPage: DeliveryPaymentPageContent;
+  priceMatchPage: PriceMatchPageContent;
+  certificatePage: CertificatePageContent;
   footer: {
     brandTagline: string;
     kuhniLinkText: string;
@@ -364,4 +366,57 @@ export interface WarrantyPageContent {
     successDesc: string;
   };
 }
+
+export interface PriceMatchStepItem {
+  num: string;
+  title: string;
+  desc: string;
+}
+
+export interface PriceMatchPageContent {
+  badge: string;
+  title: string;
+  subtitle: string;
+  noticeTitle: string;
+  noticeDesc: string;
+  stepsTitle: string;
+  stepsSubtitle: string;
+  steps: PriceMatchStepItem[];
+  catalogButtonText: string;
+  formBadge: string;
+  formTitle: string;
+  formSubtitle: string;
+  formSuccessTitle: string;
+  formSuccessDesc: string;
+}
+
+export interface CertificatePageContent {
+  badge: string;
+  title: string;
+  subtitle: string;
+  nominalsSummary: string;
+  catalogSectionTitle: string;
+  catalogSectionSubtitle: string;
+  salonBlock: {
+    badge: string;
+    title: string;
+    salonName: string;
+    address: string;
+    phone: string;
+    phoneRaw: string;
+    schedule: string;
+    description: string;
+  };
+  rulesSection: {
+    badge: string;
+    title: string;
+    rules: string[];
+    pdfTitle: string;
+    pdfDesc: string;
+    pdfButtonText: string;
+    pdfUrl: string;
+  };
+}
+
+
 
