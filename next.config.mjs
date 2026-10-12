@@ -75,12 +75,22 @@ const nextConfig = {
       },
       {
         source: '/return_exchange_warranty',
-        destination: '/returns',
+        destination: '/warranty',
         permanent: true,
       },
       {
         source: '/return_exchange_warranty/',
-        destination: '/returns',
+        destination: '/warranty',
+        permanent: true,
+      },
+      {
+        source: '/returns',
+        destination: '/warranty',
+        permanent: true,
+      },
+      {
+        source: '/returns/',
+        destination: '/warranty',
         permanent: true,
       },
       {

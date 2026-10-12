@@ -205,7 +205,7 @@ function PolicyContent() {
             <section className="space-y-3">
               <h3 className="text-sm font-bold text-white uppercase tracking-wider">4. Возврат и гарантия</h3>
               <p>
-                4.1. Возврат и гарантийное обслуживание осуществляются строго по правилам Закона РФ «О защите прав потребителей» и условиям, опубликованным в разделах <Link href="/returns" className="text-simona-teal underline">Возврат и обмен</Link> и <Link href="/warranty" className="text-simona-teal underline">Гарантия</Link>.
+                4.1. Возврат и гарантийное обслуживание осуществляются строго по правилам Закона РФ «О защите прав потребителей» и условиям, опубликованным в разделе <Link href="/warranty" className="text-simona-teal underline">Гарантия и возврат</Link>.
               </p>
             </section>
           </div>

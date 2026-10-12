@@ -71,6 +71,10 @@ export function getSiteContent(): SiteContent {
         ...(parsed.servicesPage || {}),
         pillars: parsed.servicesPage?.pillars || defaultSiteContent.servicesPage.pillars,
       },
+      warrantyPage: {
+        ...((defaultSiteContent as any).warrantyPage || {}),
+        ...(parsed.warrantyPage || {}),
+      },
       showroomsPage: { ...defaultSiteContent.showroomsPage, ...(parsed.showroomsPage || {}) },
       promosPage: { ...defaultSiteContent.promosPage, ...(parsed.promosPage || {}) },
       deliveryPaymentPage: {

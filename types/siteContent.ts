@@ -45,6 +45,9 @@ export interface SiteContent {
     omoikiriAddress: string;
     warehouseAddress: string;
     schedule: string;
+    phoneService: string;
+    phoneServiceRaw: string;
+    emailService: string;
     kuhniUrl: string;
     telegramUrl: string;
     telegramHandle: string;
@@ -131,14 +134,8 @@ export interface SiteContent {
     secondaryButton: string;
     pillars: PillarItem[];
   };
-  servicesPage: {
-    badge: string;
-    title: string;
-    subtitle: string;
-    ctaButton: string;
-    pillarsTitle: string;
-    pillars: PillarItem[];
-  };
+  servicesPage: ServicesPageContent;
+  warrantyPage: WarrantyPageContent;
   showroomsPage: {
     badge: string;
     title: string;
@@ -251,3 +248,120 @@ export interface DeliveryPaymentPageContent {
     items: PaymentMethodItem[];
   };
 }
+
+export interface ServicePillarItem {
+  num: string;
+  title: string;
+  desc: string;
+  highlight?: string;
+  points: string[];
+}
+
+export interface ServicesPageContent {
+  badge: string;
+  title: string;
+  subtitle: string;
+  ctaButton: string;
+  pillarsTitle: string;
+  pillars: ServicePillarItem[];
+  pdfGuide: {
+    badge: string;
+    title: string;
+    desc: string;
+    downloadText: string;
+    fileUrl: string;
+    fileSize: string;
+  };
+  orderService: {
+    badge: string;
+    title: string;
+    subtitle: string;
+    buttonText: string;
+    successTitle: string;
+    successDesc: string;
+  };
+  contactsBar: {
+    title: string;
+    subtitle: string;
+    phone: string;
+    phoneRaw: string;
+    email: string;
+  };
+}
+
+export interface BrandWarrantyItem {
+  brand: string;
+  period: string;
+  desc: string;
+  hotline: string;
+}
+
+export interface WarrantyPillarItem {
+  title: string;
+  desc: string;
+}
+
+export interface WarrantyReturnPeriodItem {
+  period: string;
+  title: string;
+  desc: string;
+}
+
+export interface WarrantyPageContent {
+  badge: string;
+  title: string;
+  subtitle: string;
+  ctaButton: string;
+  pillars: WarrantyPillarItem[];
+  brandSection: {
+    badge: string;
+    title: string;
+    subtitle: string;
+    brands: BrandWarrantyItem[];
+  };
+  ascRule: {
+    badge: string;
+    title: string;
+    lead: string;
+    points: string[];
+    salonRoleTitle: string;
+    salonRoleDesc: string;
+  };
+  returnsSection: {
+    badge: string;
+    title: string;
+    lead: string;
+    offlineTitle: string;
+    offlineDesc: string;
+    distanceTitle: string;
+    distanceDesc: string;
+    distancePoints: string[];
+    defectTitle: string;
+    defectDesc: string;
+    defectPoints15Days: string[];
+    defectPointsAfter15Days: string[];
+    expertTitle: string;
+    expertDesc: string;
+    periods: WarrantyReturnPeriodItem[];
+    blankDownloadTitle: string;
+    blankDownloadDesc: string;
+    blankDownloadButton: string;
+  };
+  warrantyConditions: {
+    badge: string;
+    title: string;
+    lead: string;
+    rules: { title: string; desc: string }[];
+    voidNoticeTitle: string;
+    voidNoticeDesc: string;
+  };
+  claimForm: {
+    badge: string;
+    title: string;
+    subtitle: string;
+    buttonText: string;
+    successTitle: string;
+    successDesc: string;
+  };
+}
+

@@ -344,18 +344,18 @@ export function Header({
               Доставка и оплата
             </Link>
             <Link
+              href="/services"
+              onClick={() => handleMobileMenuToggle(false)}
+              className="py-1 text-[#87888A] hover:text-white transition-colors"
+            >
+              Установка и сервис
+            </Link>
+            <Link
               href="/warranty"
               onClick={() => handleMobileMenuToggle(false)}
               className="py-1 text-[#87888A] hover:text-white transition-colors"
             >
-              Гарантия и сервис
-            </Link>
-            <Link
-              href="/returns"
-              onClick={() => handleMobileMenuToggle(false)}
-              className="py-1 text-[#87888A] hover:text-white transition-colors"
-            >
-              Возврат и обмен
+              Гарантия и возврат
             </Link>
             <Link
               href="/certificate"

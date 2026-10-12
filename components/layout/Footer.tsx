@@ -119,17 +119,12 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/services" className="text-[#87888A] hover:text-white transition-colors">
-                  Установка и хранение
+                  Установка и сервис
                 </Link>
               </li>
               <li>
                 <Link href="/warranty" className="text-[#87888A] hover:text-white transition-colors">
-                  Гарантия и сервис
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="text-[#87888A] hover:text-white transition-colors">
-                  Возврат и обмен
+                  Гарантия и возврат
                 </Link>
               </li>
               <li>
