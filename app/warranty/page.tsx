@@ -309,65 +309,71 @@ ______________________________________________________________________
 
         {/* 5. Returns & Exchange Section (ЗоЗПП РФ) */}
         <div id="returns" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#2B313A] pb-4">
-            <div className="text-left space-y-1">
-              <SectionBadge variant="teal">
-                {data.returnsSection.badge}
-              </SectionBadge>
-              <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
-                {data.returnsSection.title}
-              </h2>
-              <p className="text-xs text-[#87888A]">
-                {data.returnsSection.lead}
-              </p>
-            </div>
+          <div className="text-left space-y-2">
+            <SectionBadge variant="teal">
+              {data.returnsSection.badge}
+            </SectionBadge>
+            <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
+              {data.returnsSection.title}
+            </h2>
+            <p className="text-xs sm:text-sm text-[#87888A] max-w-4xl leading-relaxed">
+              {data.returnsSection.lead}
+            </p>
+          </div>
 
-            <div className="flex flex-wrap gap-2">
+          {/* Editorial Architectural Underline Tab Bar */}
+          <div className="relative border-b border-[#2B313A]">
+            <div className="flex items-center gap-6 sm:gap-10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-0 pr-8">
               <button
                 type="button"
                 onClick={() => setActiveReturnTab('distance')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition ${
+                className={`pb-3 sm:pb-3.5 -mb-[1px] text-xs sm:text-sm whitespace-nowrap transition-all border-b-2 font-medium ${
                   activeReturnTab === 'distance'
-                    ? 'bg-simona-teal text-white shadow-md shadow-simona-teal/20'
-                    : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white'
+                    ? 'border-simona-teal text-white font-semibold'
+                    : 'border-transparent text-[#87888A] hover:text-[#D7D9DB]'
                 }`}
               >
                 Интернет-магазин (7 дней)
               </button>
+
               <button
                 type="button"
                 onClick={() => setActiveReturnTab('offline')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition ${
+                className={`pb-3 sm:pb-3.5 -mb-[1px] text-xs sm:text-sm whitespace-nowrap transition-all border-b-2 font-medium ${
                   activeReturnTab === 'offline'
-                    ? 'bg-simona-teal text-white shadow-md shadow-simona-teal/20'
-                    : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white'
+                    ? 'border-simona-teal text-white font-semibold'
+                    : 'border-transparent text-[#87888A] hover:text-[#D7D9DB]'
                 }`}
               >
                 Покупка в салоне (офлайн)
               </button>
+
               <button
                 type="button"
                 onClick={() => setActiveReturnTab('defect')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition ${
+                className={`pb-3 sm:pb-3.5 -mb-[1px] text-xs sm:text-sm whitespace-nowrap transition-all border-b-2 font-medium ${
                   activeReturnTab === 'defect'
-                    ? 'bg-simona-teal text-white shadow-md shadow-simona-teal/20'
-                    : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white'
+                    ? 'border-simona-teal text-white font-semibold'
+                    : 'border-transparent text-[#87888A] hover:text-[#D7D9DB]'
                 }`}
               >
                 Производственный брак
               </button>
+
               <button
                 type="button"
                 onClick={() => setActiveReturnTab('expert')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition ${
+                className={`pb-3 sm:pb-3.5 -mb-[1px] text-xs sm:text-sm whitespace-nowrap transition-all border-b-2 font-medium ${
                   activeReturnTab === 'expert'
-                    ? 'bg-simona-teal text-white shadow-md shadow-simona-teal/20'
-                    : 'bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white'
+                    ? 'border-simona-teal text-white font-semibold'
+                    : 'border-transparent text-[#87888A] hover:text-[#D7D9DB]'
                 }`}
               >
                 Сроки и экспертиза
               </button>
             </div>
+            {/* Subtle Right Fade Gradient on mobile scroll */}
+            <div className="sm:hidden absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-[#16191D] to-transparent pointer-events-none" />
           </div>
 
           {/* Tab 1: Distance */}
