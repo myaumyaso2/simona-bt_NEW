@@ -186,3 +186,131 @@ export async function getPromoProducts(promo: ManufacturerPromo): Promise<Produc
     return prod.brand.toLowerCase() === promo.brand.toLowerCase();
   });
 }
+
+export const CERTIFICATE_SKUS = ['86152', '86153', '86154', '86155', '86156', '86157'];
+
+export async function getCertificateProducts(): Promise<ProductItem[]> {
+  try {
+    const items = await prisma.product.findMany({
+      where: {
+        sku: { in: CERTIFICATE_SKUS },
+      },
+      orderBy: {
+        price: 'asc',
+      },
+    });
+
+    if (items.length > 0) {
+      return items.map(formatPrismaProduct);
+    }
+  } catch (e) {
+    console.error('Error fetching certificate products from DB:', e);
+  }
+
+  // Fallback static data if DB is unavailable
+  return [
+    {
+      id: '86152',
+      sku: '86152',
+      name: 'Подарочный сертификат СИМОНА 3000 руб',
+      slug: 'simona-3000-rub',
+      brand: 'СИМОНА',
+      category: 'Аксессуары',
+      categoryType: 'CATEGORY_B',
+      physicalStatus: 'LOCAL_STOCK',
+      price: 3000,
+      oldPrice: null,
+      inStock: true,
+      stockCount: 10,
+      productGroup: 'Подарочный сертификат',
+      description: 'Подарочный сертификат «СИМОНА» номиналом 3 000 ₽. Действует во всех салонах и интернет-магазине сети.',
+      images: ['https://simona-bt.ru/images/cms/data/photo_code/86152.jpg'],
+    },
+    {
+      id: '86153',
+      sku: '86153',
+      name: 'Подарочный сертификат СИМОНА 5000 руб',
+      slug: 'simona-5000-rub',
+      brand: 'СИМОНА',
+      category: 'Аксессуары',
+      categoryType: 'CATEGORY_B',
+      physicalStatus: 'LOCAL_STOCK',
+      price: 5000,
+      oldPrice: null,
+      inStock: true,
+      stockCount: 10,
+      productGroup: 'Подарочный сертификат',
+      description: 'Подарочный сертификат «СИМОНА» номиналом 5 000 ₽. Действует во всех салонах и интернет-магазине сети.',
+      images: ['https://simona-bt.ru/images/cms/data/photo_code/86153.jpg'],
+    },
+    {
+      id: '86154',
+      sku: '86154',
+      name: 'Подарочный сертификат СИМОНА 10000 руб',
+      slug: 'simona-10000-rub',
+      brand: 'СИМОНА',
+      category: 'Аксессуары',
+      categoryType: 'CATEGORY_B',
+      physicalStatus: 'LOCAL_STOCK',
+      price: 10000,
+      oldPrice: null,
+      inStock: true,
+      stockCount: 10,
+      productGroup: 'Подарочный сертификат',
+      description: 'Подарочный сертификат «СИМОНА» номиналом 10 000 ₽. Действует во всех салонах и интернет-магазине сети.',
+      images: ['https://simona-bt.ru/images/cms/data/photo_code/86154.jpg'],
+    },
+    {
+      id: '86155',
+      sku: '86155',
+      name: 'Подарочный сертификат СИМОНА 30000 руб',
+      slug: 'simona-30000-rub',
+      brand: 'СИМОНА',
+      category: 'Аксессуары',
+      categoryType: 'CATEGORY_B',
+      physicalStatus: 'LOCAL_STOCK',
+      price: 30000,
+      oldPrice: null,
+      inStock: true,
+      stockCount: 10,
+      productGroup: 'Подарочный сертификат',
+      description: 'Подарочный сертификат «СИМОНА» номиналом 30 000 ₽. Действует во всех салонах и интернет-магазине сети.',
+      images: ['https://simona-bt.ru/images/cms/data/photo_code/86155.jpg'],
+    },
+    {
+      id: '86156',
+      sku: '86156',
+      name: 'Подарочный сертификат СИМОНА 50000 руб',
+      slug: 'simona-50000-rub',
+      brand: 'СИМОНА',
+      category: 'Аксессуары',
+      categoryType: 'CATEGORY_B',
+      physicalStatus: 'LOCAL_STOCK',
+      price: 50000,
+      oldPrice: null,
+      inStock: true,
+      stockCount: 10,
+      productGroup: 'Подарочный сертификат',
+      description: 'Подарочный сертификат «СИМОНА» номиналом 50 000 ₽. Действует во всех салонах и интернет-магазине сети.',
+      images: ['https://simona-bt.ru/images/cms/data/photo_code/86156.jpg'],
+    },
+    {
+      id: '86157',
+      sku: '86157',
+      name: 'Подарочный сертификат СИМОНА 100000 руб',
+      slug: 'simona-100000-rub',
+      brand: 'СИМОНА',
+      category: 'Аксессуары',
+      categoryType: 'CATEGORY_B',
+      physicalStatus: 'LOCAL_STOCK',
+      price: 100000,
+      oldPrice: null,
+      inStock: true,
+      stockCount: 10,
+      productGroup: 'Подарочный сертификат',
+      description: 'Подарочный сертификат «СИМОНА» номиналом 100 000 ₽. Действует во всех салонах и интернет-магазине сети.',
+      images: ['https://simona-bt.ru/images/cms/data/photo_code/86157.jpg'],
+    },
+  ];
+}
+
