@@ -89,6 +89,35 @@ export function getCanonicalBrand(brand: string): string {
   return CANONICAL_BRANDS[key] || brand.trim();
 }
 
+export function cleanSystemArticle(article: string): string {
+  if (!article) return '';
+  return cleanLegacySuffixes(article)
+    .replace(/[\s\/-]+/g, '')
+    .toUpperCase();
+}
+
+function refineGroupAndArticle(group: string, brandUpper: string, articleOrRest: string): string {
+  let g = group.trim();
+  const artUpper = articleOrRest.trim().toUpperCase();
+
+  if (g === 'Чайник эл.' || g === 'Чайник') {
+    g = 'Электрический чайник';
+  }
+
+  if (brandUpper === 'MIDEA' && g === 'Варочная панель') {
+    if (artUpper.startsWith('MIH')) g = 'Индукционная варочная панель';
+    else if (artUpper.startsWith('MG')) g = 'Газовая варочная панель';
+    else if (artUpper.startsWith('MCH')) g = 'Электрическая варочная панель';
+  }
+
+  if (brandUpper === 'ASKO' && g === 'Варочная панель') {
+    if (artUpper.startsWith('HG')) g = 'Газовая варочная панель';
+    else if (artUpper.startsWith('HI')) g = 'Индукционная варочная панель';
+  }
+
+  return g;
+}
+
 /**
  * Formats or normalizes any product title to comply with the standard:
  * "Группа товара + Бренд + Артикул"
@@ -107,34 +136,25 @@ export function formatProductName(product: ProductLike): string {
 
   // 1. If name already has the brand and starts with Russian text
   if (rawBrand && name.toUpperCase().includes(brandUpper) && /^[А-Яа-яЁё]/.test(name)) {
-    // Replace uppercase or raw brand with canonical brand
-    const regex = new RegExp(`(^|\\s+)${brandUpper}(\\s+|$)`, 'i');
-    const normalized = name.replace(regex, `$1${canonicalBrand}$2`);
+    const regex = new RegExp(`^(.*?)\\s+${brandUpper}\\s+(.*)$`, 'i');
+    const match = name.match(regex);
+    if (match) {
+      const refinedGroup = refineGroupAndArticle(match[1], brandUpper, match[2]);
+      const cleanArt = cleanLegacySuffixes(match[2]);
+      return `${refinedGroup} ${canonicalBrand} ${cleanArt}`.replace(/\s+/g, ' ').trim();
+    }
+    const brandReplaceRegex = new RegExp(`(^|\\s+)${brandUpper}(\\s+|$)`, 'i');
+    const normalized = name.replace(brandReplaceRegex, `$1${canonicalBrand}$2`);
     return normalized.replace(/\s+/g, ' ').trim();
   }
 
   // 2. Detect legacy inverted pattern: [Article] [Group]
   const invertedMatch = name.match(/^(.*?)\s+([А-Яа-яЁё][а-яёА-ЯЁ\s\.-]+)$/);
   if (invertedMatch && rawBrand) {
-    const article = invertedMatch[1].trim();
-    let group = invertedMatch[2].trim();
+    const article = cleanLegacySuffixes(invertedMatch[1].trim());
+    const group = refineGroupAndArticle(invertedMatch[2].trim(), brandUpper, article);
 
-    // Standardize colloquial abbreviations
-    if (group === 'Чайник эл.' || group === 'Чайник') group = 'Электрический чайник';
-
-    // Subtype refinement for MIDEA cooktops
-    if (brandUpper === 'MIDEA' && group === 'Варочная панель') {
-      if (article.startsWith('MIH')) group = 'Индукционная варочная панель';
-      else if (article.startsWith('MG')) group = 'Газовая варочная панель';
-      else if (article.startsWith('MCH')) group = 'Электрическая варочная панель';
-    }
-
-    // Subtype refinement for ASKO gas cooktops
-    if (brandUpper === 'ASKO' && group === 'Варочная панель' && article.startsWith('HG')) {
-      group = 'Газовая варочная панель';
-    }
-
-    return `${group} ${canonicalBrand} ${article}`.trim();
+    return `${group} ${canonicalBrand} ${article}`.replace(/\s+/g, ' ').trim();
   }
 
   // 3. Fallback: if group cannot be extracted cleanly, use category
@@ -147,5 +167,6 @@ export function formatProductName(product: ProductLike): string {
     .replace(/\s+/g, ' ')
     .trim();
 
-  return `${categoryGroup} ${canonicalBrand} ${cleanArticle}`.trim();
+  const refinedFallbackGroup = refineGroupAndArticle(categoryGroup, brandUpper, cleanArticle);
+  return `${refinedFallbackGroup} ${canonicalBrand} ${cleanArticle}`.replace(/\s+/g, ' ').trim();
 }

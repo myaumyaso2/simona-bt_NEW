@@ -1,126 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { CATALOG_PRODUCTS } from '@/data/catalogData';
+import { getCatalogProducts, searchCatalogProducts } from '@/lib/products';
 
-const SYNONYMS: Record<string, string> = {
-  'миле': 'Miele',
-  'милле': 'Miele',
-  'miele': 'Miele',
-  'аско': 'ASKO',
-  'asko': 'ASKO',
-  'смег': 'SMEG',
-  'smeg': 'SMEG',
-  'либхер': 'Liebherr',
-  'либхерр': 'Liebherr',
-  'liebherr': 'Liebherr',
-  'омойкири': 'OMOIKIRI',
-  'омоикири': 'OMOIKIRI',
-  'omoikiri': 'OMOIKIRI',
-  'бертаззони': 'Bertazzoni',
-  'бертазони': 'Bertazzoni',
-  'bertazzoni': 'Bertazzoni',
-  'фальмек': 'Falmec',
-  'фалмек': 'Falmec',
-  'falmec': 'Falmec',
-  'кертинг': 'KÖRTING',
-  'кортинг': 'KÖRTING',
-  'korting': 'KÖRTING',
-};
-
-// Availability priority: SHOWROOM / EXHIBITION / ACTIVE_KITCHEN (1) -> LOCAL_STOCK (2) -> REMOTE_STOCK (3) -> ON_ORDER (4)
-const priorityMap: Record<string, number> = {
-  ACTIVE_KITCHEN: 1,
-  EXHIBITION_15: 1,
-  EXHIBITION_11: 1,
-  SHOWROOM: 1,
-  LOCAL_STOCK: 2,
-  REMOTE_STOCK: 3,
-  ON_ORDER: 4,
-};
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const query = searchParams.get('q')?.trim() || '';
+  const limitParam = Number(searchParams.get('limit')) || 24;
 
   if (!query) {
-    try {
-      const defaultProducts = await prisma.product.findMany({
-        take: 8,
-        orderBy: { isFeatured: 'desc' },
-      });
-      if (defaultProducts.length > 0) {
-        return NextResponse.json({ results: defaultProducts });
-      }
-    } catch {
-      // fallback
-    }
-    return NextResponse.json({ results: CATALOG_PRODUCTS.slice(0, 8) });
-  }
-
-  const lowerQuery = query.toLowerCase();
-  let resolvedBrand = '';
-  for (const [key, val] of Object.entries(SYNONYMS)) {
-    if (lowerQuery.includes(key)) {
-      resolvedBrand = val;
-      break;
-    }
-  }
-
-  let results: any[] = [];
-  try {
-    const dbItems = await prisma.product.findMany({
-      where: {
-        OR: [
-          { name: { contains: query } },
-          { sku: { contains: query } },
-          { category: { contains: query } },
-          { brand: { contains: resolvedBrand || query } },
-          { description: { contains: query } },
-        ],
-      },
-      take: 20,
+    const { products, total } = await getCatalogProducts({
+      limit: 8,
+      orderBy: 'popular',
     });
-    results = dbItems.map((item) => {
-      let images: string[] = [];
-      try {
-        images = JSON.parse(item.imagesJson || '[]');
-      } catch {}
-      return {
-        ...item,
-        images,
-      };
-    });
-  } catch {
-    results = [];
-  }
-
-  // Fallback to CATALOG_PRODUCTS in-memory search if DB returned 0
-  if (results.length === 0) {
-    results = CATALOG_PRODUCTS.filter((p) => {
-      const targetBrand = resolvedBrand.toLowerCase();
-      const pBrand = p.brand.toLowerCase();
-      const pName = p.name.toLowerCase();
-      const pSku = p.sku.toLowerCase();
-      const pCat = p.category.toLowerCase();
-      return (
-        pName.includes(lowerQuery) ||
-        pSku.includes(lowerQuery) ||
-        pCat.includes(lowerQuery) ||
-        pBrand.includes(lowerQuery) ||
-        (targetBrand && pBrand.includes(targetBrand))
-      );
+    return NextResponse.json({
+      results: products,
+      count: products.length,
+      totalCount: total,
+      query: '',
     });
   }
 
-  const sorted = [...results].sort((a, b) => {
-    const pA = priorityMap[a.physicalStatus] || 5;
-    const pB = priorityMap[b.physicalStatus] || 5;
-    return pA - pB;
-  });
+  const { products, total } = await searchCatalogProducts(query, limitParam);
 
   return NextResponse.json({
-    results: sorted,
-    count: sorted.length,
+    results: products,
+    count: products.length,
+    totalCount: total,
     query,
   });
 }

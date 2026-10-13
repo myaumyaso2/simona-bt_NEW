@@ -3,12 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Minus, ArrowRight } from 'lucide-react';
 import {
   SimonaIconCart,
   SimonaIconTrash,
   SimonaIconGuarantee,
   SimonaIconCheckCircle,
+  SimonaIconClose,
+  SimonaIconPlus,
+  SimonaIconMinus,
+  SimonaIconArrowRight,
 } from '@/components/brand/SimonaIcons';
 import { useStore } from '@/components/providers/StoreContext';
 import { useAnalyticsData } from '@/lib/analytics/utm';
@@ -22,10 +25,11 @@ export function CartDrawer() {
   const { isCartOpen, setIsCartOpen, cart, updateQuantity, removeFromCart, clearCart, cartTotal } =
     useStore();
   const [deliveryType, setDeliveryType] = useState<
-    'PICKUP_WAREHOUSE_KOMINTERNA' | 'PICKUP_BELINSKOGO_15' | 'WHITE_GLOVE_DELIVERY'
+    'PICKUP_WAREHOUSE_KOMINTERNA' | 'PICKUP_BELINSKOGO_15' | 'COURIER_DELIVERY'
   >('PICKUP_WAREHOUSE_KOMINTERNA');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [showQuickForm, setShowQuickForm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -65,8 +69,9 @@ export function CartDrawer() {
       const payload = {
         customerName: name,
         customerPhone: phone,
+        customerEmail: email || null,
         deliveryType,
-        deliveryAddress: deliveryType === 'WHITE_GLOVE_DELIVERY' ? address : null,
+        deliveryAddress: deliveryType === 'COURIER_DELIVERY' ? address : null,
         paymentMethod: 'IN_SALON',
         items: cart.map((item) => ({
           productId: item.product.id,
@@ -76,6 +81,8 @@ export function CartDrawer() {
           quantity: item.quantity,
           brand: item.product.brand,
           image: item.product.images?.[0] || null,
+          slug: item.product.slug,
+          physicalStatus: item.product.physicalStatus,
         })),
         ...analyticsData,
       };
@@ -149,22 +156,22 @@ export function CartDrawer() {
                   className="w-9 h-9 rounded-xl border border-[#2B313A] text-[#87888A] hover:text-white hover:bg-[#1E2228] flex items-center justify-center transition cursor-pointer"
                   aria-label="Закрыть корзину"
                 >
-                  <X className="w-5 h-5" />
+                  <SimonaIconClose className="w-5 h-5" />
                 </button>
               </div>
 
               {/* Body */}
               <div className="flex-1 overflow-y-auto p-5">
                 {orderSuccess ? (
-                  <div className="text-center py-12">
-                    <div className="w-16 h-16 rounded-2xl bg-simona-teal/15 border border-simona-teal/30 text-simona-teal flex items-center justify-center mx-auto mb-4 shadow-[0_0_24px_rgba(0,151,156,0.2)]">
-                      <SimonaIconCheckCircle className="w-8 h-8" />
+                  <div className="text-left py-10 px-2">
+                    <div className="w-14 h-14 rounded-2xl bg-simona-teal/15 border border-simona-teal/30 text-simona-teal flex items-center justify-center mb-4 shadow-[0_0_24px_rgba(0,151,156,0.2)]">
+                      <SimonaIconCheckCircle className="w-7 h-7" />
                     </div>
                     <h3 className="text-2xl font-montserrat font-bold text-white mb-2">
-                      Заказ №{orderSuccess} оформлен!
+                      Заказ №{orderSuccess} принят в работу!
                     </h3>
-                    <p className="text-xs sm:text-sm text-[#87888A] font-normal max-w-xs mx-auto leading-relaxed mb-6">
-                      Чек 54-ФЗ и ссылка на оплату через ЮKassa (СБП/Карты) отправлены в SMS. Менеджер салона СИМОНА подготовит выдачу.
+                    <p className="text-xs sm:text-sm text-[#87888A] font-normal leading-relaxed mb-6">
+                      Эксперт салона «СИМОНА» свяжется с вами в ближайшее время для подтверждения наличия и деталей получения.
                     </p>
                     <button
                       onClick={() => {
@@ -177,11 +184,11 @@ export function CartDrawer() {
                     </button>
                   </div>
                 ) : cart.length === 0 ? (
-                  <div className="text-center py-16">
-                    <SimonaIconCart className="w-12 h-12 text-[#87888A] mx-auto mb-3 opacity-60" />
+                  <div className="text-left py-12 px-2">
+                    <SimonaIconCart className="w-12 h-12 text-[#87888A] mb-3 opacity-60" />
                     <p className="text-sm text-white font-bold">Ваша корзина пуста</p>
-                    <p className="text-xs text-[#87888A] mt-1.5 max-w-xs mx-auto leading-relaxed">
-                      Добавьте премиальную технику ASKO, Miele, SMEG, аксессуары OMOIKIRI или фирменную химию.
+                    <p className="text-xs text-[#87888A] mt-1.5 leading-relaxed">
+                      Добавьте бытовую технику, мойки, смесители или фирменные аксессуары из каталога «СИМОНА».
                     </p>
                   </div>
                 ) : (
@@ -204,7 +211,7 @@ export function CartDrawer() {
                                     ? JSON.parse(product.imagesJson || '[]')[0]
                                     : ''
                                 }
-                                alt={product.name}
+                                alt={formatProductName(product)}
                                 className="w-full h-full object-contain rounded-lg"
                               />
                             </div>
@@ -229,7 +236,7 @@ export function CartDrawer() {
                                 className="p-1 text-[#87888A] hover:text-white cursor-pointer transition-colors"
                                 aria-label="Уменьшить количество"
                               >
-                                <Minus className="w-3 h-3" />
+                                <SimonaIconMinus className="w-3 h-3" />
                               </button>
                               <span className="px-2 text-xs font-bold text-white">{quantity}</span>
                               <button
@@ -237,7 +244,7 @@ export function CartDrawer() {
                                 className="p-1 text-[#87888A] hover:text-white cursor-pointer transition-colors"
                                 aria-label="Увеличить количество"
                               >
-                                <Plus className="w-3 h-3" />
+                                <SimonaIconPlus className="w-3 h-3" />
                               </button>
                             </div>
 
@@ -261,7 +268,7 @@ export function CartDrawer() {
                         className="w-full flex items-center justify-between text-xs font-semibold text-simona-teal hover:text-simona-teal-hover py-1 cursor-pointer transition-colors"
                       >
                         <span>
-                          {showQuickForm ? 'Скрыть быстрый заказ' : '⚡ Оформить быстрый заказ в 1 клик'}
+                          {showQuickForm ? 'Скрыть быстрый заказ' : 'Оформить быстрый заказ в 1 клик'}
                         </span>
                         <span className="text-[10px] text-[#87888A] font-normal">
                           {showQuickForm ? '▲' : '▼'}
@@ -319,13 +326,13 @@ export function CartDrawer() {
                                 <input
                                   type="radio"
                                   name="delivery"
-                                  checked={deliveryType === 'WHITE_GLOVE_DELIVERY'}
-                                  onChange={() => setDeliveryType('WHITE_GLOVE_DELIVERY')}
+                                  checked={deliveryType === 'COURIER_DELIVERY'}
+                                  onChange={() => setDeliveryType('COURIER_DELIVERY')}
                                   className="text-simona-teal focus:ring-0 mr-2"
                                 />
                                 <div>
                                   <span className="text-white font-medium text-[11px]">
-                                    Аккуратная доставка собственной службой
+                                    Аккуратная доставка и подъем на этаж собственной службой
                                   </span>
                                   <span className="block text-[9px] text-[#87888A]">
                                     По Нижнему Новгороду и области
@@ -357,7 +364,17 @@ export function CartDrawer() {
                             />
                           </div>
 
-                          {deliveryType === 'WHITE_GLOVE_DELIVERY' && (
+                          <div>
+                            <input
+                              type="email"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              placeholder="E-mail (для чека и статуса заказа)"
+                              className="w-full px-3 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
+                            />
+                          </div>
+
+                          {deliveryType === 'COURIER_DELIVERY' && (
                             <div>
                               <input
                                 type="text"
@@ -400,11 +417,11 @@ export function CartDrawer() {
                     className="w-full py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white font-semibold text-sm transition shadow-lg shadow-simona-teal/25 flex items-center justify-center space-x-2 active:scale-[0.98] cursor-pointer"
                   >
                     <span>Перейти к оформлению заказа</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <SimonaIconArrowRight className="w-4 h-4" />
                   </button>
 
-                  <div className="flex items-center justify-center space-x-2 text-[10px] text-[#87888A]">
-                    <SimonaIconGuarantee className="w-3.5 h-3.5 text-simona-teal" />
+                  <div className="flex items-center justify-start space-x-2 text-[10px] text-[#87888A]">
+                    <SimonaIconGuarantee className="w-3.5 h-3.5 text-simona-teal shrink-0" />
                     <span>Оплата в салоне • Онлайн картой • Безналичный расчет B2B</span>
                   </div>
                 </div>

@@ -26,7 +26,7 @@ export function formatPrismaProduct(p: Product): ProductItem {
     brand: p.brand,
     category: p.category,
     categoryType: (p.categoryType as CategoryType) || 'CATEGORY_B',
-    productGroup: (p as any).productGroup || null,
+    productGroup: p.productGroup || null,
     physicalStatus: (p.physicalStatus as PhysicalStatus) || (p.inStock ? 'LOCAL_STOCK' : 'ON_ORDER'),
     price: p.price,
     oldPrice: p.oldPrice,
@@ -74,7 +74,7 @@ export async function getCatalogProducts(options?: {
   orderBy?: 'popular' | 'price_asc' | 'price_desc' | 'newest';
 }): Promise<{ products: ProductItem[]; total: number }> {
   try {
-    const where: any = {};
+    const where: Record<string, unknown> = { isActive: true };
     if (options?.categories && options.categories.length > 0) {
       where.category = { in: options.categories };
     } else if (options?.category) {
@@ -101,7 +101,7 @@ export async function getCatalogProducts(options?: {
       where.brand = { in: Array.from(brandVariants) };
     }
 
-    let orderByObj: any = { isFeatured: 'desc' };
+    let orderByObj: Record<string, string> = { isFeatured: 'desc' };
     if (options?.orderBy === 'price_asc') {
       orderByObj = { price: 'asc' };
     } else if (options?.orderBy === 'price_desc') {
@@ -136,7 +136,7 @@ export async function getCatalogProducts(options?: {
 
 export async function getPromoProducts(promo: ManufacturerPromo): Promise<ProductItem[]> {
   try {
-    const where: any = {};
+    const where: Record<string, unknown> = { isActive: true };
     if (promo.participatingSkus && promo.participatingSkus.length > 0) {
       where.sku = { in: promo.participatingSkus };
     } else if (promo.participatingProductSlugs && promo.participatingProductSlugs.length > 0) {
@@ -313,4 +313,124 @@ export async function getCertificateProducts(): Promise<ProductItem[]> {
     },
   ];
 }
+
+const SEARCH_SYNONYMS: Record<string, string> = {
+  миле: 'miele',
+  милле: 'miele',
+  аско: 'asko',
+  смег: 'smeg',
+  либхер: 'liebherr',
+  либхерр: 'liebherr',
+  омойкири: 'omoikiri',
+  омоикири: 'omoikiri',
+  бертаззони: 'bertazzoni',
+  бертазони: 'bertazzoni',
+  фальмек: 'falmec',
+  фалмек: 'falmec',
+  кертинг: 'körting',
+  кортинг: 'körting',
+  korting: 'körting',
+  мидеа: 'midea',
+  мидея: 'midea',
+  вард: 'vard',
+  бош: 'bosch',
+  сименс: 'siemens',
+  горенье: 'gorenje',
+  куперсбуш: 'küppersbusch',
+};
+
+const PHYSICAL_PRIORITY: Record<string, number> = {
+  ACTIVE_KITCHEN: 1,
+  EXHIBITION_15: 1,
+  EXHIBITION_11: 1,
+  SHOWROOM: 1,
+  LOCAL_STOCK: 2,
+  REMOTE_STOCK: 3,
+  ON_ORDER: 4,
+};
+
+/**
+ * Полнотекстовый поиск по каталогу СИМОНА с ранжированием:
+ * 1. Точное совпадение 1С-кода (sku)
+ * 2. Совпадение заводского артикула / модели в названии (name)
+ * 3. Совпадение бренда / категории / группы товара
+ * Внутри каждого ранга приоритет отдается приборам «На витрине» (SHOWROOM) и «На складе» (LOCAL_STOCK).
+ */
+export async function searchCatalogProducts(
+  rawQuery: string,
+  limit = 1500
+): Promise<{ products: ProductItem[]; total: number }> {
+  const query = (rawQuery || '').trim();
+  if (!query) {
+    return getCatalogProducts({ limit });
+  }
+
+  const lowerQuery = query.toLowerCase();
+  const compactQuery = lowerQuery.replace(/[\s\-_/]+/g, '');
+  const rawTokens = lowerQuery
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((t) => SEARCH_SYNONYMS[t] || t);
+
+  let allProducts: ProductItem[] = [];
+  try {
+    const dbItems = await prisma.product.findMany({
+      where: { isActive: true },
+    });
+    allProducts = dbItems.map(formatPrismaProduct);
+  } catch {
+    allProducts = CATALOG_PRODUCTS;
+  }
+
+  const scored: Array<{ product: ProductItem; rank: number; statusPriority: number }> = [];
+
+  for (const product of allProducts) {
+    const skuLower = (product.sku || '').toLowerCase();
+    const nameLower = (product.name || '').toLowerCase();
+    const compactName = nameLower.replace(/[\s\-_/]+/g, '');
+    const brandLower = (product.brand || '').toLowerCase();
+    const catLower = (product.category || '').toLowerCase();
+    const groupLower = (product.productGroup || '').toLowerCase();
+    const descLower = (product.description || '').toLowerCase();
+
+    const haystack = `${skuLower} ${nameLower} ${brandLower} ${catLower} ${groupLower} ${descLower}`;
+
+    let rank = 999;
+
+    if (skuLower === lowerQuery) {
+      // 1. Точное совпадение 1С-кода (SKU)
+      rank = 0;
+    } else if (skuLower.startsWith(lowerQuery) && lowerQuery.length >= 3) {
+      rank = 1;
+    } else if (
+      nameLower.includes(lowerQuery) ||
+      (compactQuery.length >= 3 && compactName.includes(compactQuery))
+    ) {
+      // 2. Прямое вхождение заводского артикула или фразы в название
+      rank = 2;
+    } else if (brandLower === lowerQuery || (rawTokens.length === 1 && brandLower.includes(rawTokens[0]))) {
+      rank = 3;
+    } else if (rawTokens.length > 0 && rawTokens.every((tok) => haystack.includes(tok))) {
+      // 3. Все слова запроса присутствуют в карточке прибора
+      rank = 4;
+    }
+
+    if (rank < 999) {
+      const statusPriority = PHYSICAL_PRIORITY[product.physicalStatus] || 5;
+      scored.push({ product, rank, statusPriority });
+    }
+  }
+
+  scored.sort((a, b) => {
+    if (a.rank !== b.rank) return a.rank - b.rank;
+    if (a.statusPriority !== b.statusPriority) return a.statusPriority - b.statusPriority;
+    return b.product.price - a.product.price;
+  });
+
+  const total = scored.length;
+  const products = scored.slice(0, limit).map((s) => s.product);
+
+  return { products, total };
+}
+
 

@@ -7,6 +7,9 @@ import { formatPrice } from '@/lib/utils';
 import { X } from 'lucide-react';
 import { SimonaIconCheckCircle, SimonaIconGuarantee } from '@/components/brand/SimonaIcons';
 import { formatBrandName } from '@/lib/formatters';
+import { formatProductName } from '@/lib/catalog/productTitle';
+import { useAnalyticsData } from '@/lib/analytics/utm';
+import { trackEcommercePurchase, trackGoal } from '@/lib/analytics/tracker';
 
 interface OneClickBuyModalProps {
   isOpen: boolean;
@@ -19,21 +22,62 @@ export function OneClickBuyModal({
   onClose,
   product,
 }: OneClickBuyModalProps) {
+  const analyticsData = useAnalyticsData();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone) return;
     setIsLoading(true);
 
-    // Simulate express 1-click order creation
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const displayName = formatProductName(product);
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'QUICK_CONSULT',
+          name: name.trim() || 'Покупатель в 1 клик',
+          phone: phone.trim(),
+          productId: product.id,
+          productName: displayName,
+          comment: `Быстрый заказ в 1 клик: ${displayName} по цене ${formatPrice(product.price)} ₽`,
+          ...analyticsData,
+        }),
+      });
+
+      trackGoal('QUICK_CONSULT', {
+        name,
+        phone,
+        productId: product.id,
+        price: product.price,
+      });
+
+      trackEcommercePurchase({
+        id: `1CLICK-${Date.now()}`,
+        revenue: product.price,
+        products: [
+          {
+            id: product.sku || product.id,
+            name: displayName,
+            price: product.price,
+            brand: product.brand || 'СИМОНА',
+            category: product.category,
+            quantity: 1,
+          },
+        ],
+      });
+
       setIsSubmitted(true);
-    }, 600);
+    } catch (err) {
+      console.error('1-Click purchase error:', err);
+      setIsSubmitted(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleReset = () => {

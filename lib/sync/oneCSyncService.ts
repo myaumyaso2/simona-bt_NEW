@@ -3,7 +3,6 @@ import { prisma } from '../prisma';
 import {
   parseStockCsvContent,
   streamCatalogCsv,
-  OneCStockItem,
   OneCCatalogItem,
 } from './oneCParser';
 
@@ -21,6 +20,80 @@ export function transliterate(text: string): string {
     .join('')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * Честная иерархия физического присутствия (AGENTS.md Раздел 9):
+ * 1. SHOWROOM / EXHIBITION_15 / EXHIBITION_11 / ACTIVE_KITCHEN при stockBelinskogo15 > 0 или существующем витринном статусе
+ * 2. LOCAL_STOCK при stockKominterna > 0
+ * 3. REMOTE_STOCK при stockRemote > 0
+ * 4. ON_ORDER при отсутствии остатков на всех складах
+ */
+export function resolvePhysicalStatus(params: {
+  currentStatus?: string | null;
+  stockBelinskogo15: number;
+  stockKominterna: number;
+  stockRemote: number;
+}): { physicalStatus: string; inStock: boolean } {
+  const showroomStatuses = ['SHOWROOM', 'EXHIBITION_15', 'EXHIBITION_11', 'ACTIVE_KITCHEN'];
+  const isCurrentlyShowroom = Boolean(
+    params.currentStatus && showroomStatuses.includes(params.currentStatus)
+  );
+
+  if (params.stockBelinskogo15 > 0 || isCurrentlyShowroom) {
+    const status = isCurrentlyShowroom ? params.currentStatus! : 'SHOWROOM';
+    return { physicalStatus: status, inStock: true };
+  }
+  if (params.stockKominterna > 0) {
+    return { physicalStatus: 'LOCAL_STOCK', inStock: true };
+  }
+  if (params.stockRemote > 0) {
+    return { physicalStatus: 'REMOTE_STOCK', inStock: true };
+  }
+  return { physicalStatus: 'ON_ORDER', inStock: false };
+}
+
+/**
+ * Аккуратное добавление/обновление характеристики "Цвет" внутри featuresJson без затирания остальных характеристик
+ */
+export function updateColorInFeaturesJson(featuresJson: string, color: string): string {
+  const cleanColor = (color || '').trim();
+  if (!cleanColor || cleanColor === '-') return featuresJson || '[]';
+
+  let features: Array<{ label: string; value: string }> = [];
+  try {
+    const parsed = JSON.parse(featuresJson || '[]');
+    if (Array.isArray(parsed)) {
+      features = parsed;
+    }
+  } catch {
+    features = [];
+  }
+
+  const colorIdx = features.findIndex(
+    (f) => f && typeof f.label === 'string' && f.label.trim().toLowerCase() === 'цвет'
+  );
+
+  if (colorIdx >= 0) {
+    if (features[colorIdx].value !== cleanColor) {
+      features[colorIdx] = { ...features[colorIdx], value: cleanColor };
+      return JSON.stringify(features);
+    }
+    return featuresJson || '[]';
+  } else {
+    features.push({ label: 'Цвет', value: cleanColor });
+    return JSON.stringify(features);
+  }
+}
+
+export function hasValidPhotos(imagesJson: string | null | undefined): boolean {
+  if (!imagesJson || imagesJson === '[]') return false;
+  try {
+    const parsed = JSON.parse(imagesJson);
+    return Array.isArray(parsed) && parsed.length > 0 && Boolean(parsed[0]);
+  } catch {
+    return false;
+  }
 }
 
 export interface SyncFastStockResult {
@@ -43,11 +116,13 @@ export interface SyncCatalogResult {
   success: boolean;
   totalCsvRows: number;
   processedItems: number;
+  disabledSpecialCount: number;
   matchedProducts: number;
   updatedPrices: number;
   updatedStocks: number;
   updatedBadges: number;
   createdProducts: number;
+  inheritedSpecialPhotos: number;
   deactivatedProducts: number;
   dryRun: boolean;
   durationMs: number;
@@ -55,14 +130,14 @@ export interface SyncCatalogResult {
     code: string;
     sku: string;
     name: string;
-    changeType: 'PRICE' | 'STOCK' | 'BADGE' | 'CREATED' | 'DEACTIVATED';
+    changeType: 'PRICE' | 'STOCK' | 'BADGE' | 'CREATED' | 'DEACTIVATED' | 'INHERITED_PHOTO';
     detail: string;
   }>;
 }
 
 /**
  * Быстрая синхронизация остатков (1C_ostatki_MP.csv)
- * Запускается каждые 10 минут.
+ * Запускается каждые 10 минут. Сопоставляет по sku и oneCGuid.
  */
 export async function syncFastStock(
   filePathOrContent: string | Buffer,
@@ -93,10 +168,13 @@ export async function syncFastStock(
     };
   }
 
-  // Находим товары в БД по кодам 1С
+  // Находим товары в БД по единому ключу: sku ИЛИ oneCGuid
   const existingProducts = await prisma.product.findMany({
     where: {
-      oneCGuid: { in: codes },
+      OR: [
+        { sku: { in: codes } },
+        { oneCGuid: { in: codes } },
+      ],
     },
     select: {
       id: true,
@@ -104,6 +182,8 @@ export async function syncFastStock(
       sku: true,
       name: true,
       stockKominterna: true,
+      stockBelinskogo15: true,
+      stockRemote: true,
       stockCount: true,
       inStock: true,
       physicalStatus: true,
@@ -113,7 +193,6 @@ export async function syncFastStock(
   const sampleChanges: SyncFastStockResult['sampleChanges'] = [];
   let updatedStockCount = 0;
 
-  // Пакетные обновления
   const updates: Array<{
     id: string;
     stockKominterna: number;
@@ -123,37 +202,36 @@ export async function syncFastStock(
   }> = [];
 
   for (const product of existingProducts) {
-    if (!product.oneCGuid) continue;
-    const stockInfo = stockMap.get(product.oneCGuid);
+    const codeKey =
+      (product.sku && stockMap.has(product.sku) ? product.sku : null) ||
+      (product.oneCGuid && stockMap.has(product.oneCGuid) ? product.oneCGuid : null);
+    if (!codeKey) continue;
+
+    const stockInfo = stockMap.get(codeKey);
     if (!stockInfo) continue;
 
     const newStock = stockInfo.stockKominterna;
-    if (product.stockKominterna !== newStock) {
+    const resolved = resolvePhysicalStatus({
+      currentStatus: product.physicalStatus,
+      stockBelinskogo15: product.stockBelinskogo15,
+      stockKominterna: newStock,
+      stockRemote: product.stockRemote,
+    });
+
+    if (
+      product.stockKominterna !== newStock ||
+      product.physicalStatus !== resolved.physicalStatus ||
+      product.inStock !== resolved.inStock
+    ) {
       updatedStockCount++;
-
-      // Сохраняем физический статус салона, если товар на витрине
-      const isShowroom = [
-        'SHOWROOM',
-        'EXHIBITION_15',
-        'EXHIBITION_11',
-        'ACTIVE_KITCHEN',
-      ].includes(product.physicalStatus);
-
-      const newStatus = isShowroom
-        ? product.physicalStatus
-        : newStock > 0
-        ? 'LOCAL_STOCK'
-        : 'ON_ORDER';
-
-      const newInStock = isShowroom ? true : newStock > 0;
 
       if (sampleChanges.length < 50) {
         sampleChanges.push({
-          code: product.oneCGuid,
+          code: codeKey,
           name: product.name,
           oldStock: product.stockKominterna,
           newStock,
-          inStock: newInStock,
+          inStock: resolved.inStock,
         });
       }
 
@@ -161,15 +239,13 @@ export async function syncFastStock(
         id: product.id,
         stockKominterna: newStock,
         stockCount: newStock,
-        inStock: newInStock,
-        physicalStatus: newStatus,
+        inStock: resolved.inStock,
+        physicalStatus: resolved.physicalStatus,
       });
     }
   }
 
-  // Применяем изменения в БД (если не dryRun)
   if (!dryRun && updates.length > 0) {
-    // Выполняем пачками по 100 записей
     const batchSize = 100;
     for (let i = 0; i < updates.length; i += batchSize) {
       const chunk = updates.slice(i, i + batchSize);
@@ -201,8 +277,48 @@ export async function syncFastStock(
 }
 
 /**
+ * Поиск базового товара по очищенному заводскому артикулу (systemArticle)
+ * для наследования фотографий, описания, характеристик и габаритов на спецпредложения
+ * (OneCImportCsv.php строки 693–736).
+ */
+async function findBaseProductForSpecialOffer(
+  systemArticle: string,
+  rawArticle: string,
+  excludeSku: string
+) {
+  if (!systemArticle && !rawArticle) return null;
+
+  const candidates = await prisma.product.findMany({
+    where: {
+      sku: { not: excludeSku },
+      isSpecial: false,
+      OR: [
+        ...(systemArticle ? [{ systemArticle }] : []),
+        ...(rawArticle && rawArticle.length >= 3 ? [{ name: { contains: rawArticle } }] : []),
+      ],
+    },
+    select: {
+      id: true,
+      sku: true,
+      imagesJson: true,
+      description: true,
+      shortDesc: true,
+      featuresJson: true,
+      dimensions: true,
+      schematicPdfUrl: true,
+    },
+    orderBy: { createdAt: 'asc' },
+    take: 5,
+  });
+
+  // Предпочитаем базовый товар, у которого уже есть фотографии
+  const withPhotos = candidates.find((c) => hasValidPhotos(c.imagesJson));
+  return withPhotos || candidates[0] || null;
+}
+
+/**
  * Полная синхронизация мастер-каталога (1C_import.csv)
- * Запускается каждые 20 минут.
+ * Приведена в полное соответствие с бизнес-правилами OneCImportCsv.php.
  */
 export async function syncFullCatalog(
   filePath: string,
@@ -217,21 +333,21 @@ export async function syncFullCatalog(
   let updatedStocks = 0;
   let updatedBadges = 0;
   let createdProducts = 0;
+  let inheritedSpecialPhotos = 0;
   let deactivatedProducts = 0;
   const sampleChanges: SyncCatalogResult['sampleChanges'] = [];
 
-  // Читаем каталог потоково чанками по 500 строк
-  const { totalRows, processedItems } = await streamCatalogCsv(
+  const { totalRows, processedItems, disabledSpecialCount } = await streamCatalogCsv(
     filePath,
     async (chunk: OneCCatalogItem[]) => {
       const chunkCodes = chunk.map((item) => item.code);
 
-      // Ищем существующие товары в БД по oneCGuid или sku
+      // Ищем существующие товары в БД по единому ключу: sku ИЛИ oneCGuid
       const existing = await prisma.product.findMany({
         where: {
           OR: [
-            { oneCGuid: { in: chunkCodes } },
             { sku: { in: chunkCodes } },
+            { oneCGuid: { in: chunkCodes } },
           ],
         },
         select: {
@@ -239,18 +355,36 @@ export async function syncFullCatalog(
           oneCGuid: true,
           sku: true,
           name: true,
+          brand: true,
+          category: true,
+          productGroup: true,
+          systemArticle: true,
           price: true,
           oldPrice: true,
+          priceOpt: true,
           badge: true,
           stockKominterna: true,
+          stockBelinskogo15: true,
+          stockRemote: true,
           stockCount: true,
           inStock: true,
           deliveryDays: true,
           physicalStatus: true,
+          color: true,
+          featuresJson: true,
+          imagesJson: true,
+          description: true,
+          shortDesc: true,
+          dimensions: true,
+          schematicPdfUrl: true,
+          isActive: true,
+          isSpecial: true,
+          isDiscount: true,
+          noPrice: true,
         },
       });
 
-      const existingMap = new Map<string, typeof existing[0]>();
+      const existingMap = new Map<string, (typeof existing)[0]>();
       for (const p of existing) {
         if (p.oneCGuid) existingMap.set(p.oneCGuid, p);
         if (p.sku) existingMap.set(p.sku, p);
@@ -258,19 +392,10 @@ export async function syncFullCatalog(
 
       const updateBatch: Array<{
         id: string;
-        data: {
-          price?: number;
-          oldPrice?: number | null;
-          badge?: string | null;
-          stockKominterna?: number;
-          stockCount?: number;
-          inStock?: boolean;
-          physicalStatus?: string;
-          deliveryDays?: number;
-        };
+        data: Record<string, unknown>;
       }> = [];
 
-      const createBatch: any[] = [];
+      const createBatch: Array<Record<string, unknown>> = [];
 
       for (const item of chunk) {
         const existingProduct = existingMap.get(item.code);
@@ -278,188 +403,345 @@ export async function syncFullCatalog(
         if (existingProduct) {
           totalMatched++;
 
-          // 1. Проверяем флаг списания / вывода товара
-          const shouldDeactivate =
-            (item.isRetired || item.isDisabled || item.isNoPrice) &&
-            item.stockKominterna === 0;
+          // Если это спецпредложение без фото, пробуем унаследовать фото/описание от базового товара
+          let currentImagesJson = existingProduct.imagesJson;
+          let currentDescription = existingProduct.description;
+          let currentShortDesc = existingProduct.shortDesc;
+          let currentFeaturesJson = existingProduct.featuresJson;
+          let currentDimensions = existingProduct.dimensions;
+          let currentSchematicPdfUrl = existingProduct.schematicPdfUrl;
+          let inheritedFromSku: string | null = null;
 
-          if (shouldDeactivate) {
-            if (existingProduct.inStock) {
+          if (
+            item.isSpecial &&
+            !item.shouldDeactivateBy1C &&
+            !hasValidPhotos(currentImagesJson) &&
+            item.systemArticle
+          ) {
+            const baseProd = await findBaseProductForSpecialOffer(
+              item.systemArticle,
+              item.article,
+              item.code
+            );
+            if (baseProd && hasValidPhotos(baseProd.imagesJson)) {
+              currentImagesJson = baseProd.imagesJson;
+              currentDescription = baseProd.description || currentDescription;
+              currentShortDesc = baseProd.shortDesc || currentShortDesc;
+              currentFeaturesJson = baseProd.featuresJson || currentFeaturesJson;
+              currentDimensions = baseProd.dimensions || currentDimensions;
+              currentSchematicPdfUrl = baseProd.schematicPdfUrl || currentSchematicPdfUrl;
+              inheritedFromSku = baseProd.sku;
+              inheritedSpecialPhotos++;
+            }
+          }
+
+          // Обновляем характеристику Цвет внутри featuresJson
+          const nextFeaturesJson = item.color
+            ? updateColorInFeaturesJson(currentFeaturesJson, item.color)
+            : currentFeaturesJson;
+
+          const hasPhoto = hasValidPhotos(currentImagesJson);
+          const targetIsActive = !item.shouldDeactivateBy1C && hasPhoto;
+
+          // Честная иерархия физического присутствия
+          const resolvedStatus = item.shouldDeactivateBy1C && item.stockKominterna === 0
+            ? {
+                physicalStatus:
+                  existingProduct.stockBelinskogo15 > 0
+                    ? existingProduct.physicalStatus
+                    : existingProduct.stockRemote > 0
+                    ? 'REMOTE_STOCK'
+                    : 'ON_ORDER',
+                inStock: existingProduct.stockBelinskogo15 > 0 || existingProduct.stockRemote > 0,
+              }
+            : resolvePhysicalStatus({
+                currentStatus: existingProduct.physicalStatus,
+                stockBelinskogo15: existingProduct.stockBelinskogo15,
+                stockKominterna: item.stockKominterna,
+                stockRemote: existingProduct.stockRemote,
+              });
+
+          const nextPrice =
+            item.resolvedPrice > 0 ? item.resolvedPrice : existingProduct.price;
+          const nextOldPrice = item.shouldDeactivateBy1C ? null : item.resolvedOldPrice;
+          const nextBadge = item.shouldDeactivateBy1C ? null : item.resolvedBadge;
+          const nextPriceOpt = item.priceOpt > 0 ? item.priceOpt : null;
+          const nextColor = item.color || existingProduct.color || null;
+          const nextProductGroup = item.group || existingProduct.productGroup || null;
+          const nextSystemArticle = item.systemArticle || existingProduct.systemArticle || null;
+
+          const changes: Record<string, unknown> = {};
+
+          // Синхронизация единого ключа sku / oneCGuid
+          if (existingProduct.sku !== item.code) changes.sku = item.code;
+          if (existingProduct.oneCGuid !== item.code) changes.oneCGuid = item.code;
+
+          // Сравнение и обновление флага активности (деактивация/активация)
+          if (existingProduct.isActive !== targetIsActive) {
+            changes.isActive = targetIsActive;
+            if (!targetIsActive) {
               deactivatedProducts++;
               if (sampleChanges.length < 100) {
+                const reason = !hasPhoto
+                  ? 'Отсутствует фото'
+                  : item.isDisabled
+                  ? 'Не используется (кол. 10)'
+                  : item.isDiscount && item.rawAmount === 0
+                  ? 'Уценка с остатком 0'
+                  : item.isRetired
+                  ? 'Выведено из ассортимента'
+                  : 'Нет розничной цены';
                 sampleChanges.push({
                   code: item.code,
                   sku: existingProduct.sku,
                   name: existingProduct.name,
                   changeType: 'DEACTIVATED',
-                  detail: `Снят с витрины (Выведено/Отключено в 1С)`,
+                  detail: `Скрыт с витрины (${reason})`,
                 });
               }
-              updateBatch.push({
-                id: existingProduct.id,
-                data: {
-                  inStock: false,
-                  physicalStatus: 'ON_ORDER',
-                },
-              });
             }
-            continue;
           }
 
-          // 2. Сравниваем цены и остатки
-          const priceDiff = Math.abs(existingProduct.price - item.resolvedPrice) > 0.01;
-          const oldPriceDiff = existingProduct.oldPrice !== item.resolvedOldPrice;
-          const badgeDiff = existingProduct.badge !== item.resolvedBadge;
+          if (inheritedFromSku) {
+            changes.imagesJson = currentImagesJson;
+            changes.description = currentDescription;
+            changes.shortDesc = currentShortDesc;
+            changes.dimensions = currentDimensions;
+            changes.schematicPdfUrl = currentSchematicPdfUrl;
+            if (sampleChanges.length < 100) {
+              sampleChanges.push({
+                code: item.code,
+                sku: existingProduct.sku,
+                name: existingProduct.name,
+                changeType: 'INHERITED_PHOTO',
+                detail: `Скопированы фото и характеристики с базового товара SKU ${inheritedFromSku} по артикулу ${item.systemArticle}`,
+              });
+            }
+          }
+
+          // Сравнение цены
+          const priceDiff =
+            item.resolvedPrice > 0 &&
+            Math.abs(existingProduct.price - nextPrice) > 0.01;
+          if (priceDiff) {
+            updatedPrices++;
+            changes.price = nextPrice;
+            if (sampleChanges.length < 100) {
+              sampleChanges.push({
+                code: item.code,
+                sku: existingProduct.sku,
+                name: existingProduct.name,
+                changeType: 'PRICE',
+                detail: `Цена: ${existingProduct.price} ₽ -> ${nextPrice} ₽`,
+              });
+            }
+          }
+
+          if (existingProduct.oldPrice !== nextOldPrice) {
+            changes.oldPrice = nextOldPrice;
+          }
+
+          if (existingProduct.priceOpt !== nextPriceOpt) {
+            changes.priceOpt = nextPriceOpt;
+          }
+
+          if (existingProduct.badge !== nextBadge) {
+            updatedBadges++;
+            changes.badge = nextBadge;
+            if (sampleChanges.length < 100) {
+              sampleChanges.push({
+                code: item.code,
+                sku: existingProduct.sku,
+                name: existingProduct.name,
+                changeType: 'BADGE',
+                detail: `Ярлык: ${existingProduct.badge || 'нет'} -> ${nextBadge || 'нет'}`,
+              });
+            }
+          }
+
+          // Сравнение остатков и физического статуса
           const stockDiff = existingProduct.stockKominterna !== item.stockKominterna;
-          const deliveryDiff = existingProduct.deliveryDays !== item.deliveryDays;
-
-          if (priceDiff || oldPriceDiff || badgeDiff || stockDiff || deliveryDiff) {
-            const changes: any = {};
-
-            if (priceDiff) {
-              updatedPrices++;
-              changes.price = item.resolvedPrice;
-              if (sampleChanges.length < 100) {
-                sampleChanges.push({
-                  code: item.code,
-                  sku: existingProduct.sku,
-                  name: existingProduct.name,
-                  changeType: 'PRICE',
-                  detail: `Цена: ${existingProduct.price} ₽ -> ${item.resolvedPrice} ₽`,
-                });
-              }
-            }
-
-            if (oldPriceDiff) {
-              changes.oldPrice = item.resolvedOldPrice;
-            }
-
-            if (badgeDiff) {
-              updatedBadges++;
-              changes.badge = item.resolvedBadge;
-              if (sampleChanges.length < 100) {
-                sampleChanges.push({
-                  code: item.code,
-                  sku: existingProduct.sku,
-                  name: existingProduct.name,
-                  changeType: 'BADGE',
-                  detail: `Ярлык: ${existingProduct.badge || 'нет'} -> ${item.resolvedBadge || 'нет'}`,
-                });
-              }
-            }
-
+          if (
+            stockDiff ||
+            existingProduct.physicalStatus !== resolvedStatus.physicalStatus ||
+            existingProduct.inStock !== resolvedStatus.inStock
+          ) {
             if (stockDiff) {
               updatedStocks++;
-              changes.stockKominterna = item.stockKominterna;
-              changes.stockCount = item.stockKominterna;
-
-              const isShowroom = [
-                'SHOWROOM',
-                'EXHIBITION_15',
-                'EXHIBITION_11',
-                'ACTIVE_KITCHEN',
-              ].includes(existingProduct.physicalStatus);
-
-              changes.inStock = isShowroom ? true : item.inStock;
-              changes.physicalStatus = isShowroom
-                ? existingProduct.physicalStatus
-                : item.inStock
-                ? 'LOCAL_STOCK'
-                : 'ON_ORDER';
-
               if (sampleChanges.length < 100) {
+                const extraNote =
+                  item.additionalDisabledAmount > 0
+                    ? ` (вкл. +${item.additionalDisabledAmount} шт из откл. спецпредложения)`
+                    : '';
                 sampleChanges.push({
                   code: item.code,
                   sku: existingProduct.sku,
                   name: existingProduct.name,
                   changeType: 'STOCK',
-                  detail: `Остаток Коминтерна 27: ${existingProduct.stockKominterna} шт -> ${item.stockKominterna} шт`,
+                  detail: `Остаток (кол. 6): ${existingProduct.stockKominterna} шт -> ${item.stockKominterna} шт${extraNote}`,
                 });
               }
             }
+            changes.stockKominterna = item.stockKominterna;
+            changes.stockCount = item.stockKominterna;
+            changes.inStock = resolvedStatus.inStock;
+            changes.physicalStatus = resolvedStatus.physicalStatus;
+          }
 
-            if (deliveryDiff) {
-              changes.deliveryDays = item.deliveryDays;
-            }
+          // Обновление атрибутов 1С
+          if (existingProduct.productGroup !== nextProductGroup) {
+            changes.productGroup = nextProductGroup;
+          }
+          if (existingProduct.systemArticle !== nextSystemArticle) {
+            changes.systemArticle = nextSystemArticle;
+          }
+          if (existingProduct.isSpecial !== item.isSpecial) {
+            changes.isSpecial = item.isSpecial;
+          }
+          if (existingProduct.isDiscount !== item.isDiscount) {
+            changes.isDiscount = item.isDiscount;
+          }
+          if (existingProduct.noPrice !== item.isNoPrice) {
+            changes.noPrice = item.isNoPrice;
+          }
+          if (existingProduct.color !== nextColor) {
+            changes.color = nextColor;
+          }
+          if (existingProduct.featuresJson !== nextFeaturesJson) {
+            changes.featuresJson = nextFeaturesJson;
+          }
+          if (existingProduct.deliveryDays !== item.deliveryDays) {
+            changes.deliveryDays = item.deliveryDays;
+          }
 
+          if (Object.keys(changes).length > 0) {
             updateBatch.push({
               id: existingProduct.id,
               data: changes,
             });
           }
-        } else if (createNew) {
-          // Создаем новый товар, если в 1С есть цена и бренд, и товар не выведен
-          if (
-            item.priceBase > 0 &&
-            item.brand &&
-            !item.isRetired &&
-            !item.isDisabled
-          ) {
-            createdProducts++;
-            const baseSlug = transliterate(
-              `${item.brand}-${item.article || item.code}`
-            ) || `product-${item.code}`;
+        } else if (createNew && !item.shouldDeactivateBy1C && item.brand) {
+          // Создание нового товара из 1C_import.csv
+          createdProducts++;
+          const baseSlug =
+            transliterate(`${item.brand}-${item.article || item.code}`) ||
+            `product-${item.code}`;
 
-            const newProduct = {
-              id: item.code, // Единый ID = Код 1С
-              sku: item.code, // По регламенту заказчика: SKU = Код (колонка 0)
-              oneCGuid: item.code,
-              name: item.fullName,
-              slug: `${baseSlug}-${item.code}`,
-              brand: item.brand,
-              category: item.group || item.categoryName || 'Встраиваемая техника',
-              categoryType: 'CATEGORY_B',
-              physicalStatus: item.inStock ? 'LOCAL_STOCK' : 'ON_ORDER',
-              price: item.resolvedPrice,
-              oldPrice: item.resolvedOldPrice,
-              badge: item.resolvedBadge,
-              inStock: item.inStock,
-              stockCount: item.stockKominterna,
-              stockKominterna: item.stockKominterna,
-              stockBelinskogo15: 0,
-              stockRemote: 0,
-              deliveryDays: item.deliveryDays || (item.inStock ? 1 : 7),
-              color: item.color || null,
-              description: `${item.fullName} по официальной цене производителя в салонах и интернет-магазине СИМОНА.`,
-              featuresJson: '[]',
-              imagesJson: '[]',
-            };
+          let imagesJson = '[]';
+          let description = `${item.fullName} по официальной цене производителя в салонах и интернет-магазине СИМОНА.`;
+          let shortDesc: string | null = null;
+          let featuresJson = item.color
+            ? updateColorInFeaturesJson('[]', item.color)
+            : '[]';
+          let dimensions: string | null = null;
+          let schematicPdfUrl: string | null = null;
+          let inheritedFromSku: string | null = null;
 
-            createBatch.push(newProduct);
-
-            if (sampleChanges.length < 100) {
-              sampleChanges.push({
-                code: item.code,
-                sku: item.code,
-                name: item.fullName,
-                changeType: 'CREATED',
-                detail: `Новинка: ${item.fullName} (цена ${item.resolvedPrice} ₽)`,
-              });
+          // Если создается новая карточка со статусом Спец предложени == 1,
+          // ищем в БД базовый товар с тем же systemArticle и копируем фото, описание, характеристики и габариты (OneCImportCsv.php строки 693–736)
+          if (item.isSpecial && item.systemArticle) {
+            const baseProd = await findBaseProductForSpecialOffer(
+              item.systemArticle,
+              item.article,
+              item.code
+            );
+            if (baseProd) {
+              if (hasValidPhotos(baseProd.imagesJson)) {
+                imagesJson = baseProd.imagesJson;
+                inheritedFromSku = baseProd.sku;
+                inheritedSpecialPhotos++;
+              }
+              if (baseProd.description) description = baseProd.description;
+              if (baseProd.shortDesc) shortDesc = baseProd.shortDesc;
+              if (baseProd.featuresJson && baseProd.featuresJson !== '[]') {
+                featuresJson = item.color
+                  ? updateColorInFeaturesJson(baseProd.featuresJson, item.color)
+                  : baseProd.featuresJson;
+              }
+              if (baseProd.dimensions) dimensions = baseProd.dimensions;
+              if (baseProd.schematicPdfUrl) schematicPdfUrl = baseProd.schematicPdfUrl;
             }
+          }
+
+          // Новинки без фото создаются с isActive = false и попадают во вкладку "/manager/products-no-photo"
+          const hasPhoto = hasValidPhotos(imagesJson);
+          const isActive = hasPhoto;
+
+          const newProduct = {
+            id: item.code,
+            sku: item.code,
+            oneCGuid: item.code,
+            name: item.fullName,
+            slug: `${baseSlug}-${item.code}`,
+            brand: item.brand,
+            category: item.categoryName || item.group || 'Встраиваемая техника',
+            categoryType: 'CATEGORY_B',
+            productGroup: item.group || null,
+            systemArticle: item.systemArticle || null,
+            physicalStatus: item.inStock ? 'LOCAL_STOCK' : 'ON_ORDER',
+            price: item.resolvedPrice,
+            oldPrice: item.resolvedOldPrice,
+            priceOpt: item.priceOpt > 0 ? item.priceOpt : null,
+            badge: item.resolvedBadge,
+            inStock: item.inStock,
+            stockCount: item.stockKominterna,
+            stockKominterna: item.stockKominterna,
+            stockBelinskogo15: 0,
+            stockRemote: 0,
+            deliveryDays: item.deliveryDays || (item.inStock ? 1 : 7),
+            color: item.color || null,
+            shortDesc,
+            description,
+            featuresJson,
+            dimensions,
+            schematicPdfUrl,
+            imagesJson,
+            isActive,
+            isSpecial: item.isSpecial,
+            isDiscount: item.isDiscount,
+            noPrice: item.isNoPrice,
+          };
+
+          createBatch.push(newProduct);
+
+          if (sampleChanges.length < 100) {
+            const photoNote = inheritedFromSku
+              ? ` [Фото унаследовано от SKU ${inheritedFromSku}, активен]`
+              : ` [Без фото -> ожидает загрузки в /manager/products-no-photo]`;
+            sampleChanges.push({
+              code: item.code,
+              sku: item.code,
+              name: item.fullName,
+              changeType: 'CREATED',
+              detail: `Новинка: ${item.fullName} (${item.resolvedPrice} ₽)${photoNote}`,
+            });
           }
         }
       }
 
-      // Запись обновлений в БД
       if (!dryRun) {
         if (updateBatch.length > 0) {
-          await prisma.$transaction(
-            updateBatch.map((u) =>
-              prisma.product.update({
-                where: { id: u.id },
-                data: u.data,
-              })
-            )
-          );
+          const batchSize = 100;
+          for (let i = 0; i < updateBatch.length; i += batchSize) {
+            const slice = updateBatch.slice(i, i + batchSize);
+            await prisma.$transaction(
+              slice.map((u) =>
+                prisma.product.update({
+                  where: { id: u.id },
+                  data: u.data,
+                })
+              )
+            );
+          }
         }
 
         if (createBatch.length > 0) {
           for (const item of createBatch) {
             try {
-              await prisma.product.create({ data: item });
-            } catch (err: any) {
-              // Игнорируем возможные дубликаты slug при параллельных запусках
-              console.warn(`[1C-Sync] Error creating product ${item.sku}:`, err.message);
+              await prisma.product.create({ data: item as never });
+            } catch (err: unknown) {
+              const message = err instanceof Error ? err.message : String(err);
+              console.warn(`[1C-Sync] Error creating product ${String(item.sku)}:`, message);
             }
           }
         }
@@ -472,11 +754,13 @@ export async function syncFullCatalog(
     success: true,
     totalCsvRows: totalRows,
     processedItems,
+    disabledSpecialCount,
     matchedProducts: totalMatched,
     updatedPrices,
     updatedStocks,
     updatedBadges,
     createdProducts,
+    inheritedSpecialPhotos,
     deactivatedProducts,
     dryRun,
     durationMs: Date.now() - start,

@@ -1,12 +1,28 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { syncFastStock, syncFullCatalog } from '../lib/sync/oneCSyncService';
 
-// Директории поиска файлов выгрузки 1С
-const INCOMING_DIR = '/var/www/simona-bt.ru/data/www/simona-bt.ru/159.253.20.27';
+// Директории поиска файлов выгрузки 1С (боевой сервер + локальный data/)
+const INCOMING_DIRS = [
+  '/var/www/simona-bt.ru/data/www/simona-bt.ru/159.253.20.27',
+  '/var/www/simona-bt.ru/data/www/new.simona-bt.ru/storage/sync',
+  path.join(process.cwd(), 'data'),
+];
+
 const BACKUP_DIR = path.join(process.cwd(), 'storage', 'sync_backups');
 const LOG_FILE = path.join(process.cwd(), 'storage', 'logs', '1c_sync.log');
-const LOCK_FILE = '/tmp/simona_1c_sync.pid';
+const LOCK_FILE = path.join(os.tmpdir(), 'simona_1c_sync.pid');
+
+function findIncomingFile(fileName: string): string | null {
+  for (const dir of INCOMING_DIRS) {
+    const candidate = path.join(dir, fileName);
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return null;
+}
 
 function log(message: string) {
   const timestamp = new Date().toISOString();
@@ -17,7 +33,7 @@ function log(message: string) {
     const dir = path.dirname(LOG_FILE);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     fs.appendFileSync(LOG_FILE, line + '\n');
-  } catch (e) {
+  } catch {
     // Ignore logging errors
   }
 }
@@ -46,7 +62,7 @@ function releaseLock() {
     if (fs.existsSync(LOCK_FILE)) {
       fs.unlinkSync(LOCK_FILE);
     }
-  } catch (e) {
+  } catch {
     // Ignore error
   }
 }
@@ -66,12 +82,12 @@ async function main() {
   try {
     if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR, { recursive: true });
 
-    const stockFile = path.join(INCOMING_DIR, '1C_ostatki_MP.csv');
-    const catalogFile = path.join(INCOMING_DIR, '1C_import.csv');
+    const stockFile = findIncomingFile('1C_ostatki_MP.csv');
+    const catalogFile = findIncomingFile('1C_import.csv');
 
     // 1. Быстрый поток остатков
     if (typeArg === 'stock' || typeArg === 'auto') {
-      if (fs.existsSync(stockFile)) {
+      if (stockFile) {
         log(`📦 Found incoming stock file: ${stockFile} (${fs.statSync(stockFile).size} bytes)`);
         const result = await syncFastStock(stockFile, { dryRun: isDryRun });
         log(
@@ -84,23 +100,31 @@ async function main() {
           log(`💾 Stock file archived to: ${backupName}`);
         }
       } else if (typeArg === 'stock') {
-        log(`ℹ️ Stock file not found at ${stockFile}`);
+        log(`ℹ️ Stock file 1C_ostatki_MP.csv not found in incoming dirs`);
       }
     }
 
     // 2. Полный каталог
     if (typeArg === 'catalog' || typeArg === 'auto') {
-      if (fs.existsSync(catalogFile)) {
+      if (catalogFile) {
         log(`📦 Found incoming catalog file: ${catalogFile} (${fs.statSync(catalogFile).size} bytes)`);
         const result = await syncFullCatalog(catalogFile, {
           dryRun: isDryRun,
           createNew: true,
         });
         log(
-          `✅ Catalog Sync Completed: total ${result.totalCsvRows} rows, matched ${result.matchedProducts}, ` +
-            `updated ${result.updatedPrices} prices, ${result.updatedStocks} stocks, ${result.updatedBadges} badges, ` +
-            `created ${result.createdProducts} new SKUs in ${result.durationMs}ms`
+          `✅ Catalog Sync Completed: total ${result.totalCsvRows} rows (${result.processedItems} valid items, ${result.disabledSpecialCount} disabled specials merged), ` +
+            `matched ${result.matchedProducts}, updated ${result.updatedPrices} prices, ${result.updatedStocks} stocks, ${result.updatedBadges} badges, ` +
+            `created ${result.createdProducts} new SKUs, inherited photos for ${result.inheritedSpecialPhotos} specials, ` +
+            `deactivated ${result.deactivatedProducts} items in ${result.durationMs}ms`
         );
+
+        if (result.sampleChanges.length > 0) {
+          log(`📋 Sample changes (top 15):`);
+          for (const sc of result.sampleChanges.slice(0, 15)) {
+            log(`   • [${sc.changeType}] SKU ${sc.sku} (${sc.name}): ${sc.detail}`);
+          }
+        }
 
         if (!isDryRun) {
           const backupName = `1C_import_${Date.now()}.csv`;
@@ -108,13 +132,15 @@ async function main() {
           log(`💾 Catalog file archived to: ${backupName}`);
         }
       } else if (typeArg === 'catalog') {
-        log(`ℹ️ Catalog file not found at ${catalogFile}`);
+        log(`ℹ️ Catalog file 1C_import.csv not found in incoming dirs`);
       }
     }
 
     log(`🏁 1C Synchronization Worker finished successfully.`);
-  } catch (error: any) {
-    log(`❌ Fatal error in 1C Synchronization: ${error.stack || error.message}`);
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.stack || error.message : String(error);
+    log(`❌ Fatal error in 1C Synchronization: ${msg}`);
+    process.exitCode = 1;
   } finally {
     releaseLock();
   }

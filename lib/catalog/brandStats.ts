@@ -110,6 +110,7 @@ export async function getDynamicBrandAtlas(): Promise<BrandCardData[]> {
   try {
     const dbCounts = await prisma.product.groupBy({
       by: ['brand'],
+      where: { isActive: true },
       _count: { id: true },
     });
 

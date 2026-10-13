@@ -6,28 +6,20 @@ import { SectionBadge } from '@/components/ui/SectionBadge';
 import {
   SimonaIconPercent,
   SimonaIconGuarantee,
-  SimonaIconClock,
   SimonaIconBuilding,
   SimonaIconChef,
   SimonaIconFile,
   SimonaIconCheckCircle,
   SimonaIconPhoneSolid,
-  SimonaIconPin,
   SimonaIconStar,
+  SimonaIconSparkles,
+  SimonaIconDelivery,
+  SimonaIconUser,
+  SimonaIconArrowRight,
+  SimonaIconDownload,
+  SimonaIconShare,
+  SimonaIconChat,
 } from '@/components/brand/SimonaIcons';
-import {
-  Coffee,
-  Wrench,
-  Send,
-  Layers,
-  ArrowRight,
-  Download,
-  Share2,
-  Truck,
-  Sparkles,
-  Users,
-  ExternalLink,
-} from 'lucide-react';
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { trackGoal } from '@/lib/analytics/tracker';
 import { useSiteContent } from '@/components/providers/ContentContext';
@@ -45,14 +37,14 @@ const DESIGNER_PILLARS = [
     title: 'Специальные закрытые мероприятия',
     desc: 'Персональные приглашения на закрытые презентации премьерных линеек техники, дегустации с шеф-поварами, закрытые распродажи и закрытые мастер-классы европейских брендов.',
     highlight: 'Нетворкинг в сообществе ведущих дизайнеров',
-    icon: Sparkles,
+    icon: SimonaIconSparkles,
   },
   {
     num: '03',
     title: 'Лаундж для встреч с клиентами',
     desc: 'Вам не нужно арендовать коворкинг или бронировать столик в кафе: назначайте встречи в нашем флагманском салоне в центре города на ул. Белинского, 15. Чай, премиальный кофе и сладости для вас и ваших гостей.',
     highlight: 'Премиальная переговорная зона в центре города',
-    icon: Coffee,
+    icon: SimonaIconChat,
   },
   {
     num: '04',
@@ -87,14 +79,14 @@ const DESIGNER_PILLARS = [
     title: 'Быстрая и бережная логистика',
     desc: 'Отлаженная служба доставки и складской распределительный комплекс. Бережно доставляем заказы по Нижнему Новгороду, области и в любые регионы России строго в оговоренные сроки.',
     highlight: 'Доставка точно в день готовности объекта',
-    icon: Truck,
+    icon: SimonaIconDelivery,
   },
   {
     num: '09',
     title: 'PR и публикации реализованных проектов',
     desc: 'Продвигаем авторов лучших проектов: готовим фоторепортажи, публикуем ваши работы на нашем сайте и в соцсетях компании, рассказывая аудитории о вашем дизайнерском таланте.',
     highlight: 'Освещение ваших интерьеров в медиаканалах',
-    icon: Share2,
+    icon: SimonaIconShare,
   },
   {
     num: '10',
@@ -108,14 +100,14 @@ const DESIGNER_PILLARS = [
     title: 'Совместный подбор техники и кухни',
     desc: 'Спроектировать кухонный гарнитур и подобрать встраиваемые приборы можно в одном окне. Единая гарантийная ответственность, доставка одним рейсом и согласованный монтаж.',
     highlight: 'Синхронная комплектация мебели и встройки',
-    icon: Layers,
+    icon: SimonaIconBuilding,
   },
   {
     num: '12',
     title: 'Выделенный отдел по работе с дизайнерами',
     desc: 'Персональный менеджер-куратор говорит с вами на одном профессиональном языке, наизусть знает артикулы, габаритные схемы и сопровождает объект от эскиза до первого пуска.',
     highlight: 'Индивидуальное кураторство каждого проекта',
-    icon: Users,
+    icon: SimonaIconUser,
   },
 ];
 
@@ -151,6 +143,7 @@ export default function DesignersPage() {
   const [specialization, setSpecialization] = useState(SPECIALIZATIONS[0]);
   const [city, setCity] = useState('Нижний Новгород');
   const [portfolioUrl, setPortfolioUrl] = useState('');
+  const [projectFile, setProjectFile] = useState<File | null>(null);
   const [source, setSource] = useState('Рекомендация коллег');
   const [comment, setComment] = useState('');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -165,7 +158,6 @@ export default function DesignersPage() {
   };
 
   const handlePhoneChange = (val: string) => {
-    // Basic formatting for RF phones
     setPhone(val);
   };
 
@@ -190,19 +182,42 @@ export default function DesignersPage() {
         .filter(Boolean)
         .join(' | ');
 
-      const res = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'B2B_CLUB',
-          name,
-          phone,
-          email: email || undefined,
-          portfolioUrl: portfolioUrl || undefined,
-          comment: detailedNotes,
-          ...analyticsData,
-        }),
-      });
+      let res: Response;
+      if (projectFile) {
+        const formData = new FormData();
+        formData.append('type', 'B2B_CLUB');
+        formData.append('name', name);
+        formData.append('phone', phone);
+        if (email) formData.append('email', email);
+        if (portfolioUrl) formData.append('portfolioUrl', portfolioUrl);
+        formData.append('comment', detailedNotes);
+        formData.append('file', projectFile);
+        if (analyticsData.ymClientId) formData.append('ymClientId', analyticsData.ymClientId);
+        if (analyticsData.utmSource) formData.append('utmSource', analyticsData.utmSource);
+        if (analyticsData.utmMedium) formData.append('utmMedium', analyticsData.utmMedium);
+        if (analyticsData.utmCampaign) formData.append('utmCampaign', analyticsData.utmCampaign);
+        if (analyticsData.utmContent) formData.append('utmContent', analyticsData.utmContent);
+        if (analyticsData.utmTerm) formData.append('utmTerm', analyticsData.utmTerm);
+
+        res = await fetch('/api/leads', {
+          method: 'POST',
+          body: formData,
+        });
+      } else {
+        res = await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'B2B_CLUB',
+            name,
+            phone,
+            email: email || undefined,
+            portfolioUrl: portfolioUrl || undefined,
+            comment: detailedNotes,
+            ...analyticsData,
+          }),
+        });
+      }
 
       if (!res.ok) throw new Error('Ошибка отправки заявки');
 
@@ -245,7 +260,7 @@ export default function DesignersPage() {
                 className="px-7 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wide transition shadow-lg shadow-simona-teal/25 flex items-center gap-2 group cursor-pointer"
               >
                 <span>{content.designersPage.ctaButton}</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                <SimonaIconArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
 
               <a
@@ -255,7 +270,7 @@ export default function DesignersPage() {
                 className="px-6 py-3.5 rounded-xl bg-[#1E2228] hover:bg-[#252A32] text-white border border-[#2B313A] hover:border-simona-teal/50 text-xs font-medium tracking-wide transition flex items-center gap-2"
               >
                 <span>Связаться с куратором в Telegram</span>
-                <ExternalLink className="w-3.5 h-3.5 text-[#87888A]" />
+                <SimonaIconArrowRight className="w-3.5 h-3.5 text-[#87888A]" />
               </a>
             </div>
           </div>
@@ -350,7 +365,7 @@ export default function DesignersPage() {
             rel="noopener noreferrer"
             className="px-6 py-3 rounded-xl bg-[#1E2228] hover:bg-[#252A32] text-white border border-[#2B313A] hover:border-simona-teal/60 text-xs font-medium tracking-wide transition flex items-center gap-2.5 shrink-0"
           >
-            <Download className="w-4 h-4 text-simona-teal" />
+            <SimonaIconFile className="w-4 h-4 text-simona-teal" />
             <span>Скачать перечень документов (PDF)</span>
           </a>
         </section>
@@ -512,18 +527,40 @@ export default function DesignersPage() {
                   </div>
                 </div>
 
-                {/* 5. Ссылка на портфолио или проект */}
-                <div>
-                  <label className="block text-[#D7D9DB] font-medium mb-1.5">
-                    Ссылка на портфолио / проект (Яндекс.Диск, Google Drive, сайт, соцсети)
-                  </label>
-                  <input
-                    type="url"
-                    value={portfolioUrl}
-                    onChange={(e) => setPortfolioUrl(e.target.value)}
-                    placeholder="https://disk.yandex.ru/d/... или ссылка на портфолио"
-                    className="w-full px-4 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] text-white focus:outline-none focus:border-simona-teal transition-colors"
-                  />
+                {/* 5. Ссылка на портфолио или загрузка файла проекта */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[#D7D9DB] font-medium mb-1.5">
+                      Ссылка на портфолио / проект (Яндекс.Диск, сайт)
+                    </label>
+                    <input
+                      type="url"
+                      value={portfolioUrl}
+                      onChange={(e) => setPortfolioUrl(e.target.value)}
+                      placeholder="https://disk.yandex.ru/d/..."
+                      className="w-full px-4 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] text-white focus:outline-none focus:border-simona-teal transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[#D7D9DB] font-medium mb-1.5">
+                      Прикрепить дизайн-проект (.pdf, .dwg, .zip)
+                    </label>
+                    <label className="w-full px-4 py-3 rounded-xl bg-[#1E2228] border border-dashed border-[#2B313A] hover:border-simona-teal/60 text-xs text-[#D7D9DB] flex items-center justify-between cursor-pointer transition-colors">
+                      <span className="flex items-center gap-2 truncate">
+                        <SimonaIconDownload className="w-4 h-4 text-simona-teal shrink-0" />
+                        <span className="truncate">
+                          {projectFile ? projectFile.name : 'Выбрать файл до 25 МБ'}
+                        </span>
+                      </span>
+                      <input
+                        type="file"
+                        accept=".pdf,.dwg,.zip,.rar,.png,.jpg,.jpeg"
+                        onChange={(e) => setProjectFile(e.target.files?.[0] || null)}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
                 </div>
 
                 {/* 6. Интересующие бренды */}
@@ -585,7 +622,7 @@ export default function DesignersPage() {
                     className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wide transition shadow-lg shadow-simona-teal/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     <span>{submitting ? 'Отправка...' : 'Отправить заявку на сотрудничество'}</span>
-                    <Send className="w-4 h-4" />
+                    <SimonaIconArrowRight className="w-4 h-4" />
                   </button>
 
                   <div className="text-[11px] text-[#87888A] text-center sm:text-right">
@@ -628,7 +665,7 @@ export default function DesignersPage() {
               className="px-5 py-2.5 rounded-xl bg-[#2AABEE]/20 hover:bg-[#2AABEE]/30 text-[#2AABEE] border border-[#2AABEE]/40 text-xs font-medium transition flex items-center gap-2"
             >
               <span>Telegram: @nikitin_simona</span>
-              <ExternalLink className="w-3.5 h-3.5" />
+              <SimonaIconArrowRight className="w-3.5 h-3.5" />
             </a>
           </div>
         </section>

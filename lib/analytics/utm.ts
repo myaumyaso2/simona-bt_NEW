@@ -38,7 +38,10 @@ export function captureUtmParams(): AnalyticsPayload {
   let stored: AnalyticsPayload = {};
 
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY) || getCookie(STORAGE_KEY);
+    const raw =
+      localStorage.getItem(STORAGE_KEY) ||
+      sessionStorage.getItem(STORAGE_KEY) ||
+      getCookie(STORAGE_KEY);
     if (raw) {
       stored = JSON.parse(raw);
     }
@@ -60,6 +63,7 @@ export function captureUtmParams(): AnalyticsPayload {
   if (hasParams) {
     try {
       const json = JSON.stringify(current);
+      localStorage.setItem(STORAGE_KEY, json);
       sessionStorage.setItem(STORAGE_KEY, json);
       setCookie(STORAGE_KEY, json, COOKIE_EXPIRE_DAYS);
     } catch {}

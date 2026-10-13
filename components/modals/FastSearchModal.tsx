@@ -1,9 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { X, ArrowRight } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { ProductItem } from '@/types';
 import { formatPrice, PHYSICAL_STATUS_CONFIG } from '@/lib/utils';
@@ -15,6 +13,8 @@ import {
   SimonaIconSearch,
   SimonaIconClock,
   SimonaIconTrash,
+  SimonaIconClose,
+  SimonaIconArrowRight,
 } from '@/components/brand/SimonaIcons';
 
 const HISTORY_KEY = 'simona_search_history';
@@ -24,6 +24,7 @@ export function FastSearchModal() {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<ProductItem[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
 
@@ -72,9 +73,11 @@ export function FastSearchModal() {
     const fetchResults = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&limit=12`);
         const data = await res.json();
-        setResults(data.results || []);
+        const items = Array.isArray(data.results) ? (data.results as ProductItem[]) : [];
+        setResults(items);
+        setTotalCount(typeof data.totalCount === 'number' ? data.totalCount : items.length);
       } catch (e) {
         console.error('Search error:', e);
       } finally {
@@ -93,6 +96,14 @@ export function FastSearchModal() {
     saveToHistory(term);
   };
 
+  const handleGoToFullSearch = () => {
+    const clean = query.trim();
+    if (!clean) return;
+    saveToHistory(clean);
+    closeModal();
+    router.push(`/catalog?q=${encodeURIComponent(clean)}`);
+  };
+
   const handleProductClick = (product: ProductItem) => {
     if (query.trim()) {
       saveToHistory(query);
@@ -101,7 +112,7 @@ export function FastSearchModal() {
     router.push(`/product/${product.slug}`);
   };
 
-  const handleCategoryClick = (e: React.MouseEvent, category: string) => {
+  const handleCategoryClick = (e: React.MouseEvent, _category: string) => {
     e.stopPropagation();
     closeModal();
     router.push('/catalog');
@@ -129,14 +140,16 @@ export function FastSearchModal() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && query.trim()) {
-                saveToHistory(query);
+                e.preventDefault();
+                handleGoToFullSearch();
               }
             }}
-            placeholder="Поиск по каталогу: бренд, артикул (например DGC 7860), тип техники..."
+            placeholder="Поиск по каталогу: код 1С (89083), артикул (OKB 1680), бренд, тип техники..."
             className="flex-1 bg-transparent text-white text-sm sm:text-base placeholder-[#87888A] focus:outline-none font-medium"
           />
           {query && (
             <button
+              type="button"
               onClick={() => setQuery('')}
               className="text-xs text-[#87888A] hover:text-white font-medium transition-colors cursor-pointer px-2 py-1"
             >
@@ -144,17 +157,18 @@ export function FastSearchModal() {
             </button>
           )}
           <button
+            type="button"
             onClick={closeModal}
             className="w-9 h-9 rounded-xl border border-[#2B313A] text-[#87888A] hover:text-white hover:bg-white/10 flex items-center justify-center transition cursor-pointer"
             aria-label="Закрыть поиск"
           >
-            <X className="w-5 h-5" />
+            <SimonaIconClose className="w-4 h-4" />
           </button>
         </div>
 
         {/* 2. History & Quick Suggestions */}
         {query === '' ? (
-          <div className="p-4 sm:p-5 border-b border-[#2B313A] bg-[#121417] space-y-4">
+          <div className="p-4 sm:p-5 border-b border-[#2B313A] bg-[#121417] space-y-4 text-left">
             {/* Search History Chips per AGENTS.md 10.2 */}
             {searchHistory.length > 0 && (
               <div className="space-y-2">
@@ -164,6 +178,7 @@ export function FastSearchModal() {
                     <span>История поиска</span>
                   </div>
                   <button
+                    type="button"
                     onClick={clearHistory}
                     className="inline-flex items-center gap-1 text-[11px] text-[#87888A] hover:text-simona-wine-light transition-colors cursor-pointer"
                   >
@@ -174,6 +189,7 @@ export function FastSearchModal() {
                 <div className="flex flex-wrap gap-2">
                   {searchHistory.map((item, idx) => (
                     <button
+                      type="button"
                       key={idx}
                       onClick={() => handleSelectHistory(item)}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1E2228] hover:bg-[#282E37] border border-[#2B313A] text-xs text-[#D7D9DB] hover:text-white transition-all cursor-pointer shadow-sm"
@@ -195,6 +211,7 @@ export function FastSearchModal() {
                 {['Miele', 'ASKO', 'Liebherr', 'SMEG', 'OMOIKIRI', 'Bertazzoni', 'Falmec'].map(
                   (b) => (
                     <button
+                      type="button"
                       key={b}
                       onClick={() => handleSelectHistory(b)}
                       className="px-3 py-1 rounded-xl bg-[#1E2228] hover:bg-simona-teal/20 hover:border-simona-teal text-[#D7D9DB] hover:text-white border border-[#2B313A] font-semibold transition shrink-0 cursor-pointer"
@@ -209,20 +226,21 @@ export function FastSearchModal() {
         ) : null}
 
         {/* 3. Results List */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3 text-left">
           {loading ? (
-            <div className="text-center py-12 text-xs text-[#87888A]">
+            <div className="py-12 text-xs text-[#87888A]">
               Поиск в номенклатурной базе...
             </div>
           ) : results.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="py-12">
               <p className="text-sm text-white font-semibold">
                 По вашему запросу ничего не найдено
               </p>
-              <p className="text-xs text-[#87888A] mt-1 max-w-md mx-auto leading-relaxed">
+              <p className="text-xs text-[#87888A] mt-1 max-w-md leading-relaxed">
                 В базе более 8 000 моделей под заказ. Оставьте заявку эксперту салона, и мы подберем прибор по вашей спецификации.
               </p>
               <button
+                type="button"
                 onClick={() => {
                   closeModal();
                   openModal('PROJECT_MATCHING');
@@ -251,6 +269,7 @@ export function FastSearchModal() {
                   <div className="flex items-center space-x-3.5 flex-1 min-w-0">
                     {/* Media Thumbnail */}
                     <div className="w-14 h-14 rounded-xl bg-[#16191D] overflow-hidden shrink-0 border border-[#2B313A] p-1 flex items-center justify-center">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={
                           Array.isArray(product.images)
@@ -317,6 +336,7 @@ export function FastSearchModal() {
                   >
                     {isEcom ? (
                       <button
+                        type="button"
                         onClick={() => {
                           addToCart(product);
                           closeModal();
@@ -328,6 +348,7 @@ export function FastSearchModal() {
                       </button>
                     ) : product.physicalStatus === 'ACTIVE_KITCHEN' ? (
                       <button
+                        type="button"
                         onClick={() => {
                           closeModal();
                           openModal('TEST_DRIVE', { product });
@@ -339,11 +360,12 @@ export function FastSearchModal() {
                       </button>
                     ) : (
                       <button
+                        type="button"
                         onClick={() => handleProductClick(product)}
                         className="px-3 py-1.5 rounded-xl bg-[#16191D] hover:bg-[#20252C] text-white text-xs font-semibold border border-[#2B313A] hover:border-simona-teal transition flex items-center gap-1 cursor-pointer"
                       >
                         <span>Подробнее</span>
-                        <ArrowRight className="w-3 h-3 text-simona-teal" />
+                        <SimonaIconArrowRight className="w-3 h-3 text-simona-teal" />
                       </button>
                     )}
                   </div>
@@ -352,6 +374,24 @@ export function FastSearchModal() {
             })
           )}
         </div>
+
+        {/* 4. Full Search Redirect CTA Footer */}
+        {query.trim() !== '' && results.length > 0 && (
+          <div className="p-4 border-t border-[#2B313A] bg-[#121417] flex items-center justify-between gap-3">
+            <span className="text-xs text-[#87888A]">
+              Найдено приборов по запросу «<strong className="text-white">{query.trim()}</strong>»:{' '}
+              <strong className="text-simona-teal font-mono">{totalCount}</strong>
+            </span>
+            <button
+              type="button"
+              onClick={handleGoToFullSearch}
+              className="px-5 py-2.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wide transition shadow-md shadow-simona-teal/20 flex items-center space-x-2 cursor-pointer"
+            >
+              <span>Показать все результаты ({totalCount})</span>
+              <SimonaIconArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

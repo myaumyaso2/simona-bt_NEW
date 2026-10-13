@@ -189,6 +189,7 @@ export default async function BrandsPage() {
   try {
     const rawCounts = await prisma.product.groupBy({
       by: ['brand'],
+      where: { isActive: true },
       _count: { id: true },
     });
     for (const item of rawCounts) {

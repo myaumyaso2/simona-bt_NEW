@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { formatProductName } from '@/lib/catalog/productTitle';
 
 function escapeXml(unsafe: string | null | undefined): string {
   if (!unsafe) return '';
@@ -18,6 +19,7 @@ export async function GET() {
   try {
     const products = await prisma.product.findMany({
       where: {
+        isActive: true,
         price: { gt: 0 },
       },
       take: 8000,
@@ -59,6 +61,7 @@ export async function GET() {
     for (const p of products) {
       const catId = categoriesMap.get(p.category || 'Бытовая техника') || 1;
       const isAvailable = p.inStock || p.stockCount > 0;
+      const formattedTitle = formatProductName(p);
 
       let images: string[] = [];
       try {
@@ -78,11 +81,14 @@ export async function GET() {
 
       if (images.length > 0) {
         images.slice(0, 5).forEach((img) => {
-          xml += `        <picture>${escapeXml(img)}</picture>\n`;
+          const fullImgUrl = img.startsWith('http')
+            ? img
+            : `${siteUrl}${img.startsWith('/') ? '' : '/'}${img}`;
+          xml += `        <picture>${escapeXml(fullImgUrl)}</picture>\n`;
         });
       }
 
-      xml += `        <name>${escapeXml(p.name)}</name>\n`;
+      xml += `        <name>${escapeXml(formattedTitle)}</name>\n`;
       xml += `        <vendor>${escapeXml(p.brand)}</vendor>\n`;
       xml += `        <vendorCode>${escapeXml(p.sku)}</vendorCode>\n`;
       xml += `        <description>${escapeXml(p.description?.replace(/<[^>]*>/g, '').slice(0, 1000))}</description>\n`;

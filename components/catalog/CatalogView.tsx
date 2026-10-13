@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
 import { CATALOG_PRODUCTS } from '@/data/catalogData';
 import { MANUFACTURER_PROMOS, isProductInPromo } from '@/data/promosData';
 import { CatalogHero, PhysicalTabType } from './CatalogHero';
@@ -17,13 +17,13 @@ import { CatalogServiceContour } from './CatalogServiceContour';
 import { MobileFilterDrawer } from './MobileFilterDrawer';
 import { getCategoryFacets, matchProductFeature } from '@/lib/productFeatures';
 import { getProductPhysicalStatus } from '@/lib/utils';
-import { BrandCategoryNav } from './BrandCategoryNav';
 import {
   getBrandCategoriesFromProducts,
   getBrandInfo,
   isProductInCategory,
 } from '@/lib/catalog/brandCategories';
 import { getCategoryProductGroups, getProductGroup } from '@/lib/catalog/productGroups';
+import { SimonaIconClose, SimonaIconSearch } from '@/components/brand/SimonaIcons';
 
 interface CatalogViewProps {
   initialProducts?: ProductItem[];
@@ -33,6 +33,7 @@ interface CatalogViewProps {
   categoryDescription?: string;
   initialBrand?: string;
   initialCategorySlug?: string;
+  searchQuery?: string;
 }
 
 const PAGE_SIZE = 24;
@@ -44,10 +45,14 @@ export function CatalogView({
   categoryDescription,
   initialBrand,
   initialCategorySlug,
+  searchQuery,
 }: CatalogViewProps = {}) {
   const searchParams = useSearchParams();
+  const activeSearchQuery = (searchQuery || searchParams.get('q') || '').trim();
+
   const rawProducts = useMemo(() => {
-    return initialProducts && initialProducts.length > 0 ? initialProducts : CATALOG_PRODUCTS;
+    if (initialProducts !== undefined) return initialProducts;
+    return CATALOG_PRODUCTS;
   }, [initialProducts]);
 
   // Brand mode calculations & category discovery
@@ -330,27 +335,32 @@ export function CatalogView({
 
   // 3. Final filtered and sorted products (strictly unified with getProductPhysicalStatus)
   const filteredProducts = useMemo(() => {
-    return sidebarFilteredProducts
-      .filter((product) => {
-        if (activePhysicalTab === 'ALL') return true;
-        return getProductPhysicalStatus(product) === activePhysicalTab;
-      })
-      .sort((a, b) => {
-        if (sort === 'popular') {
-          return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
-        }
-        if (sort === 'price_asc') {
-          return a.price - b.price;
-        }
-        if (sort === 'price_desc') {
-          return b.price - a.price;
-        }
-        if (sort === 'newest') {
-          return b.id.localeCompare(a.id);
-        }
-        return 0;
-      });
-  }, [sidebarFilteredProducts, activePhysicalTab, sort]);
+    const base = sidebarFilteredProducts.filter((product) => {
+      if (activePhysicalTab === 'ALL') return true;
+      return getProductPhysicalStatus(product) === activePhysicalTab;
+    });
+
+    // If active search query and default sort, preserve search relevance (SKU -> article -> showroom/warehouse)
+    if (activeSearchQuery && sort === 'popular') {
+      return base;
+    }
+
+    return [...base].sort((a, b) => {
+      if (sort === 'popular') {
+        return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
+      }
+      if (sort === 'price_asc') {
+        return a.price - b.price;
+      }
+      if (sort === 'price_desc') {
+        return b.price - a.price;
+      }
+      if (sort === 'newest') {
+        return b.id.localeCompare(a.id);
+      }
+      return 0;
+    });
+  }, [sidebarFilteredProducts, activePhysicalTab, sort, activeSearchQuery]);
 
   // Client-side pagination
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
@@ -460,6 +470,33 @@ export function CatalogView({
 
       {/* 2. Main Catalog Workspace: Split-Layout */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
+        {/* Search Query Active Banner (Task 2.4.3) */}
+        {activeSearchQuery && (
+          <div className="mb-6 p-4 rounded-2xl bg-[#16191D] border border-simona-teal/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
+            <div className="flex items-center space-x-3">
+              <div className="w-9 h-9 rounded-xl bg-simona-teal/15 border border-simona-teal/30 flex items-center justify-center text-simona-teal shrink-0">
+                <SimonaIconSearch className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-white">
+                  Результаты поиска по запросу: «<span className="text-simona-teal">{activeSearchQuery}</span>» — найдено{' '}
+                  <span className="font-mono font-bold text-white">{filteredProducts.length}</span> товаров
+                </div>
+                <div className="text-xs text-[#87888A]">
+                  Отсортировано по совпадению кода 1С, заводского артикула и физическому наличию в Нижнем Новгороде
+                </div>
+              </div>
+            </div>
+            <Link
+              href="/catalog"
+              className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-[#1E2228] hover:bg-[#252A32] border border-[#2B313A] text-xs font-semibold text-[#D7D9DB] hover:text-white transition shrink-0"
+            >
+              <SimonaIconClose className="w-3.5 h-3.5" />
+              <span>Сбросить поиск</span>
+            </Link>
+          </div>
+        )}
+
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           {/* Left Desktop Sidebar (300px) */}
           <div className="hidden lg:block sticky top-24 shrink-0 z-30">
@@ -509,7 +546,7 @@ export function CatalogView({
             {filters.selectedPromos.length > 0 && (
               <div className="flex flex-wrap items-center gap-2 mb-5 p-3 bg-simona-wine/10 border border-simona-wine/30 rounded-xl animate-fade-in">
                 <div className="flex items-center gap-1.5 text-xs text-simona-wine-light font-semibold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-simona-wine" />
+                  <span className="w-1.5 h-1.5 rounded-md bg-simona-wine" />
                   <span>Активные акции:</span>
                 </div>
                 {filters.selectedPromos.map((slug) => {
@@ -530,19 +567,21 @@ export function CatalogView({
                         {promoDisplayName}
                       </span>
                       <button
+                        type="button"
                         onClick={() => {
                           const next = filters.selectedPromos.filter((s) => s !== slug);
                           handleFilterChange({ selectedPromos: next });
                         }}
-                        className="hover:bg-white/20 rounded-full p-0.5 transition-colors cursor-pointer shrink-0"
+                        className="hover:bg-white/20 rounded-md p-0.5 transition-colors cursor-pointer shrink-0"
                         aria-label={`Удалить фильтр ${promo.title}`}
                       >
-                        <X className="w-3 h-3" />
+                        <SimonaIconClose className="w-3 h-3" />
                       </button>
                     </span>
                   );
                 })}
                 <button
+                  type="button"
                   onClick={() => handleFilterChange({ selectedPromos: [] })}
                   className="text-xs text-[#87888A] hover:text-white underline ml-auto transition-colors cursor-pointer"
                 >
@@ -581,7 +620,7 @@ export function CatalogView({
                 )}
               </motion.div>
             ) : (
-              <div className="py-20 text-center rounded-2xl bg-[#16191D] border border-[#2B313A] p-8">
+              <div className="py-16 text-left rounded-2xl bg-[#16191D] border border-[#2B313A] p-8">
                 <p className="text-white text-base font-semibold mb-2">
                   По выбранным параметрам приборов не найдено
                 </p>
@@ -589,6 +628,7 @@ export function CatalogView({
                   Попробуйте сбросить некоторые фильтры или выбрать другой диапазон цен
                 </p>
                 <button
+                  type="button"
                   onClick={handleResetFilters}
                   className="px-5 py-2.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold transition cursor-pointer"
                 >

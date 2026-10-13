@@ -56,6 +56,7 @@ export default async function BrandDetailPage({ params }: BrandPageProps) {
   try {
     const rawProducts = await prisma.product.findMany({
       where: {
+        isActive: true,
         brand: {
           in: Array.from(
             new Set([

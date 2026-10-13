@@ -1,17 +1,23 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Upload, AlertCircle } from 'lucide-react';
-import { SimonaIconCheckCircle } from '@/components/brand/SimonaIcons';
+import {
+  SimonaIconCheckCircle,
+  SimonaIconInfo,
+  SimonaIconFile,
+} from '@/components/brand/SimonaIcons';
 import { useStore } from '@/components/providers/StoreContext';
 import { LuxuryModalShell } from '@/components/modals/LuxuryModalShell';
+import { useAnalyticsData } from '@/lib/analytics/utm';
+import { trackGoal } from '@/lib/analytics/tracker';
 
 export function B2BLeadModal() {
   const { modal, closeModal } = useStore();
+  const analyticsData = useAnalyticsData();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [portfolio, setPortfolio] = useState('');
-  const [fileName, setFileName] = useState('');
+  const [projectFile, setProjectFile] = useState<File | null>(null);
   const [comment, setComment] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -25,7 +31,7 @@ export function B2BLeadModal() {
     setName('');
     setPhone('');
     setPortfolio('');
-    setFileName('');
+    setProjectFile(null);
     setComment('');
     closeModal();
   };
@@ -36,22 +42,51 @@ export function B2BLeadModal() {
     setError('');
 
     try {
-      const res = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'B2B_CLUB',
-          name,
-          phone,
-          portfolioUrl: portfolio,
-          comment: `Файл проекта: ${fileName || 'не прикреплен'}. Пожелания: ${comment}`,
-        }),
-      });
+      const compiledComment = `Файл проекта: ${
+        projectFile ? projectFile.name : 'не прикреплен'
+      }. Пожелания: ${comment}`;
+
+      let res: Response;
+      if (projectFile) {
+        const formData = new FormData();
+        formData.append('type', 'B2B_CLUB');
+        formData.append('name', name);
+        formData.append('phone', phone);
+        if (portfolio) formData.append('portfolioUrl', portfolio);
+        formData.append('comment', compiledComment);
+        formData.append('file', projectFile);
+        for (const [k, v] of Object.entries(analyticsData)) {
+          if (v) formData.append(k, String(v));
+        }
+        res = await fetch('/api/leads', {
+          method: 'POST',
+          body: formData,
+        });
+      } else {
+        res = await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'B2B_CLUB',
+            name,
+            phone,
+            portfolioUrl: portfolio,
+            comment: compiledComment,
+            ...analyticsData,
+          }),
+        });
+      }
 
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
 
       setSuccess(true);
+      trackGoal('B2B_CLUB', {
+        name,
+        phone,
+        hasFile: !!projectFile,
+        portfolioUrl: portfolio,
+      });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Ошибка при отправке';
       setError(errorMessage);
@@ -74,14 +109,14 @@ export function B2BLeadModal() {
       }
     >
       {success ? (
-        <div className="text-center py-6 sm:py-8">
-          <div className="w-16 h-16 rounded-2xl bg-simona-wine/15 border border-simona-wine/30 text-simona-wine flex items-center justify-center mx-auto mb-4 shadow-[0_0_24px_rgba(138,21,26,0.3)]">
+        <div className="text-left py-6 sm:py-8">
+          <div className="w-16 h-16 rounded-2xl bg-simona-wine/15 border border-simona-wine/30 text-simona-wine flex items-center justify-center mb-4 shadow-[0_0_24px_rgba(138,21,26,0.3)]">
             <SimonaIconCheckCircle className="w-8 h-8" />
           </div>
           <h3 className="text-2xl font-montserrat font-bold text-white mb-2">
             Проект принят на расчет!
           </h3>
-          <p className="text-xs sm:text-sm text-[#87888A] font-normal max-w-sm mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#87888A] font-normal max-w-sm leading-relaxed">
             B2B-куратор салона СИМОНА подготовит полную инженерную спецификацию, схемы встройки и расчет партнерского вознаграждения в течение 24 часов.
           </p>
           <button
@@ -95,7 +130,7 @@ export function B2BLeadModal() {
         <div>
           {error && (
             <div className="mb-4 p-3 rounded-xl bg-red-950/40 border border-red-800/60 text-red-300 text-xs flex items-center">
-              <AlertCircle className="w-4 h-4 mr-2 shrink-0" />
+              <SimonaIconInfo className="w-4 h-4 mr-2 shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -139,18 +174,21 @@ export function B2BLeadModal() {
             {/* File Upload Trigger */}
             <div>
               <label className="block text-[#D7D9DB] mb-1.5 font-medium">Прикрепить проект (PDF / DWG / ZIP)</label>
-              <label className="flex flex-col items-center justify-center p-4 border border-dashed border-[#2B313A] hover:border-simona-wine/70 rounded-2xl cursor-pointer bg-[#111315] hover:bg-[#1E2228]/50 transition">
-                <Upload className="w-5 h-5 text-simona-wine mb-1" />
-                <span className="text-xs text-[#D7D9DB] font-medium">
-                  {fileName ? fileName : 'Нажмите для выбора файла с устройства'}
-                </span>
-                <span className="text-[10px] text-[#87888A] mt-0.5">До 50 МБ</span>
+              <label className="flex items-center gap-3 p-4 border border-dashed border-[#2B313A] hover:border-simona-wine/70 rounded-xl cursor-pointer bg-[#111315] hover:bg-[#1E2228]/50 transition">
+                <SimonaIconFile className="w-5 h-5 text-simona-wine shrink-0" />
+                <div className="min-w-0">
+                  <span className="text-xs text-[#D7D9DB] font-medium block truncate">
+                    {projectFile ? projectFile.name : 'Нажмите для выбора файла с устройства'}
+                  </span>
+                  <span className="text-[10px] text-[#87888A]">До 50 МБ</span>
+                </div>
                 <input
                   type="file"
+                  accept=".pdf,.dwg,.zip,.rar,.jpg,.jpeg,.png,.webp,.xlsx,.xls,.doc,.docx"
                   className="hidden"
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
-                      setFileName(e.target.files[0].name);
+                      setProjectFile(e.target.files[0]);
                     }
                   }}
                 />

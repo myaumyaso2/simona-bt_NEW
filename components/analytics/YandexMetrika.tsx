@@ -1,11 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Script from 'next/script';
+import { captureUtmParams } from '@/lib/analytics/utm';
 
 export const METRIKA_COUNTER_ID = 1351807;
 
 export function YandexMetrika() {
+  useEffect(() => {
+    captureUtmParams();
+  }, []);
+
   return (
     <>
       <Script

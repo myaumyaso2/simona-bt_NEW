@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useStore } from '@/components/providers/StoreContext';
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { formatPrice } from '@/lib/utils';
+import { formatProductName } from '@/lib/catalog/productTitle';
 import { SectionBadge } from '@/components/ui/SectionBadge';
 import {
   SimonaIconDelivery,
@@ -15,13 +16,9 @@ import {
   SimonaIconClock,
   SimonaIconBuilding,
   SimonaIconCheckCircle,
+  SimonaIconArrowLeft,
+  SimonaIconShieldCheck,
 } from '@/components/brand/SimonaIcons';
-import {
-  CreditCard,
-  Wallet,
-  ArrowLeft,
-  AlertCircle,
-} from 'lucide-react';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -35,7 +32,7 @@ export default function CheckoutPage() {
 
   // Step 2: Delivery method
   const [deliveryType, setDeliveryType] = useState<
-    'PICKUP_WAREHOUSE_KOMINTERNA' | 'PICKUP_BELINSKOGO_15' | 'WHITE_GLOVE_DELIVERY'
+    'PICKUP_WAREHOUSE_KOMINTERNA' | 'PICKUP_BELINSKOGO_15' | 'COURIER_DELIVERY'
   >('PICKUP_WAREHOUSE_KOMINTERNA');
 
   const [deliveryCity, setDeliveryCity] = useState('Нижний Новгород');
@@ -58,8 +55,15 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
+  // Check if any item requires manager confirmation (SHOWROOM, REMOTE_STOCK, ON_ORDER)
+  const hasNonLocalStockItems = cart.some(
+    (item) =>
+      item.product.physicalStatus !== 'LOCAL_STOCK' ||
+      (typeof item.product.stockKominterna === 'number' && item.product.stockKominterna <= 0)
+  );
+
   const deliveryCost =
-    deliveryType === 'WHITE_GLOVE_DELIVERY'
+    deliveryType === 'COURIER_DELIVERY'
       ? cartTotal >= 50000
         ? 0
         : 1500
@@ -87,7 +91,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (deliveryType === 'WHITE_GLOVE_DELIVERY' && (!deliveryStreet || !deliveryHouse)) {
+    if (deliveryType === 'COURIER_DELIVERY' && (!deliveryStreet || !deliveryHouse)) {
       setFormError('Укажите улицу и номер дома для доставки.');
       return;
     }
@@ -95,7 +99,7 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     const fullAddress =
-      deliveryType === 'WHITE_GLOVE_DELIVERY'
+      deliveryType === 'COURIER_DELIVERY'
         ? `${deliveryCity}, ул. ${deliveryStreet}, д. ${deliveryHouse}${
             deliveryApartment ? ', кв./офис ' + deliveryApartment : ''
           }${deliveryFloor ? ', этаж ' + deliveryFloor : ''}`
@@ -113,11 +117,14 @@ export default function CheckoutPage() {
       items: cart.map((item) => ({
         productId: item.product.id,
         sku: item.product.sku,
-        name: item.product.name,
+        name: formatProductName(item.product),
         price: item.product.price,
         quantity: item.quantity,
         brand: item.product.brand,
         image: item.product.images?.[0] || null,
+        slug: item.product.slug,
+        physicalStatus: item.product.physicalStatus,
+        stockKominterna: item.product.stockKominterna,
       })),
       companyName: paymentMethod === 'B2B_INVOICE' ? companyName : undefined,
       companyInn: paymentMethod === 'B2B_INVOICE' ? companyInn : undefined,
@@ -139,17 +146,29 @@ export default function CheckoutPage() {
       // Clear local cart
       clearCart();
 
-      // Redirect to confirmation page
+      // If YooKassa confirmationUrl is returned (LOCAL_STOCK + CARD_ONLINE), redirect to YooKassa payment page
+      if (data.confirmationUrl) {
+        window.location.href = data.confirmationUrl;
+        return;
+      }
+
+      // Otherwise redirect to internal confirmation page
       router.push(
         `/checkout/success?orderNumber=${encodeURIComponent(
           data.orderNumber
         )}&total=${encodeURIComponent(grandTotal)}&delivery=${encodeURIComponent(
           deliveryType
-        )}&payment=${encodeURIComponent(paymentMethod)}`
+        )}&payment=${encodeURIComponent(paymentMethod)}&requiresConfirmation=${
+          hasNonLocalStockItems ? '1' : '0'
+        }`
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Checkout error:', err);
-      setFormError(err.message || 'Произошла ошибка при отправке заказа. Попробуйте еще раз.');
+      const msg =
+        err instanceof Error
+          ? err.message
+          : 'Произошла ошибка при отправке заказа. Попробуйте еще раз.';
+      setFormError(msg);
       setIsSubmitting(false);
     }
   };
@@ -163,28 +182,28 @@ export default function CheckoutPage() {
             href="/catalog"
             className="inline-flex items-center space-x-2 text-xs text-[#87888A] hover:text-white transition-colors"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <SimonaIconArrowLeft className="w-3.5 h-3.5" />
             <span>Вернуться в каталог</span>
           </Link>
         </div>
 
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 text-left">
           <SectionBadge variant="teal" text="Оформление заказа" />
           <h1 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight mt-3">
             Оформление покупки
           </h1>
           <p className="text-xs sm:text-sm text-[#87888A] mt-1">
-            Комплектация со склада в Нижнем Новгороде, гарантия производителя и сервис «СИМОНА»
+            Комплектация со склада в Нижнем Новгороде, официальная гарантия производителя и сервис «СИМОНА»
           </p>
         </div>
 
         {cart.length === 0 ? (
-          <div className="p-12 rounded-2xl bg-[#16191D] border border-[#2B313A] text-center max-w-lg mx-auto">
-            <SimonaIconCart className="w-12 h-12 text-simona-teal mx-auto mb-4" />
+          <div className="p-12 rounded-2xl bg-[#16191D] border border-[#2B313A] text-left max-w-lg">
+            <SimonaIconCart className="w-12 h-12 text-simona-teal mb-4" />
             <h2 className="text-lg font-bold text-white mb-2">Ваша корзина пуста</h2>
             <p className="text-xs text-[#87888A] mb-6">
-              Выберите интересующие приборы в каталоге премиальной техники
+              Выберите интересующие приборы в каталоге бытовой техники «СИМОНА»
             </p>
             <Link
               href="/catalog"
@@ -200,7 +219,7 @@ export default function CheckoutPage() {
               {/* Error Notice */}
               {formError && (
                 <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start space-x-3 text-xs text-red-400">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <SimonaIconShieldCheck className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{formError}</span>
                 </div>
               )}
@@ -211,7 +230,7 @@ export default function CheckoutPage() {
                   <span className="w-6 h-6 rounded-md bg-simona-teal/20 text-simona-teal text-xs font-bold flex items-center justify-center">
                     1
                   </span>
-                  <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+                  <h2 className="text-sm font-bold text-white tracking-wide">
                     Контактные данные
                   </h2>
                 </div>
@@ -247,7 +266,7 @@ export default function CheckoutPage() {
 
                   <div>
                     <label className="block text-xs text-[#D7D9DB] mb-1.5 font-medium">
-                      Электронная почта
+                      Электронная почта (для чека и статуса заказа)
                     </label>
                     <input
                       type="email"
@@ -266,7 +285,7 @@ export default function CheckoutPage() {
                   <span className="w-6 h-6 rounded-md bg-simona-teal/20 text-simona-teal text-xs font-bold flex items-center justify-center">
                     2
                   </span>
-                  <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+                  <h2 className="text-sm font-bold text-white tracking-wide">
                     Способ получения
                   </h2>
                 </div>
@@ -363,11 +382,11 @@ export default function CheckoutPage() {
                     </div>
                   </label>
 
-                  {/* Option 3: White Glove Delivery */}
+                  {/* Option 3: Courier Delivery */}
                   <label
-                    onClick={() => setDeliveryType('WHITE_GLOVE_DELIVERY')}
+                    onClick={() => setDeliveryType('COURIER_DELIVERY')}
                     className={`block p-4 rounded-xl border transition-all cursor-pointer ${
-                      deliveryType === 'WHITE_GLOVE_DELIVERY'
+                      deliveryType === 'COURIER_DELIVERY'
                         ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
                         : 'bg-[#16191D] border-[#2B313A] hover:border-[#3E3D40]'
                     }`}
@@ -378,22 +397,22 @@ export default function CheckoutPage() {
                           <input
                             type="radio"
                             name="delivery"
-                            checked={deliveryType === 'WHITE_GLOVE_DELIVERY'}
-                            onChange={() => setDeliveryType('WHITE_GLOVE_DELIVERY')}
+                            checked={deliveryType === 'COURIER_DELIVERY'}
+                            onChange={() => setDeliveryType('COURIER_DELIVERY')}
                             className="text-simona-teal focus:ring-0"
                           />
                         </div>
                         <div>
                           <div className="flex items-center space-x-2">
                             <span className="text-xs font-bold text-white">
-                              Аккуратная доставка и подъем на этаж
+                              Аккуратная доставка и подъем на этаж собственной службой
                             </span>
                             <span className="px-2 py-0.5 rounded-md bg-simona-teal/20 text-simona-teal text-[10px] font-semibold">
                               Собственная служба
                             </span>
                           </div>
                           <p className="text-[11px] text-[#87888A] mt-1 leading-relaxed">
-                            Собственная служба логистики «СИМОНА». Бережный занос в квартиру, распаковка прибора, проверка целостности при вас и вывоз упаковки.
+                            Собственная служба логистики «СИМОНА». Бережный занос в квартиру, распаковка прибора и проверка целостности при вас.
                           </p>
                         </div>
                       </div>
@@ -405,7 +424,7 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Delivery Address Fields (if delivery chosen) */}
-                {deliveryType === 'WHITE_GLOVE_DELIVERY' && (
+                {deliveryType === 'COURIER_DELIVERY' && (
                   <div className="mt-5 pt-5 border-t border-[#2B313A] space-y-3">
                     <h3 className="text-xs font-semibold text-white">Адрес доставки</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
@@ -472,21 +491,34 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                 )}
+
+                <div className="mt-4">
+                  <label className="block text-[10px] text-[#87888A] mb-1">
+                    Комментарий к заказу (пожелания по времени или подключению)
+                  </label>
+                  <input
+                    type="text"
+                    value={deliveryComment}
+                    onChange={(e) => setDeliveryComment(e.target.value)}
+                    placeholder="Например: требуется профессиональная установка и подключение встраиваемой техники"
+                    className="w-full px-3 py-2 rounded-xl bg-[#1E2228] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal"
+                  />
+                </div>
               </div>
 
-              {/* 3. Payment Method (Incorporating User Review Comments!) */}
+              {/* 3. Payment Method */}
               <div className="p-6 rounded-2xl bg-[#16191D] border border-[#2B313A]">
                 <div className="flex items-center space-x-2.5 mb-4">
                   <span className="w-6 h-6 rounded-md bg-simona-teal/20 text-simona-teal text-xs font-bold flex items-center justify-center">
                     3
                   </span>
-                  <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+                  <h2 className="text-sm font-bold text-white tracking-wide">
                     Способ оплаты
                   </h2>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Option 1: In Salon (Requested by user) */}
+                  {/* Option 1: In Salon */}
                   <label
                     onClick={() => setPaymentMethod('IN_SALON')}
                     className={`p-4 rounded-xl border transition-all cursor-pointer ${
@@ -534,7 +566,7 @@ export default function CheckoutPage() {
                       />
                       <div>
                         <div className="flex items-center space-x-1.5">
-                          <CreditCard className="w-4 h-4 text-simona-teal" />
+                          <SimonaIconShieldCheck className="w-4 h-4 text-simona-teal" />
                           <span className="text-xs font-bold text-white">Картой онлайн</span>
                         </div>
                         <p className="text-[11px] text-[#87888A] mt-1">
@@ -563,11 +595,11 @@ export default function CheckoutPage() {
                       />
                       <div>
                         <div className="flex items-center space-x-1.5">
-                          <Wallet className="w-4 h-4 text-simona-teal" />
+                          <SimonaIconDelivery className="w-4 h-4 text-simona-teal" />
                           <span className="text-xs font-bold text-white">При получении</span>
                         </div>
                         <p className="text-[11px] text-[#87888A] mt-1">
-                          Картой или наличными на складе на Коминтерна 27 или курьеру
+                          Картой или наличными на складе на Коминтерна, 27 или курьеру
                         </p>
                       </div>
                     </div>
@@ -602,6 +634,27 @@ export default function CheckoutPage() {
                     </div>
                   </label>
                 </div>
+
+                {/* Task 1.4.1: Honest Inventory Payment Notice for CARD_ONLINE */}
+                {paymentMethod === 'CARD_ONLINE' && (
+                  <div className="mt-4 pt-4 border-t border-[#2B313A]">
+                    {hasNonLocalStockItems ? (
+                      <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
+                        <SimonaIconClock className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                        <p className="text-xs text-amber-200 leading-relaxed">
+                          В заказе есть позиции, требующие подтверждения наличия или сверки схемы монтажа. Ссылка на онлайн-оплату придет вам на почту сразу после проверки заказа экспертом.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="p-3.5 rounded-xl bg-simona-teal/10 border border-simona-teal/30 flex items-start gap-3">
+                        <SimonaIconCheckCircle className="w-4 h-4 text-simona-teal shrink-0 mt-0.5" />
+                        <p className="text-xs text-[#D7D9DB] leading-relaxed">
+                          Все позиции в наличии на центральном складе (Коминтерна, 27). Доступна прямая онлайн-оплата с двухстадийным холдированием средств через ЮKassa (54-ФЗ).
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* B2B Details if invoice selected */}
                 {paymentMethod === 'B2B_INVOICE' && (
@@ -638,7 +691,7 @@ export default function CheckoutPage() {
             {/* Right 5 Columns: Order Summary Card */}
             <div className="lg:col-span-5">
               <div className="sticky top-28 p-6 rounded-2xl bg-[#16191D] border border-[#2B313A] space-y-6">
-                <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+                <h2 className="text-sm font-bold text-white tracking-wide">
                   Ваш заказ ({cart.length})
                 </h2>
 
@@ -651,18 +704,19 @@ export default function CheckoutPage() {
                     >
                       <div className="flex items-center space-x-3 min-w-0">
                         <div className="w-12 h-12 rounded-md bg-[#16191D] p-1 shrink-0 flex items-center justify-center border border-[#2B313A]">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={item.product.images?.[0] || ''}
-                            alt={item.product.name}
+                            alt={formatProductName(item.product)}
                             className="w-full h-full object-contain"
                           />
                         </div>
                         <div className="min-w-0">
                           <p className="text-xs font-semibold text-white truncate">
-                            {item.product.name}
+                            {formatProductName(item.product)}
                           </p>
-                          <p className="text-[10px] text-[#87888A]">
-                            {item.product.brand} • {item.quantity} шт.
+                          <p className="text-[10px] text-[#87888A] font-mono">
+                            Код: {item.product.sku} • {item.quantity} шт.
                           </p>
                         </div>
                       </div>
@@ -697,7 +751,7 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover active:scale-[0.99] text-white font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-simona-teal/20 cursor-pointer disabled:opacity-50"
+                  className="w-full py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover active:scale-[0.99] text-white font-semibold text-sm tracking-wide transition shadow-lg shadow-simona-teal/20 cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? 'Оформление заказа...' : `Подтвердить заказ — ${formatPrice(grandTotal)}`}
                 </button>

@@ -1,17 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
-import { AlertCircle } from 'lucide-react';
 import {
   SimonaIconMax,
   SimonaIconCheckCircle,
   SimonaIconSparkles,
+  SimonaIconInfo,
 } from '@/components/brand/SimonaIcons';
 import { useStore } from '@/components/providers/StoreContext';
 import { LuxuryModalShell } from '@/components/modals/LuxuryModalShell';
+import { useAnalyticsData } from '@/lib/analytics/utm';
+import { trackGoal } from '@/lib/analytics/tracker';
 
 export function EquipmentSelectionModal() {
   const { modal, closeModal } = useStore();
+  const analyticsData = useAnalyticsData();
   const [phone, setPhone] = useState('');
   const [name, setName] = useState('');
   const [agree, setAgree] = useState(true);
@@ -44,6 +47,7 @@ export function EquipmentSelectionModal() {
           name: name.trim() || 'Клиент (Подбор)',
           phone: phone.trim(),
           comment: 'Запрос на подбор бытовой техники',
+          ...analyticsData,
         }),
       });
 
@@ -51,6 +55,10 @@ export function EquipmentSelectionModal() {
       if (!data.success) throw new Error(data.error || 'Ошибка отправки');
 
       setSuccess(true);
+      trackGoal('EQUIPMENT_SELECTION', {
+        name: name.trim() || 'Клиент (Подбор)',
+        phone: phone.trim(),
+      });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Ошибка отправки заявки';
       setError(errorMessage);
@@ -74,7 +82,7 @@ export function EquipmentSelectionModal() {
       onClose={handleClose}
       maxWidth="max-w-lg"
       padding="p-5 sm:p-7"
-      badgeText={!success ? 'ОТПРАВИТЬ ЗАЯВКУ' : undefined}
+      badgeText={!success ? 'Отправить заявку' : undefined}
       badgeVariant="teal"
       title={!success ? 'Подбор бытовой техники' : undefined}
       subtitle={
@@ -84,14 +92,14 @@ export function EquipmentSelectionModal() {
       }
     >
       {success ? (
-        <div className="text-center py-6 sm:py-8">
-          <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-simona-teal/15 border border-simona-teal/30 flex items-center justify-center text-simona-teal shadow-[0_0_24px_rgba(0,151,156,0.2)]">
+        <div className="text-left py-6 sm:py-8">
+          <div className="w-14 h-14 mb-4 rounded-2xl bg-simona-teal/15 border border-simona-teal/30 flex items-center justify-center text-simona-teal shadow-[0_0_24px_rgba(0,151,156,0.2)]">
             <SimonaIconCheckCircle className="w-7 h-7" />
           </div>
           <h3 className="text-xl sm:text-2xl font-montserrat font-bold text-white mb-2">
             Запрос принят!
           </h3>
-          <p className="text-xs sm:text-sm text-[#87888A] max-w-sm mx-auto leading-relaxed mb-6">
+          <p className="text-xs sm:text-sm text-[#87888A] max-w-sm leading-relaxed mb-6">
             Эксперт салона СИМОНА свяжется с вами в течение 15 минут для консультации и подбора техники.
           </p>
           <button
@@ -105,7 +113,7 @@ export function EquipmentSelectionModal() {
         <div className="space-y-4">
           {/* 1. Fast Messengers Block (Telegram & MAX) */}
           <div className="p-3.5 sm:p-4 rounded-2xl bg-[#1E2228] border border-[#2B313A]">
-            <div className="text-xs font-medium text-[#87888A] mb-2.5 text-center sm:text-left">
+            <div className="text-xs font-medium text-[#87888A] mb-2.5 text-left">
               Быстрая консультация в мессенджерах:
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -182,7 +190,7 @@ export function EquipmentSelectionModal() {
 
             {error && (
               <div className="p-2.5 rounded-xl bg-red-950/40 border border-red-800/60 text-red-300 text-xs flex items-center">
-                <AlertCircle className="w-4 h-4 mr-2 shrink-0" />
+                <SimonaIconInfo className="w-4 h-4 mr-2 shrink-0" />
                 <span>{error}</span>
               </div>
             )}

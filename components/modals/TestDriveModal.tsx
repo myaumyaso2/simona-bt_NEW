@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { AlertCircle } from 'lucide-react';
-import { SimonaIconCheckCircle } from '@/components/brand/SimonaIcons';
+import { SimonaIconCheckCircle, SimonaIconInfo } from '@/components/brand/SimonaIcons';
 import { useStore } from '@/components/providers/StoreContext';
 import { LuxuryModalShell } from '@/components/modals/LuxuryModalShell';
 import { formatProductName } from '@/lib/catalog/productTitle';
+import { useAnalyticsData } from '@/lib/analytics/utm';
+import { trackGoal } from '@/lib/analytics/tracker';
 
 export function TestDriveModal() {
   const { modal, closeModal } = useStore();
+  const analyticsData = useAnalyticsData();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [date, setDate] = useState('');
@@ -49,6 +51,7 @@ export function TestDriveModal() {
           productId: modal.product?.id,
           productName: modal.product ? formatProductName(modal.product) : undefined,
           comment,
+          ...analyticsData,
         }),
       });
 
@@ -56,6 +59,13 @@ export function TestDriveModal() {
       if (!data.success) throw new Error(data.error);
 
       setSuccess(true);
+      trackGoal('ACTIVE_KITCHEN_TESTDRIVE', {
+        name,
+        phone,
+        preferredDate: date,
+        preferredTime: time,
+        productId: modal.product?.id,
+      });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Произошла ошибка при отправке заявки';
       setError(errorMessage);
@@ -78,14 +88,14 @@ export function TestDriveModal() {
       }
     >
       {success ? (
-        <div className="text-center py-6 sm:py-8">
-          <div className="w-16 h-16 rounded-2xl bg-simona-teal/15 border border-simona-teal/30 text-simona-teal flex items-center justify-center mx-auto mb-4 shadow-[0_0_24px_rgba(0,151,156,0.2)]">
+        <div className="text-left py-6 sm:py-8">
+          <div className="w-16 h-16 rounded-2xl bg-simona-teal/15 border border-simona-teal/30 text-simona-teal flex items-center justify-center mb-4 shadow-[0_0_24px_rgba(0,151,156,0.2)]">
             <SimonaIconCheckCircle className="w-8 h-8" />
           </div>
           <h3 className="text-2xl font-montserrat font-bold text-white mb-2">
             Запись подтверждена!
           </h3>
-          <p className="text-xs sm:text-sm text-[#87888A] font-normal max-w-sm mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#87888A] font-normal max-w-sm leading-relaxed">
             Шеф-эксперт «Активной кухни» салона СИМОНА (ул. Белинского, 15) свяжется с вами для согласования меню тест-драйва и времени визита.
           </p>
           <button
@@ -108,7 +118,7 @@ export function TestDriveModal() {
 
           {error && (
             <div className="mb-4 p-3 rounded-xl bg-red-950/40 border border-red-800/60 text-red-300 text-xs flex items-center">
-              <AlertCircle className="w-4 h-4 mr-2 shrink-0" />
+              <SimonaIconInfo className="w-4 h-4 mr-2 shrink-0" />
               <span>{error}</span>
             </div>
           )}

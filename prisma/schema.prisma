@@ -36,17 +36,47 @@ model Product {
   imagesJson      String   @default("[]") // Array of image URLs
   badge           String?  // e.g. "Хит", "Флагман", "Премьера"
   isFeatured      Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  systemArticle   String?                         // Очищенный заводской артикул для связки спецпредложений
+  priceOpt        Float?                          // Оптовая цена 1С для менеджеров
+  isDiscount      Boolean  @default(false)        // Признак Уценка (колонка 9)
+  isSpecial       Boolean  @default(false)        // Признак Спец предложение (колонка 7)
+  noPrice         Boolean  @default(false)        // Признак Без цены (колонка 11)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@index([sku])
+  @@index([oneCGuid])
+  @@index([systemArticle])
+  @@index([isActive])
   @@index([brand])
   @@index([category])
 }
 
+model Customer {
+  id             String    @id @default(cuid())
+  phone          String    @unique // Нормализованный телефон +7XXXXXXXXXX (или UMI-{umiObjectId})
+  email          String?
+  name           String
+  passwordHash   String?   // Современный хэш пароля (scrypt/bcrypt)
+  legacyPassword String?   // Legacy-хэш пароля из UMI.CMS (MD5 / SHA256+HASH_SALT)
+  role           String    @default("CLIENT") // CLIENT, DESIGNER
+  companyName    String?   // Юрлицо / Бренд B2B-партнера
+  address        String?   // Основной адрес доставки клиента
+  otpCode        String?   // Разовый 6-значный код входа по Email
+  otpExpiresAt   DateTime? // Срок действия OTP-кода
+  umiObjectId    Int?      @unique // ID объекта пользователя в UMI.CMS
+  bonusPoints    Int       @default(0)
+  orders         Order[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([email])
+}
+
 model Lead {
   id                String   @id @default(cuid())
-  type              String   // ACTIVE_KITCHEN_TESTDRIVE, SHOWROOM_VISIT, PROJECT_MATCHING, B2B_CLUB, KITCHEN_ESTIMATE, QUICK_CONSULT
+  type              String   // ACTIVE_KITCHEN_TESTDRIVE, SHOWROOM_VISIT, PROJECT_MATCHING, B2B_CLUB, B2B_OPT, KITCHEN_ESTIMATE, QUICK_CONSULT, EQUIPMENT_SELECTION, PRICE_MATCH
   name              String
   phone             String
   email             String?
@@ -72,21 +102,28 @@ model Lead {
 }
 
 model Order {
-  id              String   @id @default(cuid())
-  orderNumber     String   @unique
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  umiOrderId      Int?        @unique
+  customerId      String?
+  customer        Customer?   @relation(fields: [customerId], references: [id])
   customerName    String
   customerPhone   String
   customerEmail   String?
-  deliveryType    String   @default("PICKUP_WAREHOUSE_KOMINTERNA") // PICKUP_WAREHOUSE_KOMINTERNA, PICKUP_BELINSKOGO_15, WHITE_GLOVE_DELIVERY
+  deliveryType    String      @default("PICKUP_WAREHOUSE_KOMINTERNA") // PICKUP_WAREHOUSE_KOMINTERNA, PICKUP_BELINSKOGO_15, COURIER_DELIVERY
   deliveryAddress String?
   deliveryDate    String?
   deliveryComment String?
   totalAmount     Float
-  status          String   @default("NEW")     // NEW, CONFIRMED, PAID, READY_FOR_PICKUP, DELIVERED, CANCELLED
-  paymentStatus   String   @default("PENDING") // PENDING, PAID, CANCELLED
-  paymentMethod   String   @default("IN_SALON") // IN_SALON, CARD_ONLINE, ON_RECEIPT, B2B_INVOICE
+  status          String      @default("NEW")     // NEW, CONFIRMED, PAID, READY_FOR_PICKUP, DELIVERED, CANCELLED
+  paymentStatus   String      @default("PENDING") // PENDING, HOLD, PAID, CANCELLED, REFUNDED
+  paymentMethod   String      @default("IN_SALON") // IN_SALON, CARD_ONLINE, ON_RECEIPT, B2B_INVOICE
   paymentId       String?
-  itemsJson       String   // Array of { productId, sku, name, price, quantity, brand, image }
+  paymentLink     String?                       // Персональная платежная ссылка ЮKassa
+  companyName     String?
+  companyInn      String?
+  itemsJson       String      // Array of { productId, sku, name, price, quantity, brand, image, physicalStatus }
+  orderItems      OrderItem[]
   ymClientId      String?
   yclid           String?
   utmSource       String?
@@ -94,9 +131,32 @@ model Order {
   utmCampaign     String?
   utmContent      String?
   utmTerm         String?
-  oneCSynced      Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  asanaTaskId     String?
+  oneCSynced      Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([customerId])
+  @@index([customerPhone])
+  @@index([paymentId])
+}
+
+model OrderItem {
+  id             String  @id @default(cuid())
+  orderId        String
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String?
+  sku            String?
+  name           String
+  brand          String?
+  price          Float
+  quantity       Int     @default(1)
+  image          String?
+  slug           String?
+  physicalStatus String?
+
+  @@index([orderId])
+  @@index([sku])
 }
 
 model Redirect301 {
@@ -109,11 +169,17 @@ model Redirect301 {
 }
 
 model ChatMessage {
-  id          String   @id @default(cuid())
-  sessionId   String
-  sender      String   // CLIENT, MANAGER, SYSTEM
-  text        String
-  tgMessageId Int?
-  isRead      Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id           String   @id @default(cuid())
+  sessionId    String
+  sender       String   // CLIENT, MANAGER, SYSTEM
+  text         String
+  clientName   String?
+  clientPhone  String?
+  pageUrl      String?
+  tgMessageId  Int?
+  maxMessageId String?
+  isRead       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@index([sessionId])
 }

@@ -14,9 +14,12 @@ import { LuxuryModalShell } from '@/components/modals/LuxuryModalShell';
 import { formatProductName } from '@/lib/catalog/productTitle';
 import { formatPrice } from '@/lib/utils';
 import { formatBrandName } from '@/lib/formatters';
+import { useAnalyticsData } from '@/lib/analytics/utm';
+import { trackGoal } from '@/lib/analytics/tracker';
 
 export function PriceMatchModal() {
   const { modal, closeModal } = useStore();
+  const analyticsData = useAnalyticsData();
   const [competitorUrl, setCompetitorUrl] = useState('');
   const [competitorPrice, setCompetitorPrice] = useState('');
   const [phone, setPhone] = useState('');
@@ -82,6 +85,7 @@ export function PriceMatchModal() {
           productId: product?.id,
           productName: product ? formatProductName(product) : undefined,
           comment: compiledComment,
+          ...analyticsData,
         }),
       });
 
@@ -89,6 +93,13 @@ export function PriceMatchModal() {
       if (!data.success) throw new Error(data.error || 'Ошибка отправки заявки');
 
       setSuccess(true);
+      trackGoal('PRICE_MATCH', {
+        name: name.trim() || 'Покупатель (Снизим цену)',
+        phone: phone.trim(),
+        productName: product ? formatProductName(product) : undefined,
+        competitorPrice: competitorPrice.trim(),
+        competitorUrl: competitorUrl.trim(),
+      });
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : 'Не удалось отправить заявку. Попробуйте еще раз.';

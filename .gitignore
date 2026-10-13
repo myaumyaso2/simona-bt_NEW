@@ -39,5 +39,7 @@ next-env.d.ts
 /tmp/
 /scratch/
 /data/promo_refs/
+/data/exported_umi_customers_orders.json.gz
 next_build.tar.gz
 *.csv
+

@@ -1,18 +1,25 @@
 'use client';
 
 import React, { useState } from 'react';
-import { AlertCircle } from 'lucide-react';
-import { SimonaIconCheckCircle } from '@/components/brand/SimonaIcons';
+import {
+  SimonaIconCheckCircle,
+  SimonaIconInfo,
+  SimonaIconFile,
+} from '@/components/brand/SimonaIcons';
 import { useStore } from '@/components/providers/StoreContext';
 import { LuxuryModalShell } from '@/components/modals/LuxuryModalShell';
 import { formatProductName } from '@/lib/catalog/productTitle';
+import { useAnalyticsData } from '@/lib/analytics/utm';
+import { trackGoal } from '@/lib/analytics/tracker';
 
 export function ProjectMatchingModal() {
   const { modal, closeModal } = useStore();
+  const analyticsData = useAnalyticsData();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [budget, setBudget] = useState('500 000 – 1 000 000 ₽');
   const [comment, setComment] = useState('');
+  const [projectFile, setProjectFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -26,6 +33,7 @@ export function ProjectMatchingModal() {
     setName('');
     setPhone('');
     setComment('');
+    setProjectFile(null);
     closeModal();
   };
 
@@ -35,23 +43,53 @@ export function ProjectMatchingModal() {
     setError('');
 
     try {
-      const res = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: isKitchen ? 'KITCHEN_ESTIMATE' : 'PROJECT_MATCHING',
-          name,
-          phone,
-          productId: modal.product?.id,
-          productName: modal.product ? formatProductName(modal.product) : undefined,
-          comment: `Бюджет: ${budget}. Пожелания: ${comment}`,
-        }),
-      });
+      const leadType = isKitchen ? 'KITCHEN_ESTIMATE' : 'PROJECT_MATCHING';
+      const compiledComment = `Бюджет: ${budget}. Пожелания: ${comment}`;
+
+      let res: Response;
+      if (projectFile) {
+        const formData = new FormData();
+        formData.append('type', leadType);
+        formData.append('name', name);
+        formData.append('phone', phone);
+        if (modal.product?.id) formData.append('productId', modal.product.id);
+        if (modal.product) formData.append('productName', formatProductName(modal.product));
+        formData.append('comment', compiledComment);
+        formData.append('file', projectFile);
+        for (const [k, v] of Object.entries(analyticsData)) {
+          if (v) formData.append(k, String(v));
+        }
+        res = await fetch('/api/leads', {
+          method: 'POST',
+          body: formData,
+        });
+      } else {
+        res = await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: leadType,
+            name,
+            phone,
+            productId: modal.product?.id,
+            productName: modal.product ? formatProductName(modal.product) : undefined,
+            comment: compiledComment,
+            ...analyticsData,
+          }),
+        });
+      }
 
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
 
       setSuccess(true);
+      trackGoal(leadType, {
+        name,
+        phone,
+        budget,
+        hasFile: !!projectFile,
+        productId: modal.product?.id,
+      });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Ошибка отправки';
       setError(errorMessage);
@@ -86,14 +124,14 @@ export function ProjectMatchingModal() {
       }
     >
       {success ? (
-        <div className="text-center py-6 sm:py-8">
-          <div className="w-16 h-16 rounded-2xl bg-simona-teal/15 border border-simona-teal/30 text-simona-teal flex items-center justify-center mx-auto mb-4 shadow-[0_0_24px_rgba(0,151,156,0.2)]">
+        <div className="text-left py-6 sm:py-8">
+          <div className="w-16 h-16 rounded-2xl bg-simona-teal/15 border border-simona-teal/30 text-simona-teal flex items-center justify-center mb-4 shadow-[0_0_24px_rgba(0,151,156,0.2)]">
             <SimonaIconCheckCircle className="w-8 h-8" />
           </div>
           <h3 className="text-2xl font-montserrat font-bold text-white mb-2">
             Запрос принят!
           </h3>
-          <p className="text-xs sm:text-sm text-[#87888A] font-normal max-w-sm mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#87888A] font-normal max-w-sm leading-relaxed">
             Эксперт салона СИМОНА подготовит персональную подборку комплекта техники и свяжется с вами.
           </p>
           <button
@@ -107,7 +145,7 @@ export function ProjectMatchingModal() {
         <div>
           {error && (
             <div className="mb-4 p-3 rounded-xl bg-red-950/40 border border-red-800/60 text-red-300 text-xs flex items-center">
-              <AlertCircle className="w-4 h-4 mr-2 shrink-0" />
+              <SimonaIconInfo className="w-4 h-4 mr-2 shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -147,8 +185,33 @@ export function ProjectMatchingModal() {
                 <option value="до 500 000 ₽">до 500 000 ₽</option>
                 <option value="500 000 – 1 000 000 ₽">500 000 – 1 000 000 ₽</option>
                 <option value="1 000 000 – 2 000 000 ₽">1 000 000 – 2 000 000 ₽</option>
-                <option value="от 2 000 000 ₽ (Премиум-класс)">от 2 000 000 ₽ (Премиум-класс)</option>
+                <option value="от 2 000 000 ₽">от 2 000 000 ₽</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-[#D7D9DB] mb-1.5 font-medium">
+                Прикрепить дизайн-проект или эскиз кухни (PDF, DWG, ZIP, фото)
+              </label>
+              <label className="flex items-center gap-3 p-3.5 border border-dashed border-[#2B313A] hover:border-simona-teal/70 rounded-xl cursor-pointer bg-[#111315] hover:bg-[#1E2228]/50 transition">
+                <SimonaIconFile className="w-5 h-5 text-simona-teal shrink-0" />
+                <div className="min-w-0">
+                  <span className="text-xs text-[#D7D9DB] font-medium block truncate">
+                    {projectFile ? projectFile.name : 'Нажмите для выбора файла с устройства'}
+                  </span>
+                  <span className="text-[10px] text-[#87888A]">PDF, DWG, ZIP, JPG, PNG до 50 МБ</span>
+                </div>
+                <input
+                  type="file"
+                  accept=".pdf,.dwg,.zip,.rar,.jpg,.jpeg,.png,.webp,.xlsx,.xls,.doc,.docx"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setProjectFile(e.target.files[0]);
+                    }
+                  }}
+                />
+              </label>
             </div>
 
             <div>
@@ -159,7 +222,7 @@ export function ProjectMatchingModal() {
                 rows={3}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Нужен комплект Miele/ASKO: духовка, индукция, посудомойка, винный шкаф..."
+                placeholder="Нужен комплект техники: духовой шкаф, индукция, посудомойка, холодильник..."
                 className="w-full px-4 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 transition font-medium resize-none"
               />
             </div>
@@ -172,7 +235,7 @@ export function ProjectMatchingModal() {
               {loading ? 'Отправка...' : 'Запросить расчет'}
             </button>
 
-            <p className="text-[11px] text-[#87888A] text-center leading-tight pt-1">
+            <p className="text-[11px] text-[#87888A] text-left leading-tight pt-1">
               Нажимая кнопку, вы даете согласие на обработку персональных данных.
             </p>
           </form>

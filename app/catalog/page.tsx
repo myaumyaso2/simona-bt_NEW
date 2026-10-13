@@ -9,7 +9,7 @@ import {
   getCategoriesBySection,
   getCategoryBySlug,
 } from '@/data/catalogCategories';
-import { getCatalogProducts } from '@/lib/products';
+import { getCatalogProducts, searchCatalogProducts } from '@/lib/products';
 
 export const metadata: Metadata = {
   title: 'Каталог бытовой техники в Нижнем Новгороде | СИМОНА — 8 000+ моделей',
@@ -27,6 +27,7 @@ export const dynamic = 'force-dynamic';
 
 interface CatalogPageProps {
   searchParams?: {
+    q?: string;
     category?: string;
     section?: string;
     brand?: string;
@@ -34,6 +35,37 @@ interface CatalogPageProps {
 }
 
 export default async function CatalogPage({ searchParams }: CatalogPageProps) {
+  // 0. Full-text Search View with Faceted Filtering: /catalog?q=...
+  if (searchParams?.q && searchParams.q.trim() !== '') {
+    const cleanQuery = searchParams.q.trim();
+    const { products, total } = await searchCatalogProducts(cleanQuery, 1500);
+
+    const breadcrumbs = [
+      { name: 'Главная', url: '/' },
+      { name: 'Каталог', url: '/catalog' },
+      {
+        name: `Поиск: «${cleanQuery}»`,
+        url: `/catalog?q=${encodeURIComponent(cleanQuery)}`,
+      },
+    ];
+
+    return (
+      <>
+        <SchemaOrgBreadcrumbs items={breadcrumbs} />
+        <Suspense fallback={<div className="min-h-screen bg-[#111315]" />}>
+          <CatalogView
+            initialProducts={products}
+            totalCount={total}
+            searchQuery={cleanQuery}
+            categoryTitle={`Результаты поиска: «${cleanQuery}»`}
+            categoryDescription={`Найдено ${total} приборов по запросу «${cleanQuery}» в каталоге бытовой техники «СИМОНА». Используйте вкладки физического наличия и фильтры слева для точного отбора.`}
+            initialBrand={searchParams.brand}
+          />
+        </Suspense>
+      </>
+    );
+  }
+
   // 1. Dedicated Brand Catalog View: /catalog?brand=BOSCH (supports optional &category=slug)
   if (searchParams?.brand) {
     const brandUpper = searchParams.brand.toUpperCase();
@@ -45,7 +77,10 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
     const breadcrumbs = [
       { name: 'Главная', url: '/' },
       { name: 'Каталог', url: '/catalog' },
-      { name: `Техника ${brandUpper}`, url: `/catalog?brand=${encodeURIComponent(searchParams.brand)}` },
+      {
+        name: `Техника ${brandUpper}`,
+        url: `/catalog?brand=${encodeURIComponent(searchParams.brand)}`,
+      },
     ];
 
     return (
