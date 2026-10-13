@@ -16,6 +16,7 @@ import {
   SimonaIconChevronRight,
   SimonaIconClock,
 } from '@/components/brand/SimonaIcons';
+import { SimonaLogo } from '@/components/brand/SimonaLogo';
 
 interface TelegramLiveSectionProps {
   initialVideos?: TelegramVideo[];
@@ -263,17 +264,12 @@ export function TelegramLiveSection({ initialVideos = [] }: TelegramLiveSectionP
                       ? 'w-[calc((100%-16px)/2)] min-w-[calc((100%-16px)/2)]'
                       : 'w-[calc((100%-32px)/3)] min-w-[calc((100%-32px)/3)]';
 
-                  const formattedDate = vid.date
-                    ? new Date(vid.date).toLocaleDateString('ru-RU', {
-                        day: 'numeric',
-                        month: 'short',
-                      })
-                    : null;
-
                   return (
-                    <div
+                    <TelegramVideoCard
                       key={vid.id || idx}
-                      onClick={() =>
+                      video={vid}
+                      itemWidthStyle={itemWidthStyle}
+                      onOpenModal={() =>
                         openModal('VIDEO_PREVIEW', {
                           videoData: {
                             title: vid.title,
@@ -288,54 +284,7 @@ export function TelegramLiveSection({ initialVideos = [] }: TelegramLiveSectionP
                           },
                         })
                       }
-                      className={`${itemWidthStyle} flex-shrink-0 group cursor-pointer flex flex-col rounded-2xl overflow-hidden border border-[#2B313A] bg-[#111315]/80 hover:border-simona-teal transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-simona-teal/5`}
-                    >
-                      {/* Video Thumbnail Box */}
-                      <div className="relative aspect-[4/3] w-full bg-black overflow-hidden">
-                        <img
-                          src={vid.thumbnail}
-                          alt={vid.title}
-                          loading="lazy"
-                          className="w-full h-full object-cover opacity-80 group-hover:opacity-95 group-hover:scale-105 transition-all duration-500"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-
-                        {/* Play Button Overlay */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-11 h-11 rounded-xl bg-black/60 group-hover:bg-simona-teal border border-white/20 text-white flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg">
-                            <SimonaIconPlay className="w-4 h-4 ml-0.5 fill-white" />
-                          </div>
-                        </div>
-
-                        {/* Duration Chip (Top Right) */}
-                        {vid.duration && (
-                          <div className="absolute top-2.5 right-2.5 flex items-center space-x-1 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-sm text-[10px] text-white/90 border border-white/10 font-medium">
-                            <SimonaIconClock className="w-2.5 h-2.5 text-[#87888A]" />
-                            <span>{vid.duration}</span>
-                          </div>
-                        )}
-
-                        {/* Views Badge (Bottom Left) */}
-                        <div className="absolute bottom-2.5 left-2.5 flex items-center space-x-1 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-sm text-[10px] text-white/90 border border-white/10">
-                          <SimonaIconEye className="w-3 h-3 text-simona-teal" />
-                          <span>{vid.views}</span>
-                        </div>
-                      </div>
-
-                      {/* Title & Metadata Bottom Area */}
-                      <div className="p-3.5 flex flex-col justify-between flex-1 space-y-2.5">
-                        <h4 className="text-xs font-montserrat font-medium text-[#D7D9DB] group-hover:text-white transition-colors leading-snug line-clamp-2">
-                          {vid.title}
-                        </h4>
-
-                        <div className="flex items-center justify-between text-[10px] text-[#87888A] pt-1 border-t border-[#2B313A]/50">
-                          {formattedDate && <span>{formattedDate}</span>}
-                          <span className="text-simona-teal font-medium group-hover:underline ml-auto">
-                            Смотреть обзор →
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                    />
                   );
                 })}
               </div>
@@ -344,5 +293,87 @@ export function TelegramLiveSection({ initialVideos = [] }: TelegramLiveSectionP
         </div>
       </div>
     </section>
+  );
+}
+
+interface TelegramVideoCardProps {
+  video: TelegramVideo;
+  itemWidthStyle: string;
+  onOpenModal: () => void;
+}
+
+function TelegramVideoCard({ video, itemWidthStyle, onOpenModal }: TelegramVideoCardProps) {
+  const [imgError, setImgError] = useState(false);
+
+  const formattedDate = video.date
+    ? new Date(video.date).toLocaleDateString('ru-RU', {
+        day: 'numeric',
+        month: 'short',
+      })
+    : null;
+
+  return (
+    <div
+      onClick={onOpenModal}
+      className={`${itemWidthStyle} flex-shrink-0 group cursor-pointer flex flex-col rounded-2xl overflow-hidden border border-[#2B313A] bg-[#111315]/80 hover:border-simona-teal transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-simona-teal/5`}
+    >
+      {/* Video Thumbnail Box with Quiet Luxury Fallback */}
+      <div className="relative aspect-[4/3] w-full bg-[#16191D] overflow-hidden flex items-center justify-center">
+        {!imgError && video.thumbnail ? (
+          <img
+            src={video.thumbnail}
+            alt={video.title}
+            loading="lazy"
+            onError={() => setImgError(true)}
+            className="w-full h-full object-cover opacity-80 group-hover:opacity-95 group-hover:scale-105 transition-all duration-500"
+          />
+        ) : (
+          /* Quiet Luxury Brand Fallback: Simona Diamond Emblem from Figma 4350:92 */
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-[#16191D] via-[#111315] to-[#16191D] p-6 select-none">
+            <div className="w-16 h-12 opacity-30 group-hover:opacity-55 transition-opacity flex items-center justify-center">
+              <SimonaLogo signOnly variant="teal" size="lg" />
+            </div>
+            <div className="absolute inset-0 bg-radial-gradient from-simona-teal/10 to-transparent pointer-events-none" />
+          </div>
+        )}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
+
+        {/* Play Button Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-11 h-11 rounded-xl bg-black/60 group-hover:bg-simona-teal border border-white/20 text-white flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg">
+            <SimonaIconPlay className="w-4 h-4 ml-0.5 fill-white" />
+          </div>
+        </div>
+
+        {/* Duration Chip (Top Right) */}
+        {video.duration && (
+          <div className="absolute top-2.5 right-2.5 flex items-center space-x-1 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-sm text-[10px] text-white/90 border border-white/10 font-medium">
+            <SimonaIconClock className="w-2.5 h-2.5 text-[#87888A]" />
+            <span>{video.duration}</span>
+          </div>
+        )}
+
+        {/* Views Badge (Bottom Left) */}
+        <div className="absolute bottom-2.5 left-2.5 flex items-center space-x-1 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-sm text-[10px] text-white/90 border border-white/10">
+          <SimonaIconEye className="w-3 h-3 text-simona-teal" />
+          <span>{video.views}</span>
+        </div>
+      </div>
+
+      {/* Title & Metadata Bottom Area */}
+      <div className="p-3.5 flex flex-col justify-between flex-1 space-y-2.5">
+        <h4 className="text-xs font-montserrat font-medium text-[#D7D9DB] group-hover:text-white transition-colors leading-snug line-clamp-2">
+          {video.title}
+        </h4>
+
+        <div className="flex items-center justify-between text-[10px] text-[#87888A] pt-1 border-t border-[#2B313A]/50">
+          {formattedDate && <span>{formattedDate}</span>}
+          <span className="text-simona-teal font-medium group-hover:underline ml-auto">
+            Смотреть обзор →
+          </span>
+        </div>
+      </div>
+    </div>
   );
 }

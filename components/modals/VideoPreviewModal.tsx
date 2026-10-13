@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useStore } from '@/components/providers/StoreContext';
 import {
   SimonaIconClose,
@@ -10,9 +10,11 @@ import {
   SimonaIconExternalLink,
   SimonaIconClock,
 } from '@/components/brand/SimonaIcons';
+import { SimonaLogo } from '@/components/brand/SimonaLogo';
 
 export function VideoPreviewModal() {
   const { modal, closeModal, openModal } = useStore();
+  const [imgError, setImgError] = useState(false);
 
   if (modal.type !== 'VIDEO_PREVIEW' || !modal.videoData) {
     return null;
@@ -78,13 +80,23 @@ export function VideoPreviewModal() {
               />
             </div>
           ) : (
-            <div className="relative aspect-video w-full group">
-              <img
-                src={thumbnail}
-                alt={title}
-                className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            <div className="relative aspect-video w-full group bg-[#16191D] flex items-center justify-center overflow-hidden">
+              {!imgError && thumbnail ? (
+                <img
+                  src={thumbnail}
+                  alt={title}
+                  onError={() => setImgError(true)}
+                  className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
+                />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-[#16191D] via-[#111315] to-[#16191D] p-6 select-none">
+                  <div className="w-20 h-14 opacity-30 group-hover:opacity-55 transition-opacity flex items-center justify-center">
+                    <SimonaLogo signOnly variant="teal" size="xl" />
+                  </div>
+                  <div className="absolute inset-0 bg-radial-gradient from-simona-teal/10 to-transparent pointer-events-none" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
               <a
                 href={telegramUrl}
                 target="_blank"
