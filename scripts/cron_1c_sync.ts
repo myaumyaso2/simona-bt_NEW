@@ -1,7 +1,7 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { syncFastStock, syncFullCatalog } from '../lib/sync/oneCSyncService';
+import { syncFastStock, syncFullCatalog, saveSyncSession } from '../lib/sync/oneCSyncService';
 
 // Директории поиска файлов выгрузки 1С (боевой сервер + локальный data/)
 const INCOMING_DIRS = [
@@ -181,6 +181,28 @@ async function main() {
             syncState.lastCatalogSyncAt = new Date().toISOString();
             syncState.lastCatalogResultSummary = summary;
             saveSyncState(syncState);
+
+            const sessionId = String(Date.now());
+            saveSyncSession({
+              id: sessionId,
+              startedAt: new Date(Date.now() - result.durationMs).toISOString(),
+              finishedAt: new Date().toISOString(),
+              durationMs: result.durationMs,
+              fileName: path.basename(catalogFile),
+              totalRows: result.totalCsvRows,
+              stats: {
+                totalChanges: result.allChanges.length,
+                matchedProducts: result.matchedProducts,
+                updatedPrices: result.updatedPrices,
+                updatedStocks: result.updatedStocks,
+                updatedBadges: result.updatedBadges,
+                createdProducts: result.createdProducts,
+                deactivatedProducts: result.deactivatedProducts,
+                inheritedSpecialPhotos: result.inheritedSpecialPhotos,
+              },
+              changes: result.allChanges,
+            });
+            log(`📊 Saved sync session ${sessionId} (${result.allChanges.length} total changes recorded)`);
 
             const backupName = `1C_import_${Date.now()}.csv`;
             fs.copyFileSync(catalogFile, path.join(BACKUP_DIR, backupName));

@@ -19,8 +19,9 @@ import {
   SimonaIconPlus,
 } from '@/components/brand/SimonaIcons';
 import { formatPrice } from '@/lib/utils';
+import { ManagerSyncView } from './ManagerSyncView';
 
-export type ManagerTabId = 'orders' | 'leads' | 'products-no-photo' | 'chat';
+export type ManagerTabId = 'orders' | 'leads' | 'products-no-photo' | 'chat' | 'sync';
 
 interface ChatMessageRecord {
   id: string;
@@ -265,7 +266,7 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const t = params.get('tab') as ManagerTabId | null;
-      if (t && ['orders', 'leads', 'products-no-photo', 'chat'].includes(t)) {
+      if (t && ['orders', 'leads', 'products-no-photo', 'chat', 'sync'].includes(t)) {
         setActiveTab(t);
       }
     }
@@ -552,6 +553,19 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
             >
               <SimonaIconChat className="w-4 h-4" />
               <span>Онлайн-чат ({chatSessions.length})</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('sync')}
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center space-x-2 transition cursor-pointer ${
+                activeTab === 'sync'
+                  ? 'bg-simona-teal text-white shadow-lg shadow-simona-teal/20'
+                  : 'bg-[#16191D] text-[#D7D9DB] border border-[#2B313A] hover:border-simona-teal/50'
+              }`}
+            >
+              <SimonaIconClock className="w-4 h-4" />
+              <span>Синхронизация 1С</span>
             </button>
           </div>
         </div>
@@ -1436,6 +1450,9 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
             </div>
           </div>
         )}
+
+        {/* 1C Sync Tab */}
+        {activeTab === 'sync' && <ManagerSyncView />}
       </div>
     </main>
   );

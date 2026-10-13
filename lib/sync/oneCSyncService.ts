@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import { prisma } from '../prisma';
 import {
   parseStockCsvContent,
@@ -112,6 +113,51 @@ export interface SyncFastStockResult {
   }>;
 }
 
+export interface SyncChangeRecord {
+  code: string;
+  sku: string;
+  name: string;
+  brand: string;
+  category: string;
+  slug?: string;
+  changeType: 'PRICE' | 'STOCK' | 'BADGE' | 'CREATED' | 'DEACTIVATED' | 'INHERITED_PHOTO';
+  oldValue?: string | number | null;
+  newValue?: string | number | null;
+  detail: string;
+  reason?: string;
+  hasPhoto?: boolean;
+}
+
+export interface SyncSessionData {
+  id: string;
+  startedAt: string;
+  finishedAt: string;
+  durationMs: number;
+  fileName: string;
+  totalRows: number;
+  stats: {
+    totalChanges: number;
+    matchedProducts: number;
+    updatedPrices: number;
+    updatedStocks: number;
+    updatedBadges: number;
+    createdProducts: number;
+    deactivatedProducts: number;
+    inheritedSpecialPhotos: number;
+  };
+  changes: SyncChangeRecord[];
+}
+
+export interface SyncSessionSummary {
+  id: string;
+  startedAt: string;
+  finishedAt: string;
+  durationMs: number;
+  fileName: string;
+  totalRows: number;
+  stats: SyncSessionData['stats'];
+}
+
 export interface SyncCatalogResult {
   success: boolean;
   totalCsvRows: number;
@@ -133,6 +179,7 @@ export interface SyncCatalogResult {
     changeType: 'PRICE' | 'STOCK' | 'BADGE' | 'CREATED' | 'DEACTIVATED' | 'INHERITED_PHOTO';
     detail: string;
   }>;
+  allChanges: SyncChangeRecord[];
 }
 
 /**
@@ -336,6 +383,7 @@ export async function syncFullCatalog(
   let inheritedSpecialPhotos = 0;
   let deactivatedProducts = 0;
   const sampleChanges: SyncCatalogResult['sampleChanges'] = [];
+  const allChanges: SyncChangeRecord[] = [];
 
   const { totalRows, processedItems, disabledSpecialCount } = await streamCatalogCsv(
     filePath,
@@ -354,6 +402,7 @@ export async function syncFullCatalog(
           id: true,
           oneCGuid: true,
           sku: true,
+          slug: true,
           name: true,
           brand: true,
           category: true,
@@ -481,16 +530,31 @@ export async function syncFullCatalog(
             changes.isActive = targetIsActive;
             if (!targetIsActive) {
               deactivatedProducts++;
+              const reason = !hasPhoto
+                ? 'Отсутствует фото'
+                : item.isDisabled
+                ? 'Не используется (кол. 10)'
+                : item.isDiscount && item.rawAmount === 0
+                ? 'Уценка с остатком 0'
+                : item.isRetired
+                ? 'Выведено из ассортимента'
+                : 'Нет розничной цены';
+
+              allChanges.push({
+                code: item.code,
+                sku: existingProduct.sku,
+                name: existingProduct.name,
+                brand: existingProduct.brand,
+                category: existingProduct.category,
+                slug: existingProduct.slug,
+                changeType: 'DEACTIVATED',
+                oldValue: 'Активен',
+                newValue: 'Скрыт',
+                detail: `Скрыт с витрины (${reason})`,
+                reason,
+              });
+
               if (sampleChanges.length < 100) {
-                const reason = !hasPhoto
-                  ? 'Отсутствует фото'
-                  : item.isDisabled
-                  ? 'Не используется (кол. 10)'
-                  : item.isDiscount && item.rawAmount === 0
-                  ? 'Уценка с остатком 0'
-                  : item.isRetired
-                  ? 'Выведено из ассортимента'
-                  : 'Нет розничной цены';
                 sampleChanges.push({
                   code: item.code,
                   sku: existingProduct.sku,
@@ -508,6 +572,18 @@ export async function syncFullCatalog(
             changes.shortDesc = currentShortDesc;
             changes.dimensions = currentDimensions;
             changes.schematicPdfUrl = currentSchematicPdfUrl;
+            allChanges.push({
+              code: item.code,
+              sku: existingProduct.sku,
+              name: existingProduct.name,
+              brand: existingProduct.brand,
+              category: existingProduct.category,
+              slug: existingProduct.slug,
+              changeType: 'INHERITED_PHOTO',
+              oldValue: null,
+              newValue: inheritedFromSku,
+              detail: `Скопированы фото и характеристики с базового товара SKU ${inheritedFromSku} по артикулу ${item.systemArticle}`,
+            });
             if (sampleChanges.length < 100) {
               sampleChanges.push({
                 code: item.code,
@@ -526,6 +602,18 @@ export async function syncFullCatalog(
           if (priceDiff) {
             updatedPrices++;
             changes.price = nextPrice;
+            allChanges.push({
+              code: item.code,
+              sku: existingProduct.sku,
+              name: existingProduct.name,
+              brand: existingProduct.brand,
+              category: existingProduct.category,
+              slug: existingProduct.slug,
+              changeType: 'PRICE',
+              oldValue: existingProduct.price,
+              newValue: nextPrice,
+              detail: `Цена: ${existingProduct.price} ₽ -> ${nextPrice} ₽`,
+            });
             if (sampleChanges.length < 100) {
               sampleChanges.push({
                 code: item.code,
@@ -548,6 +636,18 @@ export async function syncFullCatalog(
           if (existingProduct.badge !== nextBadge) {
             updatedBadges++;
             changes.badge = nextBadge;
+            allChanges.push({
+              code: item.code,
+              sku: existingProduct.sku,
+              name: existingProduct.name,
+              brand: existingProduct.brand,
+              category: existingProduct.category,
+              slug: existingProduct.slug,
+              changeType: 'BADGE',
+              oldValue: existingProduct.badge || 'нет',
+              newValue: nextBadge || 'нет',
+              detail: `Ярлык: ${existingProduct.badge || 'нет'} -> ${nextBadge || 'нет'}`,
+            });
             if (sampleChanges.length < 100) {
               sampleChanges.push({
                 code: item.code,
@@ -568,11 +668,23 @@ export async function syncFullCatalog(
           ) {
             if (stockDiff) {
               updatedStocks++;
+              const extraNote =
+                item.additionalDisabledAmount > 0
+                  ? ` (вкл. +${item.additionalDisabledAmount} шт из откл. спецпредложения)`
+                  : '';
+              allChanges.push({
+                code: item.code,
+                sku: existingProduct.sku,
+                name: existingProduct.name,
+                brand: existingProduct.brand,
+                category: existingProduct.category,
+                slug: existingProduct.slug,
+                changeType: 'STOCK',
+                oldValue: existingProduct.stockKominterna,
+                newValue: item.stockKominterna,
+                detail: `Остаток (кол. 6): ${existingProduct.stockKominterna} шт -> ${item.stockKominterna} шт${extraNote}`,
+              });
               if (sampleChanges.length < 100) {
-                const extraNote =
-                  item.additionalDisabledAmount > 0
-                    ? ` (вкл. +${item.additionalDisabledAmount} шт из откл. спецпредложения)`
-                    : '';
                 sampleChanges.push({
                   code: item.code,
                   sku: existingProduct.sku,
@@ -704,10 +816,25 @@ export async function syncFullCatalog(
 
           createBatch.push(newProduct);
 
+          const photoNote = inheritedFromSku
+            ? ` [Фото унаследовано от SKU ${inheritedFromSku}, активен]`
+            : ` [Без фото -> ожидает загрузки в /manager/products-no-photo]`;
+
+          allChanges.push({
+            code: item.code,
+            sku: item.code,
+            name: item.fullName,
+            brand: item.brand,
+            category: item.categoryName || item.group || 'Встраиваемая техника',
+            slug: `${baseSlug}-${item.code}`,
+            changeType: 'CREATED',
+            oldValue: null,
+            newValue: item.resolvedPrice,
+            detail: `Новинка: ${item.fullName} (${item.resolvedPrice} ₽)${photoNote}`,
+            hasPhoto: Boolean(inheritedFromSku || hasPhoto),
+          });
+
           if (sampleChanges.length < 100) {
-            const photoNote = inheritedFromSku
-              ? ` [Фото унаследовано от SKU ${inheritedFromSku}, активен]`
-              : ` [Без фото -> ожидает загрузки в /manager/products-no-photo]`;
             sampleChanges.push({
               code: item.code,
               sku: item.code,
@@ -765,5 +892,83 @@ export async function syncFullCatalog(
     dryRun,
     durationMs: Date.now() - start,
     sampleChanges,
+    allChanges,
   };
+}
+
+const SESSIONS_DIR = path.join(process.cwd(), 'storage', 'sync_sessions');
+const SESSIONS_INDEX_FILE = path.join(SESSIONS_DIR, 'sessions_index.json');
+
+export function saveSyncSession(session: SyncSessionData) {
+  try {
+    if (!fs.existsSync(SESSIONS_DIR)) {
+      fs.mkdirSync(SESSIONS_DIR, { recursive: true });
+    }
+    const sessionFile = path.join(SESSIONS_DIR, `session_${session.id}.json`);
+    fs.writeFileSync(sessionFile, JSON.stringify(session, null, 2), 'utf-8');
+
+    // Update latest.json
+    fs.writeFileSync(path.join(SESSIONS_DIR, 'latest.json'), JSON.stringify(session, null, 2), 'utf-8');
+
+    // Update sessions_index.json (rotation: keep 30)
+    let index: SyncSessionSummary[] = [];
+    if (fs.existsSync(SESSIONS_INDEX_FILE)) {
+      try {
+        index = JSON.parse(fs.readFileSync(SESSIONS_INDEX_FILE, 'utf-8'));
+      } catch {
+        index = [];
+      }
+    }
+
+    const summary: SyncSessionSummary = {
+      id: session.id,
+      startedAt: session.startedAt,
+      finishedAt: session.finishedAt,
+      durationMs: session.durationMs,
+      fileName: session.fileName,
+      totalRows: session.totalRows,
+      stats: session.stats,
+    };
+
+    index = [summary, ...index.filter((s) => s.id !== session.id)].slice(0, 30);
+    fs.writeFileSync(SESSIONS_INDEX_FILE, JSON.stringify(index, null, 2), 'utf-8');
+
+    // Cleanup old session files beyond 30
+    const activeIds = new Set(index.map((s) => s.id));
+    const files = fs.readdirSync(SESSIONS_DIR);
+    for (const f of files) {
+      if (f.startsWith('session_') && f.endsWith('.json')) {
+        const sid = f.replace('session_', '').replace('.json', '');
+        if (!activeIds.has(sid)) {
+          try {
+            fs.unlinkSync(path.join(SESSIONS_DIR, f));
+          } catch {}
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[SyncService] Failed to save sync session:', err);
+  }
+}
+
+export function getSyncSessionsList(): SyncSessionSummary[] {
+  try {
+    if (fs.existsSync(SESSIONS_INDEX_FILE)) {
+      return JSON.parse(fs.readFileSync(SESSIONS_INDEX_FILE, 'utf-8'));
+    }
+  } catch {}
+  return [];
+}
+
+export function getSyncSessionDetails(sessionId: string): SyncSessionData | null {
+  try {
+    const file =
+      sessionId === 'latest'
+        ? path.join(SESSIONS_DIR, 'latest.json')
+        : path.join(SESSIONS_DIR, `session_${sessionId}.json`);
+    if (fs.existsSync(file)) {
+      return JSON.parse(fs.readFileSync(file, 'utf-8'));
+    }
+  } catch {}
+  return null;
 }
