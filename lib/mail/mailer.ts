@@ -140,11 +140,28 @@ function formatRub(amount: number): string {
   return `${Math.round(amount || 0).toLocaleString('ru-RU')} ₽`;
 }
 
-function wrapLuxuryEmailHtml(title: string, badgeText: string, bodyHtml: string): string {
+export function formatCustomerGreeting(name?: string | null): string {
+  if (!name) return 'Здравствуйте!';
+  const trimmed = name.trim();
+  const lower = trimmed.toLowerCase();
+  if (
+    !trimmed ||
+    lower === 'покупатель' ||
+    lower === 'покупатель симона' ||
+    lower.startsWith('покупатель симона')
+  ) {
+    return 'Здравствуйте!';
+  }
+  return `Здравствуйте, ${trimmed}!`;
+}
+
+function wrapLuxuryEmailHtml(title: string, badgeOrBody: string, maybeBody?: string): string {
+  const bodyHtml = maybeBody !== undefined ? maybeBody : badgeOrBody;
   return `<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${title}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#111315;font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:#D7D9DB;">
@@ -152,18 +169,23 @@ function wrapLuxuryEmailHtml(title: string, badgeText: string, bodyHtml: string)
     <tr>
       <td align="center">
         <table width="640" cellpadding="0" cellspacing="0" style="max-width:640px;width:100%;background-color:#16191D;border:1px solid #2B313A;border-radius:16px;overflow:hidden;">
-          <!-- Header -->
+          <!-- Header: ТОЛЬКО логотип и телефон (иконка и номер) -->
           <tr>
-            <td style="padding:28px 32px;background-color:#1E2228;border-bottom:1px solid #2B313A;">
-              <div style="display:inline-block;padding:4px 10px;border-radius:6px;background-color:rgba(0,151,156,0.15);border:1px solid rgba(0,151,156,0.35);color:#00979C;font-size:11px;font-weight:600;margin-bottom:10px;">
-                ${badgeText}
-              </div>
-              <div style="font-size:22px;font-weight:700;color:#FFFFFF;letter-spacing:-0.01em;">
-                СИМОНА • Бытовая техника
-              </div>
-              <div style="font-size:12px;color:#87888A;margin-top:4px;">
-                Более 30 лет на рынке • Нижний Новгород
-              </div>
+            <td style="padding:22px 32px;background-color:#16191D;border-bottom:1px solid #2B313A;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+                <tr>
+                  <td align="left" valign="middle">
+                    <a href="${SITE_URL}" target="_blank" style="display:inline-block;text-decoration:none;border:0;outline:none;">
+                      <img src="${SITE_URL}/brand/email-logo.png" alt="СИМОНА" width="135" height="24" style="display:block;border:0;outline:none;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:#00979C;" />
+                    </a>
+                  </td>
+                  <td align="right" valign="middle">
+                    <a href="tel:+78314237600" style="display:inline-block;text-decoration:none;border:0;outline:none;">
+                      <img src="${SITE_URL}/brand/email-phone.png" alt="(831) 423 76 00" width="114" height="20" style="display:block;border:0;outline:none;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:#FFFFFF;" />
+                    </a>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           <!-- Main Body -->
@@ -172,16 +194,14 @@ function wrapLuxuryEmailHtml(title: string, badgeText: string, bodyHtml: string)
               ${bodyHtml}
             </td>
           </tr>
-          <!-- Footer -->
+          <!-- Footer: Наши магазины в Нижнем Новгороде -->
           <tr>
-            <td style="padding:24px 32px;background-color:#111315;border-top:1px solid #2B313A;font-size:12px;color:#87888A;line-height:1.6;">
-              <div style="color:#FFFFFF;font-weight:600;margin-bottom:6px;">Физические салоны и склад «СИМОНА» в Нижнем Новгороде:</div>
-              <div>• Флагманский салон: ул. Белинского, 15 (Ежедневно 10:00–20:00)</div>
-              <div>• Монобрендовый салон Omoikiri &amp; Körting: ул. Белинского, 11/66</div>
-              <div>• Центральный склад самовывоза: ул. Коминтерна, 27</div>
-              <div style="margin-top:10px;">
-                Телефон: <a href="tel:+78314237600" style="color:#00979C;text-decoration:none;font-weight:600;">+7 (831) 423-76-00</a> •
-                Сайт: <a href="${SITE_URL}" style="color:#00979C;text-decoration:none;">simona-bt.ru</a>
+            <td style="padding:24px 32px;background-color:#111315;border-top:1px solid #2B313A;font-size:13px;color:#87888A;line-height:1.6;">
+              <div style="color:#FFFFFF;font-weight:600;margin-bottom:8px;">Наши магазины в Нижнем Новгороде:</div>
+              <div style="margin-bottom:4px;">• СИМОНА на Белинского, 15</div>
+              <div style="margin-bottom:12px;">• Omoikiri &amp; Körting на Белинского, 11/66</div>
+              <div style="padding-top:8px;border-top:1px solid #1E2228;">
+                Сайт: <a href="${SITE_URL}" style="color:#00979C;text-decoration:none;font-weight:500;">simona-bt.ru</a>
               </div>
             </td>
           </tr>
@@ -285,7 +305,7 @@ export async function sendOrderCreatedEmails(order: OrderEmailData) {
   if (order.customerEmail) {
     const clientBody = `
       <h1 style="font-size:20px;font-weight:700;color:#FFFFFF;margin:0 0 12px 0;">
-        Здравствуйте, ${order.customerName}!
+        ${formatCustomerGreeting(order.customerName)}
       </h1>
       <p style="font-size:14px;color:#D7D9DB;line-height:1.6;margin:0 0 16px 0;">
         Благодарим вас за заказ в сети салонов и интернет-магазине бытовой техники «СИМОНА».
@@ -398,7 +418,7 @@ export async function sendOrderStatusChangedEmail(order: OrderEmailData) {
       Статус вашего заказа №${order.orderNumber} обновлен
     </h1>
     <p style="font-size:14px;color:#D7D9DB;line-height:1.6;margin:0 0 16px 0;">
-      Здравствуйте, ${order.customerName}! Статус вашего заказа изменен на:
+      ${formatCustomerGreeting(order.customerName)} Статус вашего заказа изменен на:
     </p>
     <div style="display:inline-block;padding:10px 18px;border-radius:12px;background-color:rgba(0,151,156,0.18);border:1px solid #00979C;color:#FFFFFF;font-size:15px;font-weight:700;margin-bottom:16px;">
       ${statusLabel}
@@ -455,7 +475,7 @@ export async function sendLeadNotificationEmails(lead: LeadEmailData) {
   if (lead.email) {
     const clientBody = `
       <h1 style="font-size:20px;font-weight:700;color:#FFFFFF;margin:0 0 12px 0;">
-        Здравствуйте, ${lead.name}!
+        ${formatCustomerGreeting(lead.name)}
       </h1>
       <p style="font-size:14px;color:#D7D9DB;line-height:1.6;margin:0 0 16px 0;">
         Ваше обращение <strong style="color:#FFFFFF;">«${typeLabel}»</strong> принято экспертами салона «СИМОНА».
@@ -601,7 +621,7 @@ export async function sendPaymentStatusEmail(
       ${statusLabel}
     </div>
     <p style="font-size:14px;color:#D7D9DB;line-height:1.6;margin:0 0 16px 0;">
-      Здравствуйте, ${order.customerName}! ${explanationText}
+      ${formatCustomerGreeting(order.customerName)} ${explanationText}
     </p>
     ${itemsTableHtml}
     <div style="text-align:right;font-size:18px;font-weight:700;color:#00979C;">
@@ -628,7 +648,7 @@ export async function sendOtpEmail(
   code: string,
   customerName?: string | null
 ) {
-  const greeting = customerName ? `Здравствуйте, ${customerName}!` : 'Здравствуйте!';
+  const greeting = formatCustomerGreeting(customerName);
   const bodyHtml = `
     <h1 style="font-size:20px;font-weight:700;color:#FFFFFF;margin:0 0 12px 0;">
       ${greeting}
@@ -640,7 +660,7 @@ export async function sendOtpEmail(
       ${code}
     </div>
     <p style="font-size:12px;color:#87888A;line-height:1.6;margin:0;">
-      Код действителен в течение 15 минут. Если вы не запрашивали вход на сайте simona-bt.ru, просто проигнорируйте это письмо.
+      Код действителен в течение 15 минут. Если вы не запрашивали код авторизации на сайте simona-bt.ru, просто проигнорируйте это письмо.
     </p>
   `;
 

@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
           create: {
             phone,
             email: emailLower,
-            name: orderWithEmail?.customerName || 'Покупатель СИМОНА',
+            name: orderWithEmail?.customerName || '',
           },
         });
       }
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
           data: {
             phone: normalizedPhone,
             email: rawEmail || orderWithPhone?.customerEmail || null,
-            name: orderWithPhone?.customerName || 'Покупатель СИМОНА',
+            name: orderWithPhone?.customerName || '',
           },
         });
       } else if (rawEmail && !customer.email) {
