@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import { TestDriveModal } from '@/components/modals/TestDriveModal';
 import { ShowroomVisitModal } from '@/components/modals/ShowroomVisitModal';
@@ -15,6 +15,7 @@ import { EquipmentSelectionModal } from '@/components/modals/EquipmentSelectionM
 import { PromoTermsModal } from '@/components/modals/PromoTermsModal';
 import { PriceMatchModal } from '@/components/modals/PriceMatchModal';
 import { LiveChatWidget } from '@/components/chat/LiveChatWidget';
+import { ModalDeepLinkListener } from '@/components/modals/ModalDeepLinkListener';
 
 export function GlobalModalContainer() {
   const pathname = usePathname();
@@ -25,6 +26,9 @@ export function GlobalModalContainer() {
 
   return (
     <>
+      <Suspense fallback={null}>
+        <ModalDeepLinkListener />
+      </Suspense>
       <TestDriveModal />
       <ShowroomVisitModal />
       <B2BLeadModal />

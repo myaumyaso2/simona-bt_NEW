@@ -102,7 +102,7 @@ async function main() {
   let createdProducts = 0;
   let deactivatedProducts = 0;
 
-  for (const [code, item] of newMap.entries()) {
+  for (const [code, item] of Array.from(newMap.entries())) {
     const oldItem = oldMap.get(code);
 
     const fullName = formatProductName({
