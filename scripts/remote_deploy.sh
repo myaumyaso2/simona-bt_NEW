@@ -28,7 +28,7 @@ npm install --prefer-offline --no-audit
 
 echo "🗄️ Initializing Prisma & PostgreSQL..."
 npx prisma generate
-npx prisma db push --skip-generate
+npx prisma db push --skip-generate --accept-data-loss
 
 if [ "$FULL_IMPORT" = "True" ] || [ "$FULL_IMPORT" = "true" ]; then
     echo "💾 Importing updated catalog and characteristics into PostgreSQL..."
