@@ -65,6 +65,7 @@ if ($LASTEXITCODE -ne 0) {
 
 # 5. Verify live URL
 Write-Host "Step 5: Verifying live staging URL..." -ForegroundColor Yellow
+Start-Sleep -Seconds 5
 $Status = curl.exe -s -o NUL -w "%{http_code}" https://new.simona-bt.ru
 Write-Host "HTTP Status: $Status" -ForegroundColor Green
 

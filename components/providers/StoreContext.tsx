@@ -86,6 +86,22 @@ interface StoreContextType {
   isInCompare: (productId: string) => boolean;
   clearCompareCategory: (category: string) => void;
   updateCompareCategories: (mapping: Record<string, string>) => void;
+
+  // Customer Auth state
+  customer: CustomerUser | null;
+  isCustomerLoading: boolean;
+  refreshCustomer: () => Promise<void>;
+}
+
+export interface CustomerUser {
+  id: string;
+  name?: string | null;
+  phone: string;
+  email?: string | null;
+  role: string;
+  companyName?: string | null;
+  address?: string | null;
+  bonusPoints?: number;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -97,6 +113,30 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [compare, setCompare] = useState<string[]>([]);
   const [compareCategories, setCompareCategories] = useState<Record<string, string>>({});
+
+  // Auth state
+  const [customer, setCustomer] = useState<CustomerUser | null>(null);
+  const [isCustomerLoading, setIsCustomerLoading] = useState(true);
+
+  const refreshCustomer = async () => {
+    try {
+      const res = await fetch('/api/auth/me', { cache: 'no-store' });
+      const data = await res.json();
+      if (data.authenticated && data.customer) {
+        setCustomer(data.customer as CustomerUser);
+      } else {
+        setCustomer(null);
+      }
+    } catch {
+      setCustomer(null);
+    } finally {
+      setIsCustomerLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshCustomer();
+  }, []);
 
   // Load cart, wishlist, compare from localStorage on mount
   useEffect(() => {
@@ -331,6 +371,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         isInCompare,
         clearCompareCategory,
         updateCompareCategories,
+        customer,
+        isCustomerLoading,
+        refreshCustomer,
       }}
     >
       {children}

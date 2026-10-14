@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown } from 'lucide-react';
@@ -32,7 +32,22 @@ export function Header({
   const [internalScrolled, setInternalScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [catalogMenuOpen, setCatalogMenuOpen] = useState(false);
-  const { cartCount, setIsCartOpen, openModal, wishlist, compare } = useStore();
+  const { cartCount, setIsCartOpen, openModal, wishlist, compare, customer } = useStore();
+
+  const userMonogram = useMemo(() => {
+    if (!customer) return '';
+    if (customer.name) {
+      const parts = customer.name.trim().split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+    if (customer.phone) {
+      return customer.phone.slice(-2);
+    }
+    return 'ЛК';
+  }, [customer]);
 
   const isScrolled = propIsScrolled !== undefined ? propIsScrolled : internalScrolled;
 
@@ -190,15 +205,26 @@ export function Header({
               <SimonaIconSearch className="w-4 h-4" />
             </button>
 
-            {/* User Auth / Personal Account Link */}
-            <Link
-              href="/profile"
-              aria-label="Личный кабинет"
-              title="Личный кабинет"
-              className="p-2 sm:p-2.5 text-[#87888A] hover:text-white bg-[#1E2228] hover:bg-[#242A32] rounded-xl border border-[#2B313A] hover:border-simona-teal/50 transition flex items-center justify-center group"
-            >
-              <SimonaIconUser className="w-4 h-4 group-hover:text-simona-teal transition-colors" />
-            </Link>
+            {/* User Auth / Personal Account Link: Monogram when authenticated */}
+            {!customer ? (
+              <Link
+                href="/profile"
+                aria-label="Личный кабинет"
+                title="Войти в личный кабинет"
+                className="p-2 sm:p-2.5 text-[#87888A] hover:text-white bg-[#1E2228] hover:bg-[#242A32] rounded-xl border border-[#2B313A] hover:border-simona-teal/50 transition flex items-center justify-center group"
+              >
+                <SimonaIconUser className="w-4 h-4 group-hover:text-simona-teal transition-colors" />
+              </Link>
+            ) : (
+              <Link
+                href="/profile"
+                aria-label="Личный кабинет"
+                title={`Личный кабинет: ${customer.name || customer.phone}`}
+                className="h-[38px] px-2.5 rounded-xl bg-simona-teal/15 hover:bg-simona-teal/25 border border-simona-teal/40 text-simona-teal text-xs font-montserrat font-bold flex items-center justify-center transition-all shadow-sm shadow-simona-teal/10 group min-w-[38px]"
+              >
+                <span>{userMonogram}</span>
+              </Link>
+            )}
 
             {/* Paired Wishlist + Compare Block (Split-Pill Container) */}
             <div className="hidden sm:flex items-center h-[38px] rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-[#3E3D40] transition-colors p-0.5">
