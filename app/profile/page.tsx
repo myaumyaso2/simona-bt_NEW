@@ -107,8 +107,6 @@ function ProfileContent() {
   // Login Form state
   const [authMode, setAuthMode] = useState<AuthMode>('otp');
   const [loginIdentifier, setLoginIdentifier] = useState('');
-  const [extraEmail, setExtraEmail] = useState('');
-  const [needsExtraEmail, setNeedsExtraEmail] = useState(false);
   const [otpSentTo, setOtpSentTo] = useState<string | null>(null);
   const [otpCode, setOtpCode] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
@@ -123,7 +121,16 @@ function ProfileContent() {
   const [clientCompany, setClientCompany] = useState('');
   const [preferredSalon, setPreferredSalon] = useState('Белинского, 15');
   const [isSaved, setIsSaved] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
   const [repeatingOrderId, setRepeatingOrderId] = useState<string | null>(null);
+
+  const isTypingPhone = useMemo(() => {
+    if (authMode !== 'otp') return false;
+    const trimmed = loginIdentifier.trim();
+    if (!trimmed || trimmed.includes('@')) return false;
+    const digitsOnly = trimmed.replace(/\D/g, '');
+    return trimmed.startsWith('+') || trimmed.startsWith('8') || digitsOnly.length >= 3;
+  }, [loginIdentifier, authMode]);
 
   const loadAuthenticatedProfile = async () => {
     setAuthLoading(true);
@@ -190,24 +197,25 @@ function ProfileContent() {
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError(null);
+    const email = loginIdentifier.trim().toLowerCase();
+    if (!email.includes('@') || !email.includes('.')) {
+      setAuthError('Пожалуйста, укажите корректный адрес электронной почты (например, client@mail.ru)');
+      return;
+    }
     setAuthSubmitting(true);
     try {
       const res = await fetch('/api/auth/send-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          identifier: loginIdentifier,
-          ...(needsExtraEmail && extraEmail ? { email: extraEmail } : {}),
+          identifier: email,
         }),
       });
       const data = await res.json();
       if (!res.ok) {
-        if (data.needsEmail) {
-          setNeedsExtraEmail(true);
-        }
         throw new Error(data.error || 'Не удалось отправить код');
       }
-      setOtpSentTo(data.sentTo || loginIdentifier);
+      setOtpSentTo(data.sentTo || email);
     } catch (err: unknown) {
       setAuthError(err instanceof Error ? err.message : 'Ошибка отправки кода');
     } finally {
@@ -277,24 +285,28 @@ function ProfileContent() {
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    setProfileError(null);
     try {
       const res = await fetch('/api/auth/me', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: clientName,
+          phone: clientPhone,
           email: clientEmail,
           address: clientAddress,
           companyName: clientCompany,
         }),
       });
-      if (res.ok) {
-        setIsSaved(true);
-        setTimeout(() => setIsSaved(false), 3000);
-        await loadAuthenticatedProfile();
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Ошибка при сохранении данных');
       }
-    } catch (err) {
-      console.error('Save profile error:', err);
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 3000);
+      await loadAuthenticatedProfile();
+    } catch (err: unknown) {
+      setProfileError(err instanceof Error ? err.message : 'Не удалось сохранить профиль');
     }
   };
 
@@ -474,7 +486,7 @@ function ProfileContent() {
               : 'text-[#87888A] hover:text-white'
           }`}
         >
-          По коду из письма
+          Код на Email
         </button>
         <button
           type="button"
@@ -503,37 +515,39 @@ function ProfileContent() {
           <form onSubmit={handleSendOtp} className="space-y-4">
             <div>
               <label className="block text-xs text-zinc-300 font-semibold mb-1.5">
-                Ваш Email или номер телефона
+                Ваш Email
               </label>
               <input
-                type="text"
+                type="email"
                 required
                 value={loginIdentifier}
                 onChange={(e) => setLoginIdentifier(e.target.value)}
-                placeholder="client@mail.ru или +7 (910) 123-45-67"
+                placeholder="client@mail.ru"
                 className="w-full px-4 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal"
               />
             </div>
 
-            {needsExtraEmail && (
-              <div>
-                <label className="block text-xs text-zinc-300 font-semibold mb-1.5">
-                  Укажите Email для отправки 6-значного кода
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={extraEmail}
-                  onChange={(e) => setExtraEmail(e.target.value)}
-                  placeholder="client@mail.ru"
-                  className="w-full px-4 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal"
-                />
+            {isTypingPhone && (
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <span className="leading-relaxed">
+                  Похоже, вы вводите номер телефона. Для входа по номеру переключитесь на вкладку «По паролю» или введите ваш Email.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode('password');
+                    setAuthError(null);
+                  }}
+                  className="shrink-0 px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 font-semibold text-[11px] transition"
+                >
+                  Перейти «По паролю» →
+                </button>
               </div>
             )}
 
             <button
               type="submit"
-              disabled={authSubmitting}
+              disabled={authSubmitting || isTypingPhone}
               className="w-full py-3.5 px-6 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wide transition shadow-lg shadow-simona-teal/20 disabled:opacity-50"
             >
               {authSubmitting ? 'Отправка кода...' : 'Получить 6-значный код на почту'}
@@ -923,6 +937,12 @@ function ProfileContent() {
                   Информация используется для подтверждения заказов, бронирования визитов в салоны и аккуратной доставки бытовой техники собственной службой.
                 </p>
 
+                {profileError && (
+                  <div className="mb-4 p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-300">
+                    {profileError}
+                  </div>
+                )}
+
                 <form onSubmit={handleSaveProfile} className="space-y-4 text-xs">
                   <div>
                     <label className="block text-zinc-300 font-semibold mb-1.5">
@@ -944,8 +964,9 @@ function ProfileContent() {
                       <input
                         type="tel"
                         value={clientPhone}
-                        disabled
-                        className="w-full px-4 py-3 rounded-xl bg-[#111315] border border-[#2B313A] text-[#87888A] cursor-not-allowed"
+                        onChange={(e) => setClientPhone(e.target.value)}
+                        placeholder="+7 (910) 123-45-67"
+                        className="w-full px-4 py-3 rounded-xl bg-[#1E2228] border border-[#2B313A] text-white focus:outline-none focus:border-simona-teal"
                       />
                     </div>
 
