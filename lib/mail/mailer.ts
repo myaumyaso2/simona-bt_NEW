@@ -162,9 +162,26 @@ function wrapLuxuryEmailHtml(title: string, badgeOrBody: string, maybeBody?: str
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="format-detection" content="telephone=no, address=no, email=no, date=no" />
   <title>${title}</title>
+  <style type="text/css">
+    /* Отключение авто-ссылок для адресов и телефонов в почтовиках (Apple Mail, Gmail, Outlook) */
+    a[x-apple-data-detectors],
+    u + #body a,
+    #MessageViewBody a,
+    .address-link a,
+    .address-link {
+      color: #87888A !important;
+      text-decoration: none !important;
+      font-size: inherit !important;
+      font-family: inherit !important;
+      font-weight: inherit !important;
+      line-height: inherit !important;
+      pointer-events: none !important;
+    }
+  </style>
 </head>
-<body style="margin:0;padding:0;background-color:#111315;font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:#D7D9DB;">
+<body id="body" style="margin:0;padding:0;background-color:#111315;font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:#D7D9DB;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#111315;padding:32px 16px;">
     <tr>
       <td align="center">
@@ -176,12 +193,12 @@ function wrapLuxuryEmailHtml(title: string, badgeOrBody: string, maybeBody?: str
                 <tr>
                   <td align="left" valign="middle">
                     <a href="${SITE_URL}" target="_blank" style="display:inline-block;text-decoration:none;border:0;outline:none;">
-                      <img src="${SITE_URL}/brand/email-logo.png" alt="СИМОНА" width="135" height="24" style="display:block;border:0;outline:none;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:#00979C;" />
+                      <img src="${SITE_URL}/brand/email-logo-v2.png" alt="СИМОНА" width="135" height="24" style="display:block;border:0;outline:none;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:#00979C;" />
                     </a>
                   </td>
                   <td align="right" valign="middle">
                     <a href="tel:+78314237600" style="display:inline-block;text-decoration:none;border:0;outline:none;">
-                      <img src="${SITE_URL}/brand/email-phone.png" alt="(831) 423 76 00" width="114" height="20" style="display:block;border:0;outline:none;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:#FFFFFF;" />
+                      <img src="${SITE_URL}/brand/email-phone-v2.png" alt="(831) 423 76 00" width="114" height="20" style="display:block;border:0;outline:none;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:#FFFFFF;" />
                     </a>
                   </td>
                 </tr>
@@ -198,8 +215,8 @@ function wrapLuxuryEmailHtml(title: string, badgeOrBody: string, maybeBody?: str
           <tr>
             <td style="padding:24px 32px;background-color:#111315;border-top:1px solid #2B313A;font-size:13px;color:#87888A;line-height:1.6;">
               <div style="color:#FFFFFF;font-weight:600;margin-bottom:8px;">Наши магазины в Нижнем Новгороде:</div>
-              <div style="margin-bottom:4px;">• СИМОНА на Белинского, 15</div>
-              <div style="margin-bottom:12px;">• Omoikiri &amp; Körting на Белинского, 11/66</div>
+              <div style="margin-bottom:4px;color:#87888A;" class="address-link">• СИМОНА на <span style="color:#87888A;text-decoration:none;">Белинского,&zwnj;&nbsp;15</span></div>
+              <div style="margin-bottom:12px;color:#87888A;" class="address-link">• Omoikiri &amp; Körting на <span style="color:#87888A;text-decoration:none;">Белинского,&zwnj;&nbsp;11/66</span></div>
               <div style="padding-top:8px;border-top:1px solid #1E2228;">
                 Сайт: <a href="${SITE_URL}" style="color:#00979C;text-decoration:none;font-weight:500;">simona-bt.ru</a>
               </div>
