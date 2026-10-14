@@ -165,10 +165,7 @@ function wrapLuxuryEmailHtml(title: string, badgeOrBody: string, maybeBody?: str
   <meta name="format-detection" content="telephone=no, address=no, email=no, date=no" />
   <title>${title}</title>
   <style type="text/css">
-    /* Отключение авто-ссылок для адресов и телефонов в почтовиках (Apple Mail, Gmail, Outlook) */
-    a[x-apple-data-detectors],
-    u + #body a,
-    #MessageViewBody a,
+    /* Отключение авто-ссылок для адресов в подвале */
     .address-link a,
     .address-link {
       color: #87888A !important;
@@ -186,14 +183,14 @@ function wrapLuxuryEmailHtml(title: string, badgeOrBody: string, maybeBody?: str
     <tr>
       <td align="center">
         <table width="640" cellpadding="0" cellspacing="0" style="max-width:640px;width:100%;background-color:#16191D;border:1px solid #2B313A;border-radius:16px;overflow:hidden;">
-          <!-- Header: ТОЛЬКО логотип и телефон (иконка и номер) -->
+          <!-- Header: ТОЛЬКО логотип (в 2 раза крупнее) и телефон (иконка и номер) -->
           <tr>
             <td style="padding:22px 32px;background-color:#16191D;border-bottom:1px solid #2B313A;">
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
                 <tr>
                   <td align="left" valign="middle">
                     <a href="${SITE_URL}" target="_blank" style="display:inline-block;text-decoration:none;border:0;outline:none;">
-                      <img src="${SITE_URL}/brand/email-logo-v2.png" alt="СИМОНА" width="135" height="24" style="display:block;border:0;outline:none;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:#00979C;" />
+                      <img src="${SITE_URL}/brand/email-logo-v3.png" alt="СИМОНА" width="270" height="48" style="display:block;border:0;outline:none;font-family:'Montserrat',sans-serif;font-size:24px;font-weight:700;color:#00979C;" />
                     </a>
                   </td>
                   <td align="right" valign="middle">
@@ -217,8 +214,8 @@ function wrapLuxuryEmailHtml(title: string, badgeOrBody: string, maybeBody?: str
               <div style="color:#FFFFFF;font-weight:600;margin-bottom:8px;">Наши магазины в Нижнем Новгороде:</div>
               <div style="margin-bottom:4px;color:#87888A;" class="address-link">• СИМОНА на <span style="color:#87888A;text-decoration:none;">Белинского,&zwnj;&nbsp;15</span></div>
               <div style="margin-bottom:12px;color:#87888A;" class="address-link">• Omoikiri &amp; Körting на <span style="color:#87888A;text-decoration:none;">Белинского,&zwnj;&nbsp;11/66</span></div>
-              <div style="padding-top:8px;border-top:1px solid #1E2228;">
-                Сайт: <a href="${SITE_URL}" style="color:#00979C;text-decoration:none;font-weight:500;">simona-bt.ru</a>
+              <div style="padding-top:10px;border-top:1px solid #1E2228;color:#87888A;">
+                Сайт: <a href="${SITE_URL}" target="_blank" style="color:#00979C !important;text-decoration:underline;font-weight:600;"><span style="color:#00979C !important;text-decoration:underline;">simona-bt.ru</span></a>
               </div>
             </td>
           </tr>
@@ -671,7 +668,7 @@ export async function sendOtpEmail(
       ${greeting}
     </h1>
     <p style="font-size:14px;color:#D7D9DB;line-height:1.6;margin:0 0 20px 0;">
-      Ваш одноразовый код для входа в Личный кабинет покупателя и истории заказов «СИМОНА»:
+      Ваш одноразовый код для входа в Личный Кабинет покупателя:
     </p>
     <div style="padding:20px 28px;background-color:#1E2228;border:1px solid #00979C;border-radius:12px;font-family:monospace;font-size:32px;font-weight:700;letter-spacing:0.25em;color:#FFFFFF;text-align:left;display:inline-block;margin-bottom:20px;">
       ${code}
