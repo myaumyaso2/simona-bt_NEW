@@ -155,6 +155,21 @@ export function formatCustomerGreeting(name?: string | null): string {
   return `Здравствуйте, ${trimmed}!`;
 }
 
+export function cleanCustomerName(name?: string | null): string {
+  if (!name) return 'Не указано';
+  const trimmed = name.trim();
+  const lower = trimmed.toLowerCase();
+  if (
+    !trimmed ||
+    lower === 'покупатель' ||
+    lower === 'покупатель симона' ||
+    lower.startsWith('покупатель симона')
+  ) {
+    return 'Не указано';
+  }
+  return trimmed;
+}
+
 function wrapLuxuryEmailHtml(title: string, badgeOrBody: string, maybeBody?: string): string {
   const bodyHtml = maybeBody !== undefined ? maybeBody : badgeOrBody;
   return `<!DOCTYPE html>
@@ -357,7 +372,7 @@ export async function sendOrderCreatedEmails(order: OrderEmailData) {
       Новый заказ №${order.orderNumber} на сумму ${formatRub(order.totalAmount)}
     </h1>
     <div style="padding:16px;background-color:#1E2228;border:1px solid #2B313A;border-radius:12px;font-size:13px;line-height:1.7;margin-bottom:16px;">
-      <div><strong style="color:#FFFFFF;">Покупатель:</strong> ${order.customerName}</div>
+      <div><strong style="color:#FFFFFF;">Покупатель:</strong> ${cleanCustomerName(order.customerName)}</div>
       <div><strong style="color:#FFFFFF;">Телефон:</strong> <a href="tel:${order.customerPhone}" style="color:#00979C;font-weight:700;">${order.customerPhone}</a></div>
       <div><strong style="color:#FFFFFF;">Email:</strong> ${order.customerEmail || 'не указан'}</div>
       <div><strong style="color:#FFFFFF;">Способ получения:</strong> ${deliveryLabel}</div>
@@ -586,7 +601,7 @@ export async function sendPaymentStatusEmail(
         💳 Средства по заказу №${order.orderNumber} захолдированы (${formatRub(order.totalAmount)})
       </h1>
       <p style="font-size:14px;color:#D7D9DB;line-height:1.6;margin:0 0 16px 0;">
-        Покупатель <strong style="color:#FFFFFF;">${order.customerName}</strong> (${order.customerPhone}) успешно авторизовал платеж в ЮKassa (двухстадийный холд <code>capture: false</code>).
+        Покупатель <strong style="color:#FFFFFF;">${cleanCustomerName(order.customerName)}</strong> (${order.customerPhone}) успешно авторизовал платеж в ЮKassa (двухстадийный холд <code>capture: false</code>).
         Проверьте физический резерв на складе (ул. Коминтерна, 27) и подтвердите списание средств в личном кабинете ЮKassa.
       </p>
       ${itemsTableHtml}
