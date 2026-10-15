@@ -178,7 +178,7 @@ export async function POST(req: NextRequest) {
         maxAlert: maxResult.deliveredMax || maxResult.mode === 'LOCAL_QUEUE',
       },
       message:
-        'Заявка успешно принята. Эксперт салона СИМОНА свяжется с вами в течение 15 минут.',
+        'Заявка успешно принята. Эксперт салона СИМОНА свяжется с вами для консультации.',
     });
   } catch (error: unknown) {
     console.error('Lead submission error:', error);

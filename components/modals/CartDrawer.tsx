@@ -21,40 +21,6 @@ import { trackEcommercePurchase, trackGoal } from '@/lib/analytics/tracker';
 import { formatProductName } from '@/lib/catalog/productTitle';
 import { formatPhoneMask, isValidRussianPhone } from '@/lib/phone';
 
-const quickFormVariants = {
-  hidden: {
-    height: 0,
-    opacity: 0,
-    transition: {
-      duration: 0.28,
-      ease: [0.32, 0.72, 0, 1],
-      when: 'afterChildren',
-    },
-  },
-  visible: {
-    height: 'auto',
-    opacity: 1,
-    transition: {
-      duration: 0.35,
-      ease: [0.32, 0.72, 0, 1],
-      staggerChildren: 0.04,
-      delayChildren: 0.02,
-    },
-  },
-};
-
-const quickFormFieldVariants = {
-  hidden: { opacity: 0, y: 8 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.28,
-      ease: [0.32, 0.72, 0, 1],
-    },
-  },
-};
-
 export function CartDrawer() {
   const router = useRouter();
   const analyticsData = useAnalyticsData();
@@ -71,15 +37,20 @@ export function CartDrawer() {
   const [showQuickForm, setShowQuickForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
-  const quickFormRef = useRef<HTMLDivElement>(null);
+  const cartBodyRef = useRef<HTMLDivElement>(null);
 
   const toggleQuickForm = () => {
     const next = !showQuickForm;
     setShowQuickForm(next);
     if (next) {
       setTimeout(() => {
-        quickFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 120);
+        if (cartBodyRef.current) {
+          cartBodyRef.current.scrollTo({
+            top: cartBodyRef.current.scrollHeight,
+            behavior: 'smooth',
+          });
+        }
+      }, 80);
     }
   };
 
@@ -215,7 +186,7 @@ export function CartDrawer() {
               </div>
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto p-5">
+              <div ref={cartBodyRef} className="flex-1 overflow-y-auto p-5">
                 {orderSuccess ? (
                   <div className="text-left py-10 px-2">
                     <div className="w-14 h-14 rounded-2xl bg-simona-teal/15 border border-simona-teal/30 text-simona-teal flex items-center justify-center mb-4 shadow-[0_0_24px_rgba(0,151,156,0.2)]">
@@ -315,7 +286,7 @@ export function CartDrawer() {
                     </div>
 
                     {/* Quick 1-click Order Accordion */}
-                    <div ref={quickFormRef} className="pt-3 border-t border-[#2B313A]">
+                    <div className="pt-3 border-t border-[#2B313A]">
                       <button
                         type="button"
                         onClick={toggleQuickForm}
@@ -335,10 +306,10 @@ export function CartDrawer() {
                         {showQuickForm && (
                           <motion.div
                             key="quick-form-accordion"
-                            variants={quickFormVariants}
-                            initial="hidden"
-                            animate="visible"
-                            exit="hidden"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
                             className="overflow-hidden"
                           >
                             <form
@@ -346,7 +317,7 @@ export function CartDrawer() {
                               id="quick-cart-form"
                               className="space-y-3 pt-3 text-xs"
                             >
-                              <motion.div variants={quickFormFieldVariants}>
+                              <div>
                                 <label className="block text-[#D7D9DB] mb-1.5 font-medium text-[11px]">
                                   Способ получения
                                 </label>
@@ -423,9 +394,9 @@ export function CartDrawer() {
                                     </div>
                                   </label>
                                 </div>
-                              </motion.div>
+                              </div>
 
-                              <motion.div variants={quickFormFieldVariants}>
+                              <div>
                                 <input
                                   type="text"
                                   required
@@ -434,9 +405,9 @@ export function CartDrawer() {
                                   placeholder="Ваше имя *"
                                   className="w-full px-3 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
                                 />
-                              </motion.div>
+                              </div>
 
-                              <motion.div variants={quickFormFieldVariants}>
+                              <div>
                                 <input
                                   type="tel"
                                   required
@@ -457,9 +428,9 @@ export function CartDrawer() {
                                     {phoneError}
                                   </span>
                                 )}
-                              </motion.div>
+                              </div>
 
-                              <motion.div variants={quickFormFieldVariants}>
+                              <div>
                                 <input
                                   type="email"
                                   value={email}
@@ -467,10 +438,10 @@ export function CartDrawer() {
                                   placeholder="E-mail (для чека и статуса заказа)"
                                   className="w-full px-3 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
                                 />
-                              </motion.div>
+                              </div>
 
                               {deliveryType === 'COURIER_DELIVERY' && (
-                                <motion.div variants={quickFormFieldVariants}>
+                                <div>
                                   <input
                                     type="text"
                                     required
@@ -479,10 +450,10 @@ export function CartDrawer() {
                                     placeholder="Адрес доставки (улица, дом, квартира)"
                                     className="w-full px-3 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
                                   />
-                                </motion.div>
+                                </div>
                               )}
 
-                              <motion.div variants={quickFormFieldVariants}>
+                              <div>
                                 <button
                                   type="submit"
                                   disabled={loading}
@@ -490,7 +461,7 @@ export function CartDrawer() {
                                 >
                                   <span>{loading ? 'Отправка...' : 'Подтвердить быстрый заказ'}</span>
                                 </button>
-                              </motion.div>
+                              </div>
                             </form>
                           </motion.div>
                         )}

@@ -523,7 +523,7 @@ export async function sendLeadNotificationEmails(lead: LeadEmailData) {
         ${lead.productName ? `<div><strong style="color:#FFFFFF;">Интересующий прибор:</strong> ${lead.productName}</div>` : ''}
       </div>
       <p style="font-size:13px;color:#87888A;line-height:1.6;margin:20px 0 0 0;">
-        Профильный специалист свяжется с вами в течение 15 минут в рабочее время салона (10:00 – 20:00).
+        Профильный специалист свяжется с вами в рабочее время салона (10:00 – 20:00).
       </p>
     `;
 

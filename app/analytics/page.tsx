@@ -276,7 +276,7 @@ export default function AnalyticsDashboardPage() {
               <SimonaIconCreditCard className="w-4 h-4 text-emerald-400" />
             </div>
             <div className="text-2xl font-bold tracking-tight text-white">
-              {formatPrice(summary?.totalRevenue || 0)} ₽
+              {formatPrice(summary?.totalRevenue || 0)}
             </div>
             <div className="text-xs text-emerald-400 mt-2 flex items-center space-x-1">
               <span>{summary?.paidOrdersCount || 0} оплаченных заказов</span>
@@ -289,7 +289,7 @@ export default function AnalyticsDashboardPage() {
               <TrendingUp className="w-4 h-4 text-simona-teal" />
             </div>
             <div className="text-2xl font-bold tracking-tight text-white">
-              {formatPrice(summary?.averageCheck || 0)} ₽
+              {formatPrice(summary?.averageCheck || 0)}
             </div>
             <div className="text-xs text-[#87888A] mt-2">
               По завершенным покупкам
@@ -382,7 +382,7 @@ export default function AnalyticsDashboardPage() {
                 4. Оплата в 1С / Кассе
               </div>
               <div className="text-lg font-bold text-emerald-400">
-                {formatPrice(summary?.totalRevenue || 0)} ₽
+                {formatPrice(summary?.totalRevenue || 0)}
               </div>
               <p className="text-xs text-[#87888A] mt-1">
                 Передача офлайн-конверсий в Метрику для ROAS
@@ -434,10 +434,10 @@ export default function AnalyticsDashboardPage() {
                         {u.paidCount}
                       </td>
                       <td className="px-6 py-4 text-right text-white">
-                        {formatPrice(u.avgCheck)} ₽
+                        {formatPrice(u.avgCheck)}
                       </td>
                       <td className="px-6 py-4 text-right font-bold text-white">
-                        {formatPrice(u.revenue)} ₽
+                        {formatPrice(u.revenue)}
                       </td>
                     </tr>
                   ))
@@ -500,7 +500,7 @@ export default function AnalyticsDashboardPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 font-bold text-white">
-                        {formatPrice(o.totalAmount)} ₽
+                        {formatPrice(o.totalAmount)}
                       </td>
                       <td className="px-6 py-4">
                         <span

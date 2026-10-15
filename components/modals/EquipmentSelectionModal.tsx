@@ -100,7 +100,7 @@ export function EquipmentSelectionModal() {
             Запрос принят!
           </h3>
           <p className="text-xs sm:text-sm text-[#87888A] max-w-sm leading-relaxed mb-6">
-            Эксперт салона СИМОНА свяжется с вами в течение 15 минут для консультации и подбора техники.
+            Эксперт салона «СИМОНА» свяжется с вами для консультации и подбора техники.
           </p>
           <button
             onClick={handleClose}

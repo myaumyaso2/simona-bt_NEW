@@ -153,7 +153,7 @@ export function OneClickBuyModal({
                   {submittedOrderNumber ? `Заказ №${submittedOrderNumber}` : 'Заказ успешно оформлен'}
                 </h3>
                 <p className="text-xs text-[#87888A] mt-2 max-w-sm leading-relaxed">
-                  Эксперт салона «СИМОНА» свяжется с вами по номеру <strong className="text-white">{phone}</strong> в течение 15 минут для подтверждения резерва, проверки совместимости и согласования доставки.
+                  Эксперт салона «СИМОНА» свяжется с вами по номеру <strong className="text-white whitespace-nowrap">{phone.replace(/ /g, '\u00A0')}</strong> для подтверждения резерва и согласования доставки.
                 </p>
 
                 {/* Compact summary */}
@@ -165,7 +165,7 @@ export function OneClickBuyModal({
                   />
                   <div className="flex-1 min-w-0">
                     <div className="text-[10px] text-[#87888A]">1 прибор • Итого к оплате</div>
-                    <div className="text-sm font-extrabold text-white">{formatPrice(product.price)} ₽</div>
+                    <div className="text-sm font-extrabold text-white">{formatPrice(product.price)}</div>
                   </div>
                 </div>
 
