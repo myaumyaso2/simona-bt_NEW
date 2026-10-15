@@ -111,16 +111,16 @@ export const ORDER_STATUS_LABELS: Record<string, string> = {
 };
 
 export const DELIVERY_TYPE_LABELS: Record<string, string> = {
-  PICKUP_WAREHOUSE_KOMINTERNA: 'Самовывоз: Центральный склад (ул. Коминтерна, 27)',
-  PICKUP_BELINSKOGO_15: 'Самовывоз: Флагманский салон (ул. Белинского, 15)',
+  PICKUP_WAREHOUSE_KOMINTERNA: 'самовывоз (склад на ул. Коминтерна, 27)',
+  PICKUP_BELINSKOGO_15: 'самовывоз (салон на ул. Белинского, 15)',
   COURIER_DELIVERY: 'Аккуратная доставка и подъем на этаж собственной службой',
   WHITE_GLOVE_DELIVERY: 'Аккуратная доставка и подъем на этаж собственной службой',
 };
 
 export const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  IN_SALON: 'Оплата в салоне «СИМОНА» (картой или наличными)',
+  IN_SALON: 'в салоне «СИМОНА» (картой или наличными)',
   CARD_ONLINE: 'Онлайн-оплата картой / СБП (ЮKassa)',
-  ON_RECEIPT: 'Оплата при получении',
+  ON_RECEIPT: 'при получении',
   B2B_INVOICE: 'Безналичный расчет по счету для юрлиц (с НДС)',
 };
 
@@ -168,6 +168,14 @@ export function cleanCustomerName(name?: string | null): string {
     return 'Не указано';
   }
   return trimmed;
+}
+
+export function formatNonBreakingPhone(phone?: string | null): string {
+  if (!phone) return '';
+  return phone
+    .trim()
+    .replace(/\s+/g, '&nbsp;')
+    .replace(/-/g, '&#8209;');
 }
 
 function wrapLuxuryEmailHtml(title: string, badgeOrBody: string, maybeBody?: string): string {
@@ -337,7 +345,6 @@ export async function sendOrderCreatedEmails(order: OrderEmailData) {
         ${formatCustomerGreeting(order.customerName)}
       </h1>
       <p style="font-size:14px;color:#D7D9DB;line-height:1.6;margin:0 0 16px 0;">
-        Благодарим вас за заказ в сети салонов и интернет-магазине бытовой техники «СИМОНА».
         Ваш заказ <strong style="color:#FFFFFF;">№${order.orderNumber}</strong> принят в обработку.
       </p>
       ${itemsTableHtml}
@@ -351,7 +358,7 @@ export async function sendOrderCreatedEmails(order: OrderEmailData) {
         <div><strong style="color:#FFFFFF;">Способ оплаты:</strong> ${paymentLabel}</div>
       </div>
       <p style="font-size:13px;color:#87888A;line-height:1.6;margin:20px 0 0 0;">
-        Эксперт салона «СИМОНА» свяжется с вами в ближайшее время по телефону <strong style="color:#FFFFFF;">${order.customerPhone}</strong> для подтверждения резерва, сверки монтажной совместимости и согласования времени выдачи или доставки.
+        Эксперт салона «СИМОНА» свяжется с вами в ближайшее время по телефону <span style="white-space:nowrap;color:#FFFFFF;font-weight:700;">${formatNonBreakingPhone(order.customerPhone)}</span> для подтверждения резерва и согласования времени выдачи или доставки.
       </p>
     `;
 
@@ -373,7 +380,7 @@ export async function sendOrderCreatedEmails(order: OrderEmailData) {
     </h1>
     <div style="padding:16px;background-color:#1E2228;border:1px solid #2B313A;border-radius:12px;font-size:13px;line-height:1.7;margin-bottom:16px;">
       <div><strong style="color:#FFFFFF;">Покупатель:</strong> ${cleanCustomerName(order.customerName)}</div>
-      <div><strong style="color:#FFFFFF;">Телефон:</strong> <a href="tel:${order.customerPhone}" style="color:#00979C;font-weight:700;">${order.customerPhone}</a></div>
+      <div><strong style="color:#FFFFFF;">Телефон:</strong> <a href="tel:${order.customerPhone}" style="color:#00979C;font-weight:700;text-decoration:none;"><span style="white-space:nowrap;color:#00979C;font-weight:700;">${formatNonBreakingPhone(order.customerPhone)}</span></a></div>
       <div><strong style="color:#FFFFFF;">Email:</strong> ${order.customerEmail || 'не указан'}</div>
       <div><strong style="color:#FFFFFF;">Способ получения:</strong> ${deliveryLabel}</div>
       ${order.deliveryAddress ? `<div><strong style="color:#FFFFFF;">Адрес:</strong> ${order.deliveryAddress}</div>` : ''}
@@ -510,7 +517,7 @@ export async function sendLeadNotificationEmails(lead: LeadEmailData) {
         Ваше обращение <strong style="color:#FFFFFF;">«${typeLabel}»</strong> принято экспертами салона «СИМОНА».
       </p>
       <div style="padding:16px;background-color:#1E2228;border:1px solid #2B313A;border-radius:12px;font-size:13px;line-height:1.7;">
-        <div><strong style="color:#FFFFFF;">Контактный телефон:</strong> ${lead.phone}</div>
+        <div><strong style="color:#FFFFFF;">Контактный телефон:</strong> <span style="white-space:nowrap;color:#FFFFFF;font-weight:700;">${formatNonBreakingPhone(lead.phone)}</span></div>
         ${lead.preferredShowroom ? `<div><strong style="color:#FFFFFF;">Выбранный салон:</strong> ${lead.preferredShowroom}</div>` : ''}
         ${lead.preferredDate ? `<div><strong style="color:#FFFFFF;">Желаемая дата и время:</strong> ${lead.preferredDate} ${lead.preferredTime || ''}</div>` : ''}
         ${lead.productName ? `<div><strong style="color:#FFFFFF;">Интересующий прибор:</strong> ${lead.productName}</div>` : ''}
@@ -543,7 +550,7 @@ export async function sendLeadNotificationEmails(lead: LeadEmailData) {
     <div style="padding:16px;background-color:#1E2228;border:1px solid #2B313A;border-radius:12px;font-size:13px;line-height:1.7;margin-bottom:16px;">
       <div><strong style="color:#FFFFFF;">Тип обращения:</strong> ${typeLabel} (${lead.type})</div>
       <div><strong style="color:#FFFFFF;">Имя:</strong> ${lead.name}</div>
-      <div><strong style="color:#FFFFFF;">Телефон:</strong> <a href="tel:${lead.phone}" style="color:#00979C;font-weight:700;">${lead.phone}</a></div>
+      <div><strong style="color:#FFFFFF;">Телефон:</strong> <a href="tel:${lead.phone}" style="color:#00979C;font-weight:700;text-decoration:none;"><span style="white-space:nowrap;color:#00979C;font-weight:700;">${formatNonBreakingPhone(lead.phone)}</span></a></div>
       ${lead.email ? `<div><strong style="color:#FFFFFF;">Email:</strong> ${lead.email}</div>` : ''}
       ${lead.preferredShowroom ? `<div><strong style="color:#FFFFFF;">Салон:</strong> ${lead.preferredShowroom}</div>` : ''}
       ${lead.preferredDate || lead.preferredTime ? `<div><strong style="color:#FFFFFF;">Дата / Время:</strong> ${lead.preferredDate || ''} ${lead.preferredTime || ''}</div>` : ''}
@@ -601,7 +608,7 @@ export async function sendPaymentStatusEmail(
         💳 Средства по заказу №${order.orderNumber} захолдированы (${formatRub(order.totalAmount)})
       </h1>
       <p style="font-size:14px;color:#D7D9DB;line-height:1.6;margin:0 0 16px 0;">
-        Покупатель <strong style="color:#FFFFFF;">${cleanCustomerName(order.customerName)}</strong> (${order.customerPhone}) успешно авторизовал платеж в ЮKassa (двухстадийный холд <code>capture: false</code>).
+        Покупатель <strong style="color:#FFFFFF;">${cleanCustomerName(order.customerName)}</strong> (<span style="white-space:nowrap;color:#FFFFFF;font-weight:700;">${formatNonBreakingPhone(order.customerPhone)}</span>) успешно авторизовал платеж в ЮKassa (двухстадийный холд <code>capture: false</code>).
         Проверьте физический резерв на складе (ул. Коминтерна, 27) и подтвердите списание средств в личном кабинете ЮKassa.
       </p>
       ${itemsTableHtml}
