@@ -36,11 +36,16 @@ $TarExcludes = @(
     "--exclude=.env*",
     "--exclude=*bundle.tar.gz",
     "--exclude=prisma/dev.db*",
-    "--exclude=data/*.backup*"
+    "--exclude=data/*.backup*",
+    "--exclude=storage/uploads"
 )
 
 $ProjectRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
-tar -czf $BUNDLE_PATH @TarExcludes -C $ProjectRoot .
+& tar -czf $BUNDLE_PATH @TarExcludes -C $ProjectRoot .
+if ($LASTEXITCODE -gt 1) {
+    Write-Error "Failed to package bundle."
+    exit 1
+}
 Write-Host "Created bundle: $BUNDLE_PATH" -ForegroundColor Green
 
 # 3. Transfer bundle
