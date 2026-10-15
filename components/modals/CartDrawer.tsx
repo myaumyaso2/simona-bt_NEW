@@ -302,170 +302,169 @@ export function CartDrawer() {
                         />
                       </button>
 
-                      <AnimatePresence initial={false}>
-                        {showQuickForm && (
-                          <motion.div
-                            key="quick-form-accordion"
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-                            className="overflow-hidden"
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateRows: showQuickForm ? '1fr' : '0fr',
+                          transition: 'grid-template-rows 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s ease',
+                          opacity: showQuickForm ? 1 : 0,
+                          pointerEvents: showQuickForm ? 'auto' : 'none',
+                        }}
+                      >
+                        <div style={{ minHeight: 0, overflow: 'hidden' }}>
+                          <form
+                            onSubmit={handleQuickCheckout}
+                            id="quick-cart-form"
+                            className="space-y-3 pt-3 pb-1 text-xs"
                           >
-                            <form
-                              onSubmit={handleQuickCheckout}
-                              id="quick-cart-form"
-                              className="space-y-3 pt-3 text-xs"
-                            >
-                              <div>
-                                <label className="block text-[#D7D9DB] mb-1.5 font-medium text-[11px]">
-                                  Способ получения
+                            <div>
+                              <label className="block text-[#D7D9DB] mb-1.5 font-medium text-[11px]">
+                                Способ получения
+                              </label>
+                              <div className="space-y-1.5">
+                                <label
+                                  className={`flex items-center p-2 rounded-xl border transition-all cursor-pointer ${
+                                    deliveryType === 'PICKUP_WAREHOUSE_KOMINTERNA'
+                                      ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
+                                      : 'bg-[#111315] border-[#2B313A] hover:border-simona-teal/50'
+                                  }`}
+                                >
+                                  <input
+                                    type="radio"
+                                    name="delivery"
+                                    checked={deliveryType === 'PICKUP_WAREHOUSE_KOMINTERNA'}
+                                    onChange={() => setDeliveryType('PICKUP_WAREHOUSE_KOMINTERNA')}
+                                    className="accent-simona-teal text-simona-teal focus:ring-0 mr-2 cursor-pointer"
+                                  />
+                                  <div>
+                                    <span className="text-white font-medium text-[11px]">
+                                      Самовывоз: Склад (Коминтерна, 27)
+                                    </span>
+                                    <span className="block text-[9px] text-[#87888A]">
+                                      Терминал выдачи крупной техники • Бесплатно
+                                    </span>
+                                  </div>
                                 </label>
-                                <div className="space-y-1.5">
-                                  <label
-                                    className={`flex items-center p-2 rounded-xl border transition-all cursor-pointer ${
-                                      deliveryType === 'PICKUP_WAREHOUSE_KOMINTERNA'
-                                        ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
-                                        : 'bg-[#111315] border-[#2B313A] hover:border-simona-teal/50'
-                                    }`}
-                                  >
-                                    <input
-                                      type="radio"
-                                      name="delivery"
-                                      checked={deliveryType === 'PICKUP_WAREHOUSE_KOMINTERNA'}
-                                      onChange={() => setDeliveryType('PICKUP_WAREHOUSE_KOMINTERNA')}
-                                      className="accent-simona-teal text-simona-teal focus:ring-0 mr-2 cursor-pointer"
-                                    />
-                                    <div>
-                                      <span className="text-white font-medium text-[11px]">
-                                        Самовывоз: Склад (Коминтерна, 27)
-                                      </span>
-                                      <span className="block text-[9px] text-[#87888A]">
-                                        Терминал выдачи крупной техники • Бесплатно
-                                      </span>
-                                    </div>
-                                  </label>
 
-                                  <label
-                                    className={`flex items-center p-2 rounded-xl border transition-all cursor-pointer ${
-                                      deliveryType === 'PICKUP_BELINSKOGO_15'
-                                        ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
-                                        : 'bg-[#111315] border-[#2B313A] hover:border-simona-teal/50'
-                                    }`}
-                                  >
-                                    <input
-                                      type="radio"
-                                      name="delivery"
-                                      checked={deliveryType === 'PICKUP_BELINSKOGO_15'}
-                                      onChange={() => setDeliveryType('PICKUP_BELINSKOGO_15')}
-                                      className="accent-simona-teal text-simona-teal focus:ring-0 mr-2 cursor-pointer"
-                                    />
-                                    <div>
-                                      <span className="text-white font-medium text-[11px]">
-                                        Самовывоз: Салон (Белинского, 15)
-                                      </span>
-                                      <span className="block text-[9px] text-[#87888A]">
-                                        Экспресс-выдача малой техники • Бесплатно
-                                      </span>
-                                    </div>
-                                  </label>
+                                <label
+                                  className={`flex items-center p-2 rounded-xl border transition-all cursor-pointer ${
+                                    deliveryType === 'PICKUP_BELINSKOGO_15'
+                                      ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
+                                      : 'bg-[#111315] border-[#2B313A] hover:border-simona-teal/50'
+                                  }`}
+                                >
+                                  <input
+                                    type="radio"
+                                    name="delivery"
+                                    checked={deliveryType === 'PICKUP_BELINSKOGO_15'}
+                                    onChange={() => setDeliveryType('PICKUP_BELINSKOGO_15')}
+                                    className="accent-simona-teal text-simona-teal focus:ring-0 mr-2 cursor-pointer"
+                                  />
+                                  <div>
+                                    <span className="text-white font-medium text-[11px]">
+                                      Самовывоз: Салон (Белинского, 15)
+                                    </span>
+                                    <span className="block text-[9px] text-[#87888A]">
+                                      Экспресс-выдача малой техники • Бесплатно
+                                    </span>
+                                  </div>
+                                </label>
 
-                                  <label
-                                    className={`flex items-center p-2 rounded-xl border transition-all cursor-pointer ${
-                                      deliveryType === 'COURIER_DELIVERY'
-                                        ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
-                                        : 'bg-[#111315] border-[#2B313A] hover:border-simona-teal/50'
-                                    }`}
-                                  >
-                                    <input
-                                      type="radio"
-                                      name="delivery"
-                                      checked={deliveryType === 'COURIER_DELIVERY'}
-                                      onChange={() => setDeliveryType('COURIER_DELIVERY')}
-                                      className="accent-simona-teal text-simona-teal focus:ring-0 mr-2 cursor-pointer"
-                                    />
-                                    <div>
-                                      <span className="text-white font-medium text-[11px]">
-                                        Аккуратная доставка и подъем на этаж собственной службой
-                                      </span>
-                                      <span className="block text-[9px] text-[#87888A]">
-                                        По Нижнему Новгороду и области
-                                      </span>
-                                    </div>
-                                  </label>
-                                </div>
+                                <label
+                                  className={`flex items-center p-2 rounded-xl border transition-all cursor-pointer ${
+                                    deliveryType === 'COURIER_DELIVERY'
+                                      ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
+                                      : 'bg-[#111315] border-[#2B313A] hover:border-simona-teal/50'
+                                  }`}
+                                >
+                                  <input
+                                    type="radio"
+                                    name="delivery"
+                                    checked={deliveryType === 'COURIER_DELIVERY'}
+                                    onChange={() => setDeliveryType('COURIER_DELIVERY')}
+                                    className="accent-simona-teal text-simona-teal focus:ring-0 mr-2 cursor-pointer"
+                                  />
+                                  <div>
+                                    <span className="text-white font-medium text-[11px]">
+                                      Аккуратная доставка и подъем на этаж собственной службой
+                                    </span>
+                                    <span className="block text-[9px] text-[#87888A]">
+                                      По Нижнему Новгороду и области
+                                    </span>
+                                  </div>
+                                </label>
                               </div>
+                            </div>
 
+                            <div>
+                              <input
+                                type="text"
+                                required
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Ваше имя *"
+                                className="w-full px-3 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
+                              />
+                            </div>
+
+                            <div>
+                              <input
+                                type="tel"
+                                required
+                                value={phone}
+                                onChange={(e) => {
+                                  setPhone(formatPhoneMask(e.target.value, phone));
+                                  if (phoneError) setPhoneError(null);
+                                }}
+                                placeholder="+7 (___) ___-__-__"
+                                className={`w-full px-3 py-2.5 rounded-xl bg-[#111315] border text-white text-xs placeholder-[#6E7074] focus:outline-none focus:ring-1 font-medium transition ${
+                                  phoneError
+                                    ? 'border-red-500/80 focus:border-red-500 focus:ring-red-500/30'
+                                    : 'border-[#2B313A] focus:border-simona-teal focus:ring-simona-teal/50'
+                                }`}
+                              />
+                              {phoneError && (
+                                <span className="block text-[10px] text-red-400 mt-1 pl-1">
+                                  {phoneError}
+                                </span>
+                              )}
+                            </div>
+
+                            <div>
+                              <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="E-mail (для чека и статуса заказа)"
+                                className="w-full px-3 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
+                              />
+                            </div>
+
+                            {deliveryType === 'COURIER_DELIVERY' && (
                               <div>
                                 <input
                                   type="text"
                                   required
-                                  value={name}
-                                  onChange={(e) => setName(e.target.value)}
-                                  placeholder="Ваше имя *"
+                                  value={address}
+                                  onChange={(e) => setAddress(e.target.value)}
+                                  placeholder="Адрес доставки (улица, дом, квартира)"
                                   className="w-full px-3 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
                                 />
                               </div>
+                            )}
 
-                              <div>
-                                <input
-                                  type="tel"
-                                  required
-                                  value={phone}
-                                  onChange={(e) => {
-                                    setPhone(formatPhoneMask(e.target.value, phone));
-                                    if (phoneError) setPhoneError(null);
-                                  }}
-                                  placeholder="+7 (___) ___-__-__"
-                                  className={`w-full px-3 py-2.5 rounded-xl bg-[#111315] border text-white text-xs placeholder-[#6E7074] focus:outline-none focus:ring-1 font-medium transition ${
-                                    phoneError
-                                      ? 'border-red-500/80 focus:border-red-500 focus:ring-red-500/30'
-                                      : 'border-[#2B313A] focus:border-simona-teal focus:ring-simona-teal/50'
-                                  }`}
-                                />
-                                {phoneError && (
-                                  <span className="block text-[10px] text-red-400 mt-1 pl-1">
-                                    {phoneError}
-                                  </span>
-                                )}
-                              </div>
-
-                              <div>
-                                <input
-                                  type="email"
-                                  value={email}
-                                  onChange={(e) => setEmail(e.target.value)}
-                                  placeholder="E-mail (для чека и статуса заказа)"
-                                  className="w-full px-3 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
-                                />
-                              </div>
-
-                              {deliveryType === 'COURIER_DELIVERY' && (
-                                <div>
-                                  <input
-                                    type="text"
-                                    required
-                                    value={address}
-                                    onChange={(e) => setAddress(e.target.value)}
-                                    placeholder="Адрес доставки (улица, дом, квартира)"
-                                    className="w-full px-3 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
-                                  />
-                                </div>
-                              )}
-
-                              <div>
-                                <button
-                                  type="submit"
-                                  disabled={loading}
-                                  className="w-full py-2.5 rounded-xl bg-[#1E2228] hover:bg-[#2B313A] border border-[#2B313A] text-white text-xs font-semibold transition flex items-center justify-center space-x-2 cursor-pointer active:scale-[0.98]"
-                                >
-                                  <span>{loading ? 'Отправка...' : 'Подтвердить быстрый заказ'}</span>
-                                </button>
-                              </div>
-                            </form>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                            <div>
+                              <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full py-2.5 rounded-xl bg-[#1E2228] hover:bg-[#2B313A] border border-[#2B313A] text-white text-xs font-semibold transition flex items-center justify-center space-x-2 cursor-pointer active:scale-[0.98]"
+                              >
+                                <span>{loading ? 'Отправка...' : 'Подтвердить быстрый заказ'}</span>
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
