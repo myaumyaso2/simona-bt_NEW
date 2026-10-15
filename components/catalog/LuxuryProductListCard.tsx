@@ -328,7 +328,7 @@ export function LuxuryProductListCard({ product, selectedPromos }: LuxuryProduct
             {/* 2. Discount Badge (informational % badge, positioned below promo badge) */}
             {discountBadge && (
               <span
-                className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold border backdrop-blur-md shadow-md select-none ${discountBadge.className}`}
+                className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-bold border backdrop-blur-md shadow-md select-none ${discountBadge.className}`}
                 title={`Скидка ${discountBadge.text}`}
               >
                 {discountBadge.text}

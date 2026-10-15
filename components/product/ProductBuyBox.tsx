@@ -226,6 +226,15 @@ export function ProductBuyBox({
           <div className="flex items-center gap-2">
             {(() => {
               const discountBadge = getDiscountBadgeInfo(product);
+              if (discountBadge && savings > 0) {
+                return (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-[#8A151A] text-white border border-[#A81C22]/60 shadow-sm">
+                    <span>{discountBadge.text}</span>
+                    <span className="text-white/40 font-normal">•</span>
+                    <span className="font-semibold">Выгода {formatPrice(savings)}</span>
+                  </span>
+                );
+              }
               if (discountBadge) {
                 return (
                   <span
@@ -235,14 +244,15 @@ export function ProductBuyBox({
                   </span>
                 );
               }
+              if (savings > 0) {
+                return (
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-[#8A151A] text-white border border-[#A81C22]/60 shadow-sm">
+                    Выгода {formatPrice(savings)}
+                  </span>
+                );
+              }
               return null;
             })()}
-
-            {savings > 0 && (
-              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-simona-wine text-white shadow-sm">
-                Выгода {formatPrice(savings)}
-              </span>
-            )}
           </div>
         </div>
 

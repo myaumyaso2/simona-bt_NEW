@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>СИМОНА — Варианты винного бейджа скидки (Liebherr ICBNdi 5123)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+
+    /* Базовые сбросы и типографика */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #0d0f12;
+      color: #F5F5F7;
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Сетка вариантов */
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    /* Карточка варианта */
+    .variant-card {
+      background-color: #16191D;
+      border: 1px solid #2B313A;
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .variant-card.current {
+      border: 2px solid rgba(239, 68, 68, 0.6);
+      background: linear-gradient(180deg, rgba(239, 68, 68, 0.05) 0%, #16191D 30%);
+    }
+    .variant-card.recommended {
+      border: 2px solid #00979C;
+      background: linear-gradient(180deg, rgba(0, 151, 156, 0.08) 0%, #16191D 30%);
+      box-shadow: 0 10px 30px rgba(0, 151, 156, 0.15);
+    }
+    .variant-card.alternative {
+      border: 1px solid #8A151A;
+      background: linear-gradient(180deg, rgba(138, 21, 26, 0.08) 0%, #16191D 30%);
+    }
+
+    /* Бейджи статуса варианта */
+    .pill-status {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+    .pill-red {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #F87171;
+    }
+    .pill-teal {
+      background: rgba(0, 151, 156, 0.2);
+      border: 1px solid rgba(0, 151, 156, 0.5);
+      color: #00B5BA;
+    }
+    .pill-wine {
+      background: rgba(138, 21, 26, 0.25);
+      border: 1px solid rgba(138, 21, 26, 0.5);
+      color: #F43F5E;
+    }
+    .pill-gray {
+      background: #1E2228;
+      border: 1px solid #2B313A;
+      color: #87888A;
+    }
+
+    /* Симуляция блока цены PDP */
+    .sim-box {
+      background-color: #1E2228;
+      border: 1px solid #2B313A;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .sim-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #87888A;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .price-current {
+      font-size: 24px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+    }
+    .price-old {
+      font-size: 13px;
+      color: #87888A;
+      text-decoration: line-through;
+    }
+    .badges-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Скидочные бейджи */
+    .badge-teal-discount {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(0, 151, 156, 0.2);
+      border: 1px solid rgba(0, 151, 156, 0.5);
+      color: #00979C;
+    }
+    .badge-wine-benefit {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #8A151A;
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(138, 21, 26, 0.3);
+    }
+    .badge-wine-outline-percent {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(138, 21, 26, 0.25);
+      border: 1px solid rgba(168, 28, 34, 0.6);
+      color: #FFA4A8;
+    }
+    .badge-wine-unified {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      background: #8A151A;
+      color: #FFFFFF;
+      border: 1px solid rgba(168, 28, 34, 0.7);
+      box-shadow: 0 2px 8px rgba(138, 21, 26, 0.4);
+    }
+    .badge-wine-unified .dot {
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 400;
+    }
+    .badge-wine-unified .subtext {
+      font-weight: 600;
+    }
+
+    /* Симуляция карточки каталога */
+    .catalog-sim {
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 12px;
+      height: 160px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .catalog-sim img {
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .top-left-status {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(22, 25, 29, 0.9);
+      color: #00979C;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(43, 49, 58, 0.8);
+    }
+    .top-right-percent-teal {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0, 151, 156, 0.2);
+      border: 1px solid rgba(0, 151, 156, 0.5);
+      color: #007378;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .top-right-percent-wine {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #8A151A;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(138, 21, 26, 0.3);
+    }
+
+    /* Мобильный фрейм */
+    .mobile-strip {
+      background: #111315;
+      border: 1px solid #2B313A;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .pros-cons {
+      font-size: 11px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #2B313A;
+      color: #D7D9DB;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Header Section -->
+    <header style="border-bottom: 1px solid #2B313A; padding-bottom: 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #8A151A;"></span>
+          <span style="font-size: 11px; font-weight: 800; color: #8A151A; text-transform: uppercase; letter-spacing: 0.1em;">Quiet Luxury • Лаборатория интерфейсов</span>
+          <span style="color: #87888A;">|</span>
+          <span style="font-size: 11px; color: #00979C; font-weight: 600;">Стандартизация скидочных маркеров</span>
+        </div>
+        <h1 style="font-size: 26px; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em;">
+          Встраиваемый холодильник Liebherr ICBNdi 5123
+        </h1>
+        <div style="font-size: 13px; color: #87888A; margin-top: 4px;">
+          Код 1С: <b style="color: #D7D9DB;">87217</b> • Артикул модели: <b style="color: #D7D9DB;">ICBNdi 5123</b>
+        </div>
+      </div>
+
+      <div style="background: #16191D; border: 1px solid #2B313A; border-radius: 12px; padding: 12px 16px; font-size: 12px;">
+        <div style="color: #87888A;">Базовая розничная цена: <span style="text-decoration: line-through; color: #FFFFFF; font-weight: 600;">175 000 ₽</span></div>
+        <div style="color: #87888A; margin: 2px 0;">Цена по акции: <span style="color: #FFFFFF; font-weight: 800; font-size: 14px;">160 195 ₽</span></div>
+        <div style="color: #10B981; font-weight: 700;">Экономия покупателя: 14 805 ₽ (-8%)</div>
+      </div>
+    </header>
+
+    <!-- Context Explanation Banner -->
+    <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; font-size: 13px; color: #D7D9DB; display: flex; gap: 12px; align-items: flex-start;">
+      <span style="font-size: 18px; line-height: 1;">💡</span>
+      <div>
+        <b style="color: #FBBF24;">Почему бейдж был бирюзовым:</b>
+        В коде модуля 1С-синхронизации (<code style="background: #1E2228; padding: 2px 6px; border-radius: 4px; color: #FCD34D;">lib/sync/oneCParser.ts</code> и <code style="background: #1E2228; padding: 2px 6px; border-radius: 4px; color: #FCD34D;">lib/catalog/badgeHelper.ts</code>) была историческая развилка: акции производителя (<code style="background: #1E2228; padding: 2px 6px; border-radius: 4px; color: #FCD34D;">ACTION:</code>) красились в бирюзовый, а спецпредложения салона (<code style="background: #1E2228; padding: 2px 6px; border-radius: 4px; color: #FCD34D;">SPECIAL:</code>) — в винный.
+        По брендбуку <b>DESIGN.md</b> (п. 2.1) <b>все скидки, выгода и акции должны маркироваться строго винным цветом (<code style="color: #F87171;">#8A151A</code>)</b>, а бирюзовый зарезервирован под статус наличия и фирменный акцент.
+      </div>
+    </div>
+
+    <!-- 4 Variants Comparison Grid -->
+    <div class="grid-4">
+
+      <!-- ==================================================== -->
+      <!-- VARIANT 0: CURRENT (BEFORE) -->
+      <!-- ==================================================== -->
+      <div class="variant-card current">
+        <div>
+          <span class="pill-status pill-red">Было (Текущее)</span>
+          <h3 style="font-size: 16px; font-weight: 800; color: #FFFFFF; margin-bottom: 4px;">Разнобой цветов</h3>
+          <p style="font-size: 12px; color: #87888A; margin-bottom: 12px;">Бирюзовый процент + винная выгода</p>
+
+          <!-- PDP Box -->
+          <div class="sim-box">
+            <div class="sim-label">Карточка товара (PDP)</div>
+            <div class="price-row">
+              <span class="price-current">160 195 ₽</span>
+              <span class="price-old">175 000 ₽</span>
+            </div>
+            <div class="badges-row">
+              <span class="badge-teal-discount">-8%</span>
+              <span class="badge-wine-benefit">Выгода 14 805 ₽</span>
+            </div>
+          </div>
+
+          <!-- Catalog Box -->
+          <div style="background: #1E2228; border: 1px solid #2B313A; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+            <div class="sim-label">В каталоге (на фото)</div>
+            <div class="catalog-sim">
+              <img src="https://simona-bt.ru/images/cms/data/photo_code/87217.jpg" alt="Liebherr ICBNdi 5123" />
+              <span class="top-left-status">На складе</span>
+              <span class="top-right-percent-teal">-8%</span>
+            </div>
+          </div>
+
+          <!-- Mobile Box -->
+          <div class="mobile-strip">
+            <div class="sim-label">На смартфоне (390px)</div>
+            <div style="font-size: 16px; font-weight: 800; color: #FFFFFF;">
+              160 195 ₽ <span class="price-old" style="font-size: 11px;">175 000 ₽</span>
+            </div>
+            <div class="badges-row" style="margin-top: 6px;">
+              <span class="badge-teal-discount" style="padding: 2px 6px; font-size: 10px;">-8%</span>
+              <span class="badge-wine-benefit" style="padding: 2px 8px; font-size: 10px;">Выгода 14 805 ₽</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pros-cons" style="color: #FCA5A5;">
+          ❌ <b>Проблема:</b> Бирюзовый цвет скидки конфликтует с соседней винной плашкой и ломает сквозной стандарт Brandbook.
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- VARIANT 1: TWO WINE BADGES -->
+      <!-- ==================================================== -->
+      <div class="variant-card alternative">
+        <div>
+          <span class="pill-status pill-wine">Вариант 1</span>
+          <h3 style="font-size: 16px; font-weight: 800; color: #FFFFFF; margin-bottom: 4px;">Два винных бейджа</h3>
+          <p style="font-size: 12px; color: #87888A; margin-bottom: 12px;">Процент (тонкий контур) + Выгода (заливка)</p>
+
+          <!-- PDP Box -->
+          <div class="sim-box">
+            <div class="sim-label">Карточка товара (PDP)</div>
+            <div class="price-row">
+              <span class="price-current">160 195 ₽</span>
+              <span class="price-old">175 000 ₽</span>
+            </div>
+            <div class="badges-row">
+              <span class="badge-wine-outline-percent">-8%</span>
+              <span class="badge-wine-benefit">Выгода 14 805 ₽</span>
+            </div>
+          </div>
+
+          <!-- Catalog Box -->
+          <div style="background: #1E2228; border: 1px solid #2B313A; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+            <div class="sim-label">В каталоге (на фото)</div>
+            <div class="catalog-sim">
+              <img src="https://simona-bt.ru/images/cms/data/photo_code/87217.jpg" alt="Liebherr ICBNdi 5123" />
+              <span class="top-left-status">На складе</span>
+              <span class="top-right-percent-wine">-8%</span>
+            </div>
+          </div>
+
+          <!-- Mobile Box -->
+          <div class="mobile-strip">
+            <div class="sim-label">На смартфоне (390px)</div>
+            <div style="font-size: 16px; font-weight: 800; color: #FFFFFF;">
+              160 195 ₽ <span class="price-old" style="font-size: 11px;">175 000 ₽</span>
+            </div>
+            <div class="badges-row" style="margin-top: 6px;">
+              <span class="badge-wine-outline-percent" style="padding: 2px 6px; font-size: 10px;">-8%</span>
+              <span class="badge-wine-benefit" style="padding: 2px 8px; font-size: 10px;">Выгода 14 805 ₽</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pros-cons">
+          ✨ <b>Плюс:</b> Привычная структура из двух плашек, но теперь в строгой единой винной тональности без бирюзового диссонанса.
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- VARIANT 2: UNIFIED COMPACT BADGE -->
+      <!-- ==================================================== -->
+      <div class="variant-card recommended">
+        <div>
+          <span class="pill-status pill-teal">Вариант 2 • Рекомендован</span>
+          <h3 style="font-size: 16px; font-weight: 800; color: #FFFFFF; margin-bottom: 4px;">Единый монолитный бейдж</h3>
+          <p style="font-size: 12px; color: #87888A; margin-bottom: 12px;">Процент и рубли в одной аккуратной плашке</p>
+
+          <!-- PDP Box -->
+          <div class="sim-box">
+            <div class="sim-label">Карточка товара (PDP)</div>
+            <div class="price-row">
+              <span class="price-current">160 195 ₽</span>
+              <span class="price-old">175 000 ₽</span>
+            </div>
+            <div class="badges-row">
+              <span class="badge-wine-unified">
+                <span>-8%</span>
+                <span class="dot">•</span>
+                <span class="subtext">Выгода 14 805 ₽</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Catalog Box -->
+          <div style="background: #1E2228; border: 1px solid #2B313A; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+            <div class="sim-label">В каталоге (на фото)</div>
+            <div class="catalog-sim">
+              <img src="https://simona-bt.ru/images/cms/data/photo_code/87217.jpg" alt="Liebherr ICBNdi 5123" />
+              <span class="top-left-status">На складе</span>
+              <span class="top-right-percent-wine">-8%</span>
+            </div>
+          </div>
+
+          <!-- Mobile Box -->
+          <div class="mobile-strip">
+            <div class="sim-label">На смартфоне (390px)</div>
+            <div style="font-size: 16px; font-weight: 800; color: #FFFFFF;">
+              160 195 ₽ <span class="price-old" style="font-size: 11px;">175 000 ₽</span>
+            </div>
+            <div class="badges-row" style="margin-top: 6px;">
+              <span class="badge-wine-unified" style="padding: 2px 8px; font-size: 10px;">
+                <span>-8%</span>
+                <span class="dot">•</span>
+                <span class="subtext">Выгода 14 805 ₽</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pros-cons" style="color: #6EE7B7;">
+          🏆 <b>Рекомендация:</b> Идеальный баланс Quiet Luxury — исключает визуальную дробность, смотрится монолитно и премиально на экранах любой ширины.
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- VARIANT 3: ONLY BENEFIT IN PRICE BOX -->
+      <!-- ==================================================== -->
+      <div class="variant-card">
+        <div>
+          <span class="pill-status pill-gray">Вариант 3</span>
+          <h3 style="font-size: 16px; font-weight: 800; color: #FFFFFF; margin-bottom: 4px;">Только рубли в цене</h3>
+          <p style="font-size: 12px; color: #87888A; margin-bottom: 12px;">Процент — только на фото в каталоге</p>
+
+          <!-- PDP Box -->
+          <div class="sim-box">
+            <div class="sim-label">Карточка товара (PDP)</div>
+            <div class="price-row">
+              <span class="price-current">160 195 ₽</span>
+              <span class="price-old">175 000 ₽</span>
+            </div>
+            <div class="badges-row">
+              <span class="badge-wine-benefit">Выгода 14 805 ₽</span>
+            </div>
+          </div>
+
+          <!-- Catalog Box -->
+          <div style="background: #1E2228; border: 1px solid #2B313A; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+            <div class="sim-label">В каталоге (на фото)</div>
+            <div class="catalog-sim">
+              <img src="https://simona-bt.ru/images/cms/data/photo_code/87217.jpg" alt="Liebherr ICBNdi 5123" />
+              <span class="top-left-status">На складе</span>
+              <span class="top-right-percent-wine">-8%</span>
+            </div>
+          </div>
+
+          <!-- Mobile Box -->
+          <div class="mobile-strip">
+            <div class="sim-label">На смартфоне (390px)</div>
+            <div style="font-size: 16px; font-weight: 800; color: #FFFFFF;">
+              160 195 ₽ <span class="price-old" style="font-size: 11px;">175 000 ₽</span>
+            </div>
+            <div class="badges-row" style="margin-top: 6px;">
+              <span class="badge-wine-benefit" style="padding: 2px 8px; font-size: 10px;">Выгода 14 805 ₽</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pros-cons">
+          👌 <b>Плюс:</b> В карточке показывается только ощутимая сумма в рублях, а процент `-8%` выполняет роль магнита в каталоге.
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
