@@ -7,6 +7,7 @@ import { useStore } from '@/components/providers/StoreContext';
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { formatPrice } from '@/lib/utils';
 import { formatProductName } from '@/lib/catalog/productTitle';
+import { formatPhoneMask, isValidRussianPhone } from '@/lib/phone';
 import { SectionBadge } from '@/components/ui/SectionBadge';
 import {
   SimonaIconDelivery,
@@ -85,9 +86,8 @@ export default function CheckoutPage() {
       return;
     }
 
-    const cleanPhone = customerPhone.replace(/\D/g, '');
-    if (cleanPhone.length < 10) {
-      setFormError('Укажите корректный номер телефона для связи.');
+    if (!isValidRussianPhone(customerPhone)) {
+      setFormError('Укажите корректный номер телефона РФ (+7 (XXX) XXX-XX-XX).');
       return;
     }
 
@@ -258,8 +258,8 @@ export default function CheckoutPage() {
                       type="tel"
                       required
                       value={customerPhone}
-                      onChange={(e) => setCustomerPhone(e.target.value)}
-                      placeholder="+7 (900) 123-45-67"
+                      onChange={(e) => setCustomerPhone(formatPhoneMask(e.target.value, customerPhone))}
+                      placeholder="+7 (___) ___-__-__"
                       className="w-full px-4 py-2.5 rounded-xl bg-[#1E2228] border border-[#2B313A] text-white text-xs placeholder-[#87888A] focus:outline-none focus:border-simona-teal transition"
                     />
                   </div>

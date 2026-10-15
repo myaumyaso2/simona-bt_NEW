@@ -18,6 +18,7 @@ import { useAnalyticsData } from '@/lib/analytics/utm';
 import { formatPrice } from '@/lib/utils';
 import { trackEcommercePurchase, trackGoal } from '@/lib/analytics/tracker';
 import { formatProductName } from '@/lib/catalog/productTitle';
+import { formatPhoneMask, isValidRussianPhone } from '@/lib/phone';
 
 export function CartDrawer() {
   const router = useRouter();
@@ -29,6 +30,7 @@ export function CartDrawer() {
   >('PICKUP_WAREHOUSE_KOMINTERNA');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [showQuickForm, setShowQuickForm] = useState(false);
@@ -63,6 +65,12 @@ export function CartDrawer() {
 
   const handleQuickCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isValidRussianPhone(phone)) {
+      setPhoneError('Пожалуйста, введите полный номер телефона (+7 (XXX) XXX-XX-XX)');
+      return;
+    }
+    setPhoneError(null);
     setLoading(true);
 
     try {
@@ -376,10 +384,22 @@ export function CartDrawer() {
                               type="tel"
                               required
                               value={phone}
-                              onChange={(e) => setPhone(e.target.value)}
-                              placeholder="Телефон для подтверждения *"
-                              className="w-full px-3 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
+                              onChange={(e) => {
+                                setPhone(formatPhoneMask(e.target.value, phone));
+                                if (phoneError) setPhoneError(null);
+                              }}
+                              placeholder="+7 (___) ___-__-__"
+                              className={`w-full px-3 py-2.5 rounded-xl bg-[#111315] border text-white text-xs placeholder-[#6E7074] focus:outline-none focus:ring-1 font-medium transition ${
+                                phoneError
+                                  ? 'border-red-500/80 focus:border-red-500 focus:ring-red-500/30'
+                                  : 'border-[#2B313A] focus:border-simona-teal focus:ring-simona-teal/50'
+                              }`}
                             />
+                            {phoneError && (
+                              <span className="block text-[10px] text-red-400 mt-1 pl-1">
+                                {phoneError}
+                              </span>
+                            )}
                           </div>
 
                           <div>

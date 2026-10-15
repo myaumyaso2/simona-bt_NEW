@@ -15,14 +15,15 @@ echo "  -> TypeScript check PASSED (0 errors)."
 
 echo "📦 Step 2: Packaging project bundle..."
 rm -f "$BUNDLE_PATH"
-tar -czf "$BUNDLE_PATH" \
+tar --warning=no-file-changed -czf "$BUNDLE_PATH" \
   --exclude="node_modules" \
   --exclude=".next" \
   --exclude=".git" \
   --exclude="*.log" \
   --exclude="staging_bundle.tar.gz" \
   --exclude="prisma/dev.db*" \
-  .
+  --exclude="storage/uploads" \
+  . || [ $? -le 1 ]
 
 echo "📤 Step 3: Uploading bundle to $SSH_HOST..."
 scp "$BUNDLE_PATH" "${SSH_HOST}:/tmp/simona_staging_bundle.tar.gz"
@@ -41,12 +42,13 @@ tar -xzf /tmp/simona_staging_bundle.tar.gz -C "$REMOTE_DIR"
 rm -f /tmp/simona_staging_bundle.tar.gz
 
 echo "📝 Configuring environment..."
-cat << 'ENVEOF' > .env.production
+cat << 'ENVEOF' > .env
 NODE_ENV=production
 PORT=3005
 DATABASE_URL="postgresql://simona_app:SmBt_Staging_2026_PgPass!@localhost:5432/simona_staging"
 NEXT_PUBLIC_SITE_URL="https://new.simona-bt.ru"
 ENVEOF
+cp .env .env.production
 
 sed -i 's/provider = "sqlite"/provider = "postgresql"/g' prisma/schema.prisma
 
