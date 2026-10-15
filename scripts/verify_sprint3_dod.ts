@@ -213,7 +213,7 @@ async function main() {
 
     // 4. Purchase
     trackEcommercePurchase({
-      id: 'SMB-20261013-1234',
+      id: '15104',
       revenue: 99990,
       products: [
         {
@@ -228,7 +228,7 @@ async function main() {
     });
     assert(fakeDataLayer.length === 4, 'dataLayer must have 4 events after purchase');
     assert(
-      fakeDataLayer[3]?.ecommerce?.purchase?.actionField?.id === 'SMB-20261013-1234',
+      fakeDataLayer[3]?.ecommerce?.purchase?.actionField?.id === '15104',
       'Purchase payload matches order id'
     );
   });

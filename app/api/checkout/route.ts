@@ -5,14 +5,9 @@ import { sendOrderCreatedEmails } from '@/lib/mail/mailer';
 import { createAsanaOrderTask } from '@/lib/integrations/asana';
 import { notifyNewOrderInMax } from '@/lib/integrations/maxMessenger';
 import { createHoldPayment } from '@/lib/integrations/yookassa';
+import { getNextOrderNumber } from '@/lib/orders/orderNumber';
 
 export const dynamic = 'force-dynamic';
-
-function generateOrderNumber(): string {
-  const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-  const dateStr = new Date().toISOString().slice(2, 10).replace(/-/g, '');
-  return `SMB-${dateStr}-${randomSuffix}`;
-}
 
 interface CheckoutItemInput {
   id?: string;
@@ -159,7 +154,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const orderNumber = generateOrderNumber();
+    const orderNumber = await getNextOrderNumber();
 
     const order = await prisma.order.create({
       data: {

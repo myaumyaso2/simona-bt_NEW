@@ -198,7 +198,9 @@ export async function createAsanaOrderTask(order: OrderEmailData): Promise<Asana
     itemsList = order.itemsJson;
   }
 
-  const title = `[Заказ №${order.orderNumber}] — ${order.customerName} (${order.customerPhone}) — ${Math.round(order.totalAmount).toLocaleString('ru-RU')} ₽`;
+  const isOneClick = order.status === 'ONE_CLICK';
+  const prefix = isOneClick ? '[Заказ в 1 клик' : '[Заказ';
+  const title = `${prefix} №${order.orderNumber}] — ${order.customerName} (${order.customerPhone}) — ${Math.round(order.totalAmount).toLocaleString('ru-RU')} ₽`;
   const notes = [
     `Номер заказа: ${order.orderNumber}`,
     `Сумма заказа: ${Math.round(order.totalAmount).toLocaleString('ru-RU')} ₽`,

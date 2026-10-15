@@ -33,6 +33,7 @@ sed -i 's/provider = "sqlite"/provider = "postgresql"/g' prisma/schema.prisma
 echo "📦 Generating Prisma client and syncing database schema..."
 npx prisma generate
 npx prisma db push --skip-generate --accept-data-loss
+PGPASSWORD='SmBt_Staging_2026_PgPass!' psql -h localhost -U simona_app -d simona_prod -c 'CREATE SEQUENCE IF NOT EXISTS order_number_seq START WITH 15104;' 2>/dev/null || true
 
 echo "💾 Checking customers in simona_prod..."
 CUSTOMERS=$(PGPASSWORD='SmBt_Staging_2026_PgPass!' psql -h localhost -U simona_app -d simona_prod -t -A -c 'SELECT COUNT(*) FROM "Customer";' 2>/dev/null || echo "0")

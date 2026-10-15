@@ -56,6 +56,7 @@ npm install --prefer-offline --no-audit
 echo "🗄️ Initializing Prisma & PostgreSQL..."
 npx prisma generate
 npx prisma db push --skip-generate
+PGPASSWORD='SmBt_Staging_2026_PgPass!' psql -h localhost -U simona_app -d simona_staging -c 'CREATE SEQUENCE IF NOT EXISTS order_number_seq START WITH 15104;' 2>/dev/null || true
 
 COUNT=$(PGPASSWORD='SmBt_Staging_2026_PgPass!' psql -h localhost -U simona_app -d simona_staging -t -A -c 'SELECT COUNT(*) FROM "Product";' 2>/dev/null || echo "0")
 echo "Current products in DB: $COUNT"

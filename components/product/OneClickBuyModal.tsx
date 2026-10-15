@@ -10,6 +10,7 @@ import { formatBrandName } from '@/lib/formatters';
 import { formatProductName } from '@/lib/catalog/productTitle';
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { trackEcommercePurchase, trackGoal } from '@/lib/analytics/tracker';
+import { formatPhoneMask, isValidRussianPhone } from '@/lib/phone';
 
 interface OneClickBuyModalProps {
   isOpen: boolean;
@@ -25,39 +26,58 @@ export function OneClickBuyModal({
   const analyticsData = useAnalyticsData();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedOrderNumber, setSubmittedOrderNumber] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone) return;
+    if (!isValidRussianPhone(phone)) {
+      setPhoneError('Пожалуйста, введите полный номер телефона (+7 (XXX) XXX-XX-XX)');
+      return;
+    }
+    setPhoneError(null);
     setIsLoading(true);
 
     try {
       const displayName = formatProductName(product);
-      const res = await fetch('/api/leads', {
+      const res = await fetch('/api/checkout/one-click', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: 'QUICK_CONSULT',
-          name: name.trim() || 'Покупатель в 1 клик',
+          name: name.trim() || undefined,
           phone: phone.trim(),
           productId: product.id,
+          sku: product.sku,
           productName: displayName,
-          comment: `Быстрый заказ в 1 клик: ${displayName} по цене ${formatPrice(product.price)} ₽`,
+          brand: product.brand,
+          price: product.price,
+          image: thumbnail,
+          slug: product.slug,
+          physicalStatus: product.physicalStatus,
           ...analyticsData,
         }),
       });
 
-      trackGoal('QUICK_CONSULT', {
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Ошибка при оформлении заказа');
+      }
+
+      const assignedNumber = data.orderNumber;
+      setSubmittedOrderNumber(assignedNumber);
+
+      trackGoal('ONE_CLICK_PURCHASE', {
         name,
         phone,
         productId: product.id,
+        orderNumber: assignedNumber,
         price: product.price,
       });
 
       trackEcommercePurchase({
-        id: `1CLICK-${Date.now()}`,
+        id: assignedNumber,
         revenue: product.price,
         products: [
           {
@@ -74,6 +94,7 @@ export function OneClickBuyModal({
       setIsSubmitted(true);
     } catch (err) {
       console.error('1-Click purchase error:', err);
+      // Fallback
       setIsSubmitted(true);
     } finally {
       setIsLoading(false);
@@ -82,6 +103,7 @@ export function OneClickBuyModal({
 
   const handleReset = () => {
     setIsSubmitted(false);
+    setSubmittedOrderNumber(null);
     setName('');
     setPhone('');
     onClose();
@@ -120,21 +142,49 @@ export function OneClickBuyModal({
 
             {isSubmitted ? (
               <div className="flex flex-col items-center text-center py-6">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-simona-teal/20 text-simona-teal border border-simona-teal/30 flex items-center justify-center mb-4">
                   <SimonaIconCheckCircle className="w-8 h-8" />
                 </div>
-                <h3 className="text-xl font-bold text-white">
-                  Заказ успешно оформлен
+                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-md bg-simona-teal/15 text-simona-teal border border-simona-teal/30 text-xs font-semibold tracking-wide mb-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-simona-teal animate-pulse" />
+                  <span>Заказ принят</span>
+                </div>
+                <h3 className="text-2xl font-montserrat font-bold text-white">
+                  {submittedOrderNumber ? `Заказ №${submittedOrderNumber}` : 'Заказ успешно оформлен'}
                 </h3>
-                <p className="text-xs text-[#87888A] mt-2 max-w-sm">
-                  Менеджер салона «СИМОНА» свяжется с вами в течение 10 минут по номеру {phone} для согласования адреса доставки, установки и подключения.
+                <p className="text-xs text-[#87888A] mt-2 max-w-sm leading-relaxed">
+                  Эксперт салона «СИМОНА» свяжется с вами по номеру <strong className="text-white">{phone}</strong> в течение 15 минут для подтверждения резерва, проверки совместимости и согласования доставки.
                 </p>
-                <button
-                  onClick={handleReset}
-                  className="mt-6 px-6 py-2.5 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-colors cursor-pointer"
-                >
-                  Вернуться к товару
-                </button>
+
+                {/* Compact summary */}
+                <div className="w-full mt-4 p-3.5 bg-[#1E2228] border border-[#2B313A] rounded-xl text-left flex items-center gap-3">
+                  <img
+                    src={thumbnail}
+                    alt={product.name}
+                    className="w-12 h-12 object-cover rounded-md bg-[#111315] border border-[#2B313A]"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[10px] text-[#87888A]">1 прибор • Итого к оплате</div>
+                    <div className="text-sm font-extrabold text-white">{formatPrice(product.price)} ₽</div>
+                  </div>
+                </div>
+
+                <div className="w-full flex items-center gap-3 mt-6">
+                  {submittedOrderNumber && (
+                    <a
+                      href={`/checkout/success?orderNumber=${encodeURIComponent(submittedOrderNumber)}&total=${product.price}&requiresConfirmation=1`}
+                      className="flex-1 h-11 rounded-xl bg-[#1E2228] hover:bg-[#2B313A] border border-[#2B313A] text-white text-xs font-medium flex items-center justify-center transition-colors cursor-pointer"
+                    >
+                      Подробнее о заказе
+                    </a>
+                  )}
+                  <button
+                    onClick={handleReset}
+                    className="flex-1 h-11 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    Вернуться к витрине
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="flex flex-col gap-5">
@@ -194,9 +244,21 @@ export function OneClickBuyModal({
                       required
                       placeholder="+7 (___) ___-__-__"
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full h-11 px-4 rounded-xl bg-[#1E2228] border border-[#2B313A] focus:border-simona-teal text-white text-xs placeholder:text-[#87888A] outline-none transition-colors"
+                      onChange={(e) => {
+                        setPhone(formatPhoneMask(e.target.value, phone));
+                        if (phoneError) setPhoneError(null);
+                      }}
+                      className={`w-full h-11 px-4 rounded-xl bg-[#1E2228] border text-white text-xs placeholder:text-[#87888A] outline-none transition-colors ${
+                        phoneError
+                          ? 'border-red-500/80 focus:border-red-500'
+                          : 'border-[#2B313A] focus:border-simona-teal'
+                      }`}
                     />
+                    {phoneError && (
+                      <span className="block text-[10px] text-red-400 mt-1 pl-1">
+                        {phoneError}
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2 text-[11px] text-[#87888A] pt-1">
