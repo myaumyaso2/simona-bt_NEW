@@ -24,6 +24,7 @@ export function OneClickBuyModal({
   product,
 }: OneClickBuyModalProps) {
   const analyticsData = useAnalyticsData();
+  const displayName = formatProductName(product);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [phoneError, setPhoneError] = useState<string | null>(null);
@@ -41,7 +42,6 @@ export function OneClickBuyModal({
     setIsLoading(true);
 
     try {
-      const displayName = formatProductName(product);
       const res = await fetch('/api/checkout/one-click', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -157,15 +157,23 @@ export function OneClickBuyModal({
                 </p>
 
                 {/* Compact summary */}
-                <div className="w-full mt-4 p-3.5 bg-[#1E2228] border border-[#2B313A] rounded-xl text-left flex items-center gap-3">
-                  <img
-                    src={thumbnail}
-                    alt={product.name}
-                    className="w-12 h-12 object-cover rounded-md bg-[#111315] border border-[#2B313A]"
-                  />
+                <div className="w-full mt-4 p-3.5 bg-[#1E2228] border border-[#2B313A] rounded-xl text-left flex items-center gap-3.5">
+                  <div className="w-14 h-14 rounded-xl bg-[#111315] border border-[#2B313A] flex items-center justify-center p-1.5 shrink-0 overflow-hidden">
+                    <img
+                      src={thumbnail}
+                      alt={displayName}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[10px] text-[#87888A]">1 прибор • Итого к оплате</div>
-                    <div className="text-sm font-extrabold text-white">{formatPrice(product.price)}</div>
+                    <h4 className="text-xs font-semibold text-white leading-snug line-clamp-2 mb-1" title={displayName}>
+                      {displayName}
+                    </h4>
+                    <div className="text-xs text-[#87888A] flex items-center gap-1.5 font-medium">
+                      <span>1 прибор</span>
+                      <span className="text-[#4E545E]">•</span>
+                      <span className="font-extrabold text-white">{formatPrice(product.price)}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -201,20 +209,22 @@ export function OneClickBuyModal({
                 </div>
 
                 {/* Compact Product Card */}
-                <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-3 flex items-center gap-3">
-                  <img
-                    src={thumbnail}
-                    alt={product.name}
-                    className="w-14 h-14 object-cover rounded-md bg-[#111315] border border-[#2B313A]"
-                  />
+                <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-3 flex items-center gap-3.5">
+                  <div className="w-14 h-14 rounded-xl bg-[#111315] border border-[#2B313A] flex items-center justify-center p-1.5 shrink-0 overflow-hidden">
+                    <img
+                      src={thumbnail}
+                      alt={displayName}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <span className="text-[10px] text-[#87888A] font-mono">
+                    <span className="text-[10px] text-[#87888A] font-mono block mb-0.5">
                       Код товара: {product.sku}
                     </span>
-                    <h4 className="text-xs font-bold text-white truncate">
-                      {product.name}
+                    <h4 className="text-xs font-bold text-white line-clamp-2 leading-snug" title={displayName}>
+                      {displayName}
                     </h4>
-                    <span className="text-sm font-extrabold text-white">
+                    <span className="text-sm font-extrabold text-white mt-0.5 block">
                       {formatPrice(product.price)}
                     </span>
                   </div>
