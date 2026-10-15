@@ -286,13 +286,19 @@ export function CartDrawer() {
                               Способ получения
                             </label>
                             <div className="space-y-1.5">
-                              <label className="flex items-center p-2 rounded-xl bg-[#111315] border border-[#2B313A] cursor-pointer hover:border-simona-teal/50 transition">
+                              <label
+                                className={`flex items-center p-2 rounded-xl border transition-all cursor-pointer ${
+                                  deliveryType === 'PICKUP_WAREHOUSE_KOMINTERNA'
+                                    ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
+                                    : 'bg-[#111315] border-[#2B313A] hover:border-simona-teal/50'
+                                }`}
+                              >
                                 <input
                                   type="radio"
                                   name="delivery"
                                   checked={deliveryType === 'PICKUP_WAREHOUSE_KOMINTERNA'}
                                   onChange={() => setDeliveryType('PICKUP_WAREHOUSE_KOMINTERNA')}
-                                  className="text-simona-teal focus:ring-0 mr-2"
+                                  className="accent-simona-teal text-simona-teal focus:ring-0 mr-2 cursor-pointer"
                                 />
                                 <div>
                                   <span className="text-white font-medium text-[11px]">
@@ -304,13 +310,19 @@ export function CartDrawer() {
                                 </div>
                               </label>
 
-                              <label className="flex items-center p-2 rounded-xl bg-[#111315] border border-[#2B313A] cursor-pointer hover:border-simona-teal/50 transition">
+                              <label
+                                className={`flex items-center p-2 rounded-xl border transition-all cursor-pointer ${
+                                  deliveryType === 'PICKUP_BELINSKOGO_15'
+                                    ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
+                                    : 'bg-[#111315] border-[#2B313A] hover:border-simona-teal/50'
+                                }`}
+                              >
                                 <input
                                   type="radio"
                                   name="delivery"
                                   checked={deliveryType === 'PICKUP_BELINSKOGO_15'}
                                   onChange={() => setDeliveryType('PICKUP_BELINSKOGO_15')}
-                                  className="text-simona-teal focus:ring-0 mr-2"
+                                  className="accent-simona-teal text-simona-teal focus:ring-0 mr-2 cursor-pointer"
                                 />
                                 <div>
                                   <span className="text-white font-medium text-[11px]">
@@ -322,13 +334,19 @@ export function CartDrawer() {
                                 </div>
                               </label>
 
-                              <label className="flex items-center p-2 rounded-xl bg-[#111315] border border-[#2B313A] cursor-pointer hover:border-simona-teal/50 transition">
+                              <label
+                                className={`flex items-center p-2 rounded-xl border transition-all cursor-pointer ${
+                                  deliveryType === 'COURIER_DELIVERY'
+                                    ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
+                                    : 'bg-[#111315] border-[#2B313A] hover:border-simona-teal/50'
+                                }`}
+                              >
                                 <input
                                   type="radio"
                                   name="delivery"
                                   checked={deliveryType === 'COURIER_DELIVERY'}
                                   onChange={() => setDeliveryType('COURIER_DELIVERY')}
-                                  className="text-simona-teal focus:ring-0 mr-2"
+                                  className="accent-simona-teal text-simona-teal focus:ring-0 mr-2 cursor-pointer"
                                 />
                                 <div>
                                   <span className="text-white font-medium text-[11px]">

@@ -1,14 +1,15 @@
 export interface DiscountBadgeInfo {
   text: string;
-  variant: 'wine' | 'teal';
+  variant: 'wine';
   className: string;
 }
 
 /**
- * Определение параметров отображения скидочного бейджа на основе правил заказчика:
- * 1. Спеццена (SPECIAL) -> Винный ярлык с процентом скидки (напр. "-15%")
- * 2. Акция производителя (ACTION) -> Бирюзовый ярлык с процентом скидки (напр. "-10%")
- * 3. Обычный товар -> null (без ярлыка)
+ * Единый канонический винный бейдж скидки (DESIGN.md Quiet Luxury Brandbook):
+ * 1. Спеццена 1C (SPECIAL) -> Винный ярлык с процентом скидки (напр. "-15%")
+ * 2. Акция производителя 1C (ACTION) -> Винный ярлык с процентом скидки (напр. "-8%")
+ * 3. Fallback (oldPrice > price) -> Винный ярлык с процентом скидки (напр. "-8%")
+ * 4. Обычный товар -> null (без ярлыка)
  */
 export function getDiscountBadgeInfo(product: {
   badge?: string | null;
@@ -28,8 +29,8 @@ export function getDiscountBadgeInfo(product: {
       const text = product.badge.replace('ACTION:', '');
       return {
         text,
-        variant: 'teal',
-        className: 'bg-simona-teal/20 hover:bg-simona-teal/30 text-simona-teal border-simona-teal/40',
+        variant: 'wine',
+        className: 'bg-[#8A151A]/85 hover:bg-[#8A151A]/95 text-white border border-[#A81C22]/60 shadow-md',
       };
     }
   }

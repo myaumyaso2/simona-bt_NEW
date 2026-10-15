@@ -308,7 +308,7 @@ export default function CheckoutPage() {
                             name="delivery"
                             checked={deliveryType === 'PICKUP_WAREHOUSE_KOMINTERNA'}
                             onChange={() => setDeliveryType('PICKUP_WAREHOUSE_KOMINTERNA')}
-                            className="text-simona-teal focus:ring-0"
+                            className="accent-simona-teal text-simona-teal focus:ring-0 cursor-pointer"
                           />
                         </div>
                         <div>
@@ -356,7 +356,7 @@ export default function CheckoutPage() {
                             name="delivery"
                             checked={deliveryType === 'PICKUP_BELINSKOGO_15'}
                             onChange={() => setDeliveryType('PICKUP_BELINSKOGO_15')}
-                            className="text-simona-teal focus:ring-0"
+                            className="accent-simona-teal text-simona-teal focus:ring-0 cursor-pointer"
                           />
                         </div>
                         <div>
@@ -399,7 +399,7 @@ export default function CheckoutPage() {
                             name="delivery"
                             checked={deliveryType === 'COURIER_DELIVERY'}
                             onChange={() => setDeliveryType('COURIER_DELIVERY')}
-                            className="text-simona-teal focus:ring-0"
+                            className="accent-simona-teal text-simona-teal focus:ring-0 cursor-pointer"
                           />
                         </div>
                         <div>
@@ -533,7 +533,7 @@ export default function CheckoutPage() {
                         name="payment"
                         checked={paymentMethod === 'IN_SALON'}
                         onChange={() => setPaymentMethod('IN_SALON')}
-                        className="text-simona-teal focus:ring-0 mt-0.5"
+                        className="accent-simona-teal text-simona-teal focus:ring-0 mt-0.5 cursor-pointer"
                       />
                       <div>
                         <div className="flex items-center space-x-1.5">
@@ -562,7 +562,7 @@ export default function CheckoutPage() {
                         name="payment"
                         checked={paymentMethod === 'CARD_ONLINE'}
                         onChange={() => setPaymentMethod('CARD_ONLINE')}
-                        className="text-simona-teal focus:ring-0 mt-0.5"
+                        className="accent-simona-teal text-simona-teal focus:ring-0 mt-0.5 cursor-pointer"
                       />
                       <div>
                         <div className="flex items-center space-x-1.5">
@@ -591,7 +591,7 @@ export default function CheckoutPage() {
                         name="payment"
                         checked={paymentMethod === 'ON_RECEIPT'}
                         onChange={() => setPaymentMethod('ON_RECEIPT')}
-                        className="text-simona-teal focus:ring-0 mt-0.5"
+                        className="accent-simona-teal text-simona-teal focus:ring-0 mt-0.5 cursor-pointer"
                       />
                       <div>
                         <div className="flex items-center space-x-1.5">
@@ -620,7 +620,7 @@ export default function CheckoutPage() {
                         name="payment"
                         checked={paymentMethod === 'B2B_INVOICE'}
                         onChange={() => setPaymentMethod('B2B_INVOICE')}
-                        className="text-simona-teal focus:ring-0 mt-0.5"
+                        className="accent-simona-teal text-simona-teal focus:ring-0 mt-0.5 cursor-pointer"
                       />
                       <div>
                         <div className="flex items-center space-x-1.5">
