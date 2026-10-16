@@ -113,7 +113,6 @@ export default function CheckoutPage() {
   const [deliveryHouse, setDeliveryHouse] = useState('');
   const [deliveryApartment, setDeliveryApartment] = useState('');
   const [deliveryFloor, setDeliveryFloor] = useState('');
-  const [deliveryDate, setDeliveryDate] = useState('');
   const [deliveryComment, setDeliveryComment] = useState('');
   const [deliveryTransportCompany, setDeliveryTransportCompany] = useState('Деловые Линии');
   const [tkPassportData, setTkPassportData] = useState('');
@@ -259,7 +258,7 @@ export default function CheckoutPage() {
       deliveryZone: deliveryType === 'COURIER_DELIVERY' ? deliveryZone : undefined,
       deliveryCost: 0,
       deliveryAddress: fullAddress,
-      deliveryDate: deliveryDate || null,
+      deliveryDate: null,
       deliveryComment: deliveryComment || null,
       paymentMethod,
       items: cart.map((item) => ({
@@ -761,8 +760,8 @@ export default function CheckoutPage() {
 
                     {/* Input fields */}
                     {deliveryZone !== 'RUSSIA_TK' ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                        <div className="sm:col-span-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-6 gap-3">
+                        <div className="sm:col-span-3">
                           <label className="block text-[10px] text-[#87888A] mb-1">
                             {deliveryZone === 'NN' ? 'Город' : 'Населенный пункт (город / поселок) *'}
                           </label>
@@ -775,7 +774,7 @@ export default function CheckoutPage() {
                             className="w-full px-3 py-2 rounded-xl bg-[#1E2228] border border-[#2B313A] text-white text-xs focus:outline-none focus:border-simona-teal"
                           />
                         </div>
-                        <div className="sm:col-span-2">
+                        <div className="sm:col-span-3">
                           <label className="block text-[10px] text-[#87888A] mb-1">Улица *</label>
                           <input
                             type="text"
@@ -786,7 +785,7 @@ export default function CheckoutPage() {
                             className="w-full px-3 py-2 rounded-xl bg-[#1E2228] border border-[#2B313A] text-white text-xs focus:outline-none focus:border-simona-teal"
                           />
                         </div>
-                        <div>
+                        <div className="sm:col-span-2">
                           <label className="block text-[10px] text-[#87888A] mb-1">Дом / Корпус *</label>
                           <input
                             type="text"
@@ -797,7 +796,7 @@ export default function CheckoutPage() {
                             className="w-full px-3 py-2 rounded-xl bg-[#1E2228] border border-[#2B313A] text-white text-xs focus:outline-none focus:border-simona-teal"
                           />
                         </div>
-                        <div>
+                        <div className="sm:col-span-2">
                           <label className="block text-[10px] text-[#87888A] mb-1">Квартира / Офис</label>
                           <input
                             type="text"
@@ -807,24 +806,13 @@ export default function CheckoutPage() {
                             className="w-full px-3 py-2 rounded-xl bg-[#1E2228] border border-[#2B313A] text-white text-xs focus:outline-none focus:border-simona-teal"
                           />
                         </div>
-                        <div>
+                        <div className="sm:col-span-2">
                           <label className="block text-[10px] text-[#87888A] mb-1">Этаж / Лифт</label>
                           <input
                             type="text"
                             value={deliveryFloor}
                             onChange={(e) => setDeliveryFloor(e.target.value)}
                             placeholder="5 этаж, грузовой"
-                            className="w-full px-3 py-2 rounded-xl bg-[#1E2228] border border-[#2B313A] text-white text-xs focus:outline-none focus:border-simona-teal"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] text-[#87888A] mb-1">
-                            Желаемая дата {deliveryZone !== 'NN' ? '(по вторникам)' : '(кроме вторника)'}
-                          </label>
-                          <input
-                            type="date"
-                            value={deliveryDate}
-                            onChange={(e) => setDeliveryDate(e.target.value)}
                             className="w-full px-3 py-2 rounded-xl bg-[#1E2228] border border-[#2B313A] text-white text-xs focus:outline-none focus:border-simona-teal"
                           />
                         </div>
