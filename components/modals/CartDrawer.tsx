@@ -281,7 +281,7 @@ export function CartDrawer() {
                         className="w-full flex items-center justify-between text-xs font-semibold text-simona-teal hover:text-simona-teal-hover py-1.5 px-1 rounded-lg hover:bg-simona-teal/5 cursor-pointer transition-all duration-200 group"
                       >
                         <span className="tracking-wide">
-                          {showQuickForm ? 'Скрыть быстрый заказ' : 'Оформить быстрый заказ в 1 клик'}
+                          {showQuickForm ? 'Скрыть быстрый заказ' : 'Быстрый заказ в 1 клик'}
                         </span>
                         <SimonaIconChevronDown
                           className={`w-3.5 h-3.5 transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] ${
