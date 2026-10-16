@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
 
     const customerPhone = normalizeRussianPhone(rawPhone);
 
-    const deliveryCost = Number(body.deliveryCost) || 0;
+    const deliveryCost = 0; // Стоимость доставки рассчитывается справочно и оплачивается отдельно при получении
 
     const itemsTotal = items.reduce(
       (sum: number, item: CheckoutItemInput) =>
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
       0
     );
 
-    const totalAmount = itemsTotal + deliveryCost;
+    const totalAmount = itemsTotal;
 
     // Сверяем физические статусы позиций по БД (если переданы sku/productId) и входным данным
     const skus = items.map((i) => String(i.sku || '').trim()).filter(Boolean);

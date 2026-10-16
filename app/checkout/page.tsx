@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/components/providers/StoreContext';
 import { useAnalyticsData } from '@/lib/analytics/utm';
 import { formatPrice } from '@/lib/utils';
@@ -105,9 +106,7 @@ export default function CheckoutPage() {
     'PICKUP_WAREHOUSE_KOMINTERNA' | 'PICKUP_BELINSKOGO_15' | 'COURIER_DELIVERY'
   >('PICKUP_WAREHOUSE_KOMINTERNA');
 
-  const [deliveryZone, setDeliveryZone] = useState<
-    'NN' | 'OBLAST_ZONE_1' | 'OBLAST_ZONE_2' | 'RUSSIA_TK'
-  >('NN');
+  const [deliveryZone, setDeliveryZone] = useState<'NN' | 'OBLAST' | 'RUSSIA_TK'>('NN');
 
   const [deliveryCity, setDeliveryCity] = useState('Нижний Новгород');
   const [deliveryStreet, setDeliveryStreet] = useState('');
@@ -155,9 +154,15 @@ export default function CheckoutPage() {
     return n.includes('side-by-side') || n.includes('french door') || n.includes('side by side');
   });
 
-  const calculateDeliveryCost = (): { cost: number; isManualQuote: boolean; label: string } => {
-    if (deliveryType !== 'COURIER_DELIVERY') {
-      return { cost: 0, isManualQuote: false, label: 'Бесплатно' };
+  // Стоимость доставки справочная и НЕ прибавляется к сумме заказа на сайте
+  const grandTotal = cartTotal;
+
+  const getDeliveryInfo = () => {
+    if (deliveryType === 'PICKUP_WAREHOUSE_KOMINTERNA' || deliveryType === 'PICKUP_BELINSKOGO_15') {
+      return {
+        label: 'Бесплатно',
+        isManualQuote: false,
+      };
     }
 
     const sideBySideFee = hasSideBySide ? 1000 : 0;
@@ -166,46 +171,28 @@ export default function CheckoutPage() {
       let base = 1000;
       if (totalCartUnits >= 4 && totalCartUnits <= 6) base = 1500;
       else if (totalCartUnits > 6) base = 2000;
+      const total = base + sideBySideFee;
       return {
-        cost: base + sideBySideFee,
+        label: `~${formatPrice(total)}`,
         isManualQuote: false,
-        label: `${formatPrice(base + sideBySideFee)}${hasSideBySide ? ' (вкл. Side-by-Side +1 000 ₽)' : ''}`,
       };
     }
 
-    if (deliveryZone === 'OBLAST_ZONE_1') {
-      let base = 1700;
-      if (totalCartUnits >= 4 && totalCartUnits <= 6) base = 2200;
-      else if (totalCartUnits > 6) base = 2700;
+    if (deliveryZone === 'OBLAST') {
       return {
-        cost: base + sideBySideFee,
+        label: 'от 1 700 до 2 700 ₽',
         isManualQuote: false,
-        label: `${formatPrice(base + sideBySideFee)}${hasSideBySide ? ' (вкл. Side-by-Side +1 000 ₽)' : ''}`,
-      };
-    }
-
-    if (deliveryZone === 'OBLAST_ZONE_2') {
-      let base = 2700;
-      if (totalCartUnits >= 4 && totalCartUnits <= 6) base = 3300;
-      else if (totalCartUnits > 6) base = 3600;
-      return {
-        cost: base + sideBySideFee,
-        isManualQuote: false,
-        label: `${formatPrice(base + sideBySideFee)}${hasSideBySide ? ' (вкл. Side-by-Side +1 000 ₽)' : ''}`,
       };
     }
 
     // RUSSIA_TK
     return {
-      cost: 0,
+      label: 'По тарифам ТК',
       isManualQuote: true,
-      label: 'По тарифам ТК (расчет менеджером)',
     };
   };
 
-  const deliveryCalc = calculateDeliveryCost();
-  const deliveryCost = deliveryCalc.cost;
-  const grandTotal = cartTotal + deliveryCost;
+  const deliveryInfo = getDeliveryInfo();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -249,10 +236,8 @@ export default function CheckoutPage() {
     const zoneName =
       deliveryZone === 'NN'
         ? 'Нижний Новгород'
-        : deliveryZone === 'OBLAST_ZONE_1'
-        ? 'Нижегородская область (Зона 1, до 50 км)'
-        : deliveryZone === 'OBLAST_ZONE_2'
-        ? 'Нижегородская область (Зона 2, 51–100 км)'
+        : deliveryZone === 'OBLAST'
+        ? 'Нижегородская область'
         : 'По России (Транспортной компанией)';
 
     const fullAddress =
@@ -263,7 +248,7 @@ export default function CheckoutPage() {
             }`
           : `${deliveryCity}, ул. ${deliveryStreet}, д. ${deliveryHouse}${
               deliveryApartment ? ', кв./офис ' + deliveryApartment : ''
-            }${deliveryFloor ? ', этаж ' + deliveryFloor : ''} [Зона: ${zoneName}, доставка: ${deliveryCalc.label}]`
+            }${deliveryFloor ? ', этаж ' + deliveryFloor : ''} [Зона: ${zoneName}, доставка: ${deliveryInfo.label}, оплата при получении]`
         : null;
 
     const payload = {
@@ -272,7 +257,7 @@ export default function CheckoutPage() {
       customerEmail: customerEmail || null,
       deliveryType,
       deliveryZone: deliveryType === 'COURIER_DELIVERY' ? deliveryZone : undefined,
-      deliveryCost,
+      deliveryCost: 0,
       deliveryAddress: fullAddress,
       deliveryDate: deliveryDate || null,
       deliveryComment: deliveryComment || null,
@@ -457,13 +442,20 @@ export default function CheckoutPage() {
                   {/* Option 1: Warehouse Kominterna 27 */}
                   <label
                     onClick={() => setDeliveryType('PICKUP_WAREHOUSE_KOMINTERNA')}
-                    className={`block p-4 rounded-xl border transition-all cursor-pointer ${
+                    className={`relative block p-4 rounded-xl border transition-colors cursor-pointer overflow-hidden ${
                       deliveryType === 'PICKUP_WAREHOUSE_KOMINTERNA'
-                        ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
+                        ? 'bg-[#1E2228] border-transparent'
                         : 'bg-[#16191D] border-[#2B313A] hover:border-[#3E3D40]'
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-4">
+                    {deliveryType === 'PICKUP_WAREHOUSE_KOMINTERNA' && (
+                      <motion.div
+                        layoutId="activeDeliveryMethod"
+                        className="absolute inset-0 rounded-xl border-2 border-simona-teal bg-simona-teal/[0.04] pointer-events-none shadow-sm shadow-simona-teal/10"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <div className="relative z-10 flex items-start justify-between gap-4">
                       <div className="flex items-start space-x-3">
                         <div className="mt-0.5">
                           <input
@@ -504,15 +496,22 @@ export default function CheckoutPage() {
                         setDeliveryType('PICKUP_BELINSKOGO_15');
                       }
                     }}
-                    className={`block p-4 rounded-xl border transition-all ${
+                    className={`relative block p-4 rounded-xl border transition-colors overflow-hidden ${
                       hasBulkyItems
                         ? 'bg-[#141619] border-[#2B313A]/50 opacity-60 cursor-not-allowed'
                         : deliveryType === 'PICKUP_BELINSKOGO_15'
-                        ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10 cursor-pointer'
+                        ? 'bg-[#1E2228] border-transparent cursor-pointer'
                         : 'bg-[#16191D] border-[#2B313A] hover:border-[#3E3D40] cursor-pointer'
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-4">
+                    {!hasBulkyItems && deliveryType === 'PICKUP_BELINSKOGO_15' && (
+                      <motion.div
+                        layoutId="activeDeliveryMethod"
+                        className="absolute inset-0 rounded-xl border-2 border-simona-teal bg-simona-teal/[0.04] pointer-events-none shadow-sm shadow-simona-teal/10"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <div className="relative z-10 flex items-start justify-between gap-4">
                       <div className="flex items-start space-x-3">
                         <div className="mt-0.5">
                           <input
@@ -561,13 +560,20 @@ export default function CheckoutPage() {
                   {/* Option 3: Delivery */}
                   <label
                     onClick={() => setDeliveryType('COURIER_DELIVERY')}
-                    className={`block p-4 rounded-xl border transition-all cursor-pointer ${
+                    className={`relative block p-4 rounded-xl border transition-colors cursor-pointer overflow-hidden ${
                       deliveryType === 'COURIER_DELIVERY'
-                        ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
+                        ? 'bg-[#1E2228] border-transparent'
                         : 'bg-[#16191D] border-[#2B313A] hover:border-[#3E3D40]'
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-4">
+                    {deliveryType === 'COURIER_DELIVERY' && (
+                      <motion.div
+                        layoutId="activeDeliveryMethod"
+                        className="absolute inset-0 rounded-xl border-2 border-simona-teal bg-simona-teal/[0.04] pointer-events-none shadow-sm shadow-simona-teal/10"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <div className="relative z-10 flex items-start justify-between gap-4">
                       <div className="flex items-start space-x-3">
                         <div className="mt-0.5">
                           <input
@@ -588,143 +594,170 @@ export default function CheckoutPage() {
                         </div>
                       </div>
                       <span className="text-xs font-bold text-simona-teal shrink-0">
-                        {deliveryCalc.isManualQuote ? 'По тарифам ТК' : deliveryCalc.label}
+                        {deliveryType === 'COURIER_DELIVERY' ? deliveryInfo.label : 'Расчет менеджером'}
                       </span>
                     </div>
                   </label>
                 </div>
 
-                {/* Delivery Address Fields (if delivery chosen) */}
-                {deliveryType === 'COURIER_DELIVERY' && (
-                  <div className="mt-5 pt-5 border-t border-[#2B313A] space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-xs font-semibold text-white">Адрес и зона доставки</h3>
-                      <span className="text-[11px] text-simona-teal font-medium">
-                        Приборов в заказе: {totalCartUnits} шт.
-                      </span>
-                    </div>
-
-                    {/* Zone Selector */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDeliveryZone('NN');
-                          setDeliveryCity('Нижний Новгород');
-                        }}
-                        className={`p-3 rounded-xl border text-left transition-all ${
-                          deliveryZone === 'NN'
-                            ? 'bg-[#1E2228] border-simona-teal text-white shadow-sm shadow-simona-teal/10'
-                            : 'bg-[#16191D] border-[#2B313A] text-[#87888A] hover:text-[#D7D9DB] hover:border-[#3E3D40]'
-                        }`}
-                      >
-                        <div className="text-xs font-bold text-white">Нижний Новгород</div>
-                        <div className="text-[10px] text-simona-teal font-medium mt-0.5">
-                          {totalCartUnits <= 3 ? '1 000 ₽' : totalCartUnits <= 6 ? '1 500 ₽' : '2 000 ₽'}
+                {/* Delivery Address Fields with smooth expand/collapse */}
+                <AnimatePresence initial={false}>
+                  {deliveryType === 'COURIER_DELIVERY' && (
+                    <motion.div
+                      key="courier-delivery-panel"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-5 pt-5 border-t border-[#2B313A] space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-xs font-semibold text-white">Зона и адрес доставки</h3>
+                          <span className="text-[11px] text-simona-teal font-medium">
+                            Приборов в заказе: {totalCartUnits} шт.
+                          </span>
                         </div>
-                        <div className="text-[10px] text-[#87888A] mt-1">Кроме вторника</div>
-                      </button>
 
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDeliveryZone('OBLAST_ZONE_1');
-                          if (deliveryCity === 'Нижний Новгород') setDeliveryCity('');
-                        }}
-                        className={`p-3 rounded-xl border text-left transition-all ${
-                          deliveryZone === 'OBLAST_ZONE_1' || deliveryZone === 'OBLAST_ZONE_2'
-                            ? 'bg-[#1E2228] border-simona-teal text-white shadow-sm shadow-simona-teal/10'
-                            : 'bg-[#16191D] border-[#2B313A] text-[#87888A] hover:text-[#D7D9DB] hover:border-[#3E3D40]'
-                        }`}
-                      >
-                        <div className="text-xs font-bold text-white">Нижегородская область</div>
-                        <div className="text-[10px] text-simona-teal font-medium mt-0.5">
-                          {deliveryZone === 'OBLAST_ZONE_2'
-                            ? totalCartUnits <= 3 ? '2 700 ₽' : totalCartUnits <= 6 ? '3 300 ₽' : '3 600 ₽'
-                            : totalCartUnits <= 3 ? '1 700 ₽' : totalCartUnits <= 6 ? '2 200 ₽' : '2 700 ₽'}
-                        </div>
-                        <div className="text-[10px] text-[#87888A] mt-1">Рейсы по вторникам</div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDeliveryZone('RUSSIA_TK');
-                          if (deliveryCity === 'Нижний Новгород') setDeliveryCity('');
-                        }}
-                        className={`p-3 rounded-xl border text-left transition-all ${
-                          deliveryZone === 'RUSSIA_TK'
-                            ? 'bg-[#1E2228] border-simona-teal text-white shadow-sm shadow-simona-teal/10'
-                            : 'bg-[#16191D] border-[#2B313A] text-[#87888A] hover:text-[#D7D9DB] hover:border-[#3E3D40]'
-                        }`}
-                      >
-                        <div className="text-xs font-bold text-white">По России (ТК)</div>
-                        <div className="text-[10px] text-simona-teal font-medium mt-0.5">
-                          По тарифам ТК
-                        </div>
-                        <div className="text-[10px] text-[#87888A] mt-1">Обрешетка + страховка</div>
-                      </button>
-                    </div>
-
-                    {/* Subzone toggle for Oblast */}
-                    {(deliveryZone === 'OBLAST_ZONE_1' || deliveryZone === 'OBLAST_ZONE_2') && (
-                      <div className="p-3 rounded-xl bg-[#1E2228] border border-[#2B313A] space-y-2">
-                        <div className="text-[11px] text-[#D7D9DB] font-medium">Выберите зону удаленности от Нижнего Новгорода:</div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {/* Zone Selector with sliding layoutId */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                           <button
                             type="button"
-                            onClick={() => setDeliveryZone('OBLAST_ZONE_1')}
-                            className={`p-2.5 rounded-lg border text-left transition-all ${
-                              deliveryZone === 'OBLAST_ZONE_1'
-                                ? 'bg-simona-teal/10 border-simona-teal text-white'
-                                : 'bg-[#16191D] border-[#2B313A] text-[#87888A]'
+                            onClick={() => {
+                              setDeliveryZone('NN');
+                              setDeliveryCity('Нижний Новгород');
+                            }}
+                            className={`relative p-3 rounded-xl border text-left transition-colors cursor-pointer overflow-hidden ${
+                              deliveryZone === 'NN'
+                                ? 'bg-[#1E2228] border-transparent'
+                                : 'bg-[#16191D] border-[#2B313A] text-[#87888A] hover:text-[#D7D9DB] hover:border-[#3E3D40]'
                             }`}
                           >
-                            <div className="text-xs font-semibold text-white">Зона 1 (до 50 км)</div>
-                            <div className="text-[10px] text-simona-teal mt-0.5">
-                              {totalCartUnits <= 3 ? '1 700 ₽' : totalCartUnits <= 6 ? '2 200 ₽' : '2 700 ₽'}
-                            </div>
-                            <div className="text-[10px] text-[#87888A] mt-1">
-                              Дзержинск, Кстово, Бор, Балахна, Богородск, Афонино, Новинки, Анкудиновка
+                            {deliveryZone === 'NN' && (
+                              <motion.div
+                                layoutId="activeDeliveryZone"
+                                className="absolute inset-0 rounded-xl border-2 border-simona-teal bg-simona-teal/[0.04] pointer-events-none shadow-sm shadow-simona-teal/10"
+                                transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                              />
+                            )}
+                            <div className="relative z-10">
+                              <div className="text-xs font-bold text-white">Нижний Новгород</div>
+                              <div className="text-[10px] text-simona-teal font-medium mt-0.5">
+                                {totalCartUnits <= 3 ? '1 000 ₽' : totalCartUnits <= 6 ? '1 500 ₽' : '2 000 ₽'}
+                              </div>
+                              <div className="text-[10px] text-[#87888A] mt-1">Кроме вторника</div>
                             </div>
                           </button>
+
                           <button
                             type="button"
-                            onClick={() => setDeliveryZone('OBLAST_ZONE_2')}
-                            className={`p-2.5 rounded-lg border text-left transition-all ${
-                              deliveryZone === 'OBLAST_ZONE_2'
-                                ? 'bg-simona-teal/10 border-simona-teal text-white'
-                                : 'bg-[#16191D] border-[#2B313A] text-[#87888A]'
+                            onClick={() => {
+                              setDeliveryZone('OBLAST');
+                              if (deliveryCity === 'Нижний Новгород') setDeliveryCity('');
+                            }}
+                            className={`relative p-3 rounded-xl border text-left transition-colors cursor-pointer overflow-hidden ${
+                              deliveryZone === 'OBLAST'
+                                ? 'bg-[#1E2228] border-transparent'
+                                : 'bg-[#16191D] border-[#2B313A] text-[#87888A] hover:text-[#D7D9DB] hover:border-[#3E3D40]'
                             }`}
                           >
-                            <div className="text-xs font-semibold text-white">Зона 2 (от 51 до 100 км)</div>
-                            <div className="text-[10px] text-simona-teal mt-0.5">
-                              {totalCartUnits <= 3 ? '2 700 ₽' : totalCartUnits <= 6 ? '3 300 ₽' : '3 600 ₽'}
+                            {deliveryZone === 'OBLAST' && (
+                              <motion.div
+                                layoutId="activeDeliveryZone"
+                                className="absolute inset-0 rounded-xl border-2 border-simona-teal bg-simona-teal/[0.04] pointer-events-none shadow-sm shadow-simona-teal/10"
+                                transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                              />
+                            )}
+                            <div className="relative z-10">
+                              <div className="text-xs font-bold text-white">Нижегородская область</div>
+                              <div className="text-[10px] text-simona-teal font-medium mt-0.5">
+                                от 1 700 до 2 700 ₽
+                              </div>
+                              <div className="text-[10px] text-[#87888A] mt-1">Рейсы по вторникам</div>
                             </div>
-                            <div className="text-[10px] text-[#87888A] mt-1">
-                              Арзамас, Городец, Заволжье, Павлово, Ворсма, Лысково, Семенов, Чкаловск
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDeliveryZone('RUSSIA_TK');
+                              if (deliveryCity === 'Нижний Новгород') setDeliveryCity('');
+                            }}
+                            className={`relative p-3 rounded-xl border text-left transition-colors cursor-pointer overflow-hidden ${
+                              deliveryZone === 'RUSSIA_TK'
+                                ? 'bg-[#1E2228] border-transparent'
+                                : 'bg-[#16191D] border-[#2B313A] text-[#87888A] hover:text-[#D7D9DB] hover:border-[#3E3D40]'
+                            }`}
+                          >
+                            {deliveryZone === 'RUSSIA_TK' && (
+                              <motion.div
+                                layoutId="activeDeliveryZone"
+                                className="absolute inset-0 rounded-xl border-2 border-simona-teal bg-simona-teal/[0.04] pointer-events-none shadow-sm shadow-simona-teal/10"
+                                transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                              />
+                            )}
+                            <div className="relative z-10">
+                              <div className="text-xs font-bold text-white">По России (ТК)</div>
+                              <div className="text-[10px] text-simona-teal font-medium mt-0.5">
+                                По тарифам ТК
+                              </div>
+                              <div className="text-[10px] text-[#87888A] mt-1">Обрешетка + страховка</div>
                             </div>
                           </button>
                         </div>
-                        <div className="text-[10px] text-[#87888A] pt-1 flex items-center gap-1.5">
-                          <SimonaIconClock className="w-3 h-3 text-simona-teal shrink-0" />
-                          <span>Доставка собственной службой по Нижегородской области осуществляется еженедельно <strong>по вторникам</strong>.</span>
-                        </div>
-                      </div>
-                    )}
 
-                    {/* RUSSIA_TK Notice */}
-                    {deliveryZone === 'RUSSIA_TK' && (
-                      <div className="p-3.5 rounded-xl bg-[#1E2228] border border-[#2B313A] text-xs text-zinc-300 space-y-1.5">
-                        <div className="flex items-center gap-2 text-simona-teal font-semibold text-xs">
-                          <SimonaIconPackage className="w-4 h-4" />
-                          <span>Доставка по всей России через надежные транспортные компании</span>
+                        {/* Informational Delivery Cost Banner with exact copy & tooltip */}
+                        <div className="p-3.5 rounded-xl bg-[#1E2228] border border-[#2B313A] flex items-start gap-3">
+                          <SimonaIconDelivery className="w-4 h-4 text-simona-teal shrink-0 mt-0.5" />
+                          <div className="text-xs text-[#D7D9DB] leading-relaxed">
+                            {deliveryZone === 'NN' && (
+                              <p>
+                                Ориентировочная стоимость доставки — <strong className="text-white font-semibold">{totalCartUnits <= 3 ? '1 000' : totalCartUnits <= 6 ? '1 500' : '2 000'} руб.{hasSideBySide ? ' (вкл. Side-by-Side +1 000 руб.)' : ''}</strong>. Окончательная сумма будет названа менеджером после подтверждения заказа.
+                              </p>
+                            )}
+                            {deliveryZone === 'OBLAST' && (
+                              <p>
+                                Ориентировочная стоимость доставки — <strong className="text-white font-semibold">от 1 700 до 2 700 руб.</strong>{' '}
+                                <span className="inline-flex items-center text-simona-teal font-medium">
+                                  (зависит от удаленности от Нижнего Новгорода)
+                                  <span className="relative inline-flex items-center group cursor-help ml-1.5 align-middle">
+                                    <span className="w-4 h-4 rounded-full bg-simona-teal/20 text-simona-teal hover:bg-simona-teal hover:text-white transition-colors text-[10px] font-bold flex items-center justify-center">
+                                      ?
+                                    </span>
+                                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 rounded-xl bg-[#16191D] border border-[#2B313A] shadow-2xl text-[11px] text-[#D7D9DB] z-30 pointer-events-none">
+                                      <strong className="text-white block mb-1">Зоны доставки по области:</strong>
+                                      • Зона 1 (до 50 км): от 1 700 ₽ (Дзержинск, Кстово, Бор, Балахна, Богородск)<br/>
+                                      • Зона 2 (51–100 км): от 2 700 ₽ (Арзамас, Городец, Заволжье, Павлово)<br/>
+                                      <span className="text-[10px] text-simona-teal block mt-1.5 font-medium">Рейсы собственной службой по вторникам</span>
+                                    </span>
+                                  </span>
+                                </span>
+                                . Окончательная сумма будет названа менеджером после подтверждения заказа.
+                              </p>
+                            )}
+                            {deliveryZone === 'RUSSIA_TK' && (
+                              <p>
+                                Ориентировочная стоимость доставки рассчитывается по тарифам ТК («Деловые Линии», «ПЭК», «СДЭК»). Окончательная сумма будет названа менеджером после подтверждения заказа.
+                              </p>
+                            )}
+                            <p className="text-[11px] text-[#87888A] mt-1.5">
+                              Стоимость доставки не прибавляется к счету на сайте и оплачивается отдельно при получении.
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-[11px] text-[#87888A] leading-relaxed">
-                          Отправляем заказы через «Деловые Линии», «ПЭК» или «СДЭК». Вся техника упаковывается в жесткую деревянную обрешетку и страхуется на 100% стоимости. Услуги ТК оплачиваются клиентом при получении груза.
-                        </p>
-                      </div>
-                    )}
+
+                        {/* RUSSIA_TK Notice */}
+                        {deliveryZone === 'RUSSIA_TK' && (
+                          <div className="p-3.5 rounded-xl bg-[#1E2228] border border-[#2B313A] text-xs text-zinc-300 space-y-1.5">
+                            <div className="flex items-center gap-2 text-simona-teal font-semibold text-xs">
+                              <SimonaIconPackage className="w-4 h-4" />
+                              <span>Доставка по всей России через надежные транспортные компании</span>
+                            </div>
+                            <p className="text-[11px] text-[#87888A] leading-relaxed">
+                              Отправляем заказы через «Деловые Линии», «ПЭК» или «СДЭК». Вся техника упаковывается в жесткую деревянную обрешетку и страхуется на 100% стоимости. Услуги ТК оплачиваются клиентом при получении груза.
+                            </p>
+                          </div>
+                        )}
 
                     {/* Input fields */}
                     {deliveryZone !== 'RUSSIA_TK' ? (
@@ -846,7 +879,9 @@ export default function CheckoutPage() {
                       </div>
                     )}
                   </div>
-                )}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
                 <div className="mt-4">
                   <label className="block text-[10px] text-[#87888A] mb-1">
@@ -877,13 +912,20 @@ export default function CheckoutPage() {
                   {/* Option 1: In Salon */}
                   <label
                     onClick={() => setPaymentMethod('IN_SALON')}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                    className={`relative p-4 rounded-xl border transition-colors cursor-pointer overflow-hidden ${
                       paymentMethod === 'IN_SALON'
-                        ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
+                        ? 'bg-[#1E2228] border-transparent'
                         : 'bg-[#16191D] border-[#2B313A] hover:border-[#3E3D40]'
                     }`}
                   >
-                    <div className="flex items-start space-x-3">
+                    {paymentMethod === 'IN_SALON' && (
+                      <motion.div
+                        layoutId="activePaymentMethod"
+                        className="absolute inset-0 rounded-xl border-2 border-simona-teal bg-simona-teal/[0.04] pointer-events-none shadow-sm shadow-simona-teal/10"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <div className="relative z-10 flex items-start space-x-3">
                       <input
                         type="radio"
                         name="payment"
@@ -906,13 +948,20 @@ export default function CheckoutPage() {
                   {/* Option 2: At Warehouse */}
                   <label
                     onClick={() => setPaymentMethod('AT_WAREHOUSE')}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                    className={`relative p-4 rounded-xl border transition-colors cursor-pointer overflow-hidden ${
                       paymentMethod === 'AT_WAREHOUSE'
-                        ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
+                        ? 'bg-[#1E2228] border-transparent'
                         : 'bg-[#16191D] border-[#2B313A] hover:border-[#3E3D40]'
                     }`}
                   >
-                    <div className="flex items-start space-x-3">
+                    {paymentMethod === 'AT_WAREHOUSE' && (
+                      <motion.div
+                        layoutId="activePaymentMethod"
+                        className="absolute inset-0 rounded-xl border-2 border-simona-teal bg-simona-teal/[0.04] pointer-events-none shadow-sm shadow-simona-teal/10"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <div className="relative z-10 flex items-start space-x-3">
                       <input
                         type="radio"
                         name="payment"
@@ -935,13 +984,20 @@ export default function CheckoutPage() {
                   {/* Option 3: On Delivery */}
                   <label
                     onClick={() => setPaymentMethod('ON_DELIVERY')}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                    className={`relative p-4 rounded-xl border transition-colors cursor-pointer overflow-hidden ${
                       paymentMethod === 'ON_DELIVERY'
-                        ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
+                        ? 'bg-[#1E2228] border-transparent'
                         : 'bg-[#16191D] border-[#2B313A] hover:border-[#3E3D40]'
                     }`}
                   >
-                    <div className="flex items-start space-x-3">
+                    {paymentMethod === 'ON_DELIVERY' && (
+                      <motion.div
+                        layoutId="activePaymentMethod"
+                        className="absolute inset-0 rounded-xl border-2 border-simona-teal bg-simona-teal/[0.04] pointer-events-none shadow-sm shadow-simona-teal/10"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <div className="relative z-10 flex items-start space-x-3">
                       <input
                         type="radio"
                         name="payment"
@@ -964,13 +1020,20 @@ export default function CheckoutPage() {
                   {/* Option 4: Card Online (YooKassa) */}
                   <label
                     onClick={() => setPaymentMethod('CARD_ONLINE')}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                    className={`relative p-4 rounded-xl border transition-colors cursor-pointer overflow-hidden ${
                       paymentMethod === 'CARD_ONLINE'
-                        ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
+                        ? 'bg-[#1E2228] border-transparent'
                         : 'bg-[#16191D] border-[#2B313A] hover:border-[#3E3D40]'
                     }`}
                   >
-                    <div className="flex items-start space-x-3">
+                    {paymentMethod === 'CARD_ONLINE' && (
+                      <motion.div
+                        layoutId="activePaymentMethod"
+                        className="absolute inset-0 rounded-xl border-2 border-simona-teal bg-simona-teal/[0.04] pointer-events-none shadow-sm shadow-simona-teal/10"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <div className="relative z-10 flex items-start space-x-3">
                       <input
                         type="radio"
                         name="payment"
@@ -993,13 +1056,20 @@ export default function CheckoutPage() {
                   {/* Option 5: B2B Invoice */}
                   <label
                     onClick={() => setPaymentMethod('B2B_INVOICE')}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer sm:col-span-2 ${
+                    className={`relative p-4 rounded-xl border transition-colors cursor-pointer overflow-hidden sm:col-span-2 ${
                       paymentMethod === 'B2B_INVOICE'
-                        ? 'bg-[#1E2228] border-simona-teal shadow-sm shadow-simona-teal/10'
+                        ? 'bg-[#1E2228] border-transparent'
                         : 'bg-[#16191D] border-[#2B313A] hover:border-[#3E3D40]'
                     }`}
                   >
-                    <div className="flex items-start space-x-3">
+                    {paymentMethod === 'B2B_INVOICE' && (
+                      <motion.div
+                        layoutId="activePaymentMethod"
+                        className="absolute inset-0 rounded-xl border-2 border-simona-teal bg-simona-teal/[0.04] pointer-events-none shadow-sm shadow-simona-teal/10"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <div className="relative z-10 flex items-start space-x-3">
                       <input
                         type="radio"
                         name="payment"
@@ -1118,14 +1188,32 @@ export default function CheckoutPage() {
                     <span>Товары ({totalCartUnits} шт.):</span>
                     <span className="font-montserrat text-white">{formatPrice(cartTotal)}</span>
                   </div>
-                  <div className="flex justify-between text-[#87888A]">
-                    <span>Доставка:</span>
-                    <span className={`font-montserrat ${deliveryCalc.cost === 0 && !deliveryCalc.isManualQuote ? 'text-simona-teal' : 'text-white'}`}>
-                      {deliveryCalc.isManualQuote ? 'По тарифам ТК' : deliveryCalc.cost === 0 ? 'Бесплатно' : formatPrice(deliveryCalc.cost)}
-                    </span>
+                  <div className="flex justify-between items-start text-[#87888A]">
+                    <span className="shrink-0">Доставка:</span>
+                    <div className="text-right">
+                      <span
+                        className={`font-montserrat font-medium ${
+                          deliveryType !== 'COURIER_DELIVERY' ? 'text-simona-teal' : 'text-white'
+                        }`}
+                      >
+                        {deliveryType !== 'COURIER_DELIVERY'
+                          ? 'Бесплатно'
+                          : deliveryZone === 'NN'
+                          ? `~${formatPrice(totalCartUnits <= 3 ? 1000 : totalCartUnits <= 6 ? 1500 : 2000)} (при получении)`
+                          : deliveryZone === 'OBLAST'
+                          ? 'от 1 700 до 2 700 ₽ (при получении)'
+                          : 'По тарифам ТК (при получении)'}
+                      </span>
+                      {deliveryType === 'COURIER_DELIVERY' && (
+                        <div className="text-[10px] text-[#87888A] mt-0.5">Оплачивается отдельно курьеру</div>
+                      )}
+                    </div>
                   </div>
                   <div className="flex justify-between items-baseline pt-3 border-t border-[#2B313A]">
-                    <span className="text-sm font-bold text-white">Итого к оплате:</span>
+                    <div>
+                      <span className="text-sm font-bold text-white block">Итого к оплате на сайте:</span>
+                      <span className="text-[10px] text-[#87888A]">Стоимость техники без учета доставки</span>
+                    </div>
                     <span className="text-2xl font-montserrat font-bold text-simona-teal">
                       {formatPrice(grandTotal)}
                     </span>
