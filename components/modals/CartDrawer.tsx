@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -37,21 +37,9 @@ export function CartDrawer() {
   const [showQuickForm, setShowQuickForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
-  const cartBodyRef = useRef<HTMLDivElement>(null);
 
   const toggleQuickForm = () => {
-    const next = !showQuickForm;
-    setShowQuickForm(next);
-    if (next) {
-      setTimeout(() => {
-        if (cartBodyRef.current) {
-          cartBodyRef.current.scrollTo({
-            top: cartBodyRef.current.scrollHeight,
-            behavior: 'smooth',
-          });
-        }
-      }, 80);
-    }
+    setShowQuickForm((prev) => !prev);
   };
 
   // Close on Escape key
@@ -186,7 +174,7 @@ export function CartDrawer() {
               </div>
 
               {/* Body */}
-              <div ref={cartBodyRef} className="flex-1 overflow-y-auto p-5">
+              <div className="flex-1 overflow-y-auto p-5">
                 {orderSuccess ? (
                   <div className="text-left py-10 px-2">
                     <div className="w-14 h-14 rounded-2xl bg-simona-teal/15 border border-simona-teal/30 text-simona-teal flex items-center justify-center mb-4 shadow-[0_0_24px_rgba(0,151,156,0.2)]">
@@ -296,7 +284,7 @@ export function CartDrawer() {
                           {showQuickForm ? 'Скрыть быстрый заказ' : 'Оформить быстрый заказ в 1 клик'}
                         </span>
                         <SimonaIconChevronDown
-                          className={`w-3.5 h-3.5 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                          className={`w-3.5 h-3.5 transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] ${
                             showQuickForm ? 'rotate-180 text-simona-teal' : 'text-[#87888A] group-hover:text-simona-teal'
                           }`}
                         />
@@ -306,7 +294,7 @@ export function CartDrawer() {
                         style={{
                           display: 'grid',
                           gridTemplateRows: showQuickForm ? '1fr' : '0fr',
-                          transition: 'grid-template-rows 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s ease',
+                          transition: 'grid-template-rows 0.18s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.15s ease',
                           opacity: showQuickForm ? 1 : 0,
                           pointerEvents: showQuickForm ? 'auto' : 'none',
                         }}
