@@ -111,17 +111,19 @@ export const ORDER_STATUS_LABELS: Record<string, string> = {
 };
 
 export const DELIVERY_TYPE_LABELS: Record<string, string> = {
-  PICKUP_WAREHOUSE_KOMINTERNA: 'самовывоз (склад на ул. Коминтерна, 27)',
-  PICKUP_BELINSKOGO_15: 'самовывоз (салон на ул. Белинского, 15)',
-  COURIER_DELIVERY: 'Аккуратная доставка и подъем на этаж собственной службой',
-  WHITE_GLOVE_DELIVERY: 'Аккуратная доставка и подъем на этаж собственной службой',
+  PICKUP_WAREHOUSE_KOMINTERNA: 'Самовывоз со склада (ул. Коминтерна, 27)',
+  PICKUP_BELINSKOGO_15: 'Самовывоз из салона СИМОНА (ул. Белинского, 15)',
+  COURIER_DELIVERY: 'Доставка',
+  WHITE_GLOVE_DELIVERY: 'Доставка',
 };
 
 export const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  IN_SALON: 'в салоне «СИМОНА» (картой или наличными)',
-  CARD_ONLINE: 'Онлайн-оплата картой / СБП (ЮKassa)',
-  ON_RECEIPT: 'при получении',
-  B2B_INVOICE: 'Безналичный расчет по счету для юрлиц (с НДС)',
+  IN_SALON: 'В салоне СИМОНА (ул. Белинского, 15)',
+  AT_WAREHOUSE: 'На складе СИМОНА (ул. Коминтерна, 27)',
+  ON_DELIVERY: 'В момент доставки (наличными курьеру)',
+  ON_RECEIPT: 'В момент доставки (наличными курьеру)',
+  CARD_ONLINE: 'Картой онлайн (ЮKassa / СБП)',
+  B2B_INVOICE: 'Счет для юрлиц (B2B, безналичный расчет с НДС 20%)',
 };
 
 export const LEAD_TYPE_LABELS: Record<string, string> = {

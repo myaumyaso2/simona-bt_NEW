@@ -104,11 +104,15 @@ export async function POST(req: NextRequest) {
 
     const customerPhone = normalizeRussianPhone(rawPhone);
 
-    const totalAmount = items.reduce(
+    const deliveryCost = Number(body.deliveryCost) || 0;
+
+    const itemsTotal = items.reduce(
       (sum: number, item: CheckoutItemInput) =>
         sum + (Number(item.price) || 0) * (Number(item.quantity) || 1),
       0
     );
+
+    const totalAmount = itemsTotal + deliveryCost;
 
     // Сверяем физические статусы позиций по БД (если переданы sku/productId) и входным данным
     const skus = items.map((i) => String(i.sku || '').trim()).filter(Boolean);

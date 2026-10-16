@@ -265,13 +265,9 @@ export default function DeliveryPaymentPage() {
                 </div>
               </div>
 
-              <p className="text-xs text-[#87888A] leading-relaxed">
-                {data.nnDelivery.intervalNote}
-              </p>
-
-              <div className="p-3 rounded-lg bg-[#16191D] border border-[#2B313A] text-xs text-zinc-300">
+              <div className="p-3.5 rounded-lg bg-[#16191D] border border-[#2B313A] text-xs text-zinc-300 leading-relaxed">
                 <span className="text-white font-medium block mb-1">Точный двухчасовой интервал:</span>
-                За день до доставки логистическая служба согласует с вами удобное двухчасовое окно прибытия экипажа.
+                За день до доставки логистическая служба согласует с вами удобное двухчасовое окно прибытия экипажа. Просим находиться дома в согласованный период времени.
               </div>
             </div>
           </div>
