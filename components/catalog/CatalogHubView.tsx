@@ -5,11 +5,10 @@ import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CATALOG_CATEGORIES } from '@/data/catalogCategories';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { CatalogServiceContour } from './CatalogServiceContour';
 import { CatalogSectionSlider, CatalogSectionItem } from './CatalogSectionSlider';
 import {
-  SimonaIconChevronRight,
   SimonaIconArrowRight,
 } from '@/components/brand/SimonaIcons';
 
@@ -141,28 +140,18 @@ export function CatalogHubView() {
 
   return (
     <div className="bg-[#111315] min-h-screen text-white">
-      {/* 1. Header / Breadcrumbs Area */}
+      {/* 1. Breadcrumbs Bar */}
+      <Breadcrumbs items={[{ name: 'Каталог' }]} />
+
+      {/* 2. Header Area */}
       <section className="pt-8 pb-8 border-b border-[#2B313A]/50 relative overflow-hidden">
         {/* Subtle Ambient Radial Glow */}
         <div className="absolute top-0 left-1/4 -translate-x-1/2 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-0 right-1/4 translate-x-1/2 w-96 h-96 bg-simona-wine/5 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          {/* Breadcrumbs: Root Catalog Level */}
-          <nav aria-label="Хлебные крошки" className="flex items-center space-x-2 text-xs text-[#87888A] mb-6 font-normal">
-            <Link href="/" className="hover:text-white transition-colors">
-              Главная
-            </Link>
-            <SimonaIconChevronRight className="w-3.5 h-3.5 text-[#3E3D40]" />
-            <span className="text-[#D7D9DB] font-medium">Каталог</span>
-          </nav>
-
-          {/* Title & SectionBadge */}
+          {/* Title */}
           <div className="mb-6 max-w-4xl text-left">
-            <SectionBadge variant="teal" className="mb-3.5">
-              КАТАЛОГ СИМОНЫ
-            </SectionBadge>
-
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-bold text-white tracking-tight">
               Категории бытовой техники, аксессуары и средства по уходу
             </h1>

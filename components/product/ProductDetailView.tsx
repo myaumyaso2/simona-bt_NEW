@@ -11,7 +11,8 @@ import { ProductStickySubNav } from './ProductStickySubNav';
 import { ProductTabsSection } from './ProductTabsSection';
 import { ProductMobileBottomBar } from './ProductMobileBottomBar';
 import { OneClickBuyModal } from './OneClickBuyModal';
-import { ChevronRight, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { getCategorySlugByName } from '@/data/catalogCategories';
 
 interface ProductDetailViewProps {
@@ -38,36 +39,23 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
   return (
     <div className="min-h-screen bg-[#111315] text-white flex flex-col justify-between selection:bg-simona-teal selection:text-white pb-20 md:pb-0">
       <div>
-        {/* 1. Breadcrumbs & Back Link */}
-        <div className="w-full max-w-[1280px] mx-auto px-4 sm:px-6 pt-5 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#87888A]">
-          {/* Breadcrumb path */}
-          <nav aria-label="Breadcrumbs" className="flex flex-wrap items-center gap-1.5">
-            <Link href="/" className="hover:text-white transition-colors">
-              Главная
+        {/* 1. Breadcrumbs Bar with Category Return Link */}
+        <Breadcrumbs
+          items={[
+            { name: 'Каталог', url: '/catalog' },
+            { name: product.category, url: `/catalog/${categorySlug}` },
+            { name: product.name },
+          ]}
+          rightContent={
+            <Link
+              href={`/catalog/${categorySlug}`}
+              className="inline-flex items-center gap-1.5 text-simona-teal hover:text-simona-teal-light transition-colors font-medium shrink-0"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Вернуться в категорию</span>
             </Link>
-            <ChevronRight className="w-3 h-3 text-[#3E3D40]" />
-            <Link href="/catalog" className="hover:text-white transition-colors">
-              Каталог
-            </Link>
-            <ChevronRight className="w-3 h-3 text-[#3E3D40]" />
-            <Link href={`/catalog/${categorySlug}`} className="hover:text-white transition-colors">
-              {product.category}
-            </Link>
-            <ChevronRight className="w-3 h-3 text-[#3E3D40]" />
-            <span className="text-[#D7D9DB] truncate max-w-[200px] sm:max-w-xs">
-              {product.name}
-            </span>
-          </nav>
-
-          {/* Return to category link */}
-          <Link
-            href={`/catalog/${categorySlug}`}
-            className="inline-flex items-center gap-1 text-simona-teal hover:text-simona-teal-light transition-colors font-medium shrink-0"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Вернуться в категорию</span>
-          </Link>
-        </div>
+          }
+        />
 
         {/* 2. Hero Section: 60/40 Asymmetric Split */}
         <section className="w-full max-w-[1280px] mx-auto px-4 sm:px-6 pb-12">

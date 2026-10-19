@@ -5,7 +5,6 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import {
   SimonaIconPin,
   SimonaIconClock,
@@ -340,9 +339,6 @@ export function ShowroomsFigmaSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div ref={headerRef} className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div className="max-w-2xl text-left">
-            <SectionBadge variant="teal" className="mb-3.5">
-              {content.showroomsSection?.badge || 'Салоны на Белинского'}
-            </SectionBadge>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-semibold text-white tracking-tight leading-tight">
               {content.showroomsSection?.title || 'Шоурумы бытовой техники на Белинского'}
             </h2>

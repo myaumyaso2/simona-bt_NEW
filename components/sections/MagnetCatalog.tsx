@@ -7,7 +7,6 @@ import { Sparkles } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
 import { SimonaIconChef, SimonaIconCart, SimonaIconFilter, SimonaIconPin, SimonaIconPackage } from '@/components/brand/SimonaIcons';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 
 interface MagnetCatalogProps {
   products: ProductItem[];
@@ -51,9 +50,6 @@ export function MagnetCatalog({ products }: MagnetCatalogProps) {
         {/* Section Header: Left-Aligned Split Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
           <div className="text-left">
-            <SectionBadge variant="teal" className="mb-3.5">
-              Селективная витрина салонов
-            </SectionBadge>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-bold text-[#16181B] tracking-tight">
               Каталог-магнит
             </h2>

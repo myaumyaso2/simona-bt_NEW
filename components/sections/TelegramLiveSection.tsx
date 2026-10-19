@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useStore } from '@/components/providers/StoreContext';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import { PlexusConstellationBackground } from '@/components/backgrounds/PlexusConstellationBackground';
 import { useSiteContent } from '@/components/providers/ContentContext';
 import { TelegramVideo } from '@/types';
@@ -174,17 +173,14 @@ export function TelegramLiveSection({ initialVideos = [] }: TelegramLiveSectionP
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
             {/* Left Content (4 Cols on Desktop) */}
-            <div ref={leftRef} className="lg:col-span-4 space-y-5">
-              <div className="flex items-center space-x-2">
-                <SectionBadge variant="teal">
-                  {content.telegram.badge}
-                </SectionBadge>
-                {videos.length > 0 && (
+            <div ref={leftRef} className="lg:col-span-4 space-y-4">
+              {videos.length > 0 && (
+                <div>
                   <span className="px-2.5 py-0.5 rounded-md bg-[#111315] border border-[#2B313A] text-[11px] font-mono text-simona-teal">
                     {videos.length} видео
                   </span>
-                )}
-              </div>
+                </div>
+              )}
 
               <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight leading-snug">
                 {content.telegram.title}

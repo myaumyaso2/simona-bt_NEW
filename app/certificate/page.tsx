@@ -3,9 +3,8 @@
 import React, { useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import {
-  SimonaIconChevronRight,
   SimonaIconPin,
   SimonaIconClock,
   SimonaIconPhoneSolid,
@@ -157,20 +156,8 @@ export default function CertificatePage() {
 
   return (
     <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pb-24 selection:bg-simona-teal/30 selection:text-white">
-      {/* 1. Breadcrumbs (directly adjacent to header) */}
-      <div className="border-b border-[#2B313A] bg-[#16191D]/60 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
-          <nav className="flex items-center space-x-2 text-xs text-[#87888A] truncate" aria-label="Хлебные крошки">
-            <Link href="/" className="hover:text-white transition-colors">
-              Главная
-            </Link>
-            <SimonaIconChevronRight className="w-3 h-3 text-[#87888A] shrink-0" />
-            <span className="text-white font-medium truncate">
-              {certData?.badge || 'Подарочный сертификат'}
-            </span>
-          </nav>
-        </div>
-      </div>
+      {/* 1. Breadcrumbs Bar */}
+      <Breadcrumbs items={[{ name: certData?.badge || 'Подарочный сертификат' }]} />
 
       {/* 2. Full-Width Promo Hero with Background & Darkened Left Zone */}
       <div className="relative border-b border-[#2B313A] py-14 sm:py-20 lg:py-24 overflow-hidden">
@@ -197,10 +184,6 @@ export default function CertificatePage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl space-y-5 text-left">
-            <SectionBadge variant="teal">
-              {certData?.badge || 'Подарочный сертификат'}
-            </SectionBadge>
-
             <h1 className="text-2xl sm:text-4xl lg:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
               {certData?.title || 'Подарочный сертификат на бытовую технику'}
             </h1>
@@ -243,10 +226,7 @@ export default function CertificatePage() {
         {/* Catalog Products Grid */}
         <div ref={catalogRef} className="space-y-6 text-left">
           <div className="border-b border-[#2B313A] pb-4">
-            <SectionBadge variant="wine">
-              Каталог
-            </SectionBadge>
-            <h2 className="text-xl sm:text-2xl font-montserrat font-bold text-white tracking-tight mt-2">
+            <h2 className="text-xl sm:text-2xl font-montserrat font-bold text-white tracking-tight">
               {certData?.catalogSectionTitle || 'Номиналы сертификатов'}
             </h2>
             <p className="text-xs sm:text-sm text-[#87888A] mt-1 max-w-2xl">
@@ -264,10 +244,7 @@ export default function CertificatePage() {
         {/* Rules & Transparency Section */}
         <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 sm:p-10 space-y-8 text-left">
           <div className="border-b border-[#2B313A] pb-4">
-            <SectionBadge variant="teal">
-              {certData?.rulesSection?.badge || 'Условия и правила'}
-            </SectionBadge>
-            <h2 className="text-xl sm:text-2xl font-montserrat font-bold text-white tracking-tight mt-2">
+            <h2 className="text-xl sm:text-2xl font-montserrat font-bold text-white tracking-tight">
               {certData?.rulesSection?.title || 'Условия использования подарочного сертификата'}
             </h2>
           </div>
@@ -327,10 +304,7 @@ export default function CertificatePage() {
         {/* Salon Acquisition Section */}
         <div ref={salonRef} className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 sm:p-10 relative overflow-hidden text-left space-y-6">
           <div className="border-b border-[#2B313A] pb-4">
-            <SectionBadge variant="wine">
-              {certData?.salonBlock?.badge || 'Покупка в салоне'}
-            </SectionBadge>
-            <h2 className="text-xl sm:text-2xl font-montserrat font-bold text-white tracking-tight mt-2">
+            <h2 className="text-xl sm:text-2xl font-montserrat font-bold text-white tracking-tight">
               {certData?.salonBlock?.title || 'Подарочные сертификаты можно приобрести в салоне'}
             </h2>
             <p className="text-xs sm:text-sm text-[#87888A] mt-1 leading-relaxed max-w-2xl">

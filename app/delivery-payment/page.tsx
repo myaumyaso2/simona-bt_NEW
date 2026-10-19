@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useSiteContent } from '@/components/providers/ContentContext';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import {
   SimonaIconDelivery,
   SimonaIconBuilding,
@@ -58,79 +58,75 @@ export default function DeliveryPaymentPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-16">
+    <main className="min-h-screen bg-[#111315] text-[#D7D9DB]">
+      <Breadcrumbs items={[{ name: 'Доставка и оплата' }]} />
+      <div className="pt-10 pb-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-16">
 
-        {/* 1. Header Hero */}
-        <section className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
+          {/* 1. Header Hero */}
+          <section className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-4xl text-left space-y-5">
-            <SectionBadge variant="teal">
-              {data.badge}
-            </SectionBadge>
-            <h1 className="text-3xl sm:text-5xl font-montserrat font-semibold text-white tracking-tight leading-tight">
-              {data.title}
-            </h1>
-            <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
-              {data.subtitle}
-            </p>
+            <div className="max-w-4xl text-left space-y-5">
+              <h1 className="text-3xl sm:text-5xl font-montserrat font-semibold text-white tracking-tight leading-tight">
+                {data.title}
+              </h1>
+              <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
+                {data.subtitle}
+              </p>
 
-            {/* Service Notice Box */}
-            <div className="p-4 rounded-xl bg-[#1E2228] border border-simona-teal/30 flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-simona-teal/10 text-simona-teal flex items-center justify-center shrink-0 mt-0.5">
-                <SimonaIconPhoneSolid className="w-4 h-4" />
+              {/* Service Notice Box */}
+              <div className="p-4 rounded-xl bg-[#1E2228] border border-simona-teal/30 flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-simona-teal/10 text-simona-teal flex items-center justify-center shrink-0 mt-0.5">
+                  <SimonaIconPhoneSolid className="w-4 h-4" />
+                </div>
+                <div className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
+                  <span>{data.heroNotice}</span>
+                  <span className="block text-xs text-[#87888A] mt-1">
+                    Единый справочный телефон: <a href={`tel:${content.contacts.phoneRaw}`} className="text-simona-teal font-medium hover:underline">{content.contacts.phone}</a>
+                  </span>
+                </div>
               </div>
-              <div className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                <span>{data.heroNotice}</span>
-                <span className="block text-xs text-[#87888A] mt-1">
-                  Единый справочный телефон: <a href={`tel:${content.contacts.phoneRaw}`} className="text-simona-teal font-medium hover:underline">{content.contacts.phone}</a>
-                </span>
+
+              {/* Table of Contents / Quick Navigation */}
+              <div className="pt-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1 p-4 sm:p-5 rounded-xl bg-[#1E2228] border border-[#2B313A]">
+                  {tocItems.map((item) => (
+                    <a
+                      key={item.id}
+                      href={`#${item.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        scrollToSection(item.id);
+                      }}
+                      className="flex items-center justify-between py-2 sm:py-2.5 border-b border-[#2B313A]/50 last:border-b-0 md:[&:nth-last-child(2)]:border-b-0 text-xs sm:text-sm text-left group transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="text-xs font-mono font-semibold text-simona-teal shrink-0">
+                          {item.num}
+                        </span>
+                        <span className="font-medium text-[#D7D9DB] group-hover:text-white truncate transition-colors">
+                          {item.label}
+                        </span>
+                      </div>
+                      <SimonaIconArrowRight className="w-3.5 h-3.5 text-[#87888A] group-hover:text-simona-teal group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
+          </section>
 
-            {/* Table of Contents / Quick Navigation */}
-            <div className="pt-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1 p-4 sm:p-5 rounded-xl bg-[#1E2228] border border-[#2B313A]">
-                {tocItems.map((item) => (
-                  <a
-                    key={item.id}
-                    href={`#${item.id}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToSection(item.id);
-                    }}
-                    className="flex items-center justify-between py-2 sm:py-2.5 border-b border-[#2B313A]/50 last:border-b-0 md:[&:nth-last-child(2)]:border-b-0 text-xs sm:text-sm text-left group transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <span className="text-xs font-mono font-semibold text-simona-teal shrink-0">
-                        {item.num}
-                      </span>
-                      <span className="font-medium text-[#D7D9DB] group-hover:text-white truncate transition-colors">
-                        {item.label}
-                      </span>
-                    </div>
-                    <SimonaIconArrowRight className="w-3.5 h-3.5 text-[#87888A] group-hover:text-simona-teal group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
-                  </a>
-                ))}
-              </div>
+          {/* 2. Self-pickup from Warehouse */}
+          <section id="pickup" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
+            <div className="text-left space-y-2 border-b border-[#2B313A] pb-4">
+              <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold text-white tracking-tight">
+                {data.selfPickup.title}
+              </h2>
+              <p className="text-xs sm:text-sm text-[#87888A]">
+                Выдача оплаченных заказов и крупногабаритной техники непосредственно со склада компании.
+              </p>
             </div>
-          </div>
-        </section>
-
-        {/* 2. Self-pickup from Warehouse */}
-        <section id="pickup" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
-          <div className="text-left space-y-2 border-b border-[#2B313A] pb-4">
-            <SectionBadge variant="teal">
-              {data.selfPickup.badge}
-            </SectionBadge>
-            <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold text-white tracking-tight">
-              {data.selfPickup.title}
-            </h2>
-            <p className="text-xs sm:text-sm text-[#87888A]">
-              Выдача оплаченных заказов и крупногабаритной техники непосредственно со склада компании.
-            </p>
-          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Address & Checkpoint instructions */}
@@ -208,9 +204,6 @@ export default function DeliveryPaymentPage() {
         {/* 3. Nizhny Novgorod Delivery */}
         <section id="nn-delivery" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
           <div className="text-left space-y-2 border-b border-[#2B313A] pb-4">
-            <SectionBadge variant="teal">
-              {data.nnDelivery.badge}
-            </SectionBadge>
             <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold text-white tracking-tight">
               {data.nnDelivery.title}
             </h2>
@@ -276,9 +269,6 @@ export default function DeliveryPaymentPage() {
         {/* 4. Nizhny Novgorod Oblast Delivery */}
         <section id="oblast-delivery" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
           <div className="text-left space-y-2 border-b border-[#2B313A] pb-4">
-            <SectionBadge variant="teal">
-              {data.oblastDelivery.badge}
-            </SectionBadge>
             <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold text-white tracking-tight">
               {data.oblastDelivery.title}
             </h2>
@@ -341,9 +331,6 @@ export default function DeliveryPaymentPage() {
         {/* 5. Operational Rules & Inspection («Обратите внимание!») */}
         <section id="rules" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
           <div className="text-left space-y-2 border-b border-[#2B313A] pb-4">
-            <SectionBadge variant="teal">
-              {data.rules.badge}
-            </SectionBadge>
             <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold text-white tracking-tight">
               {data.rules.title}
             </h2>
@@ -375,9 +362,6 @@ export default function DeliveryPaymentPage() {
         {/* 6. Intercity Delivery Across Russia */}
         <section id="intercity" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
           <div className="text-left space-y-2 border-b border-[#2B313A] pb-4">
-            <SectionBadge variant="teal">
-              {data.intercityTK.badge}
-            </SectionBadge>
             <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold text-white tracking-tight">
               {data.intercityTK.title}
             </h2>
@@ -439,9 +423,6 @@ export default function DeliveryPaymentPage() {
         {/* 7. Payment Methods */}
         <section id="payment" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-6">
           <div className="text-left space-y-2 border-b border-[#2B313A] pb-4">
-            <SectionBadge variant="teal">
-              {data.paymentMethods.badge}
-            </SectionBadge>
             <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold text-white tracking-tight">
               {data.paymentMethods.title}
             </h2>
@@ -523,6 +504,7 @@ export default function DeliveryPaymentPage() {
           </Link>
         </section>
 
+        </div>
       </div>
     </main>
   );

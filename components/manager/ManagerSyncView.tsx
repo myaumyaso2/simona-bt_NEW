@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import {
   SimonaIconClock,
   SimonaIconDownload,
@@ -94,14 +93,11 @@ export function ManagerSyncView() {
       {/* Top Banner and Session Selector */}
       <div className="p-6 rounded-2xl bg-[#16191D] border border-[#2B313A] flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="space-y-2">
-          <div className="flex items-center space-x-3">
-            <SectionBadge variant="teal" text="Автоматический обмен 1С" />
-            {currentSession && (
-              <span className="text-xs text-[#87888A]">
-                Файл: <strong className="text-white">{currentSession.fileName}</strong> ({currentSession.totalRows} строк, {Math.round(currentSession.durationMs / 100) / 10}с)
-              </span>
-            )}
-          </div>
+          {currentSession && (
+            <div className="text-xs text-[#87888A]">
+              Файл: <strong className="text-white">{currentSession.fileName}</strong> ({currentSession.totalRows} строк, {Math.round(currentSession.durationMs / 100) / 10}с)
+            </div>
+          )}
           <h2 className="text-xl sm:text-2xl font-montserrat font-bold text-white tracking-tight">
             История и детализация импортов 1C_import.csv
           </h2>

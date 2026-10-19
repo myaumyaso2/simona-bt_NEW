@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import {
   SimonaIconPackage,
   SimonaIconChat,
@@ -425,8 +424,7 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
       <div className="min-h-screen bg-[#111315] text-white flex items-center justify-center px-4">
         <div className="w-full max-w-md p-8 rounded-2xl bg-[#16191D] border border-[#2B313A] space-y-6 text-left">
           <div>
-            <SectionBadge variant="teal" text="Закрытый контур сотрудников" />
-            <h1 className="text-2xl font-montserrat font-bold text-white mt-3">
+            <h1 className="text-2xl font-montserrat font-bold text-white">
               Панель менеджера «СИМОНА»
             </h1>
             <p className="text-xs text-[#87888A] mt-1">
@@ -492,7 +490,6 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
         {/* Top Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-[#2B313A] pb-6">
           <div className="text-left space-y-2">
-            <SectionBadge variant="teal" text="Операционный контур СИМОНА" />
             <h1 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
               Рабочее место менеджера салона
             </h1>

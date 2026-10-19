@@ -3,7 +3,6 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 
 export interface LuxuryModalShellProps {
   isOpen: boolean;
@@ -94,13 +93,8 @@ export function LuxuryModalShell({
             </button>
 
             {/* Optional Header Section */}
-            {(badgeText || title || subtitle) && (
+            {(title || subtitle) && (
               <div className="mb-4 sm:mb-5 pr-8">
-                {badgeText && (
-                  <div className="mb-2">
-                    <SectionBadge variant={badgeVariant}>{badgeText}</SectionBadge>
-                  </div>
-                )}
                 {title && (
                   <h3 className="text-xl sm:text-2xl font-montserrat font-bold text-white tracking-tight">
                     {title}

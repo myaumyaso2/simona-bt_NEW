@@ -9,7 +9,7 @@ import { useAnalyticsData } from '@/lib/analytics/utm';
 import { formatPrice } from '@/lib/utils';
 import { formatProductName } from '@/lib/catalog/productTitle';
 import { formatPhoneMask, isValidRussianPhone } from '@/lib/phone';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { CATALOG_CATEGORIES } from '@/data/catalogCategories';
 import { ProductItem } from '@/types';
 import {
@@ -321,29 +321,35 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#111315] text-white pt-8 pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Navigation back */}
-        <div className="mb-6">
+    <div className="min-h-screen bg-[#111315] text-white">
+      {/* 1. Breadcrumbs Bar */}
+      <Breadcrumbs
+        items={[
+          { name: 'Каталог', url: '/catalog' },
+          { name: 'Оформление покупки' },
+        ]}
+        rightContent={
           <Link
             href="/catalog"
-            className="inline-flex items-center space-x-2 text-xs text-[#87888A] hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 text-simona-teal hover:text-simona-teal-light transition-colors font-medium shrink-0"
           >
             <SimonaIconArrowLeft className="w-3.5 h-3.5" />
             <span>Вернуться в каталог</span>
           </Link>
-        </div>
+        }
+      />
 
-        {/* Header */}
-        <div className="mb-8 text-left">
-          <SectionBadge variant="teal" text="Оформление заказа" />
-          <h1 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight mt-3">
-            Оформление покупки
-          </h1>
-          <p className="text-xs sm:text-sm text-[#87888A] mt-1">
-            Комплектация со склада в Нижнем Новгороде, официальная гарантия производителя и сервис «СИМОНА»
-          </p>
-        </div>
+      <div className="pt-8 pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="mb-8 text-left">
+            <h1 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
+              Оформление покупки
+            </h1>
+            <p className="text-xs sm:text-sm text-[#87888A] mt-1">
+              Комплектация со склада в Нижнем Новгороде, официальная гарантия производителя и сервис «СИМОНА»
+            </p>
+          </div>
 
         {cart.length === 0 ? (
           <div className="p-12 rounded-2xl bg-[#16191D] border border-[#2B313A] text-left max-w-lg">
@@ -1234,5 +1240,6 @@ export default function CheckoutPage() {
         )}
       </div>
     </div>
-  );
+  </div>
+);
 }

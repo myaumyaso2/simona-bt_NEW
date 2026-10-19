@@ -7,7 +7,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
 import { SimonaIconConsultation, SimonaIconMark } from '@/components/brand/SimonaIcons';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import { useSiteContent } from '@/components/providers/ContentContext';
 import { HeroBackgroundSlider } from './HeroBackgroundSlider';
 
@@ -32,7 +31,6 @@ export function HeroSection() {
   const content = useSiteContent();
   const sectionRef = useRef<HTMLElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
-  const badgeRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
@@ -48,16 +46,10 @@ export function HeroSection() {
       const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
 
       tl.fromTo(
-        badgeRef.current,
-        { y: -18, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, delay: 0.15 }
+        headingRef.current,
+        { y: 35, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, delay: 0.15 }
       )
-        .fromTo(
-          headingRef.current,
-          { y: 35, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.8 },
-          '-=0.35'
-        )
         .fromTo(
           subtitleRef.current,
           { y: 22, opacity: 0 },
@@ -139,15 +131,6 @@ export function HeroSection() {
       {/* Main Hero Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-auto">
         <div ref={contentParallaxRef} className="max-w-3xl">
-          {/* Partner Badge */}
-          <SectionBadge
-            ref={badgeRef}
-            variant="teal"
-            className="mb-6 sm:mb-8"
-          >
-            {content.hero.badge}
-          </SectionBadge>
-
           {/* Heading H1 */}
           <h1
             ref={headingRef}

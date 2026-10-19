@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useStore } from '@/components/providers/StoreContext';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { LuxuryProductCard } from '@/components/catalog/LuxuryProductCard';
 import {
   SimonaIconHeart,
@@ -482,8 +482,7 @@ function ProfileContent() {
   const renderLoginBox = () => (
     <div className="max-w-xl bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 sm:p-8 text-left">
       <div className="mb-6">
-        <SectionBadge variant="teal" text="Единый профиль СИМОНА" />
-        <h2 className="text-xl sm:text-2xl font-montserrat font-bold text-white mt-3">
+        <h2 className="text-xl sm:text-2xl font-montserrat font-bold text-white">
           Вход в личный кабинет и историю заказов
         </h2>
         <p className="text-xs text-[#87888A] mt-1.5 leading-relaxed">
@@ -658,10 +657,12 @@ function ProfileContent() {
   );
 
   return (
-    <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header Breadcrumbs & Title */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 border-b border-[#2B313A] pb-6">
+    <main className="min-h-screen bg-[#111315] text-[#D7D9DB]">
+      <Breadcrumbs items={[{ name: 'Личный кабинет' }]} />
+      <div className="pt-10 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Header Title */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 border-b border-[#2B313A] pb-6">
           <div className="text-left">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-montserrat font-bold text-white tracking-tight">
               Личный кабинет клиента
@@ -1081,6 +1082,7 @@ function ProfileContent() {
             )}
           </div>
         )}
+        </div>
       </div>
     </main>
   );

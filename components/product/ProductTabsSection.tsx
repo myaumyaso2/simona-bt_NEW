@@ -21,7 +21,6 @@ import {
   SimonaIconClock,
   SimonaIconArrowRight,
 } from '@/components/brand/SimonaIcons';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import { formatBrandName } from '@/lib/formatters';
 import { getProductBundle } from '@/lib/productBundles';
 import { AccessoryItem } from '@/data/catalogData';
@@ -191,7 +190,6 @@ export function ProductTabsSection({
           {product.technologies && product.technologies.length > 0 ? (
             <>
               <div className="flex flex-col gap-2">
-                <SectionBadge text={`Инновации ${brandFormatted}`} />
                 <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
                   Инженерные технологии {brandFormatted}
                 </h2>
@@ -233,7 +231,6 @@ export function ProductTabsSection({
             /* Zero Dead Ends: Rich editorial overview when no specific technologies array is supplied */
             <div className="flex flex-col gap-8">
               <div className="flex flex-col gap-2">
-                <SectionBadge text={`Обзор модели ${brandFormatted}`} />
                 <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
                   Инженерия и дизайн {product.name}
                 </h2>
@@ -294,16 +291,15 @@ export function ProductTabsSection({
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#2B313A]">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
-                <SectionBadge text="Полные технические параметры" />
+                <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
+                  Технические характеристики
+                </h2>
                 {totalSpecCount > 0 && (
-                  <span className="px-2 py-0.5 rounded-md bg-[#1E2228] border border-[#2B313A] text-[11px] font-mono text-[#87888A]">
+                  <span className="px-2 py-0.5 rounded-md bg-[#1E2228] border border-[#2B313A] text-[11px] font-mono text-simona-teal">
                     {totalSpecCount} параметров
                   </span>
                 )}
               </div>
-              <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
-                Технические характеристики
-              </h2>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
@@ -411,9 +407,6 @@ export function ProductTabsSection({
         >
           {/* Header */}
           <div className="space-y-3">
-            <SectionBadge variant="wine">
-              Официальные программы производителя
-            </SectionBadge>
             <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
               Действующие акции и подарки {brandFormatted} ({allPromosToDisplay.length})
             </h2>
@@ -516,7 +509,6 @@ export function ProductTabsSection({
             className="flex flex-col gap-8"
           >
             <div className="flex flex-col gap-2">
-              <SectionBadge text="Архитектурные чертежи и узлы" />
               <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
                 Схемы встройки и монтажная документация {brandFormatted}
               </h2>
@@ -611,7 +603,6 @@ export function ProductTabsSection({
           {bundleResult.hasBundle ? (
             <>
               <div className="flex flex-col gap-2">
-                <SectionBadge text="Дизайнерский комплект" />
                 <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
                   {bundleResult.bundleTitle}
                 </h2>
@@ -787,7 +778,6 @@ export function ProductTabsSection({
             /* Premium Concierge fallback when brand has no pre-compiled suite */
             <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-8 sm:p-12 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-xl">
               <div className="flex flex-col gap-3 max-w-2xl">
-                <SectionBadge text={`Комплектация ${brandFormatted}`} />
                 <h3 className="text-2xl font-montserrat font-bold text-white text-left">
                   {bundleResult.bundleTitle}
                 </h3>
@@ -827,7 +817,6 @@ export function ProductTabsSection({
             className="flex flex-col gap-10"
           >
             <div className="flex flex-col gap-2">
-              <SectionBadge text="Опыт эксплуатации" />
               <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
                 Оценки и отзывы владельцев ({product.rating || 5.0} / 5.0)
               </h2>

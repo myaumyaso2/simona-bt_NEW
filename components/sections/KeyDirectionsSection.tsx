@@ -4,7 +4,6 @@ import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import { DeepParallaxBackground } from '@/components/backgrounds/DeepParallaxBackground';
 import { useSiteContent } from '@/components/providers/ContentContext';
 import { SimonaIconArrowRight, SimonaIconPlus } from '@/components/brand/SimonaIcons';
@@ -197,9 +196,6 @@ export function KeyDirectionsSection() {
           className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6"
         >
           <div className="max-w-2xl text-left">
-            <SectionBadge variant="teal" className="mb-3.5">
-              {content.keyDirections.badge}
-            </SectionBadge>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-semibold text-white tracking-tight">
               {content.keyDirections.title}
             </h2>

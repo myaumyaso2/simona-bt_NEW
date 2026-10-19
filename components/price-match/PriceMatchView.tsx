@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useSiteContent } from '@/components/providers/ContentContext';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import {
   SimonaIconTag,
   SimonaIconClock,
@@ -118,19 +118,17 @@ export function PriceMatchView() {
   }
 
   return (
-    <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto space-y-12 sm:space-y-16">
+    <main className="min-h-screen bg-[#111315] text-[#D7D9DB]">
+      <Breadcrumbs items={[{ name: data.title || 'Гарантия лучшей цены' }]} />
+      <div className="pt-10 pb-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto space-y-12 sm:space-y-16">
 
-        {/* 1. Header Hero Screen */}
-        <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl sm:rounded-3xl p-6 sm:p-10 lg:p-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
+          {/* 1. Header Hero Screen */}
+          <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl sm:rounded-3xl p-6 sm:p-10 lg:p-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-3xl text-left space-y-4 relative z-10">
-            <SectionBadge variant="teal">
-              {data.badge}
-            </SectionBadge>
-
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
+            <div className="max-w-3xl text-left space-y-4 relative z-10">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
               {data.title}
             </h1>
 
@@ -439,6 +437,7 @@ export function PriceMatchView() {
 
         </div>
 
+        </div>
       </div>
     </main>
   );

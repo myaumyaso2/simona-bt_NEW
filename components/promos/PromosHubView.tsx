@@ -7,13 +7,12 @@ import {
   SimonaIconClock,
   SimonaIconPin,
   SimonaIconGuarantee,
-  SimonaIconChevronRight,
   SimonaIconArrowRight,
 } from '@/components/brand/SimonaIcons';
 import { MANUFACTURER_PROMOS } from '@/data/promosData';
 import { ManufacturerPromo, PromoBenefitType } from '@/types';
 import { useStore } from '@/components/providers/StoreContext';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { useSiteContent } from '@/components/providers/ContentContext';
 
 const BRAND_FILTERS = [
@@ -41,18 +40,8 @@ export function PromosHubView() {
 
   return (
     <div className="bg-[#111315] min-h-screen text-[#D7D9DB]">
-      {/* 1. Breadcrumbs */}
-      <div className="border-b border-[#2B313A] bg-[#16191D]/60 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
-          <nav className="flex items-center space-x-2 text-xs text-[#87888A]">
-            <Link href="/" className="hover:text-white transition-colors">
-              Главная
-            </Link>
-            <SimonaIconChevronRight className="w-3 h-3 text-[#87888A]" />
-            <span className="text-[#D7D9DB] font-medium">Акции производителей</span>
-          </nav>
-        </div>
-      </div>
+      {/* 1. Breadcrumbs Bar */}
+      <Breadcrumbs items={[{ name: 'Акции производителей' }]} />
 
       {/* 2. Hero Header */}
       <div className="relative border-b border-[#2B313A] py-14 sm:py-20 overflow-hidden">
@@ -61,10 +50,6 @@ export function PromosHubView() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl text-left">
-            <SectionBadge variant="wine" className="mb-4">
-              {content.promosPage.badge}
-            </SectionBadge>
-
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
               {content.promosPage.title}
             </h1>

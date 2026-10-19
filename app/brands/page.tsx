@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { SimonaIconPin } from '@/components/brand/SimonaIcons';
 import { ArrowRight, Globe2 } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
@@ -202,41 +202,41 @@ export default async function BrandsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-16">
-        
-        {/* Hero */}
-        <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
+    <main className="min-h-screen bg-[#111315] text-[#D7D9DB]">
+      <Breadcrumbs items={[{ name: 'Бренды' }]} />
+      <div className="pt-10 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-16">
+          
+          {/* Hero */}
+          <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-3xl text-left space-y-4">
-            <SectionBadge variant="teal" text="Селекция мировых производителей" />
-            <h1 className="text-3xl sm:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
-              Атлас брендов премиальной техники
-            </h1>
-            <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
-              «СИМОНА» представляет ведущие европейские фабрики с вековой историей мастерства. Мы гарантируем оригинальное происхождение каждого прибора, официальную заводскую гарантию и наличие физической экспозиции в шоурумах Нижнего Новгорода.
-            </p>
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <span className="text-xs text-[#87888A]">Физические экспозиции:</span>
-              <span className="px-3 py-1 rounded-md bg-[#1E2228] border border-[#2B313A] text-xs text-white">
-                Белинского, 15 (Флагман)
-              </span>
-              <span className="px-3 py-1 rounded-md bg-[#1E2228] border border-[#2B313A] text-xs text-white">
-                Белинского, 11/66 (OMOIKIRI & Körting)
-              </span>
+            <div className="max-w-3xl text-left space-y-4">
+              <h1 className="text-3xl sm:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
+                Атлас брендов премиальной техники
+              </h1>
+              <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
+                «СИМОНА» представляет ведущие европейские фабрики с вековой историей мастерства. Мы гарантируем оригинальное происхождение каждого прибора, официальную заводскую гарантию и наличие физической экспозиции в шоурумах Нижнего Новгорода.
+              </p>
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <span className="text-xs text-[#87888A]">Физические экспозиции:</span>
+                <span className="px-3 py-1 rounded-md bg-[#1E2228] border border-[#2B313A] text-xs text-white">
+                  Белинского, 15 (Флагман)
+                </span>
+                <span className="px-3 py-1 rounded-md bg-[#1E2228] border border-[#2B313A] text-xs text-white">
+                  Белинского, 11/66 (OMOIKIRI & Körting)
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Brands Grid */}
-        <div className="space-y-6">
-          <div className="text-left space-y-2">
-            <SectionBadge variant="teal" text="Официальные коллекции" />
-            <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
-              Производители европейской и мировой техники
-            </h2>
-          </div>
+          {/* Brands Grid */}
+          <div className="space-y-6">
+            <div className="text-left space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
+                Производители европейской и мировой техники
+              </h2>
+            </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {BRANDS_DIRECTORY.map((b) => {
@@ -313,10 +313,11 @@ export default async function BrandsPage() {
           </div>
           <Link
             href="/services"
-            className="px-6 py-3 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold uppercase tracking-wider transition shrink-0"
+            className="px-6 py-3 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wide transition shrink-0"
           >
             Условия гарантии и сервиса
           </Link>
+        </div>
         </div>
       </div>
     </main>

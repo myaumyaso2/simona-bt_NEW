@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import {
   SimonaIconDelivery,
   SimonaIconGuarantee,
@@ -107,20 +107,19 @@ export default function ServicesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-16">
-        
-        {/* 1. Hero Header */}
-        <section className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
+    <main className="min-h-screen bg-[#111315] text-[#D7D9DB]">
+      <Breadcrumbs items={[{ name: 'Услуги и сервис' }]} />
+      <div className="pt-10 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-16">
+          
+          {/* 1. Hero Header */}
+          <section className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-4xl text-left space-y-5">
-            <SectionBadge variant="teal">
-              {data.badge}
-            </SectionBadge>
-            <h1 className="text-3xl sm:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
-              {data.title}
-            </h1>
+            <div className="max-w-4xl text-left space-y-5">
+              <h1 className="text-3xl sm:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
+                {data.title}
+              </h1>
             <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
               {data.subtitle}
             </p>
@@ -157,7 +156,6 @@ export default function ServicesPage() {
         {/* 2. 4 Pillars of Service */}
         <div className="space-y-6">
           <div className="text-left space-y-2">
-            <SectionBadge variant="teal" text="Стандарты качества" />
             <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
               {data.pillarsTitle}
             </h2>
@@ -223,9 +221,6 @@ export default function ServicesPage() {
           <div id="pdf-guide" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-8 relative overflow-hidden">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="space-y-2 max-w-2xl text-left">
-                <SectionBadge variant="teal">
-                  {data.pdfGuide.badge}
-                </SectionBadge>
                 <h3 className="text-xl sm:text-2xl font-montserrat font-bold text-white tracking-tight">
                   {data.pdfGuide.title}
                 </h3>
@@ -253,9 +248,6 @@ export default function ServicesPage() {
         <div id="order-service" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10">
           <div className="max-w-2xl mx-auto">
             <div className="text-left space-y-2 mb-8">
-              <SectionBadge variant="teal">
-                {data.orderService.badge}
-              </SectionBadge>
               <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
                 {data.orderService.title}
               </h2>
@@ -411,8 +403,8 @@ export default function ServicesPage() {
             </a>
           </div>
         </div>
-
       </div>
-    </main>
+    </div>
+  </main>
   );
 }

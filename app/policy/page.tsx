@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import {
   ShieldCheck,
   FileText,
@@ -27,21 +27,20 @@ function PolicyContent() {
   }, [searchParams]);
 
   return (
-    <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto space-y-12">
-        
-        {/* Header Hero */}
-        <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-10 relative overflow-hidden text-left space-y-3">
-          <SectionBadge variant="teal">
-            Правовая информация
-          </SectionBadge>
-          <h1 className="text-2xl sm:text-4xl font-montserrat font-bold text-white tracking-tight leading-tight">
-            Политика конфиденциальности и условия использования
-          </h1>
-          <p className="text-xs sm:text-sm text-[#87888A] leading-relaxed">
-            Официальные правовые документы интернет-магазина и сети салонов бытовой техники «СИМОНА» (ООО «Технотрейд-НН»).
-          </p>
-        </div>
+    <main className="min-h-screen bg-[#111315] text-[#D7D9DB]">
+      <Breadcrumbs items={[{ name: 'Правовая информация' }]} />
+      <div className="pt-10 pb-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto space-y-12">
+          
+          {/* Header Hero */}
+          <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-10 relative overflow-hidden text-left space-y-3">
+            <h1 className="text-2xl sm:text-4xl font-montserrat font-bold text-white tracking-tight leading-tight">
+              Политика конфиденциальности и условия использования
+            </h1>
+            <p className="text-xs sm:text-sm text-[#87888A] leading-relaxed">
+              Официальные правовые документы интернет-магазина и сети салонов бытовой техники «СИМОНА» (ООО «Технотрейд-НН»).
+            </p>
+          </div>
 
         {/* Tab Switcher */}
         <div className="flex border-b border-[#2B313A] gap-2 overflow-x-auto pb-2">
@@ -251,6 +250,7 @@ function PolicyContent() {
           </div>
         )}
 
+        </div>
       </div>
     </main>
   );

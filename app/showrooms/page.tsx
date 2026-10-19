@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import {
   SimonaIconPin,
   SimonaIconClock,
@@ -76,39 +76,37 @@ export default function ShowroomsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-16">
-        
-        {/* Header */}
-        <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
+    <main className="min-h-screen bg-[#111315] text-[#D7D9DB]">
+      <Breadcrumbs items={[{ name: 'Шоурумы' }]} />
+      <div className="pt-10 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-16">
+          
+          {/* Header */}
+          <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-3xl text-left space-y-4">
-            <SectionBadge variant="teal">
-              {content.showroomsPage.badge}
-            </SectionBadge>
-            <h1 className="text-3xl sm:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
-              {content.showroomsPage.title}
-            </h1>
-            <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
-              {content.showroomsPage.subtitle}
-            </p>
-            <div className="pt-2">
-              <a
-                href="#booking"
-                className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-bold uppercase tracking-wider transition shadow-lg shadow-simona-teal/20"
-              >
-                <span>{content.showroomsPage.ctaButton}</span>
-                <ArrowRight className="w-4 h-4" />
-              </a>
+            <div className="max-w-3xl text-left space-y-4">
+              <h1 className="text-3xl sm:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
+                {content.showroomsPage.title}
+              </h1>
+              <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
+                {content.showroomsPage.subtitle}
+              </p>
+              <div className="pt-2">
+                <a
+                  href="#booking"
+                  className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wide transition shadow-lg shadow-simona-teal/20"
+                >
+                  <span>{content.showroomsPage.ctaButton}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
             </div>
           </div>
-        </div>
 
         {/* 2 Flagship Showrooms + Warehouse */}
         <div className="space-y-8">
           <div className="text-left space-y-2">
-            <SectionBadge variant="teal" text="Физические локации" />
             <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
               Адреса салонов и центрального склада
             </h2>
@@ -289,7 +287,6 @@ export default function ShowroomsPage() {
         <div id="booking" className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-10">
           <div className="max-w-2xl mx-auto">
             <div className="text-left space-y-2 mb-8">
-              <SectionBadge variant="teal" text="Индивидуальный визит" />
               <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
                 Забронировать визит и консультацию
               </h2>
@@ -418,7 +415,7 @@ export default function ShowroomsPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full py-4 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-bold uppercase tracking-wider transition shadow-lg shadow-simona-teal/20 flex items-center justify-center space-x-2"
+                    className="w-full py-4 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wide transition shadow-lg shadow-simona-teal/20 flex items-center justify-center space-x-2"
                   >
                     <span>{submitting ? 'Отправка...' : 'Подтвердить бронирование визита'}</span>
                     <Send className="w-4 h-4" />
@@ -427,6 +424,7 @@ export default function ShowroomsPage() {
               </form>
             )}
           </div>
+        </div>
         </div>
       </div>
     </main>

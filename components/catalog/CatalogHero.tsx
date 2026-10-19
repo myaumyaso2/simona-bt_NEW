@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { BrandCategoryTab } from '@/lib/catalog/brandCategories';
 import { BrandCategoryNav } from './BrandCategoryNav';
 
@@ -67,23 +66,17 @@ export function CatalogHero({
   const hasBrandCategories = Boolean(brandCategories && brandCategories.length > 0 && onSelectCategory);
 
   return (
-    <section className="pt-8 pb-6 border-b border-[#2B313A]/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* 1. Breadcrumbs: Clear & direct navigation (Zero redundant circular intermediate links) */}
-        <nav aria-label="Хлебные крошки" className="flex items-center space-x-2 text-xs text-[#87888A] mb-4 font-normal flex-wrap gap-y-1">
-          <Link href="/" className="hover:text-white transition-colors">
-            Главная
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-[#3E3D40] shrink-0" />
-          <Link href="/catalog" className="hover:text-white transition-colors">
-            Каталог
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-[#3E3D40] shrink-0" />
-          <span className="text-[#D7D9DB] font-medium">{categoryTitle}</span>
-        </nav>
-
-        {/* 2. Title & Count Badge */}
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-2">
+    <>
+      <Breadcrumbs
+        items={[
+          { name: 'Каталог', url: '/catalog' },
+          { name: categoryTitle },
+        ]}
+      />
+      <section className="pt-8 pb-6 border-b border-[#2B313A]/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Title & Count Badge */}
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-2">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-montserrat font-bold text-white tracking-tight">
             {categoryTitle}
           </h1>
@@ -142,5 +135,6 @@ export function CatalogHero({
         )}
       </div>
     </section>
-  );
+  </>
+);
 }

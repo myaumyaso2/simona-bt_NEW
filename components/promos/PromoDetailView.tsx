@@ -16,6 +16,7 @@ import { ManufacturerPromo, ProductItem } from '@/types';
 import { CATALOG_PRODUCTS } from '@/data/catalogData';
 import { LuxuryProductCard } from '@/components/catalog/LuxuryProductCard';
 import { useStore } from '@/components/providers/StoreContext';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 
 interface PromoDetailViewProps {
   promo: ManufacturerPromo;
@@ -47,22 +48,13 @@ export function PromoDetailView({ promo, initialProducts }: PromoDetailViewProps
 
   return (
     <div className="bg-[#111315] min-h-screen text-[#D7D9DB]">
-      {/* 1. Breadcrumbs */}
-      <div className="border-b border-[#2B313A] bg-[#16191D]/60 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
-          <nav className="flex items-center space-x-2 text-xs text-[#87888A] truncate">
-            <Link href="/" className="hover:text-white transition-colors">
-              Главная
-            </Link>
-            <SimonaIconChevronRight className="w-3 h-3 text-[#87888A] shrink-0" />
-            <Link href="/promos" className="hover:text-white transition-colors shrink-0">
-              Акции производителей
-            </Link>
-            <SimonaIconChevronRight className="w-3 h-3 text-[#87888A] shrink-0" />
-            <span className="text-[#D7D9DB] font-medium truncate">{promo.brand}: {promo.title}</span>
-          </nav>
-        </div>
-      </div>
+      {/* 1. Breadcrumbs Bar */}
+      <Breadcrumbs
+        items={[
+          { name: 'Акции производителей', url: '/promos' },
+          { name: `${promo.brand}: ${promo.title}` },
+        ]}
+      />
 
       {/* 2. Hero Section */}
       <div className="relative border-b border-[#2B313A] py-14 sm:py-20 lg:py-24 overflow-hidden">

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import {
   SimonaIconCreditCard,
   SimonaIconPackage,
@@ -209,8 +208,7 @@ export default function AnalyticsDashboardPage() {
         {/* Top Header & Actions */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#2B313A] pb-6">
           <div>
-            <div className="flex items-center space-x-3 mb-2">
-              <SectionBadge text="Операционный контур" variant="teal" />
+            <div className="mb-2">
               <span className="text-xs text-[#87888A] font-mono">
                 Метрика №1351807 • 1C Enterprise • DataLayer
               </span>

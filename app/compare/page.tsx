@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useStore } from '@/components/providers/StoreContext';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { LuxuryProductCard } from '@/components/catalog/LuxuryProductCard';
 import {
   SimonaIconCompare,
@@ -177,14 +177,15 @@ export default function ComparePage() {
   }, [allFeatureLabels, categoryProducts, diffOnly]);
 
   return (
-    <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#2B313A] pb-6">
-          <div className="text-left space-y-2">
-            <SectionBadge variant="teal" text="СРАВНЕНИЕ ВНУТРИ КАТЕГОРИИ" />
-            <h1 className="text-3xl sm:text-4xl font-montserrat font-bold text-white tracking-tight">
+    <main className="min-h-screen bg-[#111315] text-[#D7D9DB]">
+      <Breadcrumbs items={[{ name: 'Сравнение товаров' }]} />
+      <div className="pt-10 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-8">
+          
+          {/* Header Section */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#2B313A] pb-6">
+            <div className="text-left space-y-2">
+              <h1 className="text-3xl sm:text-4xl font-montserrat font-bold text-white tracking-tight">
               {activeCategory
                 ? `${activeCategory} (${categoryProducts.length} из 4)`
                 : `Модели (${products.length})`}
@@ -531,6 +532,7 @@ export default function ComparePage() {
             </div>
           </div>
         )}
+        </div>
       </div>
     </main>
   );

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import {
   SimonaIconPin,
   SimonaIconClock,
@@ -189,18 +189,17 @@ export default function ContactsPage() {
     : LOCATIONS.filter((l) => l.id === activeLocation);
 
   return (
-    <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-16">
-        
-        {/* Hero Section */}
-        <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
+    <main className="min-h-screen bg-[#111315] text-[#D7D9DB]">
+      <Breadcrumbs items={[{ name: 'Контакты' }]} />
+      <div className="pt-10 pb-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-16">
+          
+          {/* Hero Section */}
+          <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-3xl text-left space-y-4">
-            <SectionBadge variant="teal">
-              Контакты и адреса
-            </SectionBadge>
-            <h1 className="text-3xl sm:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
+            <div className="max-w-3xl text-left space-y-4">
+              <h1 className="text-3xl sm:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
               Салоны и логистический центр «СИМОНА»
             </h1>
             <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
@@ -612,6 +611,7 @@ export default function ContactsPage() {
 
         </div>
 
+        </div>
       </div>
     </main>
   );

@@ -5,7 +5,6 @@ import { useStore } from '@/components/providers/StoreContext';
 import { ProductItem } from '@/types';
 import { Play } from 'lucide-react';
 import { SimonaIconPin, SimonaIconClock, SimonaIconCar } from '@/components/brand/SimonaIcons';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import { getProductO2OInfo } from '@/lib/productO2O';
 
 interface ProductShowroomBlockProps {
@@ -65,8 +64,6 @@ export function ProductShowroomBlock({ product }: ProductShowroomBlockProps) {
         {/* Right: Content & Showroom Info */}
         <div className="w-full lg:w-[45%] p-7 sm:p-10 flex flex-col justify-between gap-6">
           <div className="flex flex-col gap-3">
-            <SectionBadge text={`${o2oInfo.showroomName.toUpperCase()} • НИЖНИЙ НОВГОРОД`} />
-
             <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white leading-tight text-left">
               Оцените {product.name} вживую в пространстве салона
             </h2>

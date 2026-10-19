@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import {
   SimonaIconGuarantee,
   SimonaIconShieldCheck,
@@ -158,20 +158,19 @@ ______________________________________________________________________
   };
 
   return (
-    <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-16">
-        
-        {/* 1. Hero Section */}
-        <section className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
+    <main className="min-h-screen bg-[#111315] text-[#D7D9DB]">
+      <Breadcrumbs items={[{ name: 'Гарантия и возврат' }]} />
+      <div className="pt-10 pb-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-16">
+          
+          {/* 1. Hero Section */}
+          <section className="bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-4xl text-left space-y-5">
-            <SectionBadge variant="teal">
-              {data.badge}
-            </SectionBadge>
-            <h1 className="text-3xl sm:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
-              {data.title}
-            </h1>
+            <div className="max-w-4xl text-left space-y-5">
+              <h1 className="text-3xl sm:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
+                {data.title}
+              </h1>
             <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
               {data.subtitle}
             </p>
@@ -271,9 +270,6 @@ ______________________________________________________________________
         {/* 4. Authorized Service Centers Rule */}
         <div id="asc" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-8 space-y-6">
           <div className="text-left space-y-1">
-            <SectionBadge variant="teal">
-              {data.ascRule.badge}
-            </SectionBadge>
             <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
               {data.ascRule.title}
             </h2>
@@ -318,9 +314,6 @@ ______________________________________________________________________
         {/* 5. Returns & Exchange Section (ЗоЗПП РФ) */}
         <div id="returns" className="scroll-mt-28 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-10 space-y-8">
           <div className="text-left space-y-2">
-            <SectionBadge variant="teal">
-              {data.returnsSection.badge}
-            </SectionBadge>
             <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
               {data.returnsSection.title}
             </h2>
@@ -507,9 +500,6 @@ ______________________________________________________________________
           {/* Rules & Precautions (5 Cols) */}
           <div id="conditions" className="scroll-mt-28 lg:col-span-5 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-8 space-y-6 text-left">
             <div>
-              <SectionBadge variant="teal">
-                {data.warrantyConditions.badge}
-              </SectionBadge>
               <h3 className="text-xl font-montserrat font-bold text-white mb-2">
                 {data.warrantyConditions.title}
               </h3>
@@ -544,9 +534,6 @@ ______________________________________________________________________
           {/* Electronic Claim Submission Form (7 Cols) */}
           <div id="claim-form" className="scroll-mt-28 lg:col-span-7 bg-[#16191D] border border-[#2B313A] rounded-xl p-6 sm:p-8 space-y-6 text-left">
             <div>
-              <SectionBadge variant="teal">
-                {data.claimForm.badge}
-              </SectionBadge>
               <h3 className="text-xl font-montserrat font-bold text-white mb-2">
                 {data.claimForm.title}
               </h3>
@@ -733,6 +720,7 @@ ______________________________________________________________________
           </div>
         </div>
 
+        </div>
       </div>
     </main>
   );

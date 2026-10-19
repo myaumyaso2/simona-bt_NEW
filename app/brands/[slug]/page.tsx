@@ -2,7 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import {
   SimonaIconCheckCircle,
   SimonaIconPackage,
@@ -79,55 +79,59 @@ export default async function BrandDetailPage({ params }: BrandPageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-16">
-        
-        {/* Back Link */}
-        <div>
+    <main className="min-h-screen bg-[#111315] text-[#D7D9DB]">
+      <Breadcrumbs
+        items={[
+          { name: 'Бренды', url: '/brands' },
+          { name: brandInfo.name },
+        ]}
+        rightContent={
           <Link
             href="/brands"
-            className="inline-flex items-center space-x-1.5 text-xs text-[#87888A] hover:text-white transition"
+            className="inline-flex items-center gap-1.5 text-simona-teal hover:text-simona-teal-light transition font-medium shrink-0"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Ко всем брендам</span>
           </Link>
-        </div>
+        }
+      />
+      <div className="pt-10 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-16">
+          
+          {/* Brand Hero */}
+          <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Brand Hero */}
-        <div className="bg-[#16191D] border border-[#2B313A] rounded-3xl p-6 sm:p-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="max-w-3xl text-left space-y-4">
+              <div className="flex items-center space-x-3 flex-wrap gap-2">
+                <span className="px-3 py-1 rounded-md bg-[#1E2228] border border-[#2B313A] text-xs font-semibold text-simona-teal">
+                  {brandInfo.country} • {brandInfo.showroom}
+                </span>
+              </div>
 
-          <div className="max-w-3xl text-left space-y-4">
-            <div className="flex items-center space-x-3 flex-wrap gap-2">
-              <SectionBadge variant="teal" text={`Бренд • ${brandInfo.country}`} />
-              <span className="px-3 py-1 rounded-md bg-[#1E2228] border border-[#2B313A] text-xs font-semibold text-simona-teal">
-                {brandInfo.showroom}
-              </span>
-            </div>
+              <h1 className="text-4xl sm:text-6xl font-montserrat font-bold text-white tracking-tight">
+                {brandInfo.name}
+              </h1>
+              <p className="text-base text-zinc-300 font-medium">
+                {brandInfo.category}
+              </p>
+              <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
+                {brandInfo.heroText}
+              </p>
 
-            <h1 className="text-4xl sm:text-6xl font-montserrat font-bold text-white tracking-tight">
-              {brandInfo.name}
-            </h1>
-            <p className="text-base text-zinc-300 font-medium">
-              {brandInfo.category}
-            </p>
-            <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
-              {brandInfo.heroText}
-            </p>
-
-            <div className="pt-2 flex flex-wrap gap-3">
-              <Link
-                href="/showrooms"
-                className="px-6 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-bold uppercase tracking-wider transition shadow-lg shadow-simona-teal/20"
-              >
-                Оценить вживую в шоуруме
-              </Link>
-              <Link
-                href="/designers"
-                className="px-6 py-3.5 rounded-xl bg-[#1E2228] hover:bg-[#252A32] text-white border border-[#2B313A] text-xs font-semibold uppercase tracking-wider transition"
-              >
-                Запросить B2B спецификацию
-              </Link>
+              <div className="pt-2 flex flex-wrap gap-3">
+                <Link
+                  href="/showrooms"
+                  className="px-6 py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wide transition shadow-lg shadow-simona-teal/20"
+                >
+                  Оценить вживую в шоуруме
+                </Link>
+                <Link
+                  href="/designers"
+                  className="px-6 py-3.5 rounded-xl bg-[#1E2228] hover:bg-[#252A32] text-white border border-[#2B313A] text-xs font-semibold tracking-wide transition"
+                >
+                  Запросить спецификацию
+                </Link>
             </div>
           </div>
 
@@ -145,8 +149,7 @@ export default async function BrandDetailPage({ params }: BrandPageProps) {
         {/* Brand Products Section */}
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#2B313A] pb-4">
-            <div className="text-left space-y-1">
-              <SectionBadge variant="teal" text="Модельный ряд" />
+            <div className="text-left">
               <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
                 Коллекции {brandInfo.name} ({products.length})
               </h2>
@@ -217,7 +220,7 @@ export default async function BrandDetailPage({ params }: BrandPageProps) {
                     </div>
                     <Link
                       href={`/product/${item.slug}`}
-                      className="px-3 py-1.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-[11px] font-semibold uppercase tracking-wider transition"
+                      className="px-3 py-1.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-[11px] font-semibold tracking-wide transition"
                     >
                       Подробнее
                     </Link>
@@ -226,6 +229,7 @@ export default async function BrandDetailPage({ params }: BrandPageProps) {
               ))}
             </div>
           )}
+        </div>
         </div>
       </div>
     </main>

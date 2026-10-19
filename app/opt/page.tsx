@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { SectionBadge } from '@/components/ui/SectionBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import {
   SimonaIconPercent,
   SimonaIconGuarantee,
@@ -210,23 +210,21 @@ export default function OptPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#111315] text-[#D7D9DB] pt-28 pb-24 px-4 sm:px-6 lg:px-8 selection:bg-simona-teal/20 selection:text-white">
-      <div className="max-w-7xl mx-auto space-y-20">
+    <main className="min-h-screen bg-[#111315] text-[#D7D9DB] selection:bg-simona-teal/20 selection:text-white">
+      <Breadcrumbs items={[{ name: 'Оптовый отдел' }]} />
+      <div className="pt-10 pb-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-20">
 
-        {/* HERO SECTION */}
-        <section className="relative rounded-3xl bg-[#16191D] border border-[#2B313A] p-7 sm:p-12 lg:p-16 overflow-hidden shadow-2xl">
-          {/* Subtle Ambient Radial Lighting Cones */}
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-simona-teal/10 rounded-full blur-[120px] pointer-events-none" />
-          <div className="absolute bottom-0 left-1/3 w-[360px] h-[360px] bg-simona-wine/10 rounded-full blur-[100px] pointer-events-none" />
+          {/* HERO SECTION */}
+          <section className="relative rounded-3xl bg-[#16191D] border border-[#2B313A] p-7 sm:p-12 lg:p-16 overflow-hidden shadow-2xl">
+            {/* Subtle Ambient Radial Lighting Cones */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-simona-teal/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-0 left-1/3 w-[360px] h-[360px] bg-simona-wine/10 rounded-full blur-[100px] pointer-events-none" />
 
-          <div className="relative z-10 max-w-4xl text-left space-y-6">
-            <SectionBadge variant="teal">
-              {content.optPage.badge}
-            </SectionBadge>
-
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-montserrat font-semibold tracking-tight text-white leading-[1.12]">
-              {content.optPage.title}
-            </h1>
+            <div className="relative z-10 max-w-4xl text-left space-y-6">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-montserrat font-semibold tracking-tight text-white leading-[1.12]">
+                {content.optPage.title}
+              </h1>
 
             <p className="text-base sm:text-lg text-[#87888A] leading-relaxed max-w-3xl">
               {content.optPage.subtitle}
@@ -296,7 +294,6 @@ export default function OptPage() {
         {/* 12 ADVANTAGES */}
         <section className="space-y-8">
           <div className="text-left space-y-2.5">
-            <SectionBadge variant="teal" text="Преимущества для партнеров" />
             <h2 className="text-2xl sm:text-4xl font-montserrat font-semibold tracking-tight text-white">
               Почему оптовые партнеры выбирают компанию Simona
             </h2>
@@ -350,7 +347,6 @@ export default function OptPage() {
 
           <div className="max-w-3xl mx-auto space-y-8">
             <div className="text-left space-y-2.5">
-              <SectionBadge variant="teal" text="Оптовое сотрудничество" />
               <h2 className="text-2xl sm:text-4xl font-montserrat font-semibold tracking-tight text-white">
                 Заполнить форму сотрудничества
               </h2>
@@ -595,6 +591,7 @@ export default function OptPage() {
           </div>
         </section>
 
+        </div>
       </div>
     </main>
   );

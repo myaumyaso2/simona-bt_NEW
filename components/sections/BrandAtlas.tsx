@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import { PlexusConstellationBackground } from '@/components/backgrounds/PlexusConstellationBackground';
 import { useSiteContent } from '@/components/providers/ContentContext';
 import { BrandCardData } from '@/lib/catalog/brandStats';
@@ -202,10 +201,6 @@ export function BrandAtlas({ initialBrands = [] }: BrandAtlasProps) {
           className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 sm:mb-10"
         >
           <div className="max-w-2xl text-left">
-            <SectionBadge variant="teal" className="mb-3.5">
-              {content.brandAtlas?.badge || 'Официальный дилер европейских брендов'}
-            </SectionBadge>
-
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-tight font-montserrat">
               {content.brandAtlas?.title || 'Брендовый атлас СИМОНА'}
             </h2>

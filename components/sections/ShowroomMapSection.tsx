@@ -5,7 +5,6 @@ import { flushSync } from 'react-dom';
 import { SimonaIconPin, SimonaIconClock, SimonaIconPhoneSolid } from '@/components/brand/SimonaIcons';
 import { ExternalLink, Navigation } from 'lucide-react';
 import gsap from 'gsap';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import { PlexusConstellationBackground } from '@/components/backgrounds/PlexusConstellationBackground';
 
 interface ShowroomPoint {
@@ -331,9 +330,6 @@ export function ShowroomMapSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 sm:mb-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <SectionBadge variant="teal" className="mb-3.5">
-              Физические пространства в центре
-            </SectionBadge>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-montserrat font-bold text-white tracking-tight">
               Схема проезда в салоны «СИМОНА»
             </h2>

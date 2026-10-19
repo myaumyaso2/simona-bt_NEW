@@ -4,7 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import { ProductItem } from '@/types';
 import { useStore } from '@/components/providers/StoreContext';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import { SimonaIconArrowRight } from '@/components/brand/SimonaIcons';
 
 export interface SimonaServiceContourProps {
@@ -25,13 +24,13 @@ export function SimonaServiceContour({
 
   return (
     <section id={id} className={className}>
-      {/* Header: Concise Quiet Luxury Badge */}
+      {/* Header */}
       <div className="flex items-center justify-between gap-4 mb-6">
-        <SectionBadge variant="teal">
+        <h2 className="text-xl sm:text-2xl font-montserrat font-semibold text-white tracking-tight">
           Сервисный стандарт СИМОНА
-        </SectionBadge>
-        <span className="text-[11px] font-medium text-[#87888A] tracking-wider uppercase hidden sm:inline-block">
-          30+ лет на рынке
+        </h2>
+        <span className="text-xs font-medium text-[#87888A] tracking-wider hidden sm:inline-block">
+          Более 30 лет на рынке
         </span>
       </div>
 

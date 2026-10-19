@@ -4,7 +4,6 @@ import React from 'react';
 import { Briefcase, Upload, Sparkles } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import { SimonaIconPercent, SimonaIconStar, SimonaIconGuarantee, SimonaIconTag, SimonaIconClock } from '@/components/brand/SimonaIcons';
 
 const B2B_BENEFITS = [
@@ -45,10 +44,6 @@ export function B2BClubSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Left Column: Benefits & Narrative */}
           <div className="lg:col-span-7">
-            <SectionBadge variant="wine" className="mb-4">
-              Программа привилегий для профессионалов
-            </SectionBadge>
-
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-montserrat font-bold text-[#16181B] leading-tight">
               Клуб архитекторов <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-simona-wine via-simona-wine-light to-amber-700">
