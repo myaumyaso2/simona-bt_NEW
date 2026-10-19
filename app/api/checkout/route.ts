@@ -47,6 +47,7 @@ export async function GET(req: NextRequest) {
         paymentMethod: true,
         paymentLink: true,
         deliveryType: true,
+        deliveryAddress: true,
         itemsJson: true,
         createdAt: true,
       },

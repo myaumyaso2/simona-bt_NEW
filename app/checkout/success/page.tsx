@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef, useState, Suspense } from 'react';
+import React, { useEffect, useRef, useState, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { SectionBadge } from '@/components/ui/SectionBadge';
 import {
   SimonaIconPin,
   SimonaIconClock,
@@ -15,6 +14,7 @@ import {
 } from '@/components/brand/SimonaIcons';
 import { formatPrice } from '@/lib/utils';
 import { trackEcommercePurchase, trackGoal } from '@/lib/analytics/tracker';
+import { formatProductName } from '@/lib/catalog/productTitle';
 
 interface LoadedOrderInfo {
   orderNumber: string;
@@ -24,6 +24,7 @@ interface LoadedOrderInfo {
   paymentMethod: string;
   paymentLink?: string | null;
   deliveryType: string;
+  deliveryAddress?: string | null;
   itemsJson?: string | null;
 }
 
@@ -34,7 +35,6 @@ function CheckoutSuccessContent() {
   const paramTotal = Number(searchParams.get('total')) || 0;
   const paramDelivery = searchParams.get('delivery') || 'PICKUP_WAREHOUSE_KOMINTERNA';
   const paramPayment = searchParams.get('payment') || 'IN_SALON';
-  const requiresConfirmation = searchParams.get('requiresConfirmation') === '1';
 
   const [loadedOrder, setLoadedOrder] = useState<LoadedOrderInfo | null>(null);
   const hasTracked = useRef(false);
@@ -58,6 +58,32 @@ function CheckoutSuccessContent() {
   const delivery = loadedOrder?.deliveryType || paramDelivery;
   const payment = loadedOrder?.paymentMethod || paramPayment;
   const paymentStatus = loadedOrder?.paymentStatus || 'PENDING';
+
+  const orderItems = useMemo(() => {
+    if (!loadedOrder?.itemsJson) return [];
+    try {
+      const raw = JSON.parse(loadedOrder.itemsJson);
+      if (Array.isArray(raw)) {
+        return raw.map((item: any) => ({
+          id: item.productId || item.id || '',
+          sku: item.sku || '',
+          name: item.name ? formatProductName(item) : 'Товар',
+          brand: item.brand || '',
+          price: Number(item.price) || 0,
+          quantity: Number(item.quantity) || 1,
+          image:
+            item.image ||
+            (Array.isArray(item.images) ? item.images[0] : null) ||
+            null,
+        }));
+      }
+    } catch {
+      // fallback
+    }
+    return [];
+  }, [loadedOrder?.itemsJson]);
+
+  const totalUnits = orderItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
   useEffect(() => {
     if (!hasTracked.current && total > 0) {
@@ -107,28 +133,28 @@ function CheckoutSuccessContent() {
     switch (delivery) {
       case 'PICKUP_WAREHOUSE_KOMINTERNA':
         return {
-          title: 'Самовывоз: Центральный склад СИМОНА',
-          address: 'г. Нижний Новгород, ул. Коминтерна, 27',
-          schedule: 'Пн–Пт: 09:00 – 18:00, Сб: 10:00 – 16:00',
-          desc: 'Основной терминал самовывоза крупной и встраиваемой техники. Бесплатная погрузка сотрудниками склада в ваш транспорт.',
+          title: 'Самовывоз со склада (ул. Коминтерна, 27)',
+          address: 'Нижний Новгород, ул. Коминтерна, 27',
+          schedule: 'Пн–Пт 10:00–17:00, Сб 10:00–14:30',
+          desc: 'Центральный склад «СИМОНА». Удобная зона погрузки, проверка комплектности приборов при вас.',
           mapsUrl: 'https://yandex.ru/maps/-/CDuWvQ1a',
         };
       case 'PICKUP_BELINSKOGO_15':
         return {
-          title: 'Самовывоз: Флагманский салон «СИМОНА»',
-          address: 'г. Нижний Новгород, ул. Белинского, 15',
-          schedule: 'Ежедневно: 10:00 – 20:00',
-          desc: 'Экспресс-выдача малой бытовой техники, посуды и фирменных аксессуаров. Прибор будет подготовлен и упакован к вашему визиту.',
+          title: 'Самовывоз из салона СИМОНА (ул. Белинского, 15)',
+          address: 'Нижний Новгород, ул. Белинского, 15',
+          schedule: 'Ежедневно 10:00–20:00',
+          desc: 'Выдача негабаритных товаров (варочные панели, СВЧ, подогреватели посуды, вакууматоры, малая техника, посуда).',
           mapsUrl: 'https://yandex.ru/maps/-/CDuWvEnB',
         };
       case 'COURIER_DELIVERY':
       case 'WHITE_GLOVE_DELIVERY':
       default:
         return {
-          title: 'Аккуратная доставка и подъем на этаж собственной службой',
-          address: 'По указанному вами адресу',
+          title: 'Доставка',
+          address: loadedOrder?.deliveryAddress || 'По указанному вами адресу',
           schedule: 'Согласованный интервал с экипажем',
-          desc: 'Бережный занос на этаж прямо в квартиру, распаковка в вашем присутствии и проверка целостности при вас.',
+          desc: 'Бережная доставка и подъем на этаж собственной логистической службой по Нижнему Новгороду и Нижегородской области, либо надежной транспортной компанией по РФ.',
           mapsUrl: null,
         };
     }
@@ -137,15 +163,13 @@ function CheckoutSuccessContent() {
   const getPaymentInfo = () => {
     if (paymentStatus === 'HOLD') {
       return {
-        title: 'Онлайн-оплата ЮKassa (Двухстадийный холд)',
-        badge: 'Средства захолдированы',
-        desc: 'Сумма заказа успешно зарезервирована на вашей карте. Финальное списание и отправка кассового чека 54-ФЗ произойдут после проверки прибора кладовщиком на складе Коминтерна, 27.',
+        title: 'Картой онлайн',
+        desc: 'Сумма заказа успешно зарезервирована на вашей карте (ЮKassa). Финальное списание и отправка кассового чека 54-ФЗ произойдут после проверки приборов на складе.',
       };
     }
     if (paymentStatus === 'PAID') {
       return {
-        title: 'Онлайн-оплата ЮKassa (54-ФЗ)',
-        badge: 'Оплачено',
+        title: 'Картой онлайн',
         desc: 'Оплата заказа успешно подтверждена. Электронный фискальный чек 54-ФЗ отправлен на вашу электронную почту.',
       };
     }
@@ -153,34 +177,34 @@ function CheckoutSuccessContent() {
     switch (payment) {
       case 'IN_SALON':
         return {
-          title: 'Оплата в салоне «СИМОНА» (ул. Белинского, 15)',
-          badge: 'В салоне',
-          desc: 'Картой или наличными в салоне на ул. Белинского, 15 после осмотра техники и консультации эксперта.',
+          title: 'В салоне СИМОНА',
+          desc: 'Картой или наличными в салоне на ул. Белинского, 15',
         };
       case 'AT_WAREHOUSE':
         return {
-          title: 'Оплата на складе «СИМОНА» (ул. Коминтерна, 27)',
-          badge: 'На складе',
-          desc: 'Картой или наличными при самовывозе на центральном складе (ул. Коминтерна, 27) после осмотра приборов.',
+          title: 'На складе СИМОНА',
+          desc: 'Картой или наличными при самовывозе со склада на ул. Коминтерна, 27',
         };
       case 'ON_DELIVERY':
       case 'ON_RECEIPT':
         return {
-          title: 'Оплата в момент доставки',
-          badge: 'В момент доставки',
-          desc: 'Наличными курьеру по адресу доставки после проверки целостности и комплектности приборов.',
+          title: 'В момент доставки',
+          desc: 'Наличными курьеру по адресу доставки',
+        };
+      case 'CARD_ONLINE':
+        return {
+          title: 'Картой онлайн',
+          desc: 'ЮKassa, СБП, МИР, Visa, Mastercard без комиссии с фискальным чеком 54-ФЗ',
         };
       case 'B2B_INVOICE':
         return {
           title: 'Безналичный расчет для юр. лиц (с НДС)',
-          badge: 'Счет на e-mail',
-          desc: 'Счет на оплату и проект договора поставки направлены на ваш e-mail. Отгрузка резервируется на 3 банковских дня.',
+          desc: 'Счет на оплату и договор поставки с НДС 20% для организаций и ИП',
         };
       default:
         return {
           title: 'Согласование с экспертом',
-          badge: 'В обработке',
-          desc: 'Менеджер свяжется с вами для уточнения деталей.',
+          desc: 'Менеджер свяжется с вами для уточнения деталей оплаты.',
         };
     }
   };
@@ -196,40 +220,96 @@ function CheckoutSuccessContent() {
           {/* Subtle Ambient Teal Glow */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
-          {/* Badge & Status */}
-          <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-            <SectionBadge variant="teal" text="Заказ успешно сформирован" />
-            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-md bg-simona-teal/15 text-simona-teal border border-simona-teal/30 text-xs font-semibold tracking-wide">
-              <span className="w-1.5 h-1.5 rounded-full bg-simona-teal animate-pulse" />
-              <span>
-                {paymentStatus === 'HOLD'
-                  ? 'Средства захолдированы'
-                  : paymentStatus === 'PAID'
-                  ? 'Оплачен'
-                  : 'Принят в обработку'}
-              </span>
-            </div>
-          </div>
-
           {/* Main heading */}
           <div className="flex items-start space-x-4 mb-6 text-left">
-            <div className="w-12 h-12 rounded-xl bg-simona-teal/10 border border-simona-teal/30 text-simona-teal flex items-center justify-center shrink-0 mt-1">
+            <div className="w-12 h-12 rounded-xl bg-simona-teal/10 border border-simona-teal/30 text-simona-teal flex items-center justify-center shrink-0 mt-1 shadow-[0_0_20px_rgba(0,151,156,0.15)]">
               <SimonaIconCheckCircle className="w-7 h-7" />
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
-                Благодарим за выбор «СИМОНА»!
+                Заказ №{orderNumber} принят в обработку.
               </h1>
-              <p className="text-sm text-[#87888A] mt-1.5">
-                Заказ <span className="text-white font-mono font-bold text-base">№{orderNumber}</span> зарегистрирован в системе.
-                {total > 0 && (
-                  <> Сумма к оплате: <span className="text-simona-teal font-montserrat font-bold text-base">{formatPrice(total)}</span></>
-                )}
+              <p className="text-sm text-[#87888A] mt-1.5 leading-relaxed">
+                Заказ успешно зарегистрирован в системе. Эксперт салона «СИМОНА» свяжется с вами для подтверждения наличия и деталей получения.
               </p>
             </div>
           </div>
 
-          <div className="h-px w-full bg-[#2B313A] my-6" />
+          {/* Order Items & Summary Block */}
+          <div className="bg-[#1E2228] border border-[#2B313A] rounded-xl p-4 sm:p-5 mb-6 text-left">
+            <div className="flex items-center justify-between pb-3 border-b border-[#2B313A] mb-3">
+              <div className="flex items-center space-x-2 text-simona-teal">
+                <SimonaIconPackage className="w-4 h-4" />
+                <span className="text-xs font-semibold tracking-wide text-white">
+                  Содержимое заказа
+                </span>
+              </div>
+              {totalUnits > 0 && (
+                <span className="text-[11px] text-[#87888A] font-medium">
+                  {totalUnits}{' '}
+                  {totalUnits % 10 === 1 && totalUnits % 100 !== 11
+                    ? 'прибор'
+                    : totalUnits % 10 >= 2 &&
+                      totalUnits % 10 <= 4 &&
+                      (totalUnits % 100 < 10 || totalUnits % 100 >= 20)
+                    ? 'прибора'
+                    : 'приборов'}
+                </span>
+              )}
+            </div>
+
+            {orderItems.length > 0 ? (
+              <div className="space-y-2.5">
+                {orderItems.map((item, idx) => (
+                  <div
+                    key={item.id || item.sku || idx}
+                    className="flex items-center gap-3.5 p-2.5 rounded-xl bg-[#16191D] border border-[#2B313A]/60"
+                  >
+                    <div className="w-14 h-14 rounded-lg bg-[#111315] border border-[#2B313A] flex items-center justify-center p-1 shrink-0 overflow-hidden">
+                      {item.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <SimonaIconPackage className="w-6 h-6 text-[#6E7074]" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-semibold text-white leading-snug line-clamp-2">
+                        {item.name}
+                      </div>
+                      <div className="text-[11px] text-[#87888A] flex flex-wrap items-center gap-1.5 mt-1 font-medium">
+                        {item.sku && <span>Код: {item.sku}</span>}
+                        {item.sku && <span className="text-[#4E545E]">•</span>}
+                        <span>{item.quantity} шт.</span>
+                        <span className="text-[#4E545E]">•</span>
+                        <span className="text-white font-semibold">{formatPrice(item.price)}</span>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-xs sm:text-sm font-montserrat font-bold text-white">
+                        {formatPrice(item.price * item.quantity)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
+            <div
+              className={`flex items-center justify-between ${
+                orderItems.length > 0 ? 'pt-3 mt-3 border-t border-[#2B313A]' : ''
+              }`}
+            >
+              <span className="text-xs text-[#87888A] font-medium">Сумма заказа:</span>
+              <span className="text-lg font-montserrat font-bold text-simona-teal">
+                {formatPrice(total)}
+              </span>
+            </div>
+          </div>
 
           {/* Order Details Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 text-left">
@@ -272,10 +352,7 @@ function CheckoutSuccessContent() {
                   Оплата
                 </span>
               </div>
-              <h3 className="text-sm font-semibold text-white mb-1">{payInfo.title}</h3>
-              <span className="inline-block px-2 py-0.5 rounded-md bg-[#16191D] border border-[#2B313A] text-[10px] text-zinc-300 mb-2">
-                {payInfo.badge}
-              </span>
+              <h3 className="text-sm font-semibold text-white mb-1.5">{payInfo.title}</h3>
               <p className="text-xs text-zinc-400 leading-relaxed">{payInfo.desc}</p>
             </div>
           </div>
