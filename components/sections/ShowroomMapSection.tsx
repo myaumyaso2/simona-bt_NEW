@@ -320,7 +320,7 @@ export function ShowroomMapSection() {
   };
 
   return (
-    <section id="map" className="relative w-full bg-[#111315] py-16 lg:py-24 overflow-hidden">
+    <section id="map" className="relative w-full bg-[#111315] border-t border-[#2B313A] py-16 lg:py-24 overflow-hidden">
       {/* Interactive Plexus Constellation Background across header area */}
       <div className="absolute inset-x-0 top-0 h-[400px] overflow-hidden pointer-events-none z-0">
         <PlexusConstellationBackground nodeCount={28} maxDist={130} fadeBottom={true} opacity={0.8} />

@@ -188,7 +188,7 @@ export function BrandAtlas({ initialBrands = [] }: BrandAtlasProps) {
     <section
       id="brands"
       ref={sectionRef}
-      className="relative py-16 sm:py-20 lg:py-24 bg-[#111315] border-t border-[#2B313A]/70 overflow-hidden select-none"
+      className="relative py-16 sm:py-20 lg:py-24 bg-[#111315] border-t border-[#2B313A] overflow-hidden select-none"
     >
       {/* Interactive Constellation Background */}
       <PlexusConstellationBackground nodeCount={36} maxDist={140} mouseRadius={200} />

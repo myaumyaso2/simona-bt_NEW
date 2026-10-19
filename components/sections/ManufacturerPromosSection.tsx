@@ -76,7 +76,7 @@ export function ManufacturerPromosSection() {
   return (
     <section
       id="promos"
-      className="relative py-16 sm:py-24 bg-[#111315] border-b border-[#2B313A] overflow-hidden"
+      className="relative py-16 sm:py-24 bg-[#111315] border-t border-[#2B313A] overflow-hidden"
     >
       {/* Background subtle radial gradient */}
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-simona-wine/10 rounded-full blur-[140px] pointer-events-none" />
