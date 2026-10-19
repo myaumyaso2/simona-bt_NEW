@@ -51,9 +51,30 @@ export async function POST(req: NextRequest) {
     // 2. Атомарное получение сквозного номера заказа со старого сайта (15104...)
     const orderNumber = await getNextOrderNumber();
 
+    // 2.1 Нормализация 1C-кода товара (sku)
+    let canonicalSku = data.sku || null;
+    let canonicalId = data.productId || null;
+
+    if (!canonicalSku || !/^\d+$/.test(canonicalSku)) {
+      const dbProd = await prisma.product.findFirst({
+        where: {
+          OR: [
+            ...(data.slug ? [{ slug: data.slug }] : []),
+            ...(data.productId ? [{ id: data.productId }] : []),
+            ...(data.productName ? [{ name: { contains: data.productName } }] : []),
+          ],
+        },
+        select: { id: true, sku: true },
+      });
+      if (dbProd) {
+        canonicalSku = dbProd.sku;
+        canonicalId = dbProd.id;
+      }
+    }
+
     const orderItem = {
-      productId: data.productId || null,
-      sku: data.sku || null,
+      productId: canonicalId,
+      sku: canonicalSku,
       name: data.productName,
       brand: data.brand || null,
       price: data.price,

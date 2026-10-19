@@ -111,20 +111,42 @@ export const ORDER_STATUS_LABELS: Record<string, string> = {
 };
 
 export const DELIVERY_TYPE_LABELS: Record<string, string> = {
-  PICKUP_WAREHOUSE_KOMINTERNA: 'Самовывоз со склада (ул. Коминтерна, 27)',
-  PICKUP_BELINSKOGO_15: 'Самовывоз из салона СИМОНА (ул. Белинского, 15)',
-  COURIER_DELIVERY: 'Доставка',
-  WHITE_GLOVE_DELIVERY: 'Доставка',
+  PICKUP_WAREHOUSE_KOMINTERNA: 'самовывоз (склад на ул. Коминтерна, 27)',
+  PICKUP_BELINSKOGO_15: 'самовывоз (салон на ул. Белинского, 15)',
+  COURIER_DELIVERY: 'доставка',
+  WHITE_GLOVE_DELIVERY: 'доставка',
 };
 
 export const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  IN_SALON: 'В салоне СИМОНА (ул. Белинского, 15)',
-  AT_WAREHOUSE: 'На складе СИМОНА (ул. Коминтерна, 27)',
-  ON_DELIVERY: 'В момент доставки (наличными курьеру)',
-  ON_RECEIPT: 'В момент доставки (наличными курьеру)',
-  CARD_ONLINE: 'Картой онлайн (ЮKassa / СБП)',
-  B2B_INVOICE: 'Счет для юрлиц (B2B, безналичный расчет с НДС 20%)',
+  IN_SALON: 'в салоне «СИМОНА» (картой или наличными)',
+  AT_WAREHOUSE: 'на складе «СИМОНА» (картой или наличными)',
+  ON_DELIVERY: 'в момент доставки (наличными курьеру)',
+  ON_RECEIPT: 'в момент доставки (наличными курьеру)',
+  CARD_ONLINE: 'онлайн картой (ЮKassa / СБП)',
+  B2B_INVOICE: 'счет для юрлиц (B2B, безналичный расчет с НДС 20%)',
 };
+
+export function formatDeliveryLabel(deliveryType?: string | null): string {
+  if (!deliveryType) return 'самовывоз (склад на ул. Коминтерна, 27)';
+  if (DELIVERY_TYPE_LABELS[deliveryType]) return DELIVERY_TYPE_LABELS[deliveryType];
+  const lower = deliveryType.toLowerCase();
+  if (lower.includes('коминтерна')) return 'самовывоз (склад на ул. Коминтерна, 27)';
+  if (lower.includes('белинского')) return 'самовывоз (салон на ул. Белинского, 15)';
+  if (lower.includes('доставка')) return 'доставка';
+  return deliveryType;
+}
+
+export function formatPaymentLabel(paymentMethod?: string | null): string {
+  if (!paymentMethod) return 'в салоне «СИМОНА» (картой или наличными)';
+  if (PAYMENT_METHOD_LABELS[paymentMethod]) return PAYMENT_METHOD_LABELS[paymentMethod];
+  const lower = paymentMethod.toLowerCase();
+  if (lower.includes('салон')) return 'в салоне «СИМОНА» (картой или наличными)';
+  if (lower.includes('склад')) return 'на складе «СИМОНА» (картой или наличными)';
+  if (lower.includes('доставк') || lower.includes('курьер')) return 'в момент доставки (наличными курьеру)';
+  if (lower.includes('онлайн') || lower.includes('картой')) return 'онлайн картой (ЮKassa / СБП)';
+  if (lower.includes('счет') || lower.includes('юрлиц') || lower.includes('b2b')) return 'счет для юрлиц (B2B, безналичный расчет с НДС 20%)';
+  return paymentMethod;
+}
 
 export const LEAD_TYPE_LABELS: Record<string, string> = {
   ACTIVE_KITCHEN_TESTDRIVE: 'Запись на тест-драйв «Активной кухни»',
@@ -235,11 +257,11 @@ function wrapLuxuryEmailHtml(title: string, badgeOrBody: string, maybeBody?: str
           </tr>
           <!-- Footer: Наши магазины в Нижнем Новгороде -->
           <tr>
-            <td style="padding:24px 32px;background-color:#111315;border-top:1px solid #2B313A;font-size:13px;color:#87888A;line-height:1.6;">
+            <td style="padding:24px 32px;background-color:#111315;border-top:1px solid #2B313A;font-size:13px;color:#D7D9DB;line-height:1.6;">
               <div style="color:#FFFFFF;font-weight:600;margin-bottom:8px;">Наши магазины в Нижнем Новгороде:</div>
-              <div style="margin-bottom:4px;color:#87888A;" class="address-link">• СИМОНА на <span style="color:#87888A;text-decoration:none;">Белинского,&zwnj;&nbsp;15</span></div>
-              <div style="margin-bottom:12px;color:#87888A;" class="address-link">• Omoikiri &amp; Körting на <span style="color:#87888A;text-decoration:none;">Белинского,&zwnj;&nbsp;11/66</span></div>
-              <div style="padding-top:10px;border-top:1px solid #1E2228;color:#87888A;">
+              <div style="margin-bottom:4px;color:#D7D9DB;" class="address-link">• СИМОНА на <span style="color:#D7D9DB;text-decoration:none;">Белинского,&zwnj;&nbsp;15</span></div>
+              <div style="margin-bottom:12px;color:#D7D9DB;" class="address-link">• Omoikiri &amp; Körting на <span style="color:#D7D9DB;text-decoration:none;">Белинского,&zwnj;&nbsp;11/66</span></div>
+              <div style="padding-top:10px;border-top:1px solid #1E2228;color:#D7D9DB;">
                 Сайт: <a href="${SITE_URL}" target="_blank" style="color:#00979C !important;text-decoration:underline;font-weight:600;"><span style="color:#00979C !important;text-decoration:underline;">simona-bt.ru</span></a>
               </div>
             </td>
@@ -294,18 +316,76 @@ function parseOrderItems(itemsJson: string): OrderEmailItem[] {
   }
 }
 
+export async function enrichOrderItemsWith1CCodes(items: OrderEmailItem[]): Promise<OrderEmailItem[]> {
+  const needsResolution = items.some((i) => !i.sku || !/^\d+$/.test(String(i.sku).trim()));
+  if (!needsResolution) return items;
+
+  try {
+    const { prisma } = await import('@/lib/prisma');
+    const enriched = await Promise.all(
+      items.map(async (item) => {
+        const rawSku = String(item.sku || '').trim();
+        // Если уже числовой код 1С (например, 85042) — оставляем
+        if (/^\d+$/.test(rawSku)) {
+          return item;
+        }
+
+        const cleanRaw = rawSku.replace(/[\s\-_+]+/g, '').toLowerCase();
+
+        // 1. Поиск в БД по очищенному заводскому артикулу (systemArticle), sku или полному совпадению имени
+        let dbProd = await prisma.product.findFirst({
+          where: {
+            OR: [
+              ...(cleanRaw ? [{ systemArticle: { equals: cleanRaw } }] : []),
+              { name: { contains: rawSku } },
+              { name: { contains: item.name } },
+            ],
+          },
+          select: { sku: true, name: true },
+        });
+
+        // 2. Дополнительный fallback: поиск по ключевым словам модели в названии
+        if (!dbProd && item.name) {
+          const words = item.name.split(/\s+/).filter((w) => w.length >= 3);
+          if (words.length > 0) {
+            dbProd = await prisma.product.findFirst({
+              where: {
+                AND: words.slice(0, 3).map((w) => ({ name: { contains: w } })),
+              },
+              select: { sku: true, name: true },
+            });
+          }
+        }
+
+        if (dbProd && dbProd.sku && /^\d+$/.test(dbProd.sku)) {
+          return {
+            ...item,
+            sku: dbProd.sku,
+          };
+        }
+
+        return item;
+      })
+    );
+    return enriched;
+  } catch (err) {
+    console.error('[Mailer] Error enriching items with 1C codes:', err);
+    return items;
+  }
+}
+
 function renderOrderItemsTable(items: OrderEmailItem[]): string {
   const rows = items
     .map(
       (item) => `
       <tr>
-        <td style="padding:10px 12px;border-bottom:1px solid #2B313A;color:#87888A;font-family:monospace;font-size:12px;">
+        <td style="padding:10px 12px;border-bottom:1px solid #2B313A;color:#FFFFFF;font-family:monospace;font-size:12px;font-weight:600;">
           ${item.sku || '—'}
         </td>
         <td style="padding:10px 12px;border-bottom:1px solid #2B313A;color:#FFFFFF;font-size:13px;font-weight:500;">
           ${item.name}
         </td>
-        <td style="padding:10px 12px;border-bottom:1px solid #2B313A;color:#D7D9DB;font-size:13px;text-align:center;">
+        <td style="padding:10px 12px;border-bottom:1px solid #2B313A;color:#FFFFFF;font-size:13px;text-align:center;">
           ${item.quantity} шт.
         </td>
         <td style="padding:10px 12px;border-bottom:1px solid #2B313A;color:#00979C;font-size:13px;font-weight:700;text-align:right;white-space:nowrap;">
@@ -319,10 +399,10 @@ function renderOrderItemsTable(items: OrderEmailItem[]): string {
     <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #2B313A;border-radius:12px;overflow:hidden;margin:16px 0;background-color:#1E2228;">
       <thead>
         <tr style="background-color:#111315;">
-          <th align="left" style="padding:10px 12px;font-size:11px;color:#87888A;border-bottom:1px solid #2B313A;">Код 1С</th>
-          <th align="left" style="padding:10px 12px;font-size:11px;color:#87888A;border-bottom:1px solid #2B313A;">Наименование прибора</th>
-          <th align="center" style="padding:10px 12px;font-size:11px;color:#87888A;border-bottom:1px solid #2B313A;">Кол-во</th>
-          <th align="right" style="padding:10px 12px;font-size:11px;color:#87888A;border-bottom:1px solid #2B313A;">Сумма</th>
+          <th align="left" style="padding:10px 12px;font-size:11px;color:#D7D9DB;font-weight:600;border-bottom:1px solid #2B313A;">Код 1С</th>
+          <th align="left" style="padding:10px 12px;font-size:11px;color:#D7D9DB;font-weight:600;border-bottom:1px solid #2B313A;">Наименование прибора</th>
+          <th align="center" style="padding:10px 12px;font-size:11px;color:#D7D9DB;font-weight:600;border-bottom:1px solid #2B313A;">Кол-во</th>
+          <th align="right" style="padding:10px 12px;font-size:11px;color:#D7D9DB;font-weight:600;border-bottom:1px solid #2B313A;">Сумма</th>
         </tr>
       </thead>
       <tbody>
@@ -335,9 +415,10 @@ function renderOrderItemsTable(items: OrderEmailItem[]): string {
  * 1. Письма при создании нового заказа (клиенту и менеджеру)
  */
 export async function sendOrderCreatedEmails(order: OrderEmailData) {
-  const items = parseOrderItems(order.itemsJson);
-  const deliveryLabel = DELIVERY_TYPE_LABELS[order.deliveryType] || order.deliveryType;
-  const paymentLabel = PAYMENT_METHOD_LABELS[order.paymentMethod] || order.paymentMethod;
+  const rawItems = parseOrderItems(order.itemsJson);
+  const items = await enrichOrderItemsWith1CCodes(rawItems);
+  const deliveryLabel = formatDeliveryLabel(order.deliveryType);
+  const paymentLabel = formatPaymentLabel(order.paymentMethod);
   const itemsTableHtml = renderOrderItemsTable(items);
 
   // А) Письмо клиенту (если указан email)
@@ -354,12 +435,12 @@ export async function sendOrderCreatedEmails(order: OrderEmailData) {
         Итого: ${formatRub(order.totalAmount)}
       </div>
       <div style="padding:16px;background-color:#1E2228;border:1px solid #2B313A;border-radius:12px;font-size:13px;line-height:1.7;">
-        <div><strong style="color:#FFFFFF;">Способ получения:</strong> ${deliveryLabel}</div>
-        ${order.deliveryAddress ? `<div><strong style="color:#FFFFFF;">Адрес доставки:</strong> ${order.deliveryAddress}</div>` : ''}
-        ${order.deliveryDate ? `<div><strong style="color:#FFFFFF;">Желаемая дата:</strong> ${order.deliveryDate}</div>` : ''}
-        <div><strong style="color:#FFFFFF;">Способ оплаты:</strong> ${paymentLabel}</div>
+        <div><strong style="color:#FFFFFF;">Способ получения:</strong> <span style="color:#FFFFFF;">${deliveryLabel}</span></div>
+        ${order.deliveryAddress ? `<div><strong style="color:#FFFFFF;">Адрес доставки:</strong> <span style="color:#FFFFFF;">${order.deliveryAddress}</span></div>` : ''}
+        ${order.deliveryDate ? `<div><strong style="color:#FFFFFF;">Желаемая дата:</strong> <span style="color:#FFFFFF;">${order.deliveryDate}</span></div>` : ''}
+        <div><strong style="color:#FFFFFF;">Способ оплаты:</strong> <span style="color:#FFFFFF;">${paymentLabel}</span></div>
       </div>
-      <p style="font-size:13px;color:#87888A;line-height:1.6;margin:20px 0 0 0;">
+      <p style="font-size:13px;color:#D7D9DB;line-height:1.6;margin:20px 0 0 0;">
         Эксперт салона «СИМОНА» свяжется с вами в ближайшее время по телефону <span style="white-space:nowrap;color:#FFFFFF;font-weight:700;">${formatNonBreakingPhone(order.customerPhone)}</span> для подтверждения резерва и согласования времени выдачи или доставки.
       </p>
     `;
@@ -381,22 +462,22 @@ export async function sendOrderCreatedEmails(order: OrderEmailData) {
       Новый заказ №${order.orderNumber} на сумму ${formatRub(order.totalAmount)}
     </h1>
     <div style="padding:16px;background-color:#1E2228;border:1px solid #2B313A;border-radius:12px;font-size:13px;line-height:1.7;margin-bottom:16px;">
-      <div><strong style="color:#FFFFFF;">Покупатель:</strong> ${cleanCustomerName(order.customerName)}</div>
+      <div><strong style="color:#FFFFFF;">Покупатель:</strong> <span style="color:#FFFFFF;">${cleanCustomerName(order.customerName)}</span></div>
       <div><strong style="color:#FFFFFF;">Телефон:</strong> <a href="tel:${order.customerPhone}" style="color:#00979C;font-weight:700;text-decoration:none;"><span style="white-space:nowrap;color:#00979C;font-weight:700;">${formatNonBreakingPhone(order.customerPhone)}</span></a></div>
-      <div><strong style="color:#FFFFFF;">Email:</strong> ${order.customerEmail || 'не указан'}</div>
-      <div><strong style="color:#FFFFFF;">Способ получения:</strong> ${deliveryLabel}</div>
-      ${order.deliveryAddress ? `<div><strong style="color:#FFFFFF;">Адрес:</strong> ${order.deliveryAddress}</div>` : ''}
-      ${order.deliveryDate ? `<div><strong style="color:#FFFFFF;">Желаемая дата:</strong> ${order.deliveryDate}</div>` : ''}
-      ${order.deliveryComment ? `<div><strong style="color:#FFFFFF;">Комментарий:</strong> ${order.deliveryComment}</div>` : ''}
-      <div><strong style="color:#FFFFFF;">Способ оплаты:</strong> ${paymentLabel}</div>
-      ${order.companyName ? `<div><strong style="color:#FFFFFF;">Юрлицо / ИНН:</strong> ${order.companyName} (ИНН: ${order.companyInn || '—'})</div>` : ''}
+      <div><strong style="color:#FFFFFF;">Email:</strong> <span style="color:#FFFFFF;">${order.customerEmail || 'не указан'}</span></div>
+      <div><strong style="color:#FFFFFF;">Способ получения:</strong> <span style="color:#FFFFFF;">${deliveryLabel}</span></div>
+      ${order.deliveryAddress ? `<div><strong style="color:#FFFFFF;">Адрес:</strong> <span style="color:#FFFFFF;">${order.deliveryAddress}</span></div>` : ''}
+      ${order.deliveryDate ? `<div><strong style="color:#FFFFFF;">Желаемая дата:</strong> <span style="color:#FFFFFF;">${order.deliveryDate}</span></div>` : ''}
+      ${order.deliveryComment ? `<div><strong style="color:#FFFFFF;">Комментарий:</strong> <span style="color:#FFFFFF;">${order.deliveryComment}</span></div>` : ''}
+      <div><strong style="color:#FFFFFF;">Способ оплаты:</strong> <span style="color:#FFFFFF;">${paymentLabel}</span></div>
+      ${order.companyName ? `<div><strong style="color:#FFFFFF;">Юрлицо / ИНН:</strong> <span style="color:#FFFFFF;">${order.companyName} (ИНН: ${order.companyInn || '—'})</span></div>` : ''}
     </div>
     ${itemsTableHtml}
     <div style="text-align:right;font-size:18px;font-weight:700;color:#00979C;margin-bottom:20px;">
       Итого к оплате: ${formatRub(order.totalAmount)}
     </div>
-    <div style="padding:12px 16px;background-color:#111315;border:1px solid #2B313A;border-radius:12px;font-size:11px;color:#87888A;margin-bottom:20px;">
-      <strong>Сквозная аналитика:</strong>
+    <div style="padding:12px 16px;background-color:#111315;border:1px solid #2B313A;border-radius:12px;font-size:12px;color:#D7D9DB;margin-bottom:20px;">
+      <strong style="color:#FFFFFF;">Сквозная аналитика:</strong>
       ymClientId: ${order.ymClientId || '—'} |
       yclid: ${order.yclid || '—'} |
       UTM: ${[order.utmSource, order.utmMedium, order.utmCampaign].filter(Boolean).join(' / ') || 'прямой заход'}
@@ -429,9 +510,10 @@ export async function sendOrderStatusChangedEmail(order: OrderEmailData) {
   }
 
   const statusLabel = ORDER_STATUS_LABELS[order.status] || order.status;
-  const items = parseOrderItems(order.itemsJson);
+  const rawItems = parseOrderItems(order.itemsJson);
+  const items = await enrichOrderItemsWith1CCodes(rawItems);
   const itemsTableHtml = renderOrderItemsTable(items);
-  const deliveryLabel = DELIVERY_TYPE_LABELS[order.deliveryType] || order.deliveryType;
+  const deliveryLabel = formatDeliveryLabel(order.deliveryType);
 
   const showPaymentBlock =
     order.status === 'CONFIRMED' && Boolean(order.paymentLink && order.paymentLink.trim());
@@ -464,9 +546,9 @@ export async function sendOrderStatusChangedEmail(order: OrderEmailData) {
     ${paymentCtaHtml}
     ${itemsTableHtml}
     <div style="padding:14px 16px;background-color:#1E2228;border:1px solid #2B313A;border-radius:12px;font-size:13px;line-height:1.6;">
-      <div><strong style="color:#FFFFFF;">Сумма заказа:</strong> ${formatRub(order.totalAmount)}</div>
-      <div><strong style="color:#FFFFFF;">Способ получения:</strong> ${deliveryLabel}</div>
-      ${order.deliveryAddress ? `<div><strong style="color:#FFFFFF;">Адрес:</strong> ${order.deliveryAddress}</div>` : ''}
+      <div><strong style="color:#FFFFFF;">Сумма заказа:</strong> <span style="color:#FFFFFF;">${formatRub(order.totalAmount)}</span></div>
+      <div><strong style="color:#FFFFFF;">Способ получения:</strong> <span style="color:#FFFFFF;">${deliveryLabel}</span></div>
+      ${order.deliveryAddress ? `<div><strong style="color:#FFFFFF;">Адрес:</strong> <span style="color:#FFFFFF;">${order.deliveryAddress}</span></div>` : ''}
     </div>
   `;
 
@@ -520,11 +602,11 @@ export async function sendLeadNotificationEmails(lead: LeadEmailData) {
       </p>
       <div style="padding:16px;background-color:#1E2228;border:1px solid #2B313A;border-radius:12px;font-size:13px;line-height:1.7;">
         <div><strong style="color:#FFFFFF;">Контактный телефон:</strong> <span style="white-space:nowrap;color:#FFFFFF;font-weight:700;">${formatNonBreakingPhone(lead.phone)}</span></div>
-        ${lead.preferredShowroom ? `<div><strong style="color:#FFFFFF;">Выбранный салон:</strong> ${lead.preferredShowroom}</div>` : ''}
-        ${lead.preferredDate ? `<div><strong style="color:#FFFFFF;">Желаемая дата и время:</strong> ${lead.preferredDate} ${lead.preferredTime || ''}</div>` : ''}
-        ${lead.productName ? `<div><strong style="color:#FFFFFF;">Интересующий прибор:</strong> ${lead.productName}</div>` : ''}
+        ${lead.preferredShowroom ? `<div><strong style="color:#FFFFFF;">Выбранный салон:</strong> <span style="color:#FFFFFF;">${lead.preferredShowroom}</span></div>` : ''}
+        ${lead.preferredDate ? `<div><strong style="color:#FFFFFF;">Желаемая дата и время:</strong> <span style="color:#FFFFFF;">${lead.preferredDate} ${lead.preferredTime || ''}</span></div>` : ''}
+        ${lead.productName ? `<div><strong style="color:#FFFFFF;">Интересующий прибор:</strong> <span style="color:#FFFFFF;">${lead.productName}</span></div>` : ''}
       </div>
-      <p style="font-size:13px;color:#87888A;line-height:1.6;margin:20px 0 0 0;">
+      <p style="font-size:13px;color:#D7D9DB;line-height:1.6;margin:20px 0 0 0;">
         Профильный специалист свяжется с вами в рабочее время салона (10:00 – 20:00).
       </p>
     `;
@@ -550,19 +632,19 @@ export async function sendLeadNotificationEmails(lead: LeadEmailData) {
       Новая заявка с сайта: ${typeLabel}
     </h1>
     <div style="padding:16px;background-color:#1E2228;border:1px solid #2B313A;border-radius:12px;font-size:13px;line-height:1.7;margin-bottom:16px;">
-      <div><strong style="color:#FFFFFF;">Тип обращения:</strong> ${typeLabel} (${lead.type})</div>
-      <div><strong style="color:#FFFFFF;">Имя:</strong> ${lead.name}</div>
+      <div><strong style="color:#FFFFFF;">Тип обращения:</strong> <span style="color:#FFFFFF;">${typeLabel} (${lead.type})</span></div>
+      <div><strong style="color:#FFFFFF;">Имя:</strong> <span style="color:#FFFFFF;">${lead.name}</span></div>
       <div><strong style="color:#FFFFFF;">Телефон:</strong> <a href="tel:${lead.phone}" style="color:#00979C;font-weight:700;text-decoration:none;"><span style="white-space:nowrap;color:#00979C;font-weight:700;">${formatNonBreakingPhone(lead.phone)}</span></a></div>
-      ${lead.email ? `<div><strong style="color:#FFFFFF;">Email:</strong> ${lead.email}</div>` : ''}
-      ${lead.preferredShowroom ? `<div><strong style="color:#FFFFFF;">Салон:</strong> ${lead.preferredShowroom}</div>` : ''}
-      ${lead.preferredDate || lead.preferredTime ? `<div><strong style="color:#FFFFFF;">Дата / Время:</strong> ${lead.preferredDate || ''} ${lead.preferredTime || ''}</div>` : ''}
-      ${lead.productName ? `<div><strong style="color:#FFFFFF;">Товар:</strong> ${lead.productName} (${lead.productId || ''})</div>` : ''}
-      ${lead.portfolioUrl ? `<div><strong style="color:#FFFFFF;">Ссылка / Портфолио:</strong> ${lead.portfolioUrl}</div>` : ''}
-      ${lead.comment ? `<div><strong style="color:#FFFFFF;">Комментарий / Детали:</strong> ${lead.comment}</div>` : ''}
-      ${attachmentUrl ? `<div><strong style="color:#FFFFFF;">Файл проекта:</strong> <a href="${attachmentUrl}" style="color:#00979C;">Скачать вложение (${path.basename(lead.attachmentPath!)})</a></div>` : ''}
+      ${lead.email ? `<div><strong style="color:#FFFFFF;">Email:</strong> <span style="color:#FFFFFF;">${lead.email}</span></div>` : ''}
+      ${lead.preferredShowroom ? `<div><strong style="color:#FFFFFF;">Салон:</strong> <span style="color:#FFFFFF;">${lead.preferredShowroom}</span></div>` : ''}
+      ${lead.preferredDate || lead.preferredTime ? `<div><strong style="color:#FFFFFF;">Дата / Время:</strong> <span style="color:#FFFFFF;">${lead.preferredDate || ''} ${lead.preferredTime || ''}</span></div>` : ''}
+      ${lead.productName ? `<div><strong style="color:#FFFFFF;">Товар:</strong> <span style="color:#FFFFFF;">${lead.productName} (${lead.productId || ''})</span></div>` : ''}
+      ${lead.portfolioUrl ? `<div><strong style="color:#FFFFFF;">Ссылка / Портфолио:</strong> <span style="color:#FFFFFF;">${lead.portfolioUrl}</span></div>` : ''}
+      ${lead.comment ? `<div><strong style="color:#FFFFFF;">Комментарий / Детали:</strong> <span style="color:#FFFFFF;">${lead.comment}</span></div>` : ''}
+      ${attachmentUrl ? `<div><strong style="color:#FFFFFF;">Файл проекта:</strong> <a href="${attachmentUrl}" style="color:#00979C;"><span style="color:#00979C;">Скачать вложение (${path.basename(lead.attachmentPath!)})</span></a></div>` : ''}
     </div>
-    <div style="padding:12px 16px;background-color:#111315;border:1px solid #2B313A;border-radius:12px;font-size:11px;color:#87888A;margin-bottom:20px;">
-      <strong>Сквозная аналитика:</strong>
+    <div style="padding:12px 16px;background-color:#111315;border:1px solid #2B313A;border-radius:12px;font-size:12px;color:#D7D9DB;margin-bottom:20px;">
+      <strong style="color:#FFFFFF;">Сквозная аналитика:</strong>
       ymClientId: ${lead.ymClientId || '—'} |
       yclid: ${lead.yclid || '—'} |
       UTM: ${[lead.utmSource, lead.utmMedium, lead.utmCampaign].filter(Boolean).join(' / ') || 'прямой заход'}
@@ -600,7 +682,8 @@ export async function sendPaymentStatusEmail(
   order: OrderEmailData,
   paymentStatus: 'HOLD' | 'PAID' | 'CANCELLED' | 'REFUNDED'
 ) {
-  const items = parseOrderItems(order.itemsJson);
+  const rawItems = parseOrderItems(order.itemsJson);
+  const items = await enrichOrderItemsWith1CCodes(rawItems);
   const itemsTableHtml = renderOrderItemsTable(items);
   const statusLabel = PAYMENT_STATUS_LABELS[paymentStatus] || paymentStatus;
 
@@ -697,7 +780,7 @@ export async function sendOtpEmail(
     <div style="padding:20px 28px;background-color:#1E2228;border:1px solid #00979C;border-radius:12px;font-family:monospace;font-size:32px;font-weight:700;letter-spacing:0.25em;color:#FFFFFF;text-align:left;display:inline-block;margin-bottom:20px;">
       ${code}
     </div>
-    <p style="font-size:12px;color:#87888A;line-height:1.6;margin:0;">
+    <p style="font-size:12px;color:#D7D9DB;line-height:1.6;margin:0;">
       Код действителен в течение 15 минут. Если вы не запрашивали код авторизации на сайте simona-bt.ru, просто проигнорируйте это письмо.
     </p>
   `;

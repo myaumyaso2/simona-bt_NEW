@@ -114,32 +114,66 @@ export async function POST(req: NextRequest) {
 
     const totalAmount = itemsTotal;
 
-    // Сверяем физические статусы позиций по БД (если переданы sku/productId) и входным данным
-    const skus = items.map((i) => String(i.sku || '').trim()).filter(Boolean);
-    const dbProducts =
-      skus.length > 0
-        ? await prisma.product.findMany({
-            where: { sku: { in: skus } },
-            select: { id: true, sku: true, physicalStatus: true, stockKominterna: true },
-          })
-        : [];
-    const dbBySku = new Map(dbProducts.map((p) => [p.sku, p]));
+    // Нормализация товаров по БД: связываем по sku, id или slug для получения канонического Кода 1С (sku)
+    const itemIds = items.map((i) => String(i.productId || i.id || '').trim()).filter(Boolean);
+    const itemSkus = items.map((i) => String(i.sku || '').trim()).filter(Boolean);
+    const itemSlugs = items.map((i) => String(i.slug || '').trim()).filter(Boolean);
 
-    let allItemsLocalStock = true;
-    for (const item of items) {
-      const sku = String(item.sku || '').trim();
-      const dbProd = sku ? dbBySku.get(sku) : undefined;
-      const effectiveStatus = item.physicalStatus || dbProd?.physicalStatus || 'LOCAL_STOCK';
+    const dbProducts = await prisma.product.findMany({
+      where: {
+        OR: [
+          ...(itemSkus.length > 0 ? [{ sku: { in: itemSkus } }] : []),
+          ...(itemIds.length > 0 ? [{ id: { in: itemIds } }] : []),
+          ...(itemSlugs.length > 0 ? [{ slug: { in: itemSlugs } }] : []),
+        ],
+      },
+      select: { id: true, sku: true, slug: true, name: true, physicalStatus: true, stockKominterna: true },
+    });
+
+    const normalizedItems = items.map((item) => {
+      const rawSku = String(item.sku || '').trim();
+      const rawId = String(item.productId || item.id || '').trim();
+      const rawSlug = String(item.slug || '').trim();
+
+      const matched = dbProducts.find(
+        (p) =>
+          (rawSku && p.sku === rawSku) ||
+          (rawId && p.id === rawId) ||
+          (rawSlug && p.slug === rawSlug)
+      );
+
+      // Канонический Код 1С (sku): строго числовой код 1С из базы, либо валидный числовой sku из формы
+      const canonicalSku =
+        matched?.sku && /^\d+$/.test(matched.sku)
+          ? matched.sku
+          : /^\d+$/.test(rawSku)
+          ? rawSku
+          : matched?.sku || rawSku || null;
+
+      const canonicalId = matched?.id || rawId || null;
+      const effectiveStatus = item.physicalStatus || matched?.physicalStatus || 'LOCAL_STOCK';
       const effectiveKominterna =
         typeof item.stockKominterna === 'number'
           ? item.stockKominterna
-          : typeof dbProd?.stockKominterna === 'number'
-          ? dbProd.stockKominterna
+          : typeof matched?.stockKominterna === 'number'
+          ? matched.stockKominterna
           : effectiveStatus === 'LOCAL_STOCK'
           ? 1
           : 0;
 
-      if (effectiveStatus !== 'LOCAL_STOCK' || effectiveKominterna <= 0) {
+      return {
+        ...item,
+        productId: canonicalId,
+        sku: canonicalSku,
+        name: item.name || matched?.name || 'Товар СИМОНА',
+        physicalStatus: effectiveStatus,
+        stockKominterna: effectiveKominterna,
+      };
+    });
+
+    let allItemsLocalStock = true;
+    for (const item of normalizedItems) {
+      if (item.physicalStatus !== 'LOCAL_STOCK' || (item.stockKominterna ?? 0) <= 0) {
         allItemsLocalStock = false;
       }
     }
@@ -177,7 +211,7 @@ export async function POST(req: NextRequest) {
         paymentMethod,
         companyName,
         companyInn,
-        itemsJson: JSON.stringify(items),
+        itemsJson: JSON.stringify(normalizedItems),
         utmSource,
         utmMedium,
         utmCampaign,
@@ -186,8 +220,8 @@ export async function POST(req: NextRequest) {
         ymClientId,
         yclid,
         orderItems: {
-          create: items.map((item) => ({
-            productId: item.productId || item.id ? String(item.productId || item.id) : null,
+          create: normalizedItems.map((item) => ({
+            productId: item.productId ? String(item.productId) : null,
             sku: item.sku ? String(item.sku) : null,
             name: String(item.name || 'Товар СИМОНА'),
             brand: item.brand ? String(item.brand) : null,
