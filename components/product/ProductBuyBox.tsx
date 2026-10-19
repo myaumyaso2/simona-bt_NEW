@@ -102,11 +102,8 @@ export function ProductBuyBox({
 
   return (
     <div className="w-full bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 sm:p-7 flex flex-col gap-5 shadow-xl">
-      {/* 1. Brand Tag & SKU (Anti-Caps compliant) */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-black/60 border border-white/10 text-[11px] font-semibold tracking-wider text-white">
-          {brandFormatted}
-        </div>
+      {/* 1. SKU Meta (Quiet Luxury Clean Line) */}
+      <div className="flex items-center justify-end">
         <span className="font-mono text-xs text-[#87888A]">
           Код товара: {product.sku}
         </span>

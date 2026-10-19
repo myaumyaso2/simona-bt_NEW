@@ -1,5 +1,7 @@
 import React from 'react';
 import { ProductItem } from '@/types';
+import { formatProductName } from '@/lib/catalog/productTitle';
+import { formatBrandName } from '@/lib/formatters';
 
 interface SchemaOrgProductProps {
   product: ProductItem;
@@ -12,17 +14,20 @@ export function SchemaOrgProduct({ product, siteUrl = 'https://simona-bt.ru' }: 
     ? 'https://schema.org/InStock'
     : 'https://schema.org/PreOrder';
 
+  const formattedTitle = formatProductName(product);
+  const formattedBrand = formatBrandName(product.brand);
+
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: product.name,
+    name: formattedTitle,
     image: product.images && product.images.length > 0 ? product.images : undefined,
-    description: product.description?.replace(/<[^>]*>/g, '').slice(0, 500) || product.name,
+    description: product.description?.replace(/<[^>]*>/g, '').slice(0, 500) || formattedTitle,
     sku: product.sku || product.id,
     mpn: product.sku || undefined,
     brand: {
       '@type': 'Brand',
-      name: product.brand,
+      name: formattedBrand,
     },
     offers: {
       '@type': 'Offer',

@@ -15,6 +15,7 @@ import {
 } from '@/components/brand/SimonaIcons';
 import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
 import { formatProductName } from '@/lib/catalog/productTitle';
+import { formatBrandName } from '@/lib/formatters';
 import { ProductCardGallery } from './ProductCardGallery';
 
 function getProductChips(product: ProductItem): string[] {
@@ -342,9 +343,9 @@ export function LuxuryProductCard({
                 </span>
               )}
 
-              {/* Brand Tag directly below status badge */}
-              <span className="px-2.5 py-0.5 rounded-md bg-[#16191D]/90 backdrop-blur-md text-[10px] uppercase font-bold tracking-wider text-white border border-[#2B313A] shadow-md">
-                {product.brand}
+              {/* Brand Tag directly below status badge (Anti-Caps compliant) */}
+              <span className="px-2.5 py-0.5 rounded-md bg-[#16191D]/90 backdrop-blur-md text-[10px] font-bold tracking-wider text-white border border-[#2B313A] shadow-md">
+                {formatBrandName(product.brand)}
               </span>
             </div>
 
@@ -438,7 +439,7 @@ export function LuxuryProductCard({
                                   <span>Доступные акции:</span>
                                   <span className="text-simona-wine-light font-semibold">{productPromos.length}</span>
                                 </span>
-                                <span className="text-[10px] text-[#87888A]">{product.brand}</span>
+                                <span className="text-[10px] text-[#87888A]">{formatBrandName(product.brand)}</span>
                               </div>
 
                               <div

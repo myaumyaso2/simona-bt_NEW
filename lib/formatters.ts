@@ -33,6 +33,12 @@ const KNOWN_BRANDS: Record<string, string> = {
   krona: 'Krona',
   de_dietrich: 'De Dietrich',
   'de dietrich': 'De Dietrich',
+  midea: 'Midea',
+  evelux: 'Evelux',
+  teka: 'Teka',
+  kuppersberg: 'Kuppersberg',
+  'zigmund & shtain': 'Zigmund & Shtain',
+  'bone crusher': 'Bone Crusher',
 };
 
 /**

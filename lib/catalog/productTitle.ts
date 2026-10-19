@@ -15,6 +15,8 @@
  *   - Refines appliance subtypes based on vendor series (e.g., MIH -> Индукционная, MG -> Газовая)
  */
 
+import { formatBrandName } from '@/lib/formatters';
+
 interface ProductLike {
   name?: string;
   brand?: string;
@@ -67,9 +69,9 @@ export const CANONICAL_BRANDS: Record<string, string> = {
   'körting': 'Körting',
   'falmec': 'Falmec',
   'evelux': 'Evelux',
-  'vard': 'VARD',
-  'asko': 'ASKO',
-  'smeg': 'SMEG',
+  'vard': 'Vard',
+  'asko': 'Asko',
+  'smeg': 'Smeg',
   'miele': 'Miele',
   'midea': 'Midea',
   'omoikiri': 'Omoikiri',
@@ -78,6 +80,7 @@ export const CANONICAL_BRANDS: Record<string, string> = {
   'neff': 'Neff',
   'siemens': 'Siemens',
   'kuppersbusch': 'Küppersbusch',
+  'küppersbusch': 'Küppersbusch',
   'bertazzoni': 'Bertazzoni',
   'elica': 'Elica',
   'graude': 'Graude',
@@ -86,7 +89,7 @@ export const CANONICAL_BRANDS: Record<string, string> = {
 export function getCanonicalBrand(brand: string): string {
   if (!brand) return '';
   const key = brand.trim().toLowerCase();
-  return CANONICAL_BRANDS[key] || brand.trim();
+  return CANONICAL_BRANDS[key] || formatBrandName(brand);
 }
 
 export function cleanSystemArticle(article: string): string {

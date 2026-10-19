@@ -445,9 +445,9 @@ export function ProductTabsSection({
 
                   {/* Header Tags over Image */}
                   <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
-                    {/* Brand Tag */}
-                    <span className="px-2.5 py-1 rounded-md bg-[#111315]/85 backdrop-blur-md border border-[#2B313A] text-xs font-semibold text-white uppercase tracking-wider shadow-sm">
-                      {promo.brand}
+                    {/* Brand Tag (Anti-Caps compliant) */}
+                    <span className="px-2.5 py-1 rounded-md bg-[#111315]/85 backdrop-blur-md border border-[#2B313A] text-xs font-semibold text-white tracking-wider shadow-sm">
+                      {formatBrandName(promo.brand)}
                     </span>
 
                     {/* Official Wine Promo Badge */}

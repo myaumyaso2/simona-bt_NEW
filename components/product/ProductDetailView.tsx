@@ -14,6 +14,7 @@ import { OneClickBuyModal } from './OneClickBuyModal';
 import { ArrowLeft } from 'lucide-react';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { getCategorySlugByName } from '@/data/catalogCategories';
+import { formatProductName } from '@/lib/catalog/productTitle';
 
 interface ProductDetailViewProps {
   product: ProductItem;
@@ -44,7 +45,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
           items={[
             { name: 'Каталог', url: '/catalog' },
             { name: product.category, url: `/catalog/${categorySlug}` },
-            { name: product.name },
+            { name: formatProductName(product) },
           ]}
           rightContent={
             <Link

@@ -7,6 +7,7 @@ import { formatPrice, PHYSICAL_STATUS_CONFIG } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaIconCart, SimonaIconChef } from '@/components/brand/SimonaIcons';
 import { formatProductName } from '@/lib/catalog/productTitle';
+import { formatBrandName } from '@/lib/formatters';
 import { ProductCardGallery } from './ProductCardGallery';
 
 interface ProductCardProps {
@@ -40,10 +41,10 @@ export function ProductCard({ product }: ProductCardProps) {
               </span>
             </div>
 
-            {/* Brand Tag */}
+            {/* Brand Tag (Anti-Caps compliant) */}
             <div className="absolute top-2.5 right-2.5 z-10 pointer-events-none">
-              <span className="px-2 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-[10px] uppercase font-bold tracking-wider text-[#16181B] border border-black/[0.08] shadow-sm shrink-0">
-                {product.brand}
+              <span className="px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-md text-[10px] font-bold tracking-wider text-[#16181B] border border-black/[0.08] shadow-sm shrink-0">
+                {formatBrandName(product.brand)}
               </span>
             </div>
 

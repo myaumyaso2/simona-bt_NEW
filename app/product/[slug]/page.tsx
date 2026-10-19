@@ -5,6 +5,7 @@ import { getProductBySlug } from '@/lib/products';
 import { ProductDetailView } from '@/components/product/ProductDetailView';
 import { SchemaOrgProduct } from '@/components/seo/SchemaOrgProduct';
 import { SchemaOrgBreadcrumbs } from '@/components/seo/SchemaOrgBreadcrumbs';
+import { formatProductName } from '@/lib/catalog/productTitle';
 
 interface ProductPageProps {
   params: {
@@ -23,13 +24,14 @@ export async function generateMetadata({
     };
   }
 
+  const formattedTitle = formatProductName(product);
   const firstImage = product.images && product.images.length > 0 ? product.images[0] : '';
 
   return {
-    title: `${product.name} — купить в Нижнем Новгороде | СИМОНА`,
+    title: `${formattedTitle} — купить в Нижнем Новгороде | СИМОНА`,
     description: `${product.description.slice(0, 160)}. Официальная гарантия, экспозиция в салоне «СИМОНА» на ул. Белинского, 15, доставка по Нижнему Новгороду.`,
     openGraph: {
-      title: `${product.name} | СИМОНА`,
+      title: `${formattedTitle} | СИМОНА`,
       description: product.description.slice(0, 200),
       images: firstImage ? [firstImage] : [],
     },
@@ -45,11 +47,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
+  const formattedTitle = formatProductName(product);
+
   const breadcrumbs = [
     { name: 'Главная', url: '/' },
     { name: 'Каталог', url: '/catalog' },
     { name: product.category, url: '/catalog' },
-    { name: product.name, url: `/product/${product.slug}` },
+    { name: formattedTitle, url: `/product/${product.slug}` },
   ];
 
   return (

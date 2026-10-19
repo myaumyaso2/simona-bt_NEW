@@ -14,6 +14,7 @@ import { ManufacturerPromo, PromoBenefitType } from '@/types';
 import { useStore } from '@/components/providers/StoreContext';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { useSiteContent } from '@/components/providers/ContentContext';
+import { formatBrandName } from '@/lib/formatters';
 
 const BRAND_FILTERS = [
   'Все бренды',
@@ -174,8 +175,8 @@ function PromoHubCard({ promo }: { promo: ManufacturerPromo }) {
         <div className="absolute inset-0 bg-gradient-to-t from-[#16191D] via-[#16191D]/40 to-transparent" />
 
         <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
-          <span className="px-2.5 py-1 rounded-md bg-[#111315]/85 backdrop-blur-md border border-[#2B313A] text-xs font-semibold text-white uppercase tracking-wider shadow-sm">
-            {promo.brand}
+          <span className="px-2.5 py-1 rounded-md bg-[#111315]/85 backdrop-blur-md border border-[#2B313A] text-xs font-semibold text-white tracking-wider shadow-sm">
+            {formatBrandName(promo.brand)}
           </span>
 
           {(promo.badgeText || promo.discountBadge) && (

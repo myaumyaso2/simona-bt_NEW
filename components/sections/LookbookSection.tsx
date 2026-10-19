@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { LookbookProject, LookbookHotspot } from '@/types';
 import { formatPrice } from '@/lib/utils';
+import { formatBrandName } from '@/lib/formatters';
 import { Sparkles, MapPin, Eye, ArrowRight, User } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaPatternOverlay } from '@/components/brand/SimonaPattern';
@@ -158,8 +159,8 @@ export function LookbookSection() {
                   {/* Hotspot Popover Tooltip */}
                   {activeHotspot === hs && (
                     <div className="absolute left-1/2 -translate-x-1/2 bottom-14 w-72 p-4 rounded-2xl bg-white/95 backdrop-blur-xl border border-simona-teal/50 shadow-2xl text-left z-30 animate-scale">
-                      <div className="text-[10px] uppercase font-bold tracking-wider text-simona-teal mb-1">
-                        {hs.product.brand} • Код: {hs.product.sku}
+                      <div className="text-[10px] font-bold tracking-wider text-simona-teal mb-1">
+                        {formatBrandName(hs.product.brand)} • Код: {hs.product.sku}
                       </div>
                       <div className="text-xs font-bold text-[#16181B] line-clamp-2 mb-2">
                         {hs.product.name}
