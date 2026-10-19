@@ -439,7 +439,7 @@ function CheckoutSuccessContent() {
         <div className="mt-8 text-left text-xs text-[#87888A]">
           <span>Возникли вопросы по заказу? Звоните менеджеру интернет-магазина </span>
           <a href="tel:+78314239390" className="text-white hover:text-simona-teal font-semibold transition ml-1">
-            (831) 423 93-90
+            (831) 423 93 90
           </a>
           <span className="mx-2">•</span>
           <span>Пн-Пт 9:00-18:00</span>
