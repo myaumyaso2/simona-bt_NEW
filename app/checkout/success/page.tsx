@@ -129,23 +129,39 @@ function CheckoutSuccessContent() {
     }
   }, [orderNumber, total, delivery, payment, loadedOrder?.itemsJson]);
 
-  const getDeliveryInfo = () => {
+  interface DeliveryInfoResult {
+    title: string;
+    address: string;
+    schedule: string;
+    desc?: string | null;
+    mapsUrl?: string | null;
+  }
+
+  interface PaymentInfoResult {
+    title: string;
+    address?: string | null;
+    schedule?: string | null;
+    desc?: string | null;
+    mapsUrl?: string | null;
+  }
+
+  const getDeliveryInfo = (): DeliveryInfoResult => {
     switch (delivery) {
       case 'PICKUP_WAREHOUSE_KOMINTERNA':
         return {
           title: 'Самовывоз со склада (ул. Коминтерна, 27)',
           address: 'Нижний Новгород, ул. Коминтерна, 27',
           schedule: 'Пн–Пт 10:00–17:00, Сб 10:00–14:30',
-          desc: 'Центральный склад «СИМОНА». Удобная зона погрузки, проверка комплектности приборов при вас.',
-          mapsUrl: 'https://yandex.ru/maps/-/CDuWvQ1a',
+          desc: null,
+          mapsUrl: 'https://yandex.ru/maps/-/CXF1mHJD',
         };
       case 'PICKUP_BELINSKOGO_15':
         return {
           title: 'Самовывоз из салона СИМОНА (ул. Белинского, 15)',
           address: 'Нижний Новгород, ул. Белинского, 15',
-          schedule: 'Ежедневно 10:00–20:00',
-          desc: 'Выдача негабаритных товаров (варочные панели, СВЧ, подогреватели посуды, вакууматоры, малая техника, посуда).',
-          mapsUrl: 'https://yandex.ru/maps/-/CDuWvEnB',
+          schedule: 'Пн–Сб: 10:00–20:00, Вс: 10:00–18:00',
+          desc: null,
+          mapsUrl: 'https://yandex.ru/maps/-/CXF1ZJI-',
         };
       case 'COURIER_DELIVERY':
       case 'WHITE_GLOVE_DELIVERY':
@@ -160,7 +176,7 @@ function CheckoutSuccessContent() {
     }
   };
 
-  const getPaymentInfo = () => {
+  const getPaymentInfo = (): PaymentInfoResult => {
     if (paymentStatus === 'HOLD') {
       return {
         title: 'Картой онлайн',
@@ -178,12 +194,18 @@ function CheckoutSuccessContent() {
       case 'IN_SALON':
         return {
           title: 'В салоне СИМОНА',
-          desc: 'Картой или наличными в салоне на ул. Белинского, 15',
+          address: 'Нижний Новгород, ул. Белинского, 15',
+          schedule: 'Пн–Сб: 10:00–20:00, Вс: 10:00–18:00',
+          desc: null,
+          mapsUrl: 'https://yandex.ru/maps/-/CXF1ZJI-',
         };
       case 'AT_WAREHOUSE':
         return {
           title: 'На складе СИМОНА',
-          desc: 'Картой или наличными при самовывозе со склада на ул. Коминтерна, 27',
+          address: 'Нижний Новгород, ул. Коминтерна, 27',
+          schedule: 'Пн–Пт 10:00–17:00, Сб 10:00–14:30',
+          desc: null,
+          mapsUrl: 'https://yandex.ru/maps/-/CXF1mHJD',
         };
       case 'ON_DELIVERY':
       case 'ON_RECEIPT':
@@ -221,18 +243,13 @@ function CheckoutSuccessContent() {
           <div className="absolute top-0 right-0 w-80 h-80 bg-simona-teal/5 rounded-full blur-3xl pointer-events-none" />
 
           {/* Main heading */}
-          <div className="flex items-start space-x-4 mb-6 text-left">
-            <div className="w-12 h-12 rounded-xl bg-simona-teal/10 border border-simona-teal/30 text-simona-teal flex items-center justify-center shrink-0 mt-1 shadow-[0_0_20px_rgba(0,151,156,0.15)]">
+          <div className="flex items-center space-x-4 mb-6 text-left">
+            <div className="w-12 h-12 rounded-xl bg-simona-teal/10 border border-simona-teal/30 text-simona-teal flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(0,151,156,0.15)]">
               <SimonaIconCheckCircle className="w-7 h-7" />
             </div>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
-                Заказ №{orderNumber} принят в обработку.
-              </h1>
-              <p className="text-sm text-[#87888A] mt-1.5 leading-relaxed">
-                Заказ успешно зарегистрирован в системе. Эксперт салона «СИМОНА» свяжется с вами для подтверждения наличия и деталей получения.
-              </p>
-            </div>
+            <h1 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
+              Заказ №{orderNumber} принят в обработку.
+            </h1>
           </div>
 
           {/* Order Items & Summary Block */}
@@ -322,14 +339,20 @@ function CheckoutSuccessContent() {
                 </span>
               </div>
               <h3 className="text-sm font-semibold text-white mb-1">{delInfo.title}</h3>
-              <p className="text-xs text-[#87888A] mb-2">{delInfo.address}</p>
-              <div className="text-[11px] text-[#87888A] space-y-1 mb-3">
-                <div className="flex items-center space-x-1.5 text-zinc-300">
-                  <SimonaIconClock className="w-3.5 h-3.5 text-simona-teal" />
-                  <span>{delInfo.schedule}</span>
+              {delInfo.address && (
+                <p className="text-xs text-[#87888A] mb-2">{delInfo.address}</p>
+              )}
+              {delInfo.schedule && (
+                <div className="text-[11px] text-[#87888A] space-y-1 mb-3">
+                  <div className="flex items-center space-x-1.5 text-zinc-300">
+                    <SimonaIconClock className="w-3.5 h-3.5 text-simona-teal" />
+                    <span>{delInfo.schedule}</span>
+                  </div>
                 </div>
-              </div>
-              <p className="text-xs text-zinc-400 leading-relaxed">{delInfo.desc}</p>
+              )}
+              {delInfo.desc && (
+                <p className="text-xs text-zinc-400 leading-relaxed">{delInfo.desc}</p>
+              )}
 
               {delInfo.mapsUrl && (
                 <a
@@ -352,8 +375,33 @@ function CheckoutSuccessContent() {
                   Оплата
                 </span>
               </div>
-              <h3 className="text-sm font-semibold text-white mb-1.5">{payInfo.title}</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">{payInfo.desc}</p>
+              <h3 className="text-sm font-semibold text-white mb-1">{payInfo.title}</h3>
+              {payInfo.address && (
+                <p className="text-xs text-[#87888A] mb-2">{payInfo.address}</p>
+              )}
+              {payInfo.schedule && (
+                <div className="text-[11px] text-[#87888A] space-y-1 mb-3">
+                  <div className="flex items-center space-x-1.5 text-zinc-300">
+                    <SimonaIconClock className="w-3.5 h-3.5 text-simona-teal" />
+                    <span>{payInfo.schedule}</span>
+                  </div>
+                </div>
+              )}
+              {payInfo.desc && (
+                <p className="text-xs text-zinc-400 leading-relaxed">{payInfo.desc}</p>
+              )}
+
+              {payInfo.mapsUrl && (
+                <a
+                  href={payInfo.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-1.5 text-xs text-simona-teal hover:underline mt-3"
+                >
+                  <SimonaIconPin className="w-3.5 h-3.5" />
+                  <span>Открыть на Яндекс.Картах</span>
+                </a>
+              )}
             </div>
           </div>
 
@@ -363,7 +411,7 @@ function CheckoutSuccessContent() {
             <div>
               <span className="font-semibold text-white block mb-0.5">Что происходит дальше?</span>
               <p className="text-[#87888A] leading-relaxed">
-                Эксперт салона «СИМОНА» свяжется с вами в рабочее время (10:00 – 20:00) для сверки монтажных размеров, проверки комплектации и подтверждения времени готовности или доставки.
+                Эксперт салона «СИМОНА» свяжется с вами для подтверждения наличия и даты доставки.
               </p>
             </div>
           </div>
