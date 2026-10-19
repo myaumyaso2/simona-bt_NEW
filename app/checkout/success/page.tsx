@@ -149,7 +149,7 @@ function CheckoutSuccessContent() {
     switch (delivery) {
       case 'PICKUP_WAREHOUSE_KOMINTERNA':
         return {
-          title: 'Самовывоз со склада (ул. Коминтерна, 27)',
+          title: 'Самовывоз со склада',
           address: 'Нижний Новгород, ул. Коминтерна, 27',
           schedule: 'Пн–Пт 10:00–17:00, Сб 10:00–14:30',
           desc: null,
@@ -157,7 +157,7 @@ function CheckoutSuccessContent() {
         };
       case 'PICKUP_BELINSKOGO_15':
         return {
-          title: 'Самовывоз из салона СИМОНА (ул. Белинского, 15)',
+          title: 'Самовывоз из салона',
           address: 'Нижний Новгород, ул. Белинского, 15',
           schedule: 'Пн–Сб: 10:00–20:00, Вс: 10:00–18:00',
           desc: null,
@@ -193,7 +193,7 @@ function CheckoutSuccessContent() {
     switch (payment) {
       case 'IN_SALON':
         return {
-          title: 'В салоне СИМОНА',
+          title: 'В салоне',
           address: 'Нижний Новгород, ул. Белинского, 15',
           schedule: 'Пн–Сб: 10:00–20:00, Вс: 10:00–18:00',
           desc: null,
@@ -201,7 +201,7 @@ function CheckoutSuccessContent() {
         };
       case 'AT_WAREHOUSE':
         return {
-          title: 'На складе СИМОНА',
+          title: 'На складе',
           address: 'Нижний Новгород, ул. Коминтерна, 27',
           schedule: 'Пн–Пт 10:00–17:00, Сб 10:00–14:30',
           desc: null,
