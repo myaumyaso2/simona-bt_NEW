@@ -59,7 +59,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
         />
 
         {/* 2. Hero Section: 60/40 Asymmetric Split */}
-        <section className="w-full max-w-[1280px] mx-auto px-4 sm:px-6 pb-12">
+        <section className="w-full max-w-[1280px] mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
             {/* Left Column: Gallery (60% ~ 7 cols) */}
             <div className="lg:col-span-7 w-full">
