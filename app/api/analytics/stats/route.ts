@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { isAuthorized } from '@/lib/adminAuth';
+import { getDirectCampaignReports } from '@/lib/integrations/direct/reports';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,6 +40,7 @@ export async function GET(req: NextRequest) {
         paymentMethod: true,
         deliveryType: true,
         ymClientId: true,
+        yclid: true,
         utmSource: true,
         utmMedium: true,
         utmCampaign: true,
@@ -51,10 +53,15 @@ export async function GET(req: NextRequest) {
       where: dateFilter,
     });
 
+    // 4. Fetch Yandex Direct campaign reports (API or calibrated model)
+    const directStats = await getDirectCampaignReports(days);
+
     const totalOrders = orders.length;
     let totalRevenue = 0;
     let paidOrdersCount = 0;
     let ymOrdersCount = 0;
+    let directPaidRevenue = 0;
+    let directPaidCount = 0;
 
     const utmMap = new Map<
       string,
@@ -64,6 +71,7 @@ export async function GET(req: NextRequest) {
 
     for (const order of orders) {
       const amount = order.totalAmount || 0;
+      // В переходный период 1С 7.7 оба статуса PAID и DELIVERED являются успешными индикаторами кассы
       const isPaid = ['PAID', 'COMPLETED', 'DELIVERED'].includes(order.status);
 
       if (isPaid) {
@@ -73,6 +81,16 @@ export async function GET(req: NextRequest) {
 
       if (order.ymClientId) {
         ymOrdersCount++;
+      }
+
+      // Атрибуция Яндекс Директа (по меткам yclid или utm_source === yandex)
+      const isDirectAttributed =
+        Boolean(order.yclid) ||
+        (order.utmSource && order.utmSource.toLowerCase().includes('yandex'));
+
+      if (isPaid && isDirectAttributed) {
+        directPaidRevenue += amount;
+        directPaidCount++;
       }
 
       // Group by status
@@ -95,6 +113,13 @@ export async function GET(req: NextRequest) {
 
     const averageCheck =
       paidOrdersCount > 0 ? Math.round(totalRevenue / paidOrdersCount) : 0;
+
+    // Расчет ДРР: отношение расходов Директа к выручке от Директа (или к общей выручке кассы)
+    const revenueForDrr = directPaidRevenue > 0 ? directPaidRevenue : totalRevenue;
+    const drrPercent =
+      revenueForDrr > 0
+        ? ((directStats.totalCostRub / revenueForDrr) * 100).toFixed(1)
+        : '0.0';
 
     // Convert UTM stats to array
     const utmStats = Array.from(utmMap.entries())
@@ -124,7 +149,12 @@ export async function GET(req: NextRequest) {
           totalOrders + leadsCount > 0
             ? ((paidOrdersCount / (totalOrders + leadsCount)) * 100).toFixed(1)
             : '0.0',
+        directSpend: directStats.totalCostRub,
+        directPaidRevenue,
+        directPaidCount,
+        drrPercent,
       },
+      directStats,
       utmStats,
       statusStats,
       recentOrders: orders.slice(0, 30),

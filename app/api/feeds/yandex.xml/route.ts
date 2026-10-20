@@ -44,7 +44,7 @@ export async function GET() {
     xml += `<yml_catalog date="${now}">\n`;
     xml += `  <shop>\n`;
     xml += `    <name>СИМОНА</name>\n`;
-    xml += `    <company>Салоны премиальной бытовой техники «СИМОНА»</company>\n`;
+    xml += `    <company>Сеть салонов бытовой техники «СИМОНА»</company>\n`;
     xml += `    <url>${siteUrl}</url>\n`;
     xml += `    <currencies>\n`;
     xml += `      <currency id="RUR" rate="1"/>\n`;
