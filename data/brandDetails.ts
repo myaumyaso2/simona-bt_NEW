@@ -1,3 +1,21 @@
+export interface BrandSeriesItem {
+  id: string;
+  name: string;
+  tagline: string;
+  description: string;
+  badge?: string;
+  filterQuery?: string;
+}
+
+export interface BrandTechItem {
+  id: string;
+  title: string;
+  categoryName: string;
+  description: string;
+  filterQuery?: string;
+  categorySlug?: string;
+}
+
 export interface BrandDetails {
   name: string;
   slug: string;
@@ -6,6 +24,8 @@ export interface BrandDetails {
   showroom: string;
   heroText: string;
   advantages: string[];
+  series?: BrandSeriesItem[];
+  technologies?: BrandTechItem[];
 }
 
 export const BRAND_DETAILS_MAP: Record<string, BrandDetails> = {
@@ -122,17 +142,84 @@ export const BRAND_DETAILS_MAP: Record<string, BrandDetails> = {
     ],
   },
   bosch: {
-    name: 'BOSCH',
+    name: 'Bosch',
     slug: 'bosch',
     country: 'Германия',
-    category: 'Премиальные серии Serie 8, встраиваемые духовые шкафы, варочные панели и посудомоечные машины',
+    category: 'Встраиваемые духовые шкафы, варочные панели, посудомоечные машины и холодильники',
     showroom: 'Флагманский салон: ул. Белинского, 15',
-    heroText: 'BOSCH. Разработано для жизни. Бытовая техника Bosch постоянно показывает высокие результаты в независимых испытаниях. Это лишний раз доказывает, что Bosch — это высокое качество, техническое совершенство и абсолютная надежность.',
+    heroText: 'Bosch. Разработано для жизни. Более 130 лет немецкой инженерной мысли, направленной на безупречную надежность, максимальный комфорт и энергоэффективность. Передовые сенсорные технологии, точность дозирования и непревзойденная долговечность в каждом приборе.',
     advantages: [
-      'Сушка с минералом цеолит PerfectDry для безупречного блеска стекла и посуды',
-      'Интеллектуальные сенсоры PerfectBake и термощупы PerfectRoast',
-      'Бесщеточные инверторные моторы EcoSilence Drive с повышенным ресурсом',
-      'Широкая сервисная поддержка и проверенная годами надежность',
+      'Сушка минералом цеолит PerfectDry для идеального блеска посуды и сухости пластика',
+      'Интеллектуальные сенсоры выпечки PerfectBake и 3-точечные термощупы PerfectRoast',
+      'Бесщеточные инверторные моторы EcoSilence Drive с повышенным ресурсом и тишиной',
+      'Официальная гарантия, сервисная поддержка и наличие на складе в Нижнем Новгороде',
+    ],
+    series: [
+      {
+        id: 'serie-8',
+        name: 'Bosch Serie 8',
+        tagline: 'Флагманский интеллект и дизайн',
+        description: 'Премиальный уровень оснащения: цифровое кольцо управления Digital Control Ring, цветные TFT-дисплеи, автоматические режимы с искусственным интеллектом и максимальный класс энергоэффективности.',
+        badge: 'Флагман',
+        filterQuery: 'Serie 8',
+      },
+      {
+        id: 'serie-6',
+        name: 'Bosch Serie 6',
+        tagline: 'Продвинутый комфорт и технологии',
+        description: 'Оптимальный баланс инноваций: передовые сенсоры пара и влажности, тихие инверторные моторы EcoSilence, быстрый нагрев и лаконичный современный дизайн.',
+        badge: 'Премиум',
+        filterQuery: 'Serie 6',
+      },
+      {
+        id: 'serie-4',
+        name: 'Bosch Serie 4',
+        tagline: 'Проверенная немецкая надежность',
+        description: 'Классическая европейская практичность: долговечные механические и сенсорные переключатели, простота управления и проверенные стандарты безопасности на каждый день.',
+        badge: 'Классика',
+        filterQuery: 'Serie 4',
+      },
+    ],
+    technologies: [
+      {
+        id: 'perfectdry',
+        title: 'PerfectDry с минералом Zeolith®',
+        categoryName: 'Посудомоечные машины',
+        description: 'Натуральный минерал цеолит впитывает влагу и превращает ее в сухое горячее тепло. Даже пластиковые контейнеры и хрупкие бокалы извлекаются идеально сухими и теплыми без капель и разводов.',
+        categorySlug: 'vstraivaemye-posudomoechnye-mashiny',
+        filterQuery: 'PerfectDry',
+      },
+      {
+        id: 'ecosilence',
+        title: 'Инверторный мотор EcoSilence Drive™',
+        categoryName: 'Стирка и мытье посуды',
+        description: 'Бесщеточный двигатель с постоянными магнитами исключает механическое трение. Работает практически бесшумно, снижает энергопотребление и обладает исключительным ресурсом надежности.',
+        filterQuery: 'EcoSilence',
+      },
+      {
+        id: 'perfectbake',
+        title: 'Сенсоры PerfectBake и PerfectRoast',
+        categoryName: 'Духовые шкафы',
+        description: 'Датчик PerfectBake непрерывно измеряет уровень влажности выпечки и сам завершает программу в идеальный момент. 3-точечный термощуп PerfectRoast гарантирует точную степень прожарки мяса.',
+        categorySlug: 'vstraivaemye-duhovye-shkafy',
+        filterQuery: 'PerfectBake',
+      },
+      {
+        id: 'vitafresh',
+        title: 'Зоны свежести VitaFresh',
+        categoryName: 'Холодильники',
+        description: 'Зоны с поддержанием околонулевой температуры и регулируемым уровнем влажности создают оптимальный микроклимат, сохраняя свежесть фруктов, овощей, охлажденной рыбы и мяса до 3 раз дольше.',
+        categorySlug: 'vstraivaemye-holodilniki',
+        filterQuery: 'VitaFresh',
+      },
+      {
+        id: 'flexinduction',
+        title: 'FlexInduction & FlameSelect',
+        categoryName: 'Варочные панели',
+        description: 'FlexInduction объединяет конфорки в одну сплошную зону нагрева для утятниц и грилей. Технология FlameSelect на газе обеспечивает 9 калиброванных ступеней мощности пламени с непревзойденной точностью.',
+        categorySlug: 'varochnye-paneli',
+        filterQuery: 'FlexInduction',
+      },
     ],
   },
   siemens: {

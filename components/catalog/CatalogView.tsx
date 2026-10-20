@@ -24,6 +24,11 @@ import {
 } from '@/lib/catalog/brandCategories';
 import { getCategoryProductGroups, getProductGroup } from '@/lib/catalog/productGroups';
 import { SimonaIconClose, SimonaIconSearch } from '@/components/brand/SimonaIcons';
+import { BrandDetails } from '@/data/brandDetails';
+import { BrandShowcaseHero } from '@/components/brand/BrandShowcaseHero';
+import { BrandCategoryNav } from './BrandCategoryNav';
+import { formatBrandName } from '@/lib/formatters';
+import { useStore } from '@/components/providers/StoreContext';
 
 interface CatalogViewProps {
   initialProducts?: ProductItem[];
@@ -34,6 +39,7 @@ interface CatalogViewProps {
   initialBrand?: string;
   initialCategorySlug?: string;
   searchQuery?: string;
+  brandDetails?: BrandDetails;
 }
 
 const PAGE_SIZE = 24;
@@ -46,8 +52,10 @@ export function CatalogView({
   initialBrand,
   initialCategorySlug,
   searchQuery,
+  brandDetails,
 }: CatalogViewProps = {}) {
   const searchParams = useSearchParams();
+  const { openModal } = useStore();
   const activeSearchQuery = (searchQuery || searchParams.get('q') || '').trim();
 
   const rawProducts = useMemo(() => {
@@ -108,6 +116,29 @@ export function CatalogView({
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [techFilter, setTechFilter] = useState<{ query: string; label: string } | null>(null);
+
+  const handleSelectSeries = (query: string) => {
+    setTechFilter({ query, label: `Линейка: ${query}` });
+    setCurrentPage(1);
+    const el = document.getElementById('brand-catalog');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handleSelectTechnology = (query: string, categorySlug?: string) => {
+    setTechFilter({ query, label: `Технология: ${query}` });
+    if (categorySlug && brandCategories.some((c) => c.slug === categorySlug)) {
+      setActiveCategorySlug(categorySlug);
+    }
+    setCurrentPage(1);
+    const el = document.getElementById('brand-catalog');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handleClearTechFilter = () => {
+    setTechFilter(null);
+    setCurrentPage(1);
+  };
 
   const brandParam = searchParams.get('brand') || initialBrand;
 
@@ -354,9 +385,20 @@ export function CatalogView({
         }
       }
 
+      // 4. Technology or Series active filter
+      if (techFilter?.query) {
+        const q = techFilter.query.toLowerCase();
+        const matches =
+          product.name.toLowerCase().includes(q) ||
+          (product.description || '').toLowerCase().includes(q) ||
+          (product.shortDesc || '').toLowerCase().includes(q) ||
+          (product.features || []).some((f) => (f.label + ' ' + f.value).toLowerCase().includes(q));
+        if (!matches) return false;
+      }
+
       return true;
     });
-  }, [categoryProducts, filters, lockedBrand]);
+  }, [categoryProducts, filters, lockedBrand, techFilter]);
 
   // 2. Dynamic presence counts based on current sidebar filters (Zero Dead Ends reactivity)
   const presenceCounts = useMemo(() => {
@@ -434,11 +476,11 @@ export function CatalogView({
   const dynamicTitle = useMemo(() => {
     if (isDedicatedBrandPage && lockedBrand) {
       const catName = currentBrandCategory?.menuTitle || currentBrandCategory?.title || 'Техника';
-      return `${catName} ${lockedBrand.toUpperCase()}`;
+      return `${catName} ${formatBrandName(lockedBrand)}`;
     }
     if (filters.selectedBrands.length === 1) {
       const b = filters.selectedBrands[0];
-      return `${baseCategoryTitle} ${b}`;
+      return `${baseCategoryTitle} ${formatBrandName(b)}`;
     }
     return baseCategoryTitle;
   }, [baseCategoryTitle, filters.selectedBrands, lockedBrand, isDedicatedBrandPage, currentBrandCategory]);
@@ -448,76 +490,162 @@ export function CatalogView({
       if (brandInfo?.heroText) {
         return brandInfo.heroText;
       }
-      return `Официальная бытовая техника ${initialBrand.toUpperCase()}. Сертифицированная европейская продукция с гарантией производителя в салонах «СИМОНА».`;
+      return `Официальная бытовая техника ${formatBrandName(initialBrand)}. Сертифицированная европейская продукция с гарантией производителя в салонах «СИМОНА».`;
     }
     return categoryDescription;
   }, [isDedicatedBrandPage, initialBrand, brandInfo, categoryDescription]);
 
   return (
     <div className="bg-[#111315] min-h-screen text-white">
-      {/* 1. Category Hero Block with raised Brand Categories Switcher */}
-      <CatalogHero
-        activePhysicalTab={activePhysicalTab}
-        onSelectPhysicalTab={(tab) => {
-          setActivePhysicalTab(tab);
-          setCurrentPage(1);
-        }}
-        totalCount={currentBrandCategory ? currentBrandCategory.count : sidebarFilteredProducts.length}
-        presenceCounts={presenceCounts}
-        categoryTitle={dynamicTitle}
-        categorySlug={activeCategorySlug || categorySlug}
-        categoryDescription={dynamicDescription}
-        brandName={isDedicatedBrandPage && lockedBrand ? lockedBrand.toUpperCase() : undefined}
-        brandCategories={isDedicatedBrandPage ? brandCategories : undefined}
-        activeCategorySlug={activeCategorySlug}
-        onSelectCategory={handleCategorySelect}
-      />
+      {brandDetails ? (
+        <>
+          <BrandShowcaseHero
+            brand={brandDetails}
+            totalProductsCount={rawProducts.length}
+            onSelectSeries={handleSelectSeries}
+            onSelectTechnology={handleSelectTechnology}
+          />
 
-      {/* 1.5. Inventory Presence Tabs for Brand Page (lowered below Hero per user request) */}
-      {isDedicatedBrandPage && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
-          <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
-            {[
-              { id: 'ALL' as const, label: 'Все', count: presenceCounts.ALL },
-              { id: 'SHOWROOM' as const, label: 'На витрине', count: presenceCounts.SHOWROOM },
-              { id: 'LOCAL_STOCK' as const, label: 'На складе', count: presenceCounts.LOCAL_STOCK },
-              { id: 'REMOTE_STOCK' as const, label: 'На удаленном складе', count: presenceCounts.REMOTE_STOCK },
-              { id: 'ON_ORDER' as const, label: 'Под заказ', count: presenceCounts.ON_ORDER },
-            ]
-              .filter((tab) => tab.id === 'ALL' || tab.count > 0)
-              .map((tab) => {
-                const isActive = activePhysicalTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      setActivePhysicalTab(tab.id);
-                      setCurrentPage(1);
-                    }}
-                    className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none ${
-                      isActive ? 'text-white' : 'text-[#87888A] hover:text-[#D7D9DB]'
-                    }`}
-                  >
-                    {isActive && (
-                      <motion.div
-                        layoutId="presenceActiveTabBrand"
-                        className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
-                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-                      />
-                    )}
-                    <span>{tab.label}</span>
-                    <span
-                      className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
-                        isActive ? 'text-simona-teal font-semibold' : 'text-[#87888A] font-normal'
+          {/* Dual-bar category & presence inventory controls: exactly like catalog?brand=ASKO */}
+          <div id="brand-catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-3">
+            {/* Row 1: Brand Category Nav */}
+            {brandCategories && brandCategories.length > 0 && (
+              <BrandCategoryNav
+                categories={brandCategories}
+                activeCategorySlug={activeCategorySlug || brandCategories[0].slug}
+                onSelectCategory={handleCategorySelect}
+              />
+            )}
+
+            {/* Row 2: Inventory Presence Tabs */}
+            <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
+              {[
+                { id: 'ALL' as const, label: 'Все', count: presenceCounts.ALL },
+                { id: 'SHOWROOM' as const, label: 'На витрине', count: presenceCounts.SHOWROOM },
+                { id: 'LOCAL_STOCK' as const, label: 'На складе', count: presenceCounts.LOCAL_STOCK },
+                { id: 'REMOTE_STOCK' as const, label: 'На удаленном складе', count: presenceCounts.REMOTE_STOCK },
+                { id: 'ON_ORDER' as const, label: 'Под заказ', count: presenceCounts.ON_ORDER },
+              ]
+                .filter((tab) => tab.id === 'ALL' || tab.count > 0)
+                .map((tab) => {
+                  const isActive = activePhysicalTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        setActivePhysicalTab(tab.id);
+                        setCurrentPage(1);
+                      }}
+                      className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none ${
+                        isActive ? 'text-white' : 'text-[#87888A] hover:text-[#D7D9DB]'
                       }`}
                     >
-                      ({tab.count})
-                    </span>
+                      {isActive && (
+                        <motion.div
+                          layoutId="presenceActiveTabBrandDetails"
+                          className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
+                          transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                        />
+                      )}
+                      <span>{tab.label}</span>
+                      <span
+                        className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
+                          isActive ? 'text-simona-teal font-semibold' : 'text-[#87888A] font-normal'
+                        }`}
+                      >
+                        ({tab.count})
+                      </span>
+                    </button>
+                  );
+                })}
+            </div>
+
+            {/* Active Tech / Series Filter Pill if selected */}
+            {techFilter && (
+              <div className="pt-2 flex items-center gap-2">
+                <span className="text-xs text-[#87888A]">Активный фильтр:</span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#1E2228] border border-simona-teal/50 text-xs font-semibold text-white">
+                  <span>{techFilter.label}</span>
+                  <button
+                    type="button"
+                    onClick={handleClearTechFilter}
+                    aria-label="Сбросить фильтр по технологии"
+                    className="p-0.5 hover:bg-[#252A32] rounded text-[#87888A] hover:text-white transition cursor-pointer"
+                  >
+                    <SimonaIconClose className="w-3 h-3" />
                   </button>
-                );
-              })}
+                </span>
+              </div>
+            )}
           </div>
-        </div>
+        </>
+      ) : (
+        <>
+          {/* 1. Category Hero Block with raised Brand Categories Switcher */}
+          <CatalogHero
+            activePhysicalTab={activePhysicalTab}
+            onSelectPhysicalTab={(tab) => {
+              setActivePhysicalTab(tab);
+              setCurrentPage(1);
+            }}
+            totalCount={currentBrandCategory ? currentBrandCategory.count : sidebarFilteredProducts.length}
+            presenceCounts={presenceCounts}
+            categoryTitle={dynamicTitle}
+            categorySlug={activeCategorySlug || categorySlug}
+            categoryDescription={dynamicDescription}
+            brandName={isDedicatedBrandPage && lockedBrand ? formatBrandName(lockedBrand) : undefined}
+            brandCategories={isDedicatedBrandPage ? brandCategories : undefined}
+            activeCategorySlug={activeCategorySlug}
+            onSelectCategory={handleCategorySelect}
+          />
+
+          {/* 1.5. Inventory Presence Tabs for Brand Page (lowered below Hero per user request) */}
+          {isDedicatedBrandPage && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+              <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
+                {[
+                  { id: 'ALL' as const, label: 'Все', count: presenceCounts.ALL },
+                  { id: 'SHOWROOM' as const, label: 'На витрине', count: presenceCounts.SHOWROOM },
+                  { id: 'LOCAL_STOCK' as const, label: 'На складе', count: presenceCounts.LOCAL_STOCK },
+                  { id: 'REMOTE_STOCK' as const, label: 'На удаленном складе', count: presenceCounts.REMOTE_STOCK },
+                  { id: 'ON_ORDER' as const, label: 'Под заказ', count: presenceCounts.ON_ORDER },
+                ]
+                  .filter((tab) => tab.id === 'ALL' || tab.count > 0)
+                  .map((tab) => {
+                    const isActive = activePhysicalTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => {
+                          setActivePhysicalTab(tab.id);
+                          setCurrentPage(1);
+                        }}
+                        className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none ${
+                          isActive ? 'text-white' : 'text-[#87888A] hover:text-[#D7D9DB]'
+                        }`}
+                      >
+                        {isActive && (
+                          <motion.div
+                            layoutId="presenceActiveTabBrand"
+                            className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
+                            transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                          />
+                        )}
+                        <span>{tab.label}</span>
+                        <span
+                          className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
+                            isActive ? 'text-simona-teal font-semibold' : 'text-[#87888A] font-normal'
+                          }`}
+                        >
+                          ({tab.count})
+                        </span>
+                      </button>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* 2. Main Catalog Workspace: Split-Layout */}
@@ -704,6 +832,38 @@ export function CatalogView({
           </div>
         </div>
       </div>
+
+      {/* 2.5. Dedicated Brand Consultation & Kitchen Spec Banner */}
+      {brandDetails && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 text-left shadow-lg">
+            <div className="max-w-2xl space-y-2">
+              <h3 className="text-xl sm:text-2xl font-montserrat font-bold text-white tracking-tight">
+                Комплексный подбор бытовой техники {brandDetails.name}
+              </h3>
+              <p className="text-xs sm:text-sm text-[#87888A] leading-relaxed font-normal">
+                Эксперты сети салонов «СИМОНА» на ул. Белинского 15 и 11/66 рассчитают техническую спецификацию под ваш гарнитур, проверят зазоры встройки и предложат оптимальную выгоду на комплект.
+              </p>
+            </div>
+            <div className="flex flex-wrap sm:flex-nowrap gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => openModal('SHOWROOM_VISIT', { preferredShowroom: 'BELINSKOGO_15' })}
+                className="px-5 py-3 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold tracking-wide transition shadow-lg shadow-simona-teal/20 cursor-pointer"
+              >
+                Записаться в салон
+              </button>
+              <button
+                type="button"
+                onClick={() => openModal('EQUIPMENT_SELECTION')}
+                className="px-5 py-3 rounded-xl bg-[#1E2228] hover:bg-[#252A32] text-white border border-[#2B313A] hover:border-simona-teal/50 text-xs font-semibold tracking-wide transition cursor-pointer"
+              >
+                Запросить спецификацию
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 3. 4-Column Service Contour Block */}
       <CatalogServiceContour />

@@ -2,8 +2,11 @@ import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
-import { SimonaIconPin } from '@/components/brand/SimonaIcons';
-import { ArrowRight, Globe2 } from 'lucide-react';
+import {
+  SimonaIconPin,
+  SimonaIconArrowRight,
+  SimonaIconBuilding,
+} from '@/components/brand/SimonaIcons';
 import { prisma } from '@/lib/prisma';
 
 export const metadata: Metadata = {
@@ -36,6 +39,17 @@ const BRANDS_DIRECTORY: BrandMeta[] = [
     showroom: 'BELINSKOGO_15',
     showroomNote: 'Флагманская бренд-зона • Активная кухня (Белинского, 15)',
     description: 'Легендарное немецкое качество «Immer Besser». Ресурс испытаний 20 лет, запатентованный сотовый барабан, идеальный пар и точность температуры.',
+    isFeatured: true,
+  },
+  {
+    name: 'Bosch',
+    slug: 'bosch',
+    country: 'Германия',
+    countryCode: 'DE',
+    category: 'Встраиваемые духовые шкафы, варочные панели, посудомоечные машины',
+    showroom: 'BELINSKOGO_15',
+    showroomNote: 'Экспозиция в салоне и склад (Белинского, 15)',
+    description: 'Немецкие инженерные традиции и инновации с 1886 года. Серии Serie 8, Serie 6, минеральная сушка PerfectDry с цеолитом и сверхтихие моторы EcoSilence Drive.',
     isFeatured: true,
   },
   {
@@ -251,7 +265,7 @@ export default async function BrandsPage() {
                     {/* Header with Country & Showroom Badge */}
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center space-x-2 text-xs text-[#87888A]">
-                        <Globe2 className="w-3.5 h-3.5 text-simona-teal" />
+                        <SimonaIconBuilding className="w-3.5 h-3.5 text-simona-teal" />
                         <span>{b.country}</span>
                       </div>
                       <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[#1E2228] border border-[#2B313A] text-zinc-300">
@@ -285,7 +299,7 @@ export default async function BrandsPage() {
                       className="text-xs font-semibold text-white group-hover:text-simona-teal transition flex items-center space-x-1"
                     >
                       <span>О бренде и серии</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <SimonaIconArrowRight className="w-3.5 h-3.5" />
                     </Link>
 
                     <Link
