@@ -20,6 +20,7 @@ interface MobileFilterDrawerProps {
   priceBounds?: { min: number; max: number };
   categoryFacets?: CategoryFacet[];
   brandLock?: string;
+  onUnlockBrand?: () => void;
 }
 
 export function MobileFilterDrawer({
@@ -36,6 +37,7 @@ export function MobileFilterDrawer({
   priceBounds,
   categoryFacets,
   brandLock,
+  onUnlockBrand,
 }: MobileFilterDrawerProps) {
   if (!isOpen) return null;
 
@@ -76,6 +78,7 @@ export function MobileFilterDrawer({
             priceBounds={priceBounds}
             categoryFacets={categoryFacets}
             brandLock={brandLock}
+            onUnlockBrand={onUnlockBrand}
           />
         </div>
 

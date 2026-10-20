@@ -3,7 +3,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { MANUFACTURER_PROMOS } from '@/data/promosData';
 import { SimonaIconSearch, SimonaIconCheck, SimonaIconClock } from '@/components/brand/SimonaIcons';
@@ -47,6 +47,7 @@ interface CatalogSidebarProps {
   activeVariant?: 'sidebar_facets' | 'top_chips' | 'drawer';
   onOpenDrawer?: () => void;
   brandLock?: string;
+  onUnlockBrand?: () => void;
 }
 
 export function CatalogSidebar({
@@ -60,6 +61,7 @@ export function CatalogSidebar({
   priceBounds = { min: 0, max: 900000 },
   categoryFacets = [],
   brandLock,
+  onUnlockBrand,
 }: CatalogSidebarProps) {
   const { openModal } = useStore();
   const [mounted, setMounted] = useState(false);
@@ -596,9 +598,23 @@ export function CatalogSidebar({
         <div className="border-b border-[#2B313A]/60 pb-4">
           <div className="flex items-center justify-between py-1 text-xs">
             <span className="text-[#87888A] font-medium">Производитель</span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-simona-teal/15 border border-simona-teal/30 text-simona-teal font-semibold">
+            <span className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 rounded-md bg-simona-teal/15 border border-simona-teal/30 text-simona-teal font-semibold">
               <span className="w-1.5 h-1.5 rounded-full bg-simona-teal animate-pulse" />
-              {brandLock}
+              <span>{brandLock}</span>
+              {onUnlockBrand && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onUnlockBrand();
+                  }}
+                  className="ml-1 p-0.5 rounded hover:bg-simona-teal/30 text-simona-teal hover:text-white transition-colors cursor-pointer"
+                  title="Сбросить фильтр по бренду"
+                  aria-label="Сбросить фильтр по бренду"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </span>
           </div>
         </div>

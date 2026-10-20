@@ -153,9 +153,14 @@ export function CatalogToolbar({
               <button
                 key={brand}
                 onClick={() => onRemoveBrand(brand)}
-                className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group cursor-pointer"
+                className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-simona-teal/15 border border-simona-teal/50 hover:border-rose-500/50 text-xs text-white transition group cursor-pointer"
+                title={`Удалить фильтр по бренду ${brand}`}
+                aria-label={`Удалить фильтр по бренду ${brand}`}
               >
-                <span>{brand}</span>
+                <span className="text-[#87888A]">Бренд:</span>
+                <span className="font-semibold text-simona-teal group-hover:text-white transition-colors">
+                  {brand}
+                </span>
                 <X className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
               </button>
             ))}
