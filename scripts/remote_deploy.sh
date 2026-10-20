@@ -18,6 +18,9 @@ DATABASE_URL="postgresql://simona_app:SmBt_Staging_2026_PgPass!@localhost:5432/s
 NEXT_PUBLIC_SITE_URL="https://new.simona-bt.ru"
 SYNC_SECRET_KEY="simona_secure_sync_secret_2026"
 ADMIN_PASSWORD="Vzevzcj2"
+OFFLINE_CONVERSION_SECRET="simona_offline_secret_2026"
+CRON_SECRET="simona_cron_secret_2026"
+NEXT_PUBLIC_YM_ID="1351807"
 ENVEOF
 cp .env .env.production
 

@@ -21,10 +21,27 @@ NODE_ENV=production
 PORT=3000
 DATABASE_URL="postgresql://simona_app:SmBt_Staging_2026_PgPass!@localhost:5432/simona_prod"
 NEXT_PUBLIC_SITE_URL="https://simona-bt.ru"
+NEXT_PUBLIC_KUHNI_URL="https://simona-kuhni.ru"
 ADMIN_PASSWORD=Vzevzcj2
 OFFLINE_CONVERSION_SECRET=simona_offline_secret_2026
-YOOKASSA_SHOP_ID=simona_prod_shop
-YOOKASSA_SECRET_KEY=simona_prod_secret
+CRON_SECRET=simona_cron_secret_2026
+SYNC_SECRET_KEY=simona_secure_sync_secret_2026
+
+# SMTP Mail Configuration
+SMTP_HOST="smtp.mail.ru"
+SMTP_PORT="465"
+SMTP_USER="inet@simona-bt.ru"
+SMTP_PASS="LNZOs9Wva6kfehXvRgM1"
+SMTP_FROM="«СИМОНА» Бытовая техника <inet@simona-bt.ru>"
+MANAGER_EMAIL="inet@simona-bt.ru"
+
+# YooKassa Live Production
+YOOKASSA_SHOP_ID="388703"
+YOOKASSA_SECRET_KEY="live_McS9DE3zzJJvU5pKwrS2UbpZ3H7_-9v3RTaBIYV5HOo"
+YOOKASSA_VAT_CODE="1"
+
+# Yandex Metrika ID
+NEXT_PUBLIC_YM_ID="1351807"
 ENVEOF
 cp .env .env.production
 
