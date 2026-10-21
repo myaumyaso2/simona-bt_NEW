@@ -60,13 +60,14 @@ async function handleSync(req: NextRequest) {
     const directReports = await getDirectCampaignReports(1);
     results.directSpend = directReports.totalCostRub;
 
-    // 3. Выборка вчерашних оплат из базы заказов (PAID, DELIVERED, COMPLETED)
+    // 3. Выборка вчерашних оплат из базы заказов (PAID, DELIVERED, COMPLETED, excluding TEST)
     const yesterdayOrders = await prisma.order.findMany({
       where: {
         createdAt: {
           gte: startOfYesterday,
           lte: endOfYesterday,
         },
+        status: { not: 'TEST' },
       },
     });
 

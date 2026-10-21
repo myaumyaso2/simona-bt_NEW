@@ -103,11 +103,13 @@ export async function sendEmail(options: {
 
 export const ORDER_STATUS_LABELS: Record<string, string> = {
   NEW: 'Принят в обработку',
+  IN_PROGRESS: 'Принят в работу',
   CONFIRMED: 'Подтвержден экспертом',
   PAID: 'Оплачен',
   READY_FOR_PICKUP: 'Готов к выдаче на складе / в салоне',
   DELIVERED: 'Выполнен / Доставлен',
   CANCELLED: 'Отменен',
+  TEST: 'Тестовый заказ',
 };
 
 export const DELIVERY_TYPE_LABELS: Record<string, string> = {
@@ -295,6 +297,7 @@ export interface OrderEmailData {
   deliveryComment?: string | null;
   totalAmount: number;
   status: string;
+  isOneClick?: boolean;
   paymentMethod: string;
   paymentLink?: string | null;
   companyName?: string | null;
@@ -505,6 +508,11 @@ export async function sendOrderCreatedEmails(order: OrderEmailData) {
  * Включает кнопку [ Оплатить заказ онлайн ], если статус CONFIRMED и передана paymentLink
  */
 export async function sendOrderStatusChangedEmail(order: OrderEmailData) {
+  // Тестовые заказы не отправляют уведомления клиенту
+  if (order.status === 'TEST') {
+    return { sent: false, error: 'Тестовый заказ: отправка уведомлений отключена' };
+  }
+
   if (!order.customerEmail) {
     return { sent: false, error: 'Customer email is empty' };
   }

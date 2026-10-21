@@ -380,6 +380,13 @@ function ProfileContent() {
             <span>Готов к выдаче</span>
           </span>
         );
+      case 'IN_PROGRESS':
+        return (
+          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-sky-500/15 text-sky-400 border border-sky-500/20 text-xs font-semibold">
+            <SimonaIconClock className="w-3.5 h-3.5" />
+            <span>Принят в работу</span>
+          </span>
+        );
       case 'CONFIRMED':
         return (
           <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-blue-500/15 text-blue-400 border border-blue-500/20 text-xs font-semibold">

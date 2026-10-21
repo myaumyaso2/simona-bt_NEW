@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
       physicalStatus: data.physicalStatus || 'ON_ORDER',
     };
 
-    // 3. Создание заказа в БД со статусом ONE_CLICK
+    // 3. Создание заказа в БД со статусом NEW и признаком заказа в 1 клик (isOneClick = true)
     const order = await prisma.order.create({
       data: {
         orderNumber,
@@ -95,7 +95,8 @@ export async function POST(req: NextRequest) {
         paymentMethod: 'TO_BE_AGREED',
         deliveryComment: 'Быстрый заказ в 1 клик с карточки товара',
         totalAmount: data.price,
-        status: 'ONE_CLICK',
+        status: 'NEW',
+        isOneClick: true,
         paymentStatus: 'PENDING',
         itemsJson: JSON.stringify([orderItem]),
         orderItems: {

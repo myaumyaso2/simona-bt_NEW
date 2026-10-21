@@ -1,3 +1,4 @@
+import { isProductInOutletCategory } from '@/lib/catalog/outlet';
 import { Product } from '@prisma/client';
 import { ProductItem, PhysicalStatus, CategoryType, ManufacturerPromo } from '@/types';
 import { prisma } from './prisma';
@@ -46,6 +47,8 @@ export function formatPrismaProduct(p: Product): ProductItem {
     imagesJson: p.imagesJson,
     badge: p.badge,
     isFeatured: p.isFeatured,
+    isDiscount: p.isDiscount,
+    oldUrl: p.oldUrl || undefined,
   };
 }
 
@@ -68,6 +71,8 @@ export async function getProductBySlug(slug: string): Promise<ProductItem | null
 export async function getCatalogProducts(options?: {
   category?: string;
   categories?: string[];
+  categorySlug?: string;
+  includeOutlet?: boolean;
   brand?: string;
   limit?: number;
   offset?: number;
@@ -120,8 +125,37 @@ export async function getCatalogProducts(options?: {
       prisma.product.count({ where }),
     ]);
 
+    let formatted = items.map(formatPrismaProduct);
+    if (options?.includeOutlet && options?.categorySlug) {
+      try {
+        const outletItems = await prisma.product.findMany({
+          where: {
+            isActive: true,
+            OR: [
+              { category: { contains: 'Уцен' } },
+              { isDiscount: true },
+              { oldUrl: { contains: 'ucen' } },
+            ],
+            ...(where.brand ? { brand: where.brand } : {}),
+          },
+        });
+        const formattedOutlet = outletItems.map(formatPrismaProduct);
+        const matchingOutlet = formattedOutlet.filter((p) =>
+          isProductInOutletCategory(p, options.categorySlug!)
+        );
+        const existingIds = new Set(formatted.map((p) => p.id));
+        for (const op of matchingOutlet) {
+          if (!existingIds.has(op.id)) {
+            formatted.push(op);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching category outlet products:', err);
+      }
+    }
+
     return {
-      products: items.map(formatPrismaProduct),
+      products: formatted,
       total,
     };
   } catch (e) {

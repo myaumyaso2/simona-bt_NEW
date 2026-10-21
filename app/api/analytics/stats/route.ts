@@ -25,9 +25,12 @@ export async function GET(req: NextRequest) {
           }
         : {};
 
-    // 2. Fetch orders in period
+    // 2. Fetch orders in period (excluding TEST orders)
     const orders = await prisma.order.findMany({
-      where: dateFilter,
+      where: {
+        ...dateFilter,
+        status: { not: 'TEST' },
+      },
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,

@@ -146,7 +146,7 @@ export async function notifyNewOrderInMax(order: OrderEmailData): Promise<Messen
     itemsText = '';
   }
 
-  const isOneClick = order.status === 'ONE_CLICK';
+  const isOneClick = Boolean(order.isOneClick) || order.status === 'ONE_CLICK';
   const header = isOneClick
     ? `⚡ Быстрый заказ в 1 клик №${order.orderNumber} — ${Math.round(order.totalAmount).toLocaleString('ru-RU')} ₽`
     : `🛒 Новый заказ №${order.orderNumber} — ${Math.round(order.totalAmount).toLocaleString('ru-RU')} ₽`;

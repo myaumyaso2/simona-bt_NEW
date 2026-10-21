@@ -67,6 +67,7 @@ interface OrderRecord {
   deliveryComment: string | null;
   totalAmount: number;
   status: string;
+  isOneClick?: boolean;
   paymentStatus: string;
   paymentMethod: string;
   paymentLink: string | null;
@@ -129,13 +130,14 @@ interface NoPhotoProductRecord {
 }
 
 const ORDER_STATUS_OPTIONS = [
-  { value: 'NEW', label: 'Новый (Корзина)', badgeClass: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
-  { value: 'ONE_CLICK', label: 'В 1 клик', badgeClass: 'bg-amber-500/25 text-amber-200 border-amber-400/50' },
+  { value: 'NEW', label: 'Новый', badgeClass: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
+  { value: 'IN_PROGRESS', label: 'Принят в работу', badgeClass: 'bg-sky-500/15 text-sky-300 border-sky-500/30' },
   { value: 'CONFIRMED', label: 'Подтвержден экспертом', badgeClass: 'bg-blue-500/15 text-blue-300 border-blue-500/30' },
   { value: 'PAID', label: 'Оплачен', badgeClass: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
   { value: 'READY_FOR_PICKUP', label: 'Готов к выдаче', badgeClass: 'bg-simona-teal/20 text-simona-teal border-simona-teal/40' },
   { value: 'DELIVERED', label: 'Выполнен / Доставлен', badgeClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
   { value: 'CANCELLED', label: 'Отменен', badgeClass: 'bg-[#8A151A]/20 text-red-300 border-[#8A151A]/40' },
+  { value: 'TEST', label: 'Тестовый заказ', badgeClass: 'bg-zinc-700/30 text-zinc-400 border-zinc-600/40' },
 ];
 
 const LEAD_STATUS_OPTIONS = [
@@ -367,11 +369,14 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
       if (!res.ok) throw new Error(data.error || 'Ошибка обновления заказа');
 
       setOrders((prev) => prev.map((o) => (o.id === selectedOrderId ? data.order : o)));
-      const emailSentMsg = data.emailResult?.sent
-        ? ' • Письмо отправлено клиенту на почту'
-        : data.order.customerEmail
-        ? ' • Уведомление записано в журнал отправки'
-        : '';
+      const emailSentMsg =
+        data.order.status === 'TEST'
+          ? ' (тестовый заказ — отправка клиенту пропущена)'
+          : data.emailResult?.sent
+          ? ' • Письмо отправлено клиенту на почту'
+          : data.order.customerEmail
+          ? ' • Уведомление записано в журнал отправки'
+          : '';
       showToast('success', `Статус заказа №${data.order.orderNumber} обновлен${emailSentMsg}`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Ошибка сохранения';
@@ -748,8 +753,18 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
                           </div>
 
                           <div className="text-right shrink-0">
-                            <div className="text-base font-montserrat font-bold text-simona-teal">
-                              {formatPrice(order.totalAmount)}
+                            <div className="flex items-center justify-end gap-2">
+                              <div className="text-base font-montserrat font-bold text-simona-teal">
+                                {formatPrice(order.totalAmount)}
+                              </div>
+                              {order.isOneClick && (
+                                <span
+                                  title="Быстрый заказ в 1 клик"
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 select-none"
+                                >
+                                  <span>⚡ В 1 клик</span>
+                                </span>
+                              )}
                             </div>
                             <div className="text-[11px] text-[#87888A] mt-1">
                               {new Date(order.createdAt).toLocaleString('ru-RU')}
@@ -774,8 +789,18 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
                         </h2>
                       </div>
                       <div className="text-right">
-                        <div className="text-xl font-montserrat font-bold text-simona-teal">
-                          {formatPrice(selectedOrder.totalAmount)}
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="text-xl font-montserrat font-bold text-simona-teal">
+                            {formatPrice(selectedOrder.totalAmount)}
+                          </div>
+                          {selectedOrder.isOneClick && (
+                            <span
+                              title="Быстрый заказ в 1 клик (признак неизменяем)"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 select-none"
+                            >
+                              <span>⚡ В 1 клик</span>
+                            </span>
+                          )}
                         </div>
                         <div className="text-[11px] text-[#87888A]">
                           {new Date(selectedOrder.createdAt).toLocaleString('ru-RU')}
@@ -918,9 +943,16 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
                     {/* Status & Payment Link Form */}
                     <form onSubmit={handleUpdateOrder} className="space-y-4 pt-4 border-t border-[#2B313A]">
                       <div>
-                        <label className="block text-xs font-semibold text-white mb-1.5">
-                          Статус заказа (при смене отправляется письмо клиенту)
-                        </label>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="text-xs font-semibold text-white">
+                            Статус заказа {editStatus === 'TEST' ? '(тестовый — без отправки клиенту и аналитики)' : '(при смене отправляется письмо клиенту)'}
+                          </label>
+                          {selectedOrder.isOneClick && (
+                            <span className="text-[11px] text-amber-300 font-medium">
+                              Заказ в 1 клик (тип не меняется)
+                            </span>
+                          )}
+                        </div>
                         <select
                           value={editStatus}
                           onChange={(e) => setEditStatus(e.target.value)}
@@ -953,7 +985,9 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
                         className="w-full py-3 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold transition cursor-pointer shadow-lg shadow-simona-teal/20"
                       >
                         {isUpdatingOrder
-                          ? 'Сохранение и отправка письма...'
+                          ? 'Сохранение...'
+                          : editStatus === 'TEST'
+                          ? 'Сохранить статус (тестовый заказ)'
                           : 'Сохранить статус и уведомить покупателя по Email'}
                       </button>
                     </form>
