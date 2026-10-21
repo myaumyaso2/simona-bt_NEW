@@ -8,7 +8,6 @@ import {
   SimonaIconShare,
 } from '@/components/brand/SimonaIcons';
 import { formatBrandName } from '@/lib/formatters';
-import { getProductPhysicalStatus } from '@/lib/utils';
 
 interface ProductHeroGalleryProps {
   product: ProductItem;
@@ -24,7 +23,6 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
   const [copied, setCopied] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
 
-  const physicalStatus = getProductPhysicalStatus(product);
   const brandFormatted = formatBrandName(product.brand);
 
   const handleShare = async () => {
@@ -71,31 +69,8 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
 
       {/* 2. Main Image Stage (White Luxury Showcase Tablet with object-contain) */}
       <div className="order-1 md:order-2 flex-1 relative h-[380px] sm:h-[480px] md:h-[580px] bg-white rounded-2xl border border-white/10 shadow-inner overflow-hidden flex items-center justify-center p-4 sm:p-6 select-none">
-        {/* Badges Stack (Top-Left): Availability Status + Brand Tag */}
-        <div className="absolute top-4 left-4 z-20 flex flex-col items-start gap-1.5 max-w-[85%] pointer-events-none">
-          {physicalStatus === 'DISCOUNT' ? (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-bold bg-simona-wine text-white border border-[#A71B20] backdrop-blur-md shadow-md">
-              Уценка
-            </span>
-          ) : physicalStatus === 'SHOWROOM' ? (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
-              На витрине
-            </span>
-          ) : physicalStatus === 'LOCAL_STOCK' ? (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
-              На складе
-            </span>
-          ) : physicalStatus === 'REMOTE_STOCK' ? (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
-              На удаленном складе
-            </span>
-          ) : (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-medium bg-[#16191D]/85 text-[#D7D9DB] border border-[#2B313A] backdrop-blur-md shadow-md">
-              Под заказ
-            </span>
-          )}
-
-          {/* Brand Tag directly below status badge */}
+        {/* Brand Tag (Top-Left) */}
+        <div className="absolute top-4 left-4 z-20 pointer-events-none">
           <span className="px-2.5 py-0.5 rounded-md bg-[#16191D]/90 backdrop-blur-md text-[10px] font-bold tracking-wider text-white border border-[#2B313A] shadow-md">
             {brandFormatted}
           </span>

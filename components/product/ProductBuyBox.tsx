@@ -65,6 +65,14 @@ export function ProductBuyBox({
 
   const physicalStatus = getProductPhysicalStatus(product);
   const brandFormatted = formatBrandName(product.brand);
+  const brandLower = (product.brand || '').toLowerCase();
+  const isKortingOrOmoikiri =
+    brandLower.includes('korting') ||
+    brandLower.includes('körting') ||
+    brandLower.includes('omoikiri');
+  const showroomAddress = isKortingOrOmoikiri
+    ? 'ул. Белинского, 11/66'
+    : 'ул. Белинского, 15';
   const formattedTitle = formatProductName(product);
 
   const productPromos = getPromosForProduct(product);
@@ -171,36 +179,20 @@ export function ProductBuyBox({
 
       {/* Showroom Exhibition Sample Status Block */}
       {physicalStatus === 'SHOWROOM' && (
-        <div className="bg-[#1E2228] border border-simona-teal/40 rounded-xl p-3.5 flex flex-col gap-1.5 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10.5px] font-bold bg-[#16191D] text-simona-teal border border-simona-teal/50 shadow-sm">
-              На витрине
-            </span>
-            <span className="text-[#87888A] text-[11px] font-medium">Штучный экземпляр в салоне</span>
-          </div>
+        <div className="bg-[#1E2228] border border-simona-teal/40 rounded-xl p-3.5 text-xs">
           <p className="text-white text-xs leading-relaxed font-normal">
-            Образец на экспозиции в салоне на <span className="font-semibold text-simona-teal">ул. Белинского 15</span>. Товар в идеальном состоянии, но заводская упаковка нарушена.
+            Образец на экспозиции в салоне на{' '}
+            <span className="font-semibold text-simona-teal">{showroomAddress}</span>. Товар в идеальном состоянии, но заводская упаковка нарушена.
           </p>
         </div>
       )}
 
       {/* Markdown / Outlet Item Status Block */}
       {physicalStatus === 'DISCOUNT' && (
-        <div className="bg-[#1E2228] border border-simona-wine/50 rounded-xl p-3.5 flex flex-col gap-2 text-xs">
-          <div className="flex items-center justify-between">
-            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10.5px] font-bold bg-simona-wine text-white border border-[#A71B20] shadow-sm">
-              Уценка
-            </span>
-            <span className="text-[#D7D9DB] text-[11px] font-medium">Штучный экземпляр</span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-[#87888A] text-[11px]">Причина уценки:</span>
-            <p className="text-white text-xs leading-relaxed font-medium bg-[#16191D]/90 border border-[#2B313A] p-2.5 rounded-lg">
-              {product.discountReason || 'Нарушена заводская упаковка (уточняйте детали состояния у персонального эксперта)'}
-            </p>
-          </div>
-          <p className="text-[11px] text-[#87888A] leading-relaxed">
-            Товар находится в салоне на <span className="text-[#D7D9DB]">ул. Белинского</span>. Доступен для самовывоза или бережной доставки после согласования с менеджером.
+        <div className="bg-[#1E2228] border border-simona-wine/50 rounded-xl p-3.5 flex flex-col gap-1.5 text-xs">
+          <span className="text-[#87888A] text-[11px] font-medium">Причина уценки:</span>
+          <p className="text-white text-xs leading-relaxed font-medium bg-[#16191D]/90 border border-[#2B313A] p-2.5 rounded-lg">
+            {product.discountReason || 'Нарушена заводская упаковка (уточняйте детали состояния у персонального эксперта)'}
           </p>
         </div>
       )}
