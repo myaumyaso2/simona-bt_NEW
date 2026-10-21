@@ -93,7 +93,9 @@ export async function POST(req: NextRequest) {
         customerPhone,
         deliveryType: 'TO_BE_AGREED',
         paymentMethod: 'TO_BE_AGREED',
-        deliveryComment: 'Быстрый заказ в 1 клик с карточки товара',
+        deliveryComment: (orderItem.physicalStatus === 'SHOWROOM' || orderItem.physicalStatus === 'DISCOUNT')
+          ? '⚠️ [ШТУЧНЫЙ ОБРАЗЕЦ: Витрина/Уценка — требуется подтверждение фактического наличия в салоне на ул. Белинского]\nБыстрый заказ в 1 клик с карточки товара'
+          : 'Быстрый заказ в 1 клик с карточки товара',
         totalAmount: data.price,
         status: 'NEW',
         isOneClick: true,

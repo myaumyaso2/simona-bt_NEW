@@ -25,6 +25,8 @@ export function ProductMobileBottomBar({ product }: ProductMobileBottomBarProps)
     switch (o2oInfo.physicalStatus) {
       case 'SHOWROOM':
         return '• В экспозиции в салоне';
+      case 'DISCOUNT':
+        return '• Уценка (салон на Белинского)';
       case 'LOCAL_STOCK':
         return '• На складе в НН (1–2 дня)';
       case 'REMOTE_STOCK':
@@ -36,7 +38,9 @@ export function ProductMobileBottomBar({ product }: ProductMobileBottomBarProps)
   }, [o2oInfo.physicalStatus]);
 
   const statusColor =
-    o2oInfo.physicalStatus === 'ON_ORDER'
+    o2oInfo.physicalStatus === 'DISCOUNT'
+      ? 'text-simona-wine-light'
+      : o2oInfo.physicalStatus === 'ON_ORDER'
       ? 'text-[#D7D9DB]'
       : o2oInfo.physicalStatus === 'REMOTE_STOCK'
       ? 'text-simona-teal'

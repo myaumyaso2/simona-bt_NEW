@@ -31,6 +31,14 @@ export function normalizeRussianPhone(rawPhone: string): string {
 }
 
 export const PHYSICAL_STATUS_CONFIG = {
+  DISCOUNT: {
+    badge: "Уценка",
+    location: "Салоны / Склад (уточняйте наличие)",
+    badgeClass: "bg-simona-wine text-white border border-[#A71B20]",
+    primaryButton: "Купить уцененный товар",
+    secondaryButton: "Уточнить состояние",
+    icon: "Tag",
+  },
   SHOWROOM: {
     badge: "На витрине",
     location: "Салоны на ул. Белинского",
@@ -91,7 +99,7 @@ export const PHYSICAL_STATUS_CONFIG = {
 
 export type PhysicalStatusKey = keyof typeof PHYSICAL_STATUS_CONFIG;
 
-export type EffectivePhysicalStatus = 'SHOWROOM' | 'LOCAL_STOCK' | 'REMOTE_STOCK' | 'ON_ORDER';
+export type EffectivePhysicalStatus = 'SHOWROOM' | 'DISCOUNT' | 'LOCAL_STOCK' | 'REMOTE_STOCK' | 'ON_ORDER';
 
 /**
  * Returns single deterministic physical status based on priority:
@@ -102,13 +110,25 @@ export type EffectivePhysicalStatus = 'SHOWROOM' | 'LOCAL_STOCK' | 'REMOTE_STOCK
  */
 export function getProductPhysicalStatus(product: {
   physicalStatus?: string;
+  isDiscount?: boolean | null;
+  isSpecial?: boolean | null;
   stockBelinskogo15?: number;
   stockKominterna?: number;
   stockRemote?: number;
   inStock?: boolean;
 }): EffectivePhysicalStatus {
+  // 1. Уценка (DISCOUNT): в 1С Уценка == 1 и Спец предложени == 0
+  if (
+    product.physicalStatus === 'DISCOUNT' ||
+    (Boolean(product.isDiscount) && !Boolean(product.isSpecial))
+  ) {
+    return 'DISCOUNT';
+  }
+
+  // 2. На витрине (SHOWROOM): в 1С Уценка == 1 и Спец предложени == 1
   const isShowroom =
     product.physicalStatus === 'SHOWROOM' ||
+    (Boolean(product.isDiscount) && Boolean(product.isSpecial)) ||
     product.physicalStatus === 'ACTIVE_KITCHEN' ||
     product.physicalStatus === 'EXHIBITION_15' ||
     product.physicalStatus === 'EXHIBITION_11' ||
@@ -116,6 +136,7 @@ export function getProductPhysicalStatus(product: {
 
   if (isShowroom) return 'SHOWROOM';
 
+  // 3. На складе в НН (LOCAL_STOCK)
   const isLocal =
     product.physicalStatus === 'LOCAL_STOCK' ||
     Boolean(product.inStock) ||
@@ -123,11 +144,13 @@ export function getProductPhysicalStatus(product: {
 
   if (isLocal) return 'LOCAL_STOCK';
 
+  // 4. Удаленный склад (REMOTE_STOCK)
   const isRemote =
     product.physicalStatus === 'REMOTE_STOCK' ||
     (product.stockRemote !== undefined && product.stockRemote > 0);
 
   if (isRemote) return 'REMOTE_STOCK';
 
+  // 5. Под заказ
   return 'ON_ORDER';
 }

@@ -139,9 +139,22 @@ export async function notifyNewOrderInMax(order: OrderEmailData): Promise<Messen
       price: number;
       quantity: number;
     }>;
+    const hasShowroomOrDiscount = items.some(
+      (i) => (i as any).physicalStatus === 'SHOWROOM' || (i as any).physicalStatus === 'DISCOUNT'
+    );
     itemsText = items
-      .map((i) => `• [${i.sku || '—'}] ${i.name} (${i.quantity} шт. — ${(i.price * i.quantity).toLocaleString('ru-RU')} ₽)`)
+      .map((i) => {
+        const marker = (i as any).physicalStatus === 'SHOWROOM'
+          ? ' [ВИТРИНА]'
+          : (i as any).physicalStatus === 'DISCOUNT'
+          ? ' [УЦЕНКА]'
+          : '';
+        return `• [${i.sku || '—'}] ${i.name}${marker} (${i.quantity} шт. — ${(i.price * i.quantity).toLocaleString('ru-RU')} ₽)`;
+      })
       .join('\n');
+    if (hasShowroomOrDiscount) {
+      itemsText += '\n⚠️ В заказе штучный образец (Витрина/Уценка) — проверьте фактическое наличие в салоне на ул. Белинского!';
+    }
   } catch {
     itemsText = '';
   }

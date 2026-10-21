@@ -188,11 +188,18 @@ export async function createAsanaOrderTask(order: OrderEmailData): Promise<Asana
       price: number;
       quantity: number;
     }>;
+    const hasShowroomOrDiscount = items.some(
+      (i) => (i as any).physicalStatus === 'SHOWROOM' || (i as any).physicalStatus === 'DISCOUNT'
+    );
     itemsList = items
-      .map(
-        (i, idx) =>
-          `${idx + 1}. [Код 1С: ${i.sku || '—'}] ${i.name} — ${i.quantity} шт. × ${i.price.toLocaleString('ru-RU')} ₽`
-      )
+      .map((i, idx) => {
+        const statusMarker = (i as any).physicalStatus === 'SHOWROOM'
+          ? ' [ВИТРИНА]'
+          : (i as any).physicalStatus === 'DISCOUNT'
+          ? ' [УЦЕНКА]'
+          : '';
+        return `${idx + 1}. [Код 1С: ${i.sku || '—'}] ${i.name}${statusMarker} — ${i.quantity} шт. × ${i.price.toLocaleString('ru-RU')} ₽`;
+      })
       .join('\n');
   } catch {
     itemsList = order.itemsJson;

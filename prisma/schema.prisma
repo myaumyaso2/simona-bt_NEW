@@ -41,6 +41,7 @@ model Product {
   priceOpt        Float?                          // Оптовая цена 1С для менеджеров
   isDiscount      Boolean  @default(false)        // Признак Уценка (колонка 9)
   isSpecial       Boolean  @default(false)        // Признак Спец предложение (колонка 7)
+  discountReason  String?                         // Причина уценки (дефекты, нарушенная упаковка, витрина)
   noPrice         Boolean  @default(false)        // Признак Без цены (колонка 11)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

@@ -195,6 +195,14 @@ export async function POST(req: NextRequest) {
 
     const orderNumber = await getNextOrderNumber();
 
+    const hasShowroomOrDiscount = normalizedItems.some(
+      (item) => item.physicalStatus === 'SHOWROOM' || item.physicalStatus === 'DISCOUNT'
+    );
+    const sampleWarning = '⚠️ [ШТУЧНЫЙ ОБРАЗЕЦ: Витрина/Уценка — требуется подтверждение фактического наличия в салоне на ул. Белинского]';
+    const effectiveDeliveryComment = hasShowroomOrDiscount
+      ? (deliveryComment ? `${sampleWarning}\n${deliveryComment}` : sampleWarning)
+      : deliveryComment;
+
     const order = await prisma.order.create({
       data: {
         orderNumber,
@@ -205,7 +213,7 @@ export async function POST(req: NextRequest) {
         deliveryType,
         deliveryAddress,
         deliveryDate,
-        deliveryComment,
+        deliveryComment: effectiveDeliveryComment,
         totalAmount,
         status: 'NEW',
         paymentStatus: 'PENDING',

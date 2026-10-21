@@ -44,8 +44,8 @@ export function CatalogHero({
 }: CatalogHeroProps) {
   const allTabs: PresenceTabItem[] = [
     { id: 'ALL', label: 'Все', count: presenceCounts?.ALL ?? totalCount },
-    { id: 'SHOWROOM', label: 'На витрине', count: presenceCounts?.SHOWROOM ?? 0 },
     { id: 'LOCAL_STOCK', label: 'На складе', count: presenceCounts?.LOCAL_STOCK ?? 0 },
+    { id: 'SHOWROOM', label: 'На витрине', count: presenceCounts?.SHOWROOM ?? 0 },
     { id: 'DISCOUNT', label: 'Уценка', count: presenceCounts?.DISCOUNT ?? 0 },
     { id: 'REMOTE_STOCK', label: 'На удаленном складе', count: presenceCounts?.REMOTE_STOCK ?? 0 },
     { id: 'ON_ORDER', label: 'Под заказ', count: presenceCounts?.ON_ORDER ?? 0 },

@@ -48,6 +48,8 @@ export function formatPrismaProduct(p: Product): ProductItem {
     badge: p.badge,
     isFeatured: p.isFeatured,
     isDiscount: p.isDiscount,
+    isSpecial: p.isSpecial,
+    discountReason: p.discountReason || undefined,
     oldUrl: p.oldUrl || undefined,
   };
 }

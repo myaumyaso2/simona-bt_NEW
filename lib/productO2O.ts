@@ -47,6 +47,23 @@ export function getProductO2OInfo(product: ProductItem): ProductO2OInfo {
   let consultationText: string;
 
   switch (status) {
+    case 'DISCOUNT':
+      statusBadge = {
+        text: `Уценка: салон на ${showroomAddress}`,
+        variant: 'zinc',
+        subtext: product.discountReason || 'Штучный уцененный образец',
+      };
+      pickupText = {
+        time: 'Сегодня',
+        location: `из салона (${showroomAddress})`,
+      };
+      deliveryText = {
+        time: '1–2 рабочих дня',
+        details: '(после согласования деталей состояния)',
+      };
+      consultationText = `Образец находится в салоне на ${showroomAddress}, свяжитесь с экспертом для подтверждения наличия`;
+      break;
+
     case 'SHOWROOM':
       statusBadge = {
         text: `В экспозиции: ${showroomAddress}`,

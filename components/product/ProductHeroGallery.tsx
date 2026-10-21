@@ -73,7 +73,11 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
       <div className="order-1 md:order-2 flex-1 relative h-[380px] sm:h-[480px] md:h-[580px] bg-white rounded-2xl border border-white/10 shadow-inner overflow-hidden flex items-center justify-center p-4 sm:p-6 select-none">
         {/* Badges Stack (Top-Left): Availability Status + Brand Tag */}
         <div className="absolute top-4 left-4 z-20 flex flex-col items-start gap-1.5 max-w-[85%] pointer-events-none">
-          {physicalStatus === 'SHOWROOM' ? (
+          {physicalStatus === 'DISCOUNT' ? (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-bold bg-simona-wine text-white border border-[#A71B20] backdrop-blur-md shadow-md">
+              Уценка
+            </span>
+          ) : physicalStatus === 'SHOWROOM' ? (
             <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
               На витрине
             </span>

@@ -2,19 +2,50 @@ import { ProductItem } from '@/types';
 
 /**
  * Universal classifier for outlet / discounted products
- * Checks category name, isDiscount flag, old UMI CMS URL marker (_ucenka), or title.
+ * Strictly matches DISCOUNT products: isDiscount && !isSpecial, or category/URL marker.
+ * Showroom products (isDiscount && isSpecial) are treated as SHOWROOM, not outlet!
  */
 export function isProductOutlet(product: {
   category?: string | null;
   isDiscount?: boolean | null;
+  isSpecial?: boolean | null;
+  physicalStatus?: string | null;
   oldUrl?: string | null;
   name?: string | null;
 }): boolean {
-  if (product.isDiscount) return true;
+  if (product.physicalStatus === 'DISCOUNT') return true;
+  if (product.physicalStatus === 'SHOWROOM') return false;
+  if (Boolean(product.isDiscount) && !Boolean(product.isSpecial)) return true;
+  if (Boolean(product.isDiscount) && Boolean(product.isSpecial)) return false;
   const cat = (product.category || '').toLowerCase();
   if (cat.includes('уцен')) return true;
   const url = (product.oldUrl || '').toLowerCase();
   if (url.includes('ucen')) return true;
+  return false;
+}
+
+/**
+ * Universal classifier for showroom / exhibition products
+ * Matches SHOWROOM products: isDiscount && isSpecial, or physicalStatus SHOWROOM.
+ */
+export function isProductShowroom(product: {
+  physicalStatus?: string | null;
+  isDiscount?: boolean | null;
+  isSpecial?: boolean | null;
+  stockBelinskogo15?: number | null;
+}): boolean {
+  if (
+    product.physicalStatus === 'SHOWROOM' ||
+    product.physicalStatus === 'ACTIVE_KITCHEN' ||
+    product.physicalStatus === 'EXHIBITION_15' ||
+    product.physicalStatus === 'EXHIBITION_11'
+  ) {
+    return true;
+  }
+  if (Boolean(product.isDiscount) && Boolean(product.isSpecial)) return true;
+  if (product.stockBelinskogo15 !== undefined && product.stockBelinskogo15 !== null && product.stockBelinskogo15 > 0) {
+    return true;
+  }
   return false;
 }
 

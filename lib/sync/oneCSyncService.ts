@@ -35,7 +35,18 @@ export function resolvePhysicalStatus(params: {
   stockBelinskogo15: number;
   stockKominterna: number;
   stockRemote: number;
+  isDiscount?: boolean;
+  isSpecial?: boolean;
 }): { physicalStatus: string; inStock: boolean } {
+  // 1. SHOWROOM («На витрине»): в 1С Уценка == 1 и Спец предложени == 1
+  if (params.isDiscount && params.isSpecial && params.stockKominterna > 0) {
+    return { physicalStatus: 'SHOWROOM', inStock: true };
+  }
+  // 2. DISCOUNT («Уценка»): в 1С Уценка == 1 и Спец предложени == 0
+  if (params.isDiscount && !params.isSpecial && params.stockKominterna > 0) {
+    return { physicalStatus: 'DISCOUNT', inStock: true };
+  }
+
   const showroomStatuses = ['SHOWROOM', 'EXHIBITION_15', 'EXHIBITION_11', 'ACTIVE_KITCHEN'];
   const isCurrentlyShowroom = Boolean(
     params.currentStatus && showroomStatuses.includes(params.currentStatus)
@@ -508,6 +519,8 @@ export async function syncFullCatalog(
                 stockBelinskogo15: existingProduct.stockBelinskogo15,
                 stockKominterna: item.stockKominterna,
                 stockRemote: existingProduct.stockRemote,
+                isDiscount: item.isDiscount,
+                isSpecial: item.isSpecial,
               });
 
           const nextPrice =
@@ -779,6 +792,14 @@ export async function syncFullCatalog(
           const hasPhoto = hasValidPhotos(imagesJson);
           const isActive = hasPhoto;
 
+          const createdStatus = resolvePhysicalStatus({
+            stockBelinskogo15: 0,
+            stockKominterna: item.stockKominterna,
+            stockRemote: 0,
+            isDiscount: item.isDiscount,
+            isSpecial: item.isSpecial,
+          });
+
           const newProduct = {
             id: item.code,
             sku: item.code,
@@ -790,7 +811,7 @@ export async function syncFullCatalog(
             categoryType: 'CATEGORY_B',
             productGroup: item.group || null,
             systemArticle: item.systemArticle || null,
-            physicalStatus: item.inStock ? 'LOCAL_STOCK' : 'ON_ORDER',
+            physicalStatus: createdStatus.physicalStatus,
             price: item.resolvedPrice,
             oldPrice: item.resolvedOldPrice,
             priceOpt: item.priceOpt > 0 ? item.priceOpt : null,

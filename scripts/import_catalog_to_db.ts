@@ -57,6 +57,9 @@ async function main() {
       imagesJson: JSON.stringify(p.images || []),
       badge: p.badge || null,
       isFeatured: Boolean(p.isFeatured),
+      isDiscount: Boolean(p.isDiscount),
+      isSpecial: Boolean(p.isSpecial),
+      discountReason: p.discountReason || null,
     }));
 
     await prisma.product.createMany({

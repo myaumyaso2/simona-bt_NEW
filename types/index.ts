@@ -2,6 +2,7 @@ export type CategoryType = 'CATEGORY_A' | 'CATEGORY_B';
 
 export type PhysicalStatus =
   | 'SHOWROOM'
+  | 'DISCOUNT'
   | 'LOCAL_STOCK'
   | 'REMOTE_STOCK'
   | 'ON_ORDER'
@@ -85,6 +86,8 @@ export interface ProductItem {
   badge?: string | null;
   isFeatured?: boolean;
   isDiscount?: boolean;
+  isSpecial?: boolean;
+  discountReason?: string | null;
   oldUrl?: string;
   colors?: ProductColorOption[];
   technologies?: ProductTechnology[];
