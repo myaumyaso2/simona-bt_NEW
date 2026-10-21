@@ -52,7 +52,7 @@ export function PromoDetailView({ promo, initialProducts }: PromoDetailViewProps
       <Breadcrumbs
         items={[
           { name: 'Акции производителей', url: '/promos' },
-          { name: `${promo.brand}: ${promo.title}` },
+          { name: promo.title.startsWith(promo.brand) ? promo.title : `${promo.brand}. ${promo.title}` },
         ]}
       />
 

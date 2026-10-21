@@ -147,6 +147,7 @@ export interface PromoTier {
 export interface ManufacturerPromo {
   id: string;
   slug: string;
+  asanaTaskGid?: string;
   brand: string;
   brandCountry?: string;
   title: string;
