@@ -607,52 +607,6 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
     participatingSkus: ["88149", "88150", "88151", "88152", "89687", "84908", "86810", "86809", "90148", "84891", "89688", "86805", "85827", "89051", "89052", "84923", "88145", "88143", "84903", "84900", "84905", "84904", "89053", "89054", "89055", "89056", "89057", "89058", "85835", "85833", "85834", "89060", "84888", "85832", "89062", "85831", "85830", "89059", "89064", "84889", "89061", "89063", "84887", "84886", "89065", "89066", "89067", "89068", "84899", "85829", "84896", "84897", "86807", "89690", "89689", "89692", "85836", "89691", "88502", "88504", "84920", "84894", "84895", "84893", "84892", "84910", "84909", "84911", "84912", "86804", "86803", "88505", "88506", "84914", "84913", "84916", "91657", "91655", "89071", "89279"],
     participatingProductSlugs: ["vard-vcpa1c", "vard-vcpa1v", "vard-vcpa1a", "vard-vcpa1o", "vard-vcc-6k", "vard-vcc-5k", "vard-vmg-245pk", "vard-vmg-125pk", "vard-vmg-122pk", "vard-vmc-355hk", "vard-vdi-612lt", "vard-vdi-651c", "vard-vdi-451c", "vard-wci-4sstb", "vard-wci-4sstg", "vard-wci-4ss", "vard-vfi-177niw", "vard-vic-177niw", "vard-vhgs-6434k", "vard-vhg-6424x", "vard-vhls-9534k", "vard-vhls-6434k", "vard-vos-684sb", "vard-vos-684sg", "vard-vop-682b", "vard-vop-682g", "vard-voe-684b", "vard-voe-684g", "vard-von-564b", "vard-von-444b", "vard-von-564x", "vard-voe-554hb", "vard-voe-444i", "vard-von-444x", "vard-voc-444hb", "vard-von-441b", "vard-von-441x", "vard-voe-554hx", "vard-voe-442hb", "vard-voe-444b", "vard-voc-444hi", "vard-voe-442hx", "vard-voe-432b", "vard-voe-432y", "vard-vpe-681mb", "vard-vpe-681mg", "vard-vps-681mb", "vard-vps-681mg", "vard-vhi-9552k", "vard-vhi-6461x", "vard-vhi-6420b", "vard-vhi-6420x", "vard-vhi-3260k", "vard-vhh-8462b", "vard-vhh-6472b", "vard-vfg-665pk", "vard-vfg-664pk", "vard-vfg-661k", "vard-vsmps-26t", "vard-vsmps-15n", "vard-vrs-177ni", "vard-vhc-6464k", "vard-vhc-6464x", "vard-vhc-6421x", "vard-vhc-6421b", "vard-vwf-514b", "vard-vwf-514", "vard-vwf-314", "vard-vwf-494", "vard-vwd-514sb", "vard-vwd-514s", "vard-vwd-414b", "vard-vwd-414", "vard-vth-61b", "vard-vth-61", "vard-vth-58", "vard-vri-191m60bg", "vard-vri-192m54sx", "vard-vam-14b", "vard-vam-14g"],
   },
-{
-    id: 'promo-smeg-bundle-archived',
-    slug: 'smeg-skidki-na-komplekty',
-    title: "Smeg. Скидки до 20% на комплекты техники",
-    brand: 'Smeg',
-    badgeText: 'Комплектная скидка',
-    discountBadge: 'Скидка до 20%',
-    timeRemaining: 'Акция завершена 30 сентября 2026',
-    startDate: '2026-09-01',
-    endDate: '2026-09-30',
-    isActive: false,
-    bannerUrl: '/images/promos/promo-smeg-bundle.jpg',
-    thumbnailUrl: '/images/promos/promo-smeg-bundle.jpg',
-    heroBgUrl: '/images/promos/promo-smeg-bundle.jpg',
-    shortDescription: "Специальное предложение на комплекты встраиваемой и соло техники Smeg.",
-    fullDescription: "Акция завершилась 30 сентября 2026 года. Следите за актуальными предложениями бренда в салонах СИМОНА.",
-    tiers: [],
-    conditions: [
-      "Акция завершена."
-],
-    participatingSkus: [],
-    participatingProductSlugs: [],
-  },
-  {
-    id: 'promo-asko-autumn-archived',
-    slug: 'asko-specialnye-predlozheniya-osen',
-    title: "Asko. Специальные условия на технику",
-    brand: 'Asko',
-    badgeText: 'Специальные условия',
-    discountBadge: 'Спецусловия',
-    timeRemaining: 'Акция завершена 30 сентября 2026',
-    startDate: '2026-09-01',
-    endDate: '2026-09-30',
-    isActive: false,
-    bannerUrl: '/images/promos/promo-korting-formula.jpg',
-    thumbnailUrl: '/images/promos/promo-korting-formula.jpg',
-    heroBgUrl: '/images/promos/promo-korting-formula.jpg',
-    shortDescription: "Специальная программа на скандинавскую технику ASKO для кухни и ухода за бельем.",
-    fullDescription: "Акция завершилась 30 сентября 2026 года. Следите за актуальными предложениями бренда в салонах СИМОНА.",
-    tiers: [],
-    conditions: [
-      "Акция завершена."
-],
-    participatingSkus: [],
-    participatingProductSlugs: [],
-  },
 ];
 
 export function getActivePromos(): ManufacturerPromo[] {

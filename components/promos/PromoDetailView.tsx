@@ -87,15 +87,21 @@ export function PromoDetailView({ promo, initialProducts }: PromoDetailViewProps
                 {promo.brand} {promo.brandCountry ? `(${promo.brandCountry})` : ''}
               </span>
 
-              {(promo.badgeText || promo.discountBadge) && (
-                <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-simona-wine/25 text-white text-xs font-semibold border border-simona-wine/50 backdrop-blur-md shadow-sm">
-                  <span>{promo.badgeText || promo.discountBadge}</span>
+              {promo.isActive === false ? (
+                <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-[#2B313A] text-[#87888A] text-xs font-semibold border border-[#3E4550]">
+                  <span>Акция завершена</span>
                 </div>
+              ) : (
+                (promo.badgeText || promo.discountBadge) && (
+                  <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-simona-wine/25 text-white text-xs font-semibold border border-simona-wine/50 backdrop-blur-md shadow-sm">
+                    <span>{promo.badgeText || promo.discountBadge}</span>
+                  </div>
+                )
               )}
 
               <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] text-xs text-[#D7D9DB]">
                 <SimonaIconClock className="w-3.5 h-3.5 text-simona-wine-light" />
-                <span>до {promo.endDate}</span>
+                <span>{promo.isActive === false ? (promo.timeRemaining || `Завершена ${promo.endDate}`) : `до ${promo.endDate}`}</span>
               </div>
             </div>
 
@@ -107,14 +113,34 @@ export function PromoDetailView({ promo, initialProducts }: PromoDetailViewProps
               {promo.shortDescription}
             </p>
 
+            {promo.isActive === false && (
+              <div className="mt-5 p-4 rounded-xl bg-[#16191D]/90 border border-amber-500/30 text-[#D7D9DB] text-sm">
+                <div className="flex items-center space-x-2 text-amber-400 font-medium mb-1">
+                  <span>Срок действия акции завершен</span>
+                </div>
+                <p className="text-xs text-[#87888A] leading-relaxed">
+                  Данная промо-программа завершилась ({promo.timeRemaining || promo.endDate}). Вы можете ознакомиться с характеристиками моделей или обратиться к экспертам «СИМОНА» за расчетом действующих скидок и подарков бренда {promo.brand}.
+                </p>
+              </div>
+            )}
+
             {/* Quick Actions */}
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <button
-                onClick={() => openModal('EQUIPMENT_SELECTION')}
-                className="px-6 py-3.5 rounded-xl bg-simona-wine hover:bg-simona-wine-hover text-white text-sm font-semibold transition-all shadow-lg shadow-simona-wine/25 border border-simona-wine-light/50 flex items-center space-x-2 cursor-pointer"
-              >
-                <span>Зафиксировать условия акции</span>
-              </button>
+              {promo.isActive === false ? (
+                <button
+                  onClick={() => openModal('EQUIPMENT_SELECTION')}
+                  className="px-6 py-3.5 rounded-xl bg-[#1E2228] hover:bg-[#2B313A] text-white text-sm font-semibold transition-all border border-simona-teal/60 hover:border-simona-teal flex items-center space-x-2 cursor-pointer shadow-lg shadow-black/40"
+                >
+                  <span>Подобрать актуальный комплект {promo.brand}</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => openModal('EQUIPMENT_SELECTION')}
+                  className="px-6 py-3.5 rounded-xl bg-simona-wine hover:bg-simona-wine-hover text-white text-sm font-semibold transition-all shadow-lg shadow-simona-wine/25 border border-simona-wine-light/50 flex items-center space-x-2 cursor-pointer"
+                >
+                  <span>Зафиксировать условия акции</span>
+                </button>
+              )}
 
               <button
                 onClick={() => openModal('SHOWROOM_VISIT')}

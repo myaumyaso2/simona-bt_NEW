@@ -16,9 +16,11 @@ import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { useSiteContent } from '@/components/providers/ContentContext';
 import { formatBrandName } from '@/lib/formatters';
 
+const activePromos = MANUFACTURER_PROMOS.filter((p) => p.isActive !== false);
+
 const BRAND_FILTERS = [
   'Все бренды',
-  ...Array.from(new Set(MANUFACTURER_PROMOS.map((p) => p.brand))),
+  ...Array.from(new Set(activePromos.map((p) => p.brand))),
 ];
 
 
@@ -28,7 +30,7 @@ export function PromosHubView() {
   const [selectedType, setSelectedType] = useState<string>('ALL');
   const { openModal } = useStore();
 
-  const filteredPromos = MANUFACTURER_PROMOS.filter((promo) => {
+  const filteredPromos = activePromos.filter((promo) => {
     const brandMatch =
       selectedBrand === 'Все бренды' ||
       promo.brand.toLowerCase().includes(selectedBrand.toLowerCase());
