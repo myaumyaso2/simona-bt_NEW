@@ -2,7 +2,8 @@
 # Target: https://simona-bt.ru (simona_prod, 5.188.30.184)
 
 param (
-    [switch]$SkipBuild
+    [switch]$SkipBuild,
+    [switch]$FullImport
 )
 
 $ErrorActionPreference = "Stop"
@@ -61,7 +62,7 @@ Write-Host "Upload complete." -ForegroundColor Green
 # 4. Upload deploy runner script
 Write-Host "Step 4: Executing remote production build on server..." -ForegroundColor Yellow
 scp (Join-Path $PSScriptRoot "remote_build_prod.sh") "${SSH_HOST}:/tmp/remote_build_prod.sh"
-ssh $SSH_HOST "chmod +x /tmp/remote_build_prod.sh && /tmp/remote_build_prod.sh"
+ssh $SSH_HOST "chmod +x /tmp/remote_build_prod.sh && FULL_IMPORT=$($FullImport.IsPresent) /tmp/remote_build_prod.sh"
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Remote deployment failed."

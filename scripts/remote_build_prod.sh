@@ -53,6 +53,11 @@ npx prisma db push --skip-generate --accept-data-loss
 PGPASSWORD='SmBt_Staging_2026_PgPass!' psql -h localhost -U simona_app -d simona_prod -c 'CREATE SEQUENCE IF NOT EXISTS order_number_seq START WITH 15104;' 2>/dev/null || true
 PGPASSWORD='SmBt_Staging_2026_PgPass!' psql -h localhost -U simona_app -d simona_prod -c "UPDATE \"Order\" SET \"isOneClick\" = true, \"status\" = 'NEW' WHERE \"status\" = 'ONE_CLICK';" 2>/dev/null || true
 
+if [ "$FULL_IMPORT" = "True" ] || [ "$FULL_IMPORT" = "true" ]; then
+    echo "💾 Importing updated catalog into simona_prod..."
+    DATABASE_URL="postgresql://simona_app:SmBt_Staging_2026_PgPass!@localhost:5432/simona_prod" npx tsx scripts/import_catalog_to_db.ts
+fi
+
 echo "💾 Checking customers in simona_prod..."
 CUSTOMERS=$(PGPASSWORD='SmBt_Staging_2026_PgPass!' psql -h localhost -U simona_app -d simona_prod -t -A -c 'SELECT COUNT(*) FROM "Customer";' 2>/dev/null || echo "0")
 echo "Current customers: $CUSTOMERS"
