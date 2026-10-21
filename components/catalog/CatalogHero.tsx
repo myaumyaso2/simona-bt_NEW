@@ -6,7 +6,7 @@ import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { BrandCategoryTab } from '@/lib/catalog/brandCategories';
 import { BrandCategoryNav } from './BrandCategoryNav';
 
-export type PhysicalTabType = 'ALL' | 'SHOWROOM' | 'LOCAL_STOCK' | 'REMOTE_STOCK' | 'ON_ORDER';
+export type PhysicalTabType = 'ALL' | 'SHOWROOM' | 'LOCAL_STOCK' | 'DISCOUNT' | 'REMOTE_STOCK' | 'ON_ORDER';
 
 export interface PresenceTabItem {
   id: PhysicalTabType;
@@ -46,6 +46,7 @@ export function CatalogHero({
     { id: 'ALL', label: 'Все', count: presenceCounts?.ALL ?? totalCount },
     { id: 'SHOWROOM', label: 'На витрине', count: presenceCounts?.SHOWROOM ?? 0 },
     { id: 'LOCAL_STOCK', label: 'На складе', count: presenceCounts?.LOCAL_STOCK ?? 0 },
+    { id: 'DISCOUNT', label: 'Уценка', count: presenceCounts?.DISCOUNT ?? 0 },
     { id: 'REMOTE_STOCK', label: 'На удаленном складе', count: presenceCounts?.REMOTE_STOCK ?? 0 },
     { id: 'ON_ORDER', label: 'Под заказ', count: presenceCounts?.ON_ORDER ?? 0 },
   ];
@@ -96,13 +97,14 @@ export function CatalogHero({
         {hasBrandCategories && brandCategories && onSelectCategory ? (
           <BrandCategoryNav
             categories={brandCategories}
-            activeCategorySlug={activeCategorySlug || brandCategories[0].slug}
+            activeCategorySlug={activeCategorySlug !== undefined ? activeCategorySlug : brandCategories[0].slug}
             onSelectCategory={onSelectCategory}
           />
         ) : (
           <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
             {presenceTabs.map((tab) => {
               const isActive = activePhysicalTab === tab.id;
+              const isDiscount = tab.id === 'DISCOUNT';
               return (
                 <button
                   key={tab.id}
@@ -110,20 +112,32 @@ export function CatalogHero({
                   className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none ${
                     isActive
                       ? 'text-white'
-                      : 'text-[#87888A] hover:text-[#D7D9DB]'
+                      : isDiscount
+                        ? 'text-[#C9A2A4] hover:text-white'
+                        : 'text-[#87888A] hover:text-[#D7D9DB]'
                   }`}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="presenceActiveTab"
-                      className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
+                      className={`absolute inset-0 rounded-lg shadow-sm -z-10 ${
+                        isDiscount
+                          ? 'bg-simona-wine border border-[#A71B20]'
+                          : 'bg-[#1E2228] border border-[#2B313A]'
+                      }`}
                       transition={{ type: 'spring', stiffness: 450, damping: 35 }}
                     />
                   )}
                   <span>{tab.label}</span>
                   <span
                     className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
-                      isActive ? 'text-simona-teal font-semibold' : 'text-[#87888A] font-normal'
+                      isActive
+                        ? isDiscount
+                          ? 'text-white font-bold'
+                          : 'text-simona-teal font-semibold'
+                        : isDiscount
+                          ? 'text-[#A71B20] font-medium'
+                          : 'text-[#87888A] font-normal'
                     }`}
                   >
                     ({tab.count})

@@ -1,4 +1,5 @@
 import { ProductItem } from '@/types';
+import { isProductOutlet, getOutletApplianceGroup } from './outlet';
 
 export interface ProductGroupOption {
   id: string;
@@ -11,6 +12,9 @@ export interface ProductGroupOption {
  * Formula: [Группа товара] + [Бренд] + [Артикул]
  */
 export function getProductGroup(product: ProductItem): string {
+  if (isProductOutlet(product)) {
+    return getOutletApplianceGroup(product);
+  }
   if (product.productGroup && product.productGroup.trim()) {
     return product.productGroup.trim();
   }

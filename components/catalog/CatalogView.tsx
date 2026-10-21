@@ -17,6 +17,7 @@ import { CatalogServiceContour } from './CatalogServiceContour';
 import { MobileFilterDrawer } from './MobileFilterDrawer';
 import { getCategoryFacets, matchProductFeature } from '@/lib/productFeatures';
 import { getProductPhysicalStatus } from '@/lib/utils';
+import { isProductOutlet, isProductInOutletCategory } from '@/lib/catalog/outlet';
 import {
   getBrandCategoriesFromProducts,
   getBrandInfo,
@@ -114,12 +115,40 @@ export function CatalogView({
 
   // Scoped products: in dedicated brand mode, strictly match the selected category!
   // In category mode, rawProducts are already scoped to the category.
-  const categoryProducts = useMemo(() => {
-    if (!isDedicatedBrandPage || !activeCategorySlug) return rawProducts;
-    return rawProducts.filter((p) => isProductInCategory(p, activeCategorySlug));
-  }, [rawProducts, isDedicatedBrandPage, activeCategorySlug]);
+  // Separate outlet products from standard inventory
+  const outletProducts = useMemo(() => {
+    return rawProducts.filter(isProductOutlet);
+  }, [rawProducts]);
 
-  const [activePhysicalTab, setActivePhysicalTab] = useState<PhysicalTabType>('ALL');
+  const standardProducts = useMemo(() => {
+    return rawProducts.filter((p) => !isProductOutlet(p));
+  }, [rawProducts]);
+
+  // Standard products scoped to active category
+  const standardCategoryProducts = useMemo(() => {
+    if (isDedicatedBrandPage && activeCategorySlug) {
+      return standardProducts.filter((p) => isProductInCategory(p, activeCategorySlug));
+    }
+    return standardProducts;
+  }, [isDedicatedBrandPage, activeCategorySlug, standardProducts]);
+
+  const presenceParam = searchParams.get('presence');
+  const [activePhysicalTab, setActivePhysicalTab] = useState<PhysicalTabType>(() => {
+    if (presenceParam === 'discount') return 'DISCOUNT';
+    if (presenceParam === 'showroom') return 'SHOWROOM';
+    if (presenceParam === 'stock') return 'LOCAL_STOCK';
+    if (presenceParam === 'remote') return 'REMOTE_STOCK';
+    if (presenceParam === 'order') return 'ON_ORDER';
+    return 'ALL';
+  });
+
+  // Products currently in scope for browsing and sidebar facets
+  const categoryProducts = useMemo(() => {
+    if (activePhysicalTab === 'DISCOUNT') {
+      return outletProducts;
+    }
+    return standardCategoryProducts;
+  }, [activePhysicalTab, outletProducts, standardCategoryProducts]);
   const [sort, setSort] = useState<SortOption>('popular');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [currentPage, setCurrentPage] = useState(1);
@@ -244,6 +273,22 @@ export function CatalogView({
     }
   };
 
+    const handlePresenceTabSelect = (tab: PhysicalTabType) => {
+    setActivePhysicalTab(tab);
+    setCurrentPage(1);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (tab === 'DISCOUNT') {
+        url.searchParams.set('presence', 'discount');
+      } else if (tab === 'ALL') {
+        url.searchParams.delete('presence');
+      } else {
+        url.searchParams.set('presence', tab.toLowerCase());
+      }
+      window.history.replaceState(null, '', url.pathname + url.search);
+    }
+  };
+
   const handleCategorySelect = (slug: string) => {
     setActiveCategorySlug(slug);
     setCurrentPage(1);
@@ -258,6 +303,7 @@ export function CatalogView({
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
       url.searchParams.set('category', slug);
+      url.searchParams.delete('presence');
       window.history.replaceState(null, '', url.pathname + url.search);
     }
   };
@@ -303,8 +349,9 @@ export function CatalogView({
 
   // Dynamic category facets calculation based on current category selection
   const categoryFacets = useMemo(() => {
+    if (isDedicatedBrandPage && activePhysicalTab === 'DISCOUNT') return [];
     return getCategoryFacets(categoryProducts, 16);
-  }, [categoryProducts]);
+  }, [categoryProducts, isDedicatedBrandPage, activePhysicalTab]);
 
   // Dynamic promo count calculation for current category and tab (Zero Dead Ends)
   const promoCounts = useMemo(() => {
@@ -415,32 +462,42 @@ export function CatalogView({
     let remoteStock = 0;
     let onOrder = 0;
 
-    sidebarFilteredProducts.forEach((p) => {
+    // Filter standardCategoryProducts using active group and price filters
+    const filteredStandard = standardCategoryProducts.filter((p) => {
+      if (filters.selectedGroups.length > 0 && !filters.selectedGroups.includes(getProductGroup(p))) return false;
+      if (p.price < filters.priceMin || p.price > filters.priceMax) return false;
+      return true;
+    });
+
+    filteredStandard.forEach((p) => {
       const status = getProductPhysicalStatus(p);
-      if (status === 'SHOWROOM') {
-        showroom++;
-      } else if (status === 'LOCAL_STOCK') {
-        localStock++;
-      } else if (status === 'REMOTE_STOCK') {
-        remoteStock++;
-      } else {
-        onOrder++;
-      }
+      if (status === 'SHOWROOM') showroom++;
+      else if (status === 'LOCAL_STOCK') localStock++;
+      else if (status === 'REMOTE_STOCK') remoteStock++;
+      else onOrder++;
+    });
+
+    // Outlet products count (matching group/price filters if applied)
+    const filteredOutlet = outletProducts.filter((p) => {
+      if (filters.selectedGroups.length > 0 && !filters.selectedGroups.includes(getProductGroup(p))) return false;
+      if (p.price < filters.priceMin || p.price > filters.priceMax) return false;
+      return true;
     });
 
     return {
-      ALL: sidebarFilteredProducts.length,
+      ALL: filteredStandard.length,
       SHOWROOM: showroom,
       LOCAL_STOCK: localStock,
+      DISCOUNT: filteredOutlet.length,
       REMOTE_STOCK: remoteStock,
       ON_ORDER: onOrder,
     };
-  }, [sidebarFilteredProducts]);
+  }, [standardCategoryProducts, outletProducts, filters.selectedGroups, filters.priceMin, filters.priceMax]);
 
   // 3. Final filtered and sorted products (strictly unified with getProductPhysicalStatus)
   const filteredProducts = useMemo(() => {
     const base = sidebarFilteredProducts.filter((product) => {
-      if (activePhysicalTab === 'ALL') return true;
+      if (activePhysicalTab === 'ALL' || activePhysicalTab === 'DISCOUNT') return true;
       return getProductPhysicalStatus(product) === activePhysicalTab;
     });
 
@@ -483,15 +540,21 @@ export function CatalogView({
 
   const dynamicTitle = useMemo(() => {
     if (isDedicatedBrandPage && lockedBrand) {
+      if (activePhysicalTab === 'DISCOUNT') {
+        return `Уцененные товары ${formatBrandName(lockedBrand)}`;
+      }
       const catName = currentBrandCategory?.menuTitle || currentBrandCategory?.title || 'Техника';
       return `${catName} ${formatBrandName(lockedBrand)}`;
+    }
+    if (activePhysicalTab === 'DISCOUNT') {
+      return `Уцененные товары: ${baseCategoryTitle}`;
     }
     if (filters.selectedBrands.length === 1) {
       const b = filters.selectedBrands[0];
       return `${baseCategoryTitle} ${formatBrandName(b)}`;
     }
     return baseCategoryTitle;
-  }, [baseCategoryTitle, filters.selectedBrands, lockedBrand, isDedicatedBrandPage, currentBrandCategory]);
+  }, [baseCategoryTitle, filters.selectedBrands, lockedBrand, isDedicatedBrandPage, currentBrandCategory, activePhysicalTab]);
 
   const dynamicDescription = useMemo(() => {
     if (isDedicatedBrandPage && initialBrand) {
@@ -592,18 +655,15 @@ export function CatalogView({
           {/* 1. Category Hero Block with raised Brand Categories Switcher */}
           <CatalogHero
             activePhysicalTab={activePhysicalTab}
-            onSelectPhysicalTab={(tab) => {
-              setActivePhysicalTab(tab);
-              setCurrentPage(1);
-            }}
-            totalCount={currentBrandCategory ? currentBrandCategory.count : sidebarFilteredProducts.length}
+            onSelectPhysicalTab={handlePresenceTabSelect}
+            totalCount={activePhysicalTab === 'DISCOUNT' ? (presenceCounts.DISCOUNT || 0) : (currentBrandCategory ? currentBrandCategory.count : presenceCounts.ALL)}
             presenceCounts={presenceCounts}
             categoryTitle={dynamicTitle}
             categorySlug={activeCategorySlug || categorySlug}
             categoryDescription={dynamicDescription}
             brandName={isDedicatedBrandPage && lockedBrand ? formatBrandName(lockedBrand) : undefined}
             brandCategories={isDedicatedBrandPage ? brandCategories : undefined}
-            activeCategorySlug={activeCategorySlug}
+            activeCategorySlug={activePhysicalTab === 'DISCOUNT' ? '' : activeCategorySlug}
             onSelectCategory={handleCategorySelect}
           />
 
