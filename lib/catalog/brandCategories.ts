@@ -10,6 +10,42 @@ export interface BrandCategoryTab {
   dbCategories: string[];
 }
 
+/**
+ * Реестр приоритетных флагманских категорий для брендов (Quiet Luxury Catalog Architecture)
+ * Согласовано в рамках /grill-me: при переходе с Брендового атласа открывается флагманская категория марки.
+ */
+export const BRAND_FLAGSHIP_CATEGORY: Record<string, string> = {
+  BOSCH: 'vstraivaemye-duhovye-shkafy',
+  ASKO: 'stiralnye-mashiny',
+  LIEBHERR: 'holodilniki',
+  SMEG: 'varochnye-paneli',
+  MIELE: 'vstraivaemye-duhovye-shkafy',
+  OMOIKIRI: 'mojki-dlya-kuhni',
+  ELICA: 'vytyazhki',
+  FALMEC: 'vytyazhki',
+  KORTING: 'vstraivaemye-duhovye-shkafy',
+  'KÖRTING': 'vstraivaemye-duhovye-shkafy',
+  MIDEA: 'vstraivaemye-duhovye-shkafy',
+  BERTAZZONI: 'vstraivaemye-duhovye-shkafy',
+  DUNAVOX: 'vinnye-shkafy',
+  MEYVEL: 'vinnye-shkafy',
+  FRANKE: 'mojki-dlya-kuhni',
+  VARD: 'vstraivaemye-duhovye-shkafy',
+  EVELUX: 'vstraivaemye-duhovye-shkafy',
+  GRAUDE: 'vstraivaemye-duhovye-shkafy',
+  KUPPERSBERG: 'vstraivaemye-duhovye-shkafy',
+  GORENJE: 'vstraivaemye-duhovye-shkafy',
+  NIVONA: 'kofemashiny',
+  SCHULTHESS: 'stiralnye-mashiny',
+  ALVEUS: 'mojki-dlya-kuhni',
+  HIBERG: 'holodilniki',
+};
+
+export function getBrandFlagshipCategory(brandName: string): string | null {
+  const normalized = brandName.trim().toUpperCase();
+  return BRAND_FLAGSHIP_CATEGORY[normalized] || null;
+}
+
 export interface BrandInfo {
   name: string;
   slug: string;
@@ -159,15 +195,26 @@ export function isProductInCategory(product: ProductItem, categorySlug: string):
 }
 
 /**
- * Groups a collection of brand products into sorted categories with counts
+ * Groups a collection of brand products into sorted categories with counts.
+ * Strictly excludes service/discounted/junk categories (e.g. "Уцененные товары")
+ * and prioritizes the curated flagship category if available.
  */
-export function getBrandCategoriesFromProducts(products: ProductItem[]): BrandCategoryTab[] {
+export function getBrandCategoriesFromProducts(products: ProductItem[], brandName?: string): BrandCategoryTab[] {
   const categoryMap = new Map<string, BrandCategoryTab>();
+  const flagshipSlug = brandName ? getBrandFlagshipCategory(brandName) : null;
 
   for (const product of products) {
-    const cat = findCategoryForProduct(product);
+    // 1. Strict filter against service, junk, or discount categories
+    const rawCat = (product.category || '').trim();
+    if (/уцен|архив|разное|не определено/i.test(rawCat)) {
+      continue;
+    }
 
+    const cat = findCategoryForProduct(product);
     if (cat) {
+      if (/уцен|архив/i.test(cat.slug) || /уцен|архив/i.test(cat.title)) {
+        continue;
+      }
       const existing = categoryMap.get(cat.slug);
       if (existing) {
         existing.count += 1;
@@ -180,29 +227,15 @@ export function getBrandCategoriesFromProducts(products: ProductItem[]): BrandCa
           dbCategories: [...cat.dbCategories],
         });
       }
-    } else {
-      // Unmapped category (e.g. "Уцененные товары")
-      const catName = product.category?.trim() || 'Разное';
-      const customSlug = catName
-        .toLowerCase()
-        .replace(/[^a-z0-9а-яё]+/g, '-')
-        .replace(/^-|-$/g, '') || 'other';
-
-      const existing = categoryMap.get(customSlug);
-      if (existing) {
-        existing.count += 1;
-      } else {
-        categoryMap.set(customSlug, {
-          slug: customSlug,
-          title: catName,
-          menuTitle: catName,
-          count: 1,
-          dbCategories: [catName],
-        });
-      }
     }
   }
 
-  // Sort by count descending so dominant categories appear first
-  return Array.from(categoryMap.values()).sort((a, b) => b.count - a.count);
+  // Sort categories: Curated flagship category first, then by count descending
+  return Array.from(categoryMap.values()).sort((a, b) => {
+    if (flagshipSlug) {
+      if (a.slug === flagshipSlug) return -1;
+      if (b.slug === flagshipSlug) return 1;
+    }
+    return b.count - a.count;
+  });
 }

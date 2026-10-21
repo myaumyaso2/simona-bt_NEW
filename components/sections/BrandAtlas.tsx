@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { PlexusConstellationBackground } from '@/components/backgrounds/PlexusConstellationBackground';
 import { useSiteContent } from '@/components/providers/ContentContext';
 import { BrandCardData } from '@/lib/catalog/brandStats';
+import { getBrandFlagshipCategory } from '@/lib/catalog/brandCategories';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -57,10 +58,15 @@ function BrandCardItem({ brand }: { brand: BrandCardData }) {
     }
   };
 
+  const flagshipCategory = getBrandFlagshipCategory(brand.slug || brand.name);
+  const targetHref = flagshipCategory
+    ? `/catalog?brand=${encodeURIComponent(brand.slug)}&category=${encodeURIComponent(flagshipCategory)}`
+    : `/catalog?brand=${encodeURIComponent(brand.slug)}`;
+
   return (
     <Link
       ref={cardRef}
-      href={`/catalog?brand=${encodeURIComponent(brand.slug)}`}
+      href={targetHref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className="brand-card group relative overflow-hidden flex flex-col items-center justify-center p-4 sm:p-5 rounded-xl bg-gradient-to-b from-[#1A1E24]/90 to-[#16191D]/95 backdrop-blur-md border border-[#2B313A] hover:border-simona-teal/70 hover:bg-[#1E2228] transition-all duration-300 min-h-[124px] text-center will-change-transform shadow-lg shadow-black/40 hover:shadow-simona-teal/10 hover:-translate-y-1"

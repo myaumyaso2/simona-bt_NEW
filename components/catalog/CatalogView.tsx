@@ -20,6 +20,7 @@ import { getProductPhysicalStatus } from '@/lib/utils';
 import {
   getBrandCategoriesFromProducts,
   getBrandInfo,
+  getBrandFlagshipCategory,
   isProductInCategory,
 } from '@/lib/catalog/brandCategories';
 import { getCategoryProductGroups, getProductGroup } from '@/lib/catalog/productGroups';
@@ -71,7 +72,7 @@ export function CatalogView({
   // Brand mode calculations & category discovery (only on dedicated brand landing pages)
   const brandCategories = useMemo(() => {
     if (!isDedicatedBrandPage || !initialBrand) return [];
-    return getBrandCategoriesFromProducts(rawProducts);
+    return getBrandCategoriesFromProducts(rawProducts, initialBrand);
   }, [isDedicatedBrandPage, initialBrand, rawProducts]);
 
   const brandInfo = useMemo(() => {
@@ -80,9 +81,14 @@ export function CatalogView({
   }, [isDedicatedBrandPage, initialBrand]);
 
   const categoryParam = searchParams.get('category') || initialCategorySlug;
+  const flagshipSlug = useMemo(() => {
+    return initialBrand ? getBrandFlagshipCategory(initialBrand) : null;
+  }, [initialBrand]);
+
   const [activeCategorySlug, setActiveCategorySlug] = useState<string>(() => {
     if (categorySlug) return categorySlug;
     if (categoryParam) return categoryParam;
+    if (flagshipSlug && brandCategories.some((c) => c.slug === flagshipSlug)) return flagshipSlug;
     if (isDedicatedBrandPage && brandCategories.length > 0) return brandCategories[0].slug;
     return '';
   });
@@ -93,11 +99,13 @@ export function CatalogView({
       const qCat = searchParams.get('category') || initialCategorySlug;
       if (qCat) {
         setActiveCategorySlug(qCat);
+      } else if (flagshipSlug && brandCategories.some((c) => c.slug === flagshipSlug)) {
+        setActiveCategorySlug(flagshipSlug);
       } else if (brandCategories.length > 0 && (!activeCategorySlug || !brandCategories.some((c) => c.slug === activeCategorySlug))) {
         setActiveCategorySlug(brandCategories[0].slug);
       }
     }
-  }, [searchParams, initialCategorySlug, isDedicatedBrandPage, initialBrand, brandCategories, activeCategorySlug]);
+  }, [searchParams, initialCategorySlug, isDedicatedBrandPage, initialBrand, brandCategories, activeCategorySlug, flagshipSlug]);
 
   const currentBrandCategory = useMemo(() => {
     if (!isDedicatedBrandPage || !initialBrand) return null;
