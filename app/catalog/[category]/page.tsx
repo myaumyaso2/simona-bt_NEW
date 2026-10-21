@@ -74,6 +74,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   // Fetch products matching database category names
   const { products, total } = await getCatalogProducts({
     categories: category.dbCategories,
+    categorySlug: category.slug,
+    includeOutlet: true,
     limit: 1500,
   });
 

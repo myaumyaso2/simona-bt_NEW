@@ -32,6 +32,7 @@ npm install --prefer-offline --no-audit
 echo "🗄️ Initializing Prisma & PostgreSQL..."
 npx prisma generate
 npx prisma db push --skip-generate --accept-data-loss
+PGPASSWORD='SmBt_Staging_2026_PgPass!' psql -h localhost -U simona_app -d simona_staging -c "UPDATE \"Order\" SET \"isOneClick\" = true, \"status\" = 'NEW' WHERE \"status\" = 'ONE_CLICK';" 2>/dev/null || true
 
 if [ "$FULL_IMPORT" = "True" ] || [ "$FULL_IMPORT" = "true" ]; then
     echo "💾 Importing updated catalog and characteristics into PostgreSQL..."
