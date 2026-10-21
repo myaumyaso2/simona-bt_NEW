@@ -1,5 +1,7 @@
 'use client';
 
+import { isProductOutlet } from '@/lib/catalog/outlet';
+
 import React, { useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -154,7 +156,11 @@ export function LuxuryProductListCard({ product, selectedPromos }: LuxuryProduct
           {/* Badges Stack (Top-Left): Status + Brand directly below */}
           <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1.5 max-w-[85%] pointer-events-none">
             {/* Availability Badge */}
-            {physicalStatus === 'SHOWROOM' ? (
+            {isProductOutlet(product) ? (
+                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-bold bg-simona-wine text-white border border-[#A71B20] backdrop-blur-md shadow-md">
+                  Уценка
+                </span>
+              ) : physicalStatus === 'SHOWROOM' ? (
               <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-semibold bg-[#16191D]/85 text-simona-teal border border-simona-teal/40 backdrop-blur-md shadow-md">
                 На витрине
               </span>
