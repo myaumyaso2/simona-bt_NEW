@@ -16,7 +16,9 @@ export async function GET(req: NextRequest) {
       take: 200,
     });
 
-    return NextResponse.json({ success: true, orders });
+    const response = NextResponse.json({ success: true, orders });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    return response;
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Ошибка загрузки заказов';
     return NextResponse.json({ error: message }, { status: 500 });

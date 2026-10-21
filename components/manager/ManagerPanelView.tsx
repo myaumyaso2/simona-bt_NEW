@@ -129,7 +129,8 @@ interface NoPhotoProductRecord {
 }
 
 const ORDER_STATUS_OPTIONS = [
-  { value: 'NEW', label: 'Новый (В обработке)', badgeClass: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
+  { value: 'NEW', label: 'Новый (Корзина)', badgeClass: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
+  { value: 'ONE_CLICK', label: 'В 1 клик', badgeClass: 'bg-amber-500/25 text-amber-200 border-amber-400/50' },
   { value: 'CONFIRMED', label: 'Подтвержден экспертом', badgeClass: 'bg-blue-500/15 text-blue-300 border-blue-500/30' },
   { value: 'PAID', label: 'Оплачен', badgeClass: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
   { value: 'READY_FOR_PICKUP', label: 'Готов к выдаче', badgeClass: 'bg-simona-teal/20 text-simona-teal border-simona-teal/40' },
@@ -209,6 +210,10 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
   const [managerReplyText, setManagerReplyText] = useState('');
   const [isSendingReply, setIsSendingReply] = useState(false);
 
+  // Auto-refresh & background sync state
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
   const showToast = useCallback((type: 'success' | 'error', message: string) => {
     setToast({ type, message });
     setTimeout(() => {
@@ -216,24 +221,29 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
     }, 5000);
   }, []);
 
-  const loadAllData = useCallback(async (searchNoPhoto = '') => {
+  const loadAllData = useCallback(async (searchNoPhoto = '', isBackground = false) => {
+    if (!isBackground) setIsRefreshing(true);
     try {
+      const t = Date.now();
       const [ordersRes, leadsRes, noPhotoRes, chatRes] = await Promise.all([
-        fetch('/api/manager/orders'),
-        fetch('/api/manager/leads'),
-        fetch(`/api/manager/products-no-photo?q=${encodeURIComponent(searchNoPhoto)}`),
-        fetch('/api/manager/chat'),
+        fetch(`/api/manager/orders?_t=${t}`, { cache: 'no-store' }),
+        fetch(`/api/manager/leads?_t=${t}`, { cache: 'no-store' }),
+        fetch(`/api/manager/products-no-photo?q=${encodeURIComponent(searchNoPhoto)}&_t=${t}`, { cache: 'no-store' }),
+        fetch(`/api/manager/chat?_t=${t}`, { cache: 'no-store' }),
       ]);
 
       if (ordersRes.ok) {
         const oData = await ordersRes.json();
         const list: OrderRecord[] = oData.orders || [];
         setOrders(list);
-        if (list.length > 0 && !selectedOrderId) {
-          setSelectedOrderId(list[0].id);
-          setEditStatus(list[0].status);
-          setEditPaymentLink(list[0].paymentLink || '');
-        }
+        setSelectedOrderId((prev) => {
+          if (!prev && list.length > 0) {
+            setEditStatus(list[0].status);
+            setEditPaymentLink(list[0].paymentLink || '');
+            return list[0].id;
+          }
+          return prev;
+        });
       }
 
       if (leadsRes.ok) {
@@ -251,14 +261,32 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
         const cData = await chatRes.json();
         const sessions: ChatSessionRecord[] = cData.sessions || [];
         setChatSessions(sessions);
-        if (sessions.length > 0 && !selectedChatSessionId) {
-          setSelectedChatSessionId(sessions[0].sessionId);
-        }
+        setSelectedChatSessionId((prev) => {
+          if (!prev && sessions.length > 0) {
+            return sessions[0].sessionId;
+          }
+          return prev;
+        });
       }
+
+      setLastUpdated(new Date());
     } catch (err) {
       console.error('Error loading manager data:', err);
+    } finally {
+      setIsRefreshing(false);
     }
-  }, [selectedOrderId, selectedChatSessionId]);
+  }, []);
+
+  // Background auto-refresh polling every 30 seconds
+  useEffect(() => {
+    if (authStatus !== 'authenticated') return;
+
+    const interval = setInterval(() => {
+      loadAllData('', true);
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [authStatus, loadAllData]);
 
   useEffect(() => {
     // Check URL query param ?tab=
@@ -564,6 +592,26 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
               <SimonaIconClock className="w-4 h-4" />
               <span>Синхронизация 1С</span>
             </button>
+
+            {/* Live refresh & Auto-sync indicator */}
+            <div className="flex items-center gap-2 ml-auto">
+              <button
+                type="button"
+                onClick={() => loadAllData('', false)}
+                disabled={isRefreshing}
+                title="Принудительно обновить список заказов и заявок с сервера"
+                className="px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-[#16191D] hover:bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal/50 text-[#D7D9DB] hover:text-white flex items-center space-x-2 transition cursor-pointer disabled:opacity-50"
+              >
+                <SimonaIconClock className={`w-3.5 h-3.5 text-simona-teal ${isRefreshing ? 'animate-spin' : ''}`} />
+                <span>{isRefreshing ? 'Обновление...' : 'Обновить'}</span>
+              </button>
+              {lastUpdated && (
+                <div className="hidden xl:flex items-center space-x-1.5 text-[11px] text-[#87888A] px-2.5 py-2 bg-[#16191D] rounded-xl border border-[#2B313A]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Авто (30с) • {lastUpdated.toLocaleTimeString('ru-RU')}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -610,28 +658,43 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
                 <button
                   type="button"
                   onClick={() => setOrderStatusFilter('ALL')}
-                  className={`px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
+                  className={`px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer flex items-center space-x-1.5 ${
                     orderStatusFilter === 'ALL'
                       ? 'bg-simona-teal text-white'
                       : 'bg-[#1E2228] text-[#87888A] hover:text-white border border-[#2B313A]'
                   }`}
                 >
-                  Все ({orders.length})
+                  <span>Все</span>
+                  <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold ${
+                    orderStatusFilter === 'ALL' ? 'bg-black/30 text-white' : 'bg-white/10 text-white'
+                  }`}>
+                    {orders.length}
+                  </span>
                 </button>
-                {ORDER_STATUS_OPTIONS.map((st) => (
-                  <button
-                    key={st.value}
-                    type="button"
-                    onClick={() => setOrderStatusFilter(st.value)}
-                    className={`px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
-                      orderStatusFilter === st.value
-                        ? 'bg-simona-teal text-white'
-                        : 'bg-[#1E2228] text-[#87888A] hover:text-white border border-[#2B313A]'
-                    }`}
-                  >
-                    {st.label}
-                  </button>
-                ))}
+                {ORDER_STATUS_OPTIONS.map((st) => {
+                  const count = orders.filter((o) => o.status === st.value).length;
+                  return (
+                    <button
+                      key={st.value}
+                      type="button"
+                      onClick={() => setOrderStatusFilter(st.value)}
+                      className={`px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer flex items-center space-x-1.5 ${
+                        orderStatusFilter === st.value
+                          ? 'bg-simona-teal text-white'
+                          : 'bg-[#1E2228] text-[#87888A] hover:text-white border border-[#2B313A]'
+                      }`}
+                    >
+                      <span>{st.label}</span>
+                      {count > 0 && (
+                        <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold ${
+                          orderStatusFilter === st.value ? 'bg-black/30 text-white' : 'bg-white/10 text-white'
+                        }`}>
+                          {count}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
