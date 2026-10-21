@@ -480,7 +480,7 @@ export function CatalogView({
     // Outlet products count (matching group/price filters if applied)
     const filteredOutlet = outletProducts.filter((p) => {
       if (filters.selectedGroups.length > 0 && !filters.selectedGroups.includes(getProductGroup(p))) return false;
-      if (p.price < filters.priceMin || p.price > filters.priceMax) return false;
+      if (activePhysicalTab === 'DISCOUNT' && (p.price < filters.priceMin || p.price > filters.priceMax)) return false;
       return true;
     });
 
@@ -540,21 +540,15 @@ export function CatalogView({
 
   const dynamicTitle = useMemo(() => {
     if (isDedicatedBrandPage && lockedBrand) {
-      if (activePhysicalTab === 'DISCOUNT') {
-        return `Уцененные товары ${formatBrandName(lockedBrand)}`;
-      }
       const catName = currentBrandCategory?.menuTitle || currentBrandCategory?.title || 'Техника';
       return `${catName} ${formatBrandName(lockedBrand)}`;
-    }
-    if (activePhysicalTab === 'DISCOUNT') {
-      return `Уцененные товары: ${baseCategoryTitle}`;
     }
     if (filters.selectedBrands.length === 1) {
       const b = filters.selectedBrands[0];
       return `${baseCategoryTitle} ${formatBrandName(b)}`;
     }
     return baseCategoryTitle;
-  }, [baseCategoryTitle, filters.selectedBrands, lockedBrand, isDedicatedBrandPage, currentBrandCategory, activePhysicalTab]);
+  }, [baseCategoryTitle, filters.selectedBrands, lockedBrand, isDedicatedBrandPage, currentBrandCategory]);
 
   const dynamicDescription = useMemo(() => {
     if (isDedicatedBrandPage && initialBrand) {
@@ -594,34 +588,47 @@ export function CatalogView({
                 { id: 'ALL' as const, label: 'Все', count: presenceCounts.ALL },
                 { id: 'SHOWROOM' as const, label: 'На витрине', count: presenceCounts.SHOWROOM },
                 { id: 'LOCAL_STOCK' as const, label: 'На складе', count: presenceCounts.LOCAL_STOCK },
+                { id: 'DISCOUNT' as const, label: 'Уценка', count: presenceCounts.DISCOUNT },
                 { id: 'REMOTE_STOCK' as const, label: 'На удаленном складе', count: presenceCounts.REMOTE_STOCK },
                 { id: 'ON_ORDER' as const, label: 'Под заказ', count: presenceCounts.ON_ORDER },
               ]
                 .filter((tab) => tab.id === 'ALL' || tab.count > 0)
                 .map((tab) => {
                   const isActive = activePhysicalTab === tab.id;
+                  const isDiscount = tab.id === 'DISCOUNT';
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => {
-                        setActivePhysicalTab(tab.id);
-                        setCurrentPage(1);
-                      }}
+                      onClick={() => handlePresenceTabSelect(tab.id)}
                       className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none ${
-                        isActive ? 'text-white' : 'text-[#87888A] hover:text-[#D7D9DB]'
+                        isActive
+                          ? 'text-white'
+                          : isDiscount
+                            ? 'text-[#C9A2A4] hover:text-white'
+                            : 'text-[#87888A] hover:text-[#D7D9DB]'
                       }`}
                     >
                       {isActive && (
                         <motion.div
                           layoutId="presenceActiveTabBrandDetails"
-                          className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
+                          className={`absolute inset-0 rounded-lg shadow-sm -z-10 ${
+                            isDiscount
+                              ? 'bg-simona-wine border border-[#A71B20]'
+                              : 'bg-[#1E2228] border border-[#2B313A]'
+                          }`}
                           transition={{ type: 'spring', stiffness: 450, damping: 35 }}
                         />
                       )}
                       <span>{tab.label}</span>
                       <span
                         className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
-                          isActive ? 'text-simona-teal font-semibold' : 'text-[#87888A] font-normal'
+                          isActive
+                            ? isDiscount
+                              ? 'text-white font-bold'
+                              : 'text-simona-teal font-semibold'
+                            : isDiscount
+                              ? 'text-[#A71B20] font-medium'
+                              : 'text-[#87888A] font-normal'
                         }`}
                       >
                         ({tab.count})
@@ -675,34 +682,47 @@ export function CatalogView({
                   { id: 'ALL' as const, label: 'Все', count: presenceCounts.ALL },
                   { id: 'SHOWROOM' as const, label: 'На витрине', count: presenceCounts.SHOWROOM },
                   { id: 'LOCAL_STOCK' as const, label: 'На складе', count: presenceCounts.LOCAL_STOCK },
+                  { id: 'DISCOUNT' as const, label: 'Уценка', count: presenceCounts.DISCOUNT },
                   { id: 'REMOTE_STOCK' as const, label: 'На удаленном складе', count: presenceCounts.REMOTE_STOCK },
                   { id: 'ON_ORDER' as const, label: 'Под заказ', count: presenceCounts.ON_ORDER },
                 ]
                   .filter((tab) => tab.id === 'ALL' || tab.count > 0)
                   .map((tab) => {
                     const isActive = activePhysicalTab === tab.id;
+                    const isDiscount = tab.id === 'DISCOUNT';
                     return (
                       <button
                         key={tab.id}
-                        onClick={() => {
-                          setActivePhysicalTab(tab.id);
-                          setCurrentPage(1);
-                        }}
+                        onClick={() => handlePresenceTabSelect(tab.id)}
                         className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none ${
-                          isActive ? 'text-white' : 'text-[#87888A] hover:text-[#D7D9DB]'
+                          isActive
+                            ? 'text-white'
+                            : isDiscount
+                              ? 'text-[#C9A2A4] hover:text-white'
+                              : 'text-[#87888A] hover:text-[#D7D9DB]'
                         }`}
                       >
                         {isActive && (
                           <motion.div
                             layoutId="presenceActiveTabBrand"
-                            className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
+                            className={`absolute inset-0 rounded-lg shadow-sm -z-10 ${
+                              isDiscount
+                                ? 'bg-simona-wine border border-[#A71B20]'
+                                : 'bg-[#1E2228] border border-[#2B313A]'
+                            }`}
                             transition={{ type: 'spring', stiffness: 450, damping: 35 }}
                           />
                         )}
                         <span>{tab.label}</span>
                         <span
                           className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
-                            isActive ? 'text-simona-teal font-semibold' : 'text-[#87888A] font-normal'
+                            isActive
+                              ? isDiscount
+                                ? 'text-white font-bold'
+                                : 'text-simona-teal font-semibold'
+                              : isDiscount
+                                ? 'text-[#A71B20] font-medium'
+                                : 'text-[#87888A] font-normal'
                           }`}
                         >
                           ({tab.count})
