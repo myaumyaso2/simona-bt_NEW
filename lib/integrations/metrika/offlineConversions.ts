@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
-import { METRIKA_COUNTER_ID } from '@/components/analytics/YandexMetrika';
+
+export const METRIKA_COUNTER_ID = 1351807;
 
 export interface OfflineConversionUploadResult {
   success: boolean;
