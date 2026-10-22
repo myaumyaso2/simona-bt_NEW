@@ -5,6 +5,7 @@ import {
   SimonaIconArrowRight,
   SimonaIconPhoneSolid,
 } from '@/components/brand/SimonaIcons';
+import { NotFoundTracker } from '@/components/analytics/NotFoundTracker';
 
 export const metadata = {
   title: 'Страница не найдена — 404 | СИМОНА Нижний Новгород',
@@ -24,6 +25,7 @@ const POPULAR_CATEGORIES = [
 export default function NotFound() {
   return (
     <main className="min-h-screen bg-[#111315] text-[#D7D9DB] flex flex-col justify-center py-20 px-4 sm:px-6 lg:px-8">
+      <NotFoundTracker />
       <div className="max-w-3xl mx-auto w-full text-left space-y-8">
         {/* Subtle Status */}
         <div className="space-y-3">

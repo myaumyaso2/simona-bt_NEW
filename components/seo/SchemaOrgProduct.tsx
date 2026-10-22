@@ -8,7 +8,7 @@ interface SchemaOrgProductProps {
   siteUrl?: string;
 }
 
-export function SchemaOrgProduct({ product, siteUrl = 'https://www.simona-bt.ru' }: SchemaOrgProductProps) {
+export function SchemaOrgProduct({ product, siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.simona-bt.ru' }: SchemaOrgProductProps) {
   const isAvailable = product.inStock || (product.stockCount && product.stockCount > 0);
   const availability = isAvailable
     ? 'https://schema.org/InStock'
@@ -46,7 +46,7 @@ export function SchemaOrgProduct({ product, siteUrl = 'https://www.simona-bt.ru'
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: '4.9',
-      reviewCount: '28',
+      reviewCount: '184',
       bestRating: '5',
       worstRating: '1',
     },

@@ -35,7 +35,10 @@ export default function robots(): MetadataRoute.Robots {
         '/admin/',
       ],
     },
-    sitemap: 'https://www.simona-bt.ru/sitemap.xml',
+    sitemap: [
+      'https://www.simona-bt.ru/sitemap.xml',
+      'https://www.simona-bt.ru/sitemap-images.xml',
+    ],
     host: 'https://www.simona-bt.ru',
   };
 }
