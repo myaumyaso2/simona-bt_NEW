@@ -5,6 +5,10 @@ import { formatProductName } from '@/lib/catalog/productTitle';
 function escapeXml(unsafe: string | null | undefined): string {
   if (!unsafe) return '';
   return unsafe
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&laquo;|&raquo;/gi, '"')
+    .replace(/&mdash;/gi, '—')
+    .replace(/&ndash;/gi, '–')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -82,10 +86,10 @@ export async function GET() {
       }
 
       // UTM-разметка для атрибуции кликов из Товарной галереи
-      const offerUrl = `${siteUrl}/product/${escapeXml(p.slug)}?utm_source=yandex&utm_medium=cpc&utm_campaign=direct_epk_feed&utm_content=${escapeXml(p.sku)}`;
+      const rawOfferUrl = `${siteUrl}/product/${p.slug}?utm_source=yandex&utm_medium=cpc&utm_campaign=direct_epk_feed&utm_content=${p.sku}`;
 
       xml += `      <offer id="${escapeXml(p.id)}" available="true">\n`;
-      xml += `        <url>${offerUrl}</url>\n`;
+      xml += `        <url>${escapeXml(rawOfferUrl)}</url>\n`;
       xml += `        <price>${p.price}</price>\n`;
       if (p.oldPrice && p.oldPrice > p.price) {
         xml += `        <oldprice>${p.oldPrice}</oldprice>\n`;
@@ -102,10 +106,16 @@ export async function GET() {
         });
       }
 
+      const cleanDesc = (p.description || '')
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 800);
+
       xml += `        <name>${escapeXml(formattedTitle)}</name>\n`;
       xml += `        <vendor>${escapeXml(p.brand)}</vendor>\n`;
       xml += `        <vendorCode>${escapeXml(p.sku)}</vendorCode>\n`;
-      xml += `        <description>${escapeXml(p.description?.replace(/<[^>]*>/g, '').slice(0, 800))}</description>\n`;
+      xml += `        <description>${escapeXml(cleanDesc)}</description>\n`;
       xml += `        <delivery>true</delivery>\n`;
       xml += `        <pickup>true</pickup>\n`;
       xml += `        <store>false</store>\n`;

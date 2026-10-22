@@ -5,6 +5,10 @@ import { formatProductName } from '@/lib/catalog/productTitle';
 function escapeXml(unsafe: string | null | undefined): string {
   if (!unsafe) return '';
   return unsafe
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&laquo;|&raquo;/gi, '"')
+    .replace(/&mdash;/gi, '—')
+    .replace(/&ndash;/gi, '–')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -88,10 +92,16 @@ export async function GET() {
         });
       }
 
+      const cleanDesc = (p.description || '')
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 1000);
+
       xml += `        <name>${escapeXml(formattedTitle)}</name>\n`;
       xml += `        <vendor>${escapeXml(p.brand)}</vendor>\n`;
       xml += `        <vendorCode>${escapeXml(p.sku)}</vendorCode>\n`;
-      xml += `        <description>${escapeXml(p.description?.replace(/<[^>]*>/g, '').slice(0, 1000))}</description>\n`;
+      xml += `        <description>${escapeXml(cleanDesc)}</description>\n`;
       xml += `        <delivery>true</delivery>\n`;
       xml += `        <pickup>true</pickup>\n`;
       xml += `        <store>${p.stockBelinskogo15 > 0 ? 'true' : 'false'}</store>\n`;
