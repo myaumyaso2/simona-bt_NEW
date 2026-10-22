@@ -90,11 +90,12 @@ export async function uploadOfflineConversionsToMetrika(): Promise<OfflineConver
     }
 
     const data = await res.json();
+    const uploadId = data.uploading?.id ?? data.upload?.id ?? data.id;
     return {
       success: true,
       uploadedCount: count,
-      uploadId: data.upload?.id,
-      message: `Успешно отправлено ${count} офлайн-конверсий в счетчик Метрики №${METRIKA_COUNTER_ID}.`,
+      uploadId: uploadId,
+      message: `Успешно отправлено ${count} офлайн-конверсий в счетчик Метрики №${METRIKA_COUNTER_ID}. ID загрузки: ${uploadId ?? '—'}`,
     };
   } catch (err: any) {
     console.error('Network error uploading to Metrika:', err);

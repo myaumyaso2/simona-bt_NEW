@@ -43,3 +43,5 @@ next-env.d.ts
 next_build.tar.gz
 *.csv
 
+__pycache__/
+*.pyc

@@ -363,7 +363,7 @@ export default function AnalyticsDashboardPage() {
             </div>
             <div className="text-xs text-[#87888A] mt-2 flex items-center space-x-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-simona-teal" />
-              <span>Лимит: 18 750 ₽/нед • {directStats?.totalClicks || 0} кликов</span>
+              <span>Лимит: 18 750 ₽/нед • Стоп-порог: 3 500 ₽/день • {directStats?.totalClicks || 0} кликов</span>
             </div>
           </div>
 
