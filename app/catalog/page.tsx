@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     title: 'Каталог техники | СИМОНА — Салоны и интернет-магазин',
     description:
       '8 000+ моделей бытовой техники от проверенных мировых брендов. Экспозиция в салонах на ул. Белинского, склад в Нижнем Новгороде.',
-    url: 'https://simona-bt.ru/catalog',
+    url: 'https://www.simona-bt.ru/catalog',
   },
 };
 
@@ -66,7 +66,14 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
     );
   }
 
-  // 1. Dedicated Brand Catalog View: /catalog?brand=BOSCH (supports optional &category=slug)
+  // 1. Dedicated Category + Brand canonical redirect: /catalog?brand=BOSCH&category=slug -> 301 /catalog/slug?brand=BOSCH
+  if (searchParams?.brand && searchParams?.category) {
+    const directCat = getCategoryBySlug(searchParams.category);
+    const catSlug = directCat ? directCat.slug : searchParams.category;
+    redirect(`/catalog/${catSlug}?brand=${encodeURIComponent(searchParams.brand)}`);
+  }
+
+  // 2. Dedicated Brand Catalog View: /catalog?brand=BOSCH
   if (searchParams?.brand) {
     const brandUpper = searchParams.brand.toUpperCase();
     const { products, total } = await getCatalogProducts({

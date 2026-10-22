@@ -286,8 +286,8 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(buildRedirectUrl(destination, request), 301);
     }
 
-    // 3.3. Default fallback for discontinued items -> /catalog
-    return NextResponse.redirect(buildRedirectUrl('/catalog', request), 301);
+    // 3.3. Fallback for completely unrecognizable paths -> pass to 404 page (Zero Soft 404 in Yandex)
+    return NextResponse.next();
   }
 
   return NextResponse.next();

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     title: 'Акции европейских брендов бытовой техники | СИМОНА',
     description:
       'Официальные спецпредложения и комплекты со скидкой от авторизованного партнера в Нижнем Новгороде.',
-    url: 'https://simona-bt.ru/promos',
+    url: 'https://www.simona-bt.ru/promos',
   },
 };
 

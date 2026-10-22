@@ -53,7 +53,7 @@ export async function GET() {
     });
 
     const now = new Date().toISOString().replace(/\.\d{3}Z$/, '+03:00');
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://simona-bt.ru';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.simona-bt.ru';
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
     xml += `<!DOCTYPE yml_catalog SYSTEM "shops.dtd">\n`;

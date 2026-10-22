@@ -22,6 +22,8 @@ export async function generateMetadata({
     };
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.simona-bt.ru';
+
   return {
     title: `${promo.title} — акция ${promo.brand} | СИМОНА`,
     description: `${promo.shortDescription} Официальный салон СИМОНА в Нижнем Новгороде на ул. Белинского 15.`,
@@ -29,7 +31,7 @@ export async function generateMetadata({
       title: `${promo.title} | СИМОНА`,
       description: promo.shortDescription,
       images: promo.bannerUrl ? [promo.bannerUrl] : [],
-      url: `https://simona-bt.ru/promos/${promo.slug}`,
+      url: `${siteUrl}/promos/${promo.slug}`,
     },
   };
 }

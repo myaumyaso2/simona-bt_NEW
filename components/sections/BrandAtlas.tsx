@@ -60,7 +60,7 @@ function BrandCardItem({ brand }: { brand: BrandCardData }) {
 
   const flagshipCategory = getBrandFlagshipCategory(brand.slug || brand.name);
   const targetHref = flagshipCategory
-    ? `/catalog?brand=${encodeURIComponent(brand.slug)}&category=${encodeURIComponent(flagshipCategory)}`
+    ? `/catalog/${encodeURIComponent(flagshipCategory)}?brand=${encodeURIComponent(brand.slug)}`
     : `/catalog?brand=${encodeURIComponent(brand.slug)}`;
 
   return (

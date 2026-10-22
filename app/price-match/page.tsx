@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     title: 'Нашли дешевле? Снизим цену! | СИМОНА Нижний Новгород',
     description:
       'Мы стремимся предложить лучшие цены. Отправьте нам ссылку на товар конкурента, и мы подготовим персональное выгодное предложение.',
-    url: 'https://simona-bt.ru/price-match',
+    url: 'https://www.simona-bt.ru/price-match',
   },
 };
 

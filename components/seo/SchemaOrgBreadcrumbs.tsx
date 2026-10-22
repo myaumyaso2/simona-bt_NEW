@@ -12,7 +12,7 @@ interface SchemaOrgBreadcrumbsProps {
 
 export function SchemaOrgBreadcrumbs({
   items,
-  siteUrl = 'https://simona-bt.ru',
+  siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.simona-bt.ru',
 }: SchemaOrgBreadcrumbsProps) {
   const schema = {
     '@context': 'https://schema.org',

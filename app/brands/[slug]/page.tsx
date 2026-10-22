@@ -18,13 +18,15 @@ export async function generateMetadata({ params }: BrandPageProps): Promise<Meta
   const info = BRAND_DETAILS_MAP[slug];
   const brandTitle = info ? info.name : formatBrandName(slug);
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.simona-bt.ru';
+
   return {
     title: `Бытовая техника ${brandTitle} в Нижнем Новгороде | Салоны СИМОНА`,
     description: `Официальный дилер ${brandTitle}. Каталог встраиваемой техники, наличие на складе и экспозиция в салонах на ул. Белинского 15 и 11/66. Консультация экспертов, аккуратная доставка и установка.`,
     openGraph: {
       title: `Бытовая техника ${brandTitle} | Салоны СИМОНА`,
       description: `Официальная сертифицированная коллекция ${brandTitle} в Нижнем Новгороде. Экспозиция в салонах, складское наличие, сервис и гарантия.`,
-      url: `https://simona-bt.ru/brands/${slug}`,
+      url: `${siteUrl}/brands/${slug}`,
     },
   };
 }
@@ -90,13 +92,15 @@ export default async function BrandDetailPage({ params }: BrandPageProps) {
     { name: brandInfo.name, url: `/brands/${slug}` },
   ];
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.simona-bt.ru';
+
   // Brand structured data for search engines
   const brandJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Brand',
     name: brandInfo.name,
     description: brandInfo.heroText,
-    url: `https://simona-bt.ru/brands/${slug}`,
+    url: `${siteUrl}/brands/${slug}`,
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'ул. Белинского, 15',

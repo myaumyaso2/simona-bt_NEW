@@ -227,7 +227,7 @@ export function CatalogHubView() {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                router.push(`/catalog?brand=${encodeURIComponent(brand)}&category=${cat.slug}`);
+                                router.push(`/catalog/${cat.slug}?brand=${encodeURIComponent(brand)}`);
                               }}
                               className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#1E2228]/80 text-[#D7D9DB] border border-[#2B313A]/60 hover:border-simona-teal hover:text-white hover:bg-[#252A32] cursor-pointer transition-all duration-200 active:scale-95 select-none"
                             >
