@@ -98,8 +98,25 @@ ssh "$SSH_HOST" bash << 'EOF'
 set -e
 
 cat << 'PRODCONF' > /etc/nginx/fastpanel2-sites/simona-bt.ru/simona-bt.ru.conf
+# 301 Canonical Host Redirect: www.simona-bt.ru -> simona-bt.ru
 server {
-    server_name simona-bt.ru www.simona-bt.ru;
+    server_name www.simona-bt.ru;
+
+    listen 5.188.30.184:80;
+    listen [2a01:5a60:5::5a]:80;
+    listen 5.188.30.184:443 ssl;
+    listen [2a01:5a60:5::5a]:443 ssl;
+
+    ssl_certificate "/var/www/httpd-cert/www.simona-bt.ru_2026-10-05-14-36_18.crt";
+    ssl_certificate_key "/var/www/httpd-cert/www.simona-bt.ru_2026-10-05-14-36_18.key";
+    charset utf-8;
+
+    return 301 https://simona-bt.ru$request_uri;
+}
+
+# Primary Production Host: simona-bt.ru
+server {
+    server_name simona-bt.ru;
 
     listen 5.188.30.184:80;
     listen [2a01:5a60:5::5a]:80;

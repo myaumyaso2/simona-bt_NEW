@@ -170,6 +170,19 @@ const LEGACY_UTILITY_ROUTES: Record<string, string> = {
   '/optovyj_otdel': '/opt',
 };
 
+// Helper to construct 301 redirect URL while strictly preserving incoming query parameters
+// (such as ?ysclid=..., ?yclid=..., ?gclid=..., and UTM parameters)
+function buildRedirectUrl(destination: string, request: NextRequest): URL {
+  const targetUrl = new URL(destination, request.url);
+  // Merge original search parameters from request.nextUrl, keeping any destination-specific parameters intact
+  request.nextUrl.searchParams.forEach((value, key) => {
+    if (!targetUrl.searchParams.has(key)) {
+      targetUrl.searchParams.set(key, value);
+    }
+  });
+  return targetUrl;
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const cleanPath = pathname.replace(/\/+$/, '');
@@ -179,18 +192,18 @@ export function middleware(request: NextRequest) {
   // =========================================================================
   if (cleanPath in LEGACY_UTILITY_ROUTES) {
     const target = LEGACY_UTILITY_ROUTES[cleanPath];
-    return NextResponse.redirect(new URL(target, request.url), 301);
+    return NextResponse.redirect(buildRedirectUrl(target, request), 301);
   }
 
   if (pathname.startsWith('/actions_sales')) {
-    return NextResponse.redirect(new URL('/promos', request.url), 301);
+    return NextResponse.redirect(buildRedirectUrl('/promos', request), 301);
   }
 
   // =========================================================================
   // 2. Legacy Brand URLs: /brendy and /brendy/:slug
   // =========================================================================
   if (pathname === '/brendy' || pathname === '/brendy/') {
-    return NextResponse.redirect(new URL('/brands', request.url), 301);
+    return NextResponse.redirect(buildRedirectUrl('/brands', request), 301);
   }
 
   if (pathname.startsWith('/brendy/')) {
@@ -199,18 +212,18 @@ export function middleware(request: NextRequest) {
       // Tier-1: 13 anchor brands -> /brands/:slug
       if (brandSlugRaw in TIER1_BRANDS) {
         const canonicalSlug = TIER1_BRANDS[brandSlugRaw];
-        return NextResponse.redirect(new URL(`/brands/${canonicalSlug}`, request.url), 301);
+        return NextResponse.redirect(buildRedirectUrl(`/brands/${canonicalSlug}`, request), 301);
       }
 
       // Tier-2: other brands -> /catalog?brand=:BRAND
       const brandName =
         BRAND_CANONICAL_NAMES[brandSlugRaw] || brandSlugRaw.toUpperCase();
       return NextResponse.redirect(
-        new URL(`/catalog?brand=${encodeURIComponent(brandName)}`, request.url),
+        buildRedirectUrl(`/catalog?brand=${encodeURIComponent(brandName)}`, request),
         301
       );
     }
-    return NextResponse.redirect(new URL('/brands', request.url), 301);
+    return NextResponse.redirect(buildRedirectUrl('/brands', request), 301);
   }
 
   // =========================================================================
@@ -227,7 +240,7 @@ export function middleware(request: NextRequest) {
     }
 
     if (target) {
-      return NextResponse.redirect(new URL(target, request.url), 301);
+      return NextResponse.redirect(buildRedirectUrl(target, request), 301);
     }
 
     // 3.2. Smart category and brand matching for old UMI.CMS category trees
@@ -269,11 +282,11 @@ export function middleware(request: NextRequest) {
         destination += (destination.includes('?') ? '&' : '?') + `brand=${encodeURIComponent(detectedBrand)}`;
       }
 
-      return NextResponse.redirect(new URL(destination, request.url), 301);
+      return NextResponse.redirect(buildRedirectUrl(destination, request), 301);
     }
 
     // 3.3. Default fallback for discontinued items -> /catalog
-    return NextResponse.redirect(new URL('/catalog', request.url), 301);
+    return NextResponse.redirect(buildRedirectUrl('/catalog', request), 301);
   }
 
   return NextResponse.next();

@@ -10,6 +10,7 @@ export interface AnalyticsPayload {
   utmContent?: string;
   utmTerm?: string;
   yclid?: string;
+  ysclid?: string;
   gclid?: string;
   referrer?: string;
   ymClientId?: string;
@@ -54,6 +55,7 @@ export function captureUtmParams(): AnalyticsPayload {
     utmContent: urlParams.get('utm_content') || stored.utmContent || undefined,
     utmTerm: urlParams.get('utm_term') || stored.utmTerm || undefined,
     yclid: urlParams.get('yclid') || stored.yclid || undefined,
+    ysclid: urlParams.get('ysclid') || stored.ysclid || undefined,
     gclid: urlParams.get('gclid') || stored.gclid || undefined,
     referrer: document.referrer || stored.referrer || undefined,
   };
