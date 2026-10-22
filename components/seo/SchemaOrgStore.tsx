@@ -6,12 +6,12 @@ export function SchemaOrgStore() {
     '@graph': [
       {
         '@type': 'HomeGoodsStore',
-        '@id': 'https://simona-bt.ru/#showroom-belinskogo-15',
+        '@id': 'https://www.simona-bt.ru/#showroom-belinskogo-15',
         name: 'Флагманский салон премиальной бытовой техники «СИМОНА»',
-        url: 'https://simona-bt.ru',
+        url: 'https://www.simona-bt.ru',
         telephone: '+78314237600',
         priceRange: '₽₽₽₽',
-        image: 'https://simona-bt.ru/images/showroom_belinskogo_15.jpg',
+        image: 'https://www.simona-bt.ru/images/showroom_belinskogo_15.jpg',
         address: {
           '@type': 'PostalAddress',
           streetAddress: 'ул. Белинского, 15',
@@ -35,9 +35,9 @@ export function SchemaOrgStore() {
       },
       {
         '@type': 'HomeGoodsStore',
-        '@id': 'https://simona-bt.ru/#showroom-belinskogo-11',
+        '@id': 'https://www.simona-bt.ru/#showroom-belinskogo-11',
         name: 'Фирменный салон OMOIKIRI & KÖRTING «СИМОНА»',
-        url: 'https://simona-bt.ru',
+        url: 'https://www.simona-bt.ru',
         telephone: '+78314237600',
         priceRange: '₽₽₽₽',
         address: {
@@ -63,9 +63,9 @@ export function SchemaOrgStore() {
       },
       {
         '@type': 'LocalBusiness',
-        '@id': 'https://simona-bt.ru/#warehouse-kominterna-27',
+        '@id': 'https://www.simona-bt.ru/#warehouse-kominterna-27',
         name: 'Центральный склад и терминал выдачи заказов «СИМОНА»',
-        url: 'https://simona-bt.ru',
+        url: 'https://www.simona-bt.ru',
         telephone: '+78314237600',
         address: {
           '@type': 'PostalAddress',
@@ -90,17 +90,17 @@ export function SchemaOrgStore() {
       },
       {
         '@type': 'WebSite',
-        '@id': 'https://simona-bt.ru/#website',
-        url: 'https://simona-bt.ru',
+        '@id': 'https://www.simona-bt.ru/#website',
+        url: 'https://www.simona-bt.ru',
         name: 'СИМОНА — Премиальная бытовая техника и O2O digital-витрина',
         publisher: {
-          '@id': 'https://simona-bt.ru/#showroom-belinskogo-15',
+          '@id': 'https://www.simona-bt.ru/#showroom-belinskogo-15',
         },
         potentialAction: {
           '@type': 'SearchAction',
           target: {
             '@type': 'EntryPoint',
-            urlTemplate: 'https://simona-bt.ru/catalog?search={search_term_string}',
+            urlTemplate: 'https://www.simona-bt.ru/catalog?search={search_term_string}',
           },
           'query-input': 'required name=search_term_string',
         },

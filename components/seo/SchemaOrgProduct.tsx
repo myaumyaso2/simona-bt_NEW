@@ -8,7 +8,7 @@ interface SchemaOrgProductProps {
   siteUrl?: string;
 }
 
-export function SchemaOrgProduct({ product, siteUrl = 'https://simona-bt.ru' }: SchemaOrgProductProps) {
+export function SchemaOrgProduct({ product, siteUrl = 'https://www.simona-bt.ru' }: SchemaOrgProductProps) {
   const isAvailable = product.inStock || (product.stockCount && product.stockCount > 0);
   const availability = isAvailable
     ? 'https://schema.org/InStock'

@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'СИМОНА — Салоны и интернет-магазин бытовой техники в Нижнем Новгороде',
     description: 'Официальный партнер ведущих мировых брендов. Салоны на ул. Белинского 15 и 11/66, склад на ул. Коминтерна 27.',
-    url: 'https://simona-bt.ru',
+    url: 'https://www.simona-bt.ru',
     siteName: 'СИМОНА',
     locale: 'ru_RU',
     type: 'website',

@@ -22,7 +22,7 @@ export const TIER1_BRAND_SLUGS = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://simona-bt.ru';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.simona-bt.ru';
 
   // 1. Static high-priority pages
   const staticRoutes: MetadataRoute.Sitemap = [

@@ -98,9 +98,9 @@ ssh "$SSH_HOST" bash << 'EOF'
 set -e
 
 cat << 'PRODCONF' > /etc/nginx/fastpanel2-sites/simona-bt.ru/simona-bt.ru.conf
-# 301 Canonical Host Redirect: www.simona-bt.ru -> simona-bt.ru
+# 301 Canonical Host Redirect: simona-bt.ru -> www.simona-bt.ru
 server {
-    server_name www.simona-bt.ru;
+    server_name simona-bt.ru;
 
     listen 5.188.30.184:80;
     listen [2a01:5a60:5::5a]:80;
@@ -111,20 +111,20 @@ server {
     ssl_certificate_key "/var/www/httpd-cert/www.simona-bt.ru_2026-10-05-14-36_18.key";
     charset utf-8;
 
-    # Allow direct verification of www mirror without redirecting verification bots
+    # Allow direct verification of non-www mirror without redirecting verification bots
     location ~* ^/(yandex_[a-z0-9]+\.html|google[a-z0-9]+\.html)$ {
         root /var/www/simona-bt.ru/data/www/simona-bt.ru;
         try_files $uri =404;
     }
 
     location / {
-        return 301 https://simona-bt.ru$request_uri;
+        return 301 https://www.simona-bt.ru$request_uri;
     }
 }
 
-# Primary Production Host: simona-bt.ru
+# Primary Production Host: www.simona-bt.ru
 server {
-    server_name simona-bt.ru;
+    server_name www.simona-bt.ru;
 
     listen 5.188.30.184:80;
     listen [2a01:5a60:5::5a]:80;
@@ -150,6 +150,12 @@ server {
         try_files $uri $uri/ @fallback;
         expires 60d;
         add_header Cache-Control "public, no-transform";
+    }
+
+    # Yandex & Search Engine Verification Files
+    location ~* ^/(yandex_[a-z0-9]+\.html|google[a-z0-9]+\.html)$ {
+        root /var/www/simona-bt.ru/data/www/simona-bt.ru;
+        try_files $uri =404;
     }
 
     # Primary Next.js 14 proxy
@@ -178,6 +184,16 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 120s;
+        proxy_connect_timeout 60s;
+    }
+
+    include "/etc/nginx/fastpanel2-sites/simona-bt.ru/simona-bt.ru.includes";
+    include /etc/nginx/fastpanel2-includes/*.conf;
+
+    error_log /var/www/simona-bt.ru/data/logs/simona-bt.ru-frontend.error.log;
+    access_log /var/www/simona-bt.ru/data/logs/simona-bt.ru-frontend.access.log;
+}
         proxy_read_timeout 120s;
         proxy_connect_timeout 60s;
     }

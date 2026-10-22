@@ -20,7 +20,7 @@ cat << 'ENVEOF' > .env
 NODE_ENV=production
 PORT=3000
 DATABASE_URL="postgresql://simona_app:SmBt_Staging_2026_PgPass!@localhost:5432/simona_prod"
-NEXT_PUBLIC_SITE_URL="https://simona-bt.ru"
+NEXT_PUBLIC_SITE_URL="https://www.simona-bt.ru"
 NEXT_PUBLIC_KUHNI_URL="https://simona-kuhni.ru"
 ADMIN_PASSWORD=Vzevzcj2
 OFFLINE_CONVERSION_SECRET=simona_offline_secret_2026
