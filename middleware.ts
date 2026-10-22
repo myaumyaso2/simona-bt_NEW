@@ -82,8 +82,8 @@ const UMI_CATEGORY_MAP: Record<string, string> = {
   'vstraivaemaya_tehnika/stiralnye_mashiny_vstroika': 'vstraivaemye-stiralnye-mashiny',
   'vstraivaemaya_tehnika/kofemashiny_vstroika': 'vstraivaemye-kofemashiny',
   'vstraivaemaya_tehnika/podogrevateli_posudy': 'podogrevateli-posudy',
-  'vstraivaemaya_tehnika/izmelchiteli_piwevyh_othodov': 'izmelchiteli-othodov',
-  'vstraivaemaya_tehnika/izmelchiteli_pishevyh_othodov': 'izmelchiteli-othodov',
+  'vstraivaemaya_tehnika/izmelchiteli_piwevyh_othodov': 'izmelchiteli-pishchevyh-othodov',
+  'vstraivaemaya_tehnika/izmelchiteli_pishevyh_othodov': 'izmelchiteli-pishchevyh-othodov',
   'vstraivaemaya_tehnika/vakuumatory': 'vstraivaemye-vakuumatory',
   'vstraivaemaya_tehnika/sortery_vedra': 'aksessuary-dlya-moek',
   'vstraivaemaya_tehnika': 'vstraivaemaya-tehnika',
@@ -168,6 +168,7 @@ const LEGACY_UTILITY_ROUTES: Record<string, string> = {
   '/return_exchange_warranty': '/returns',
   '/nashli_deshevle_snizim_cenu': '/price-match',
   '/optovyj_otdel': '/opt',
+  '/catalog/izmelchiteli-othodov': '/catalog/izmelchiteli-pishchevyh-othodov',
 };
 
 // Helper to construct 301 redirect URL while strictly preserving incoming query parameters
@@ -305,5 +306,6 @@ export const config = {
     '/actions_sales/:path*',
     '/actions_sales',
     '/optovyj_otdel',
+    '/catalog/izmelchiteli-othodov',
   ],
 };
