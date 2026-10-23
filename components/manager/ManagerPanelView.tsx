@@ -16,12 +16,14 @@ import {
   SimonaIconPin,
   SimonaIconExternalLink,
   SimonaIconPlus,
+  SimonaIconSparkles,
 } from '@/components/brand/SimonaIcons';
 import { formatPrice } from '@/lib/utils';
 import { ManagerSyncView } from './ManagerSyncView';
 import { ManagerProductsNoPhotoView } from './ManagerProductsNoPhotoView';
+import { ManagerSpecsView } from './ManagerSpecsView';
 
-export type ManagerTabId = 'orders' | 'leads' | 'products-no-photo' | 'chat' | 'sync';
+export type ManagerTabId = 'orders' | 'leads' | 'products-no-photo' | 'specs' | 'chat' | 'sync';
 
 interface ChatMessageRecord {
   id: string;
@@ -503,6 +505,19 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
             >
               <SimonaIconFile className="w-4 h-4" />
               <span>Картинки товаров {totalNoPhotoCount > 0 ? `(${totalNoPhotoCount})` : ''}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('specs')}
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center space-x-2 transition cursor-pointer ${
+                activeTab === 'specs'
+                  ? 'bg-simona-teal text-white shadow-lg shadow-simona-teal/20'
+                  : 'bg-[#16191D] text-[#D7D9DB] border border-[#2B313A] hover:border-simona-teal/50'
+              }`}
+            >
+              <SimonaIconSparkles className="w-4 h-4" />
+              <span>Характеристики</span>
             </button>
 
             <button
@@ -1289,6 +1304,9 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
             </div>
           </div>
         )}
+
+        {/* Specifications Tab */}
+        {activeTab === 'specs' && <ManagerSpecsView />}
 
         {/* 1C Sync Tab */}
         {activeTab === 'sync' && <ManagerSyncView />}
