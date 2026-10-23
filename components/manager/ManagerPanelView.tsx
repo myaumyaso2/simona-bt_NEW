@@ -19,6 +19,7 @@ import {
 } from '@/components/brand/SimonaIcons';
 import { formatPrice } from '@/lib/utils';
 import { ManagerSyncView } from './ManagerSyncView';
+import { ManagerProductsNoPhotoView } from './ManagerProductsNoPhotoView';
 
 export type ManagerTabId = 'orders' | 'leads' | 'products-no-photo' | 'chat' | 'sync';
 
@@ -111,24 +112,6 @@ interface LeadRecord {
   createdAt: string;
 }
 
-interface NoPhotoProductRecord {
-  id: string;
-  sku: string;
-  name: string;
-  slug: string;
-  brand: string;
-  category: string;
-  productGroup: string | null;
-  price: number;
-  oldPrice: number | null;
-  priceOpt: number | null;
-  stockKominterna: number;
-  inStock: boolean;
-  isActive: boolean;
-  imagesJson: string;
-  updatedAt: string;
-}
-
 const ORDER_STATUS_OPTIONS = [
   { value: 'NEW', label: 'Новый', badgeClass: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
   { value: 'IN_PROGRESS', label: 'Принят в работу', badgeClass: 'bg-sky-500/15 text-sky-300 border-sky-500/30' },
@@ -196,15 +179,7 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
   const [leadStatusFilter, setLeadStatusFilter] = useState('ALL');
 
   // Products no-photo state
-  const [noPhotoProducts, setNoPhotoProducts] = useState<NoPhotoProductRecord[]>([]);
   const [totalNoPhotoCount, setTotalNoPhotoCount] = useState(0);
-  const [noPhotoQuery, setNoPhotoQuery] = useState('');
-  const [uploadingSku, setUploadingSku] = useState<string | null>(null);
-  const [dragOverSku, setDragOverSku] = useState<string | null>(null);
-  const [manualSku, setManualSku] = useState('');
-  const [recentlyActivated, setRecentlyActivated] = useState<
-    Array<{ sku: string; name: string; imageUrl: string; slug: string }>
-  >([]);
 
   // Chat sessions state
   const [chatSessions, setChatSessions] = useState<ChatSessionRecord[]>([]);
@@ -255,8 +230,7 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
 
       if (noPhotoRes.ok) {
         const pData = await noPhotoRes.json();
-        setNoPhotoProducts(pData.products || []);
-        setTotalNoPhotoCount(pData.totalNoPhoto || 0);
+        setTotalNoPhotoCount(pData.totalCount ?? pData.totalNoPhoto ?? 0);
       }
 
       if (chatRes.ok) {
@@ -403,47 +377,6 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
     }
   };
 
-  const handleUploadPhoto = async (sku: string, file: File) => {
-    if (!sku || !file) return;
-    setUploadingSku(sku);
-
-    try {
-      const formData = new FormData();
-      formData.append('sku', sku);
-      formData.append('file', file);
-
-      const res = await fetch('/api/manager/products-no-photo', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Ошибка загрузки фото');
-
-      setRecentlyActivated((prev) => [
-        {
-          sku: data.product.sku,
-          name: data.product.name,
-          imageUrl: data.imageUrl,
-          slug: data.product.slug,
-        },
-        ...prev,
-      ]);
-
-      setNoPhotoProducts((prev) => prev.filter((p) => p.sku !== sku));
-      setTotalNoPhotoCount((prev) => Math.max(0, prev - 1));
-      showToast(
-        'success',
-        `Фото сохранено в ${data.imageUrl}. Товар (Код: ${sku}) активирован на витрине!`
-      );
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Ошибка загрузки фотографии';
-      showToast('error', message);
-    } finally {
-      setUploadingSku(null);
-      setDragOverSku(null);
-    }
-  };
-
   if (authStatus === 'loading') {
     return (
       <div className="min-h-screen bg-[#111315] text-white flex items-center justify-center">
@@ -569,7 +502,7 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
               }`}
             >
               <SimonaIconFile className="w-4 h-4" />
-              <span>Новинки без фото ({totalNoPhotoCount})</span>
+              <span>Картинки товаров {totalNoPhotoCount > 0 ? `(${totalNoPhotoCount})` : ''}</span>
             </button>
 
             <button
@@ -1152,197 +1085,9 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
           </div>
         )}
 
-        {/* TAB 3: PRODUCTS NO PHOTO */}
+        {/* TAB 3: PRODUCTS NO PHOTO / PRODUCT IMAGES */}
         {activeTab === 'products-no-photo' && (
-          <div className="space-y-6">
-            {/* Quick Upload by SKU + Search Bar */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <div className="lg:col-span-7 p-5 rounded-2xl bg-[#16191D] border border-[#2B313A] space-y-3 text-left">
-                <h2 className="text-sm font-bold text-white">
-                  Поиск новинок из 1С без изображений ({totalNoPhotoCount} поз.)
-                </h2>
-                <p className="text-xs text-[#87888A]">
-                  При перетаскивании фотографии файл сохраняется в{' '}
-                  <code className="text-simona-teal">/images/cms/data/photo_code/&#123;sku&#125;.jpg</code>,
-                  прописывается в <code className="text-simona-teal">imagesJson</code> и автоматически активирует карточку товара на витрине (<code className="text-simona-teal">isActive = true</code>).
-                </p>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <SimonaIconSearch className="w-4 h-4 text-[#87888A] absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      value={noPhotoQuery}
-                      onChange={(e) => setNoPhotoQuery(e.target.value)}
-                      placeholder="Код 1С (SKU), бренд или название модели..."
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1E2228] border border-[#2B313A] text-xs text-white placeholder-[#87888A] focus:outline-none focus:border-simona-teal"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => loadAllData(noPhotoQuery)}
-                    className="px-5 py-2.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold transition cursor-pointer"
-                  >
-                    Найти
-                  </button>
-                </div>
-              </div>
-
-              <div className="lg:col-span-5 p-5 rounded-2xl bg-[#16191D] border border-[#2B313A] space-y-3 text-left">
-                <h2 className="text-sm font-bold text-white">
-                  Быстрая загрузка фото по коду 1С (SKU)
-                </h2>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={manualSku}
-                    onChange={(e) => setManualSku(e.target.value)}
-                    placeholder="Введите Код 1С (например: 89083)"
-                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-[#1E2228] border border-[#2B313A] text-xs text-white placeholder-[#87888A] focus:outline-none focus:border-simona-teal"
-                  />
-                  <label className="px-4 py-2.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-xs font-semibold transition cursor-pointer flex items-center space-x-1.5 shrink-0">
-                    <SimonaIconPlus className="w-4 h-4" />
-                    <span>Загрузить JPG/PNG</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const f = e.target.files?.[0];
-                        if (f && manualSku.trim()) {
-                          handleUploadPhoto(manualSku.trim(), f);
-                        }
-                      }}
-                    />
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Recently Activated Banner */}
-            {recentlyActivated.length > 0 && (
-              <div className="p-4 rounded-2xl bg-simona-teal/10 border border-simona-teal/30 space-y-3 text-left">
-                <div className="text-xs font-bold text-white flex items-center space-x-2">
-                  <SimonaIconCheckCircle className="w-4 h-4 text-simona-teal" />
-                  <span>Только что опубликованы и активированы на витрине:</span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {recentlyActivated.map((item) => (
-                    <div
-                      key={item.sku}
-                      className="p-3 rounded-xl bg-[#16191D] border border-[#2B313A] flex items-center space-x-3"
-                    >
-                      <img
-                        src={item.imageUrl}
-                        alt={item.name}
-                        className="w-12 h-12 rounded-lg object-contain bg-white p-1 shrink-0"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="text-[11px] font-mono text-simona-teal">Код: {item.sku}</div>
-                        <div className="text-xs font-semibold text-white truncate">{item.name}</div>
-                        <Link
-                          href={`/product/${item.slug}`}
-                          className="text-[11px] text-[#87888A] hover:text-white inline-flex items-center space-x-1 mt-0.5"
-                        >
-                          <span>Открыть на витрине</span>
-                          <SimonaIconExternalLink className="w-3 h-3" />
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Grid of No-Photo Products */}
-            {noPhotoProducts.length === 0 ? (
-              <div className="p-10 rounded-2xl bg-[#16191D] border border-[#2B313A] text-left">
-                <p className="text-sm font-semibold text-white">
-                  Все активные товары в базе обеспечены фотографиями
-                </p>
-                <p className="text-xs text-[#87888A] mt-1">
-                  Новые позиции без фото из выгрузки 1C_import.csv появятся в этом списке автоматически со статусом скрытия до загрузки изображения.
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {noPhotoProducts.map((prod) => {
-                  const isDragging = dragOverSku === prod.sku;
-                  const isUploading = uploadingSku === prod.sku;
-
-                  return (
-                    <div
-                      key={prod.id}
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                        setDragOverSku(prod.sku);
-                      }}
-                      onDragLeave={() => setDragOverSku(null)}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        setDragOverSku(null);
-                        const f = e.dataTransfer.files?.[0];
-                        if (f) handleUploadPhoto(prod.sku, f);
-                      }}
-                      className={`p-5 rounded-2xl border transition flex flex-col justify-between gap-4 text-left ${
-                        isDragging
-                          ? 'bg-simona-teal/15 border-simona-teal'
-                          : 'bg-[#16191D] border-[#2B313A]'
-                      }`}
-                    >
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="px-2 py-0.5 rounded-md bg-[#1E2228] border border-[#2B313A] font-mono text-xs text-simona-teal font-bold">
-                            Код 1С: {prod.sku}
-                          </span>
-                          <span className="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 text-[10px] font-semibold">
-                            Скрыт (нет фото)
-                          </span>
-                        </div>
-                        <div className="text-sm font-semibold text-white leading-snug">
-                          {prod.name}
-                        </div>
-                        <div className="text-xs text-[#87888A]">
-                          {prod.brand} • {prod.category}
-                        </div>
-                        <div className="flex items-center justify-between pt-1 text-xs">
-                          <span className="font-montserrat font-bold text-white">
-                            {formatPrice(prod.price)}
-                          </span>
-                          <span className="text-[#87888A]">
-                            Остаток: <strong className="text-white">{prod.stockKominterna} шт.</strong>
-                          </span>
-                        </div>
-                      </div>
-
-                      <label className="w-full p-4 rounded-xl border border-dashed border-[#2B313A] hover:border-simona-teal bg-[#1E2228]/60 text-left cursor-pointer transition flex items-center justify-between">
-                        <div>
-                          <div className="text-xs font-semibold text-white">
-                            {isUploading
-                              ? 'Сохранение фотографии...'
-                              : 'Перетащите фото сюда или выберите файл'}
-                          </div>
-                          <div className="text-[10px] text-[#87888A] mt-0.5">
-                            Сохранится как /images/cms/data/photo_code/{prod.sku}.jpg
-                          </div>
-                        </div>
-                        <SimonaIconPlus className="w-5 h-5 text-simona-teal shrink-0" />
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          disabled={isUploading}
-                          onChange={(e) => {
-                            const f = e.target.files?.[0];
-                            if (f) handleUploadPhoto(prod.sku, f);
-                          }}
-                        />
-                      </label>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+          <ManagerProductsNoPhotoView />
         )}
 
         {/* TAB 4: ONLINE CHAT */}
@@ -1356,7 +1101,7 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
                 </h2>
                 <button
                   type="button"
-                  onClick={() => loadAllData(noPhotoQuery)}
+                  onClick={() => loadAllData()}
                   className="text-xs text-simona-teal hover:underline cursor-pointer"
                 >
                   Обновить
@@ -1510,7 +1255,7 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
                           });
                           if (!res.ok) throw new Error('Ошибка отправки ответа');
                           setManagerReplyText('');
-                          await loadAllData(noPhotoQuery);
+                          await loadAllData();
                           showToast('success', 'Ответ отправлен покупателю в онлайн-чат');
                         } catch (err: unknown) {
                           showToast(
