@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 import { MANUFACTURER_PROMOS, getPromoBySlug } from '@/data/promosData';
 import { PromoDetailView } from '@/components/promos/PromoDetailView';
 import { getPromoProducts } from '@/lib/products';
@@ -27,6 +27,9 @@ export async function generateMetadata({
   return {
     title: `${promo.title} — акция ${promo.brand} | СИМОНА`,
     description: `${promo.shortDescription} Официальный салон СИМОНА в Нижнем Новгороде на ул. Белинского 15.`,
+    alternates: {
+      canonical: `${siteUrl}/promos/${promo.slug}`,
+    },
     openGraph: {
       title: `${promo.title} | СИМОНА`,
       description: promo.shortDescription,
@@ -48,7 +51,7 @@ export default async function PromoPage({ params }: PromoPageProps) {
   const promo = getPromoBySlug(params.slug);
 
   if (!promo) {
-    notFound();
+    permanentRedirect('/promos');
   }
 
   const initialProducts = await getPromoProducts(promo);

@@ -15,7 +15,7 @@ export const metadata = {
 
 const POPULAR_CATEGORIES = [
   { title: 'Варочные панели', href: '/catalog/varochnye-paneli' },
-  { title: 'Духовые шкафы', href: '/catalog/duhovye-shkafy' },
+  { title: 'Духовые шкафы', href: '/catalog/vstraivaemye-duhovye-shkafy' },
   { title: 'Посудомоечные машины', href: '/catalog/vstraivaemye-posudomoechnye-mashiny' },
   { title: 'Холодильники', href: '/catalog/holodilniki' },
   { title: 'Вытяжки', href: '/catalog/vytyazhki' },

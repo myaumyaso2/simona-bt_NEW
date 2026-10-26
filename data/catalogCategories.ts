@@ -1715,3 +1715,58 @@ export function getCategorySlugByName(name?: string): string {
 export function getCategoryByDbName(dbCategory: string): CatalogCategory | undefined {
   return CATALOG_CATEGORIES.find((c) => c.dbCategories.includes(dbCategory));
 }
+
+export interface CatalogMacroSection {
+  slug: string;
+  title: string;
+  description: string;
+}
+
+export const CATALOG_MACRO_SECTIONS: CatalogMacroSection[] = [
+  {
+    slug: 'vstraivaemaya-tehnika',
+    title: 'Встраиваемая бытовая техника',
+    description:
+      'Встраиваемые духовые шкафы, индукционные и газовые варочные панели, вытяжки, посудомоечные машины и холодильники в салонах «СИМОНА» в Нижнем Новгороде.',
+  },
+  {
+    slug: 'krupnaya-bytovaya-tehnika',
+    title: 'Крупная бытовая техника',
+    description:
+      'Отдельностоящие холодильники и морозильники, стиральные и сушильные машины, кухонные плиты, винные шкафы и гладильные системы с официальной гарантией.',
+  },
+  {
+    slug: 'mojki-i-smesiteli',
+    title: 'Кухонные мойки и смесители',
+    description:
+      'Японские и европейские кухонные мойки, смесители с каналом питьевой воды, дозаторы и измельчители пищевых отходов. Экспозиция на ул. Белинского 11/66 и 15.',
+  },
+  {
+    slug: 'malaya-bytovaya-tehnika',
+    title: 'Малая бытовая техника',
+    description:
+      'Автоматические и рожковые кофемашины, электрические чайники, тостеры, блендеры, кухонные комбайны и техника для ухода за домом в наличии и под заказ.',
+  },
+  {
+    slug: 'bokaly-i-posuda',
+    title: 'Бокалы и посуда',
+    description:
+      'Хрустальные бокалы и декантеры Riedel и Nachtmann, кухонная посуда и аксессуары для сервировки в салонах «СИМОНА» в Нижнем Новгороде.',
+  },
+  {
+    slug: 'klimaticheskaya-tehnika',
+    title: 'Климатическая техника',
+    description:
+      'Накопительные водонагреватели, кондиционеры и увлажнители воздуха для комфортного микроклимата квартиры и загородного дома.',
+  },
+  {
+    slug: 'uhod-i-aksessuary',
+    title: 'Бытовая химия и аксессуары',
+    description:
+      'Фирменные средства для стирки, мытья посуды и декальцинации, а также оригинальные аксессуары для бытовой техники европейских производителей.',
+  },
+];
+
+export function getMacroSectionBySlug(slug: string): CatalogMacroSection | undefined {
+  return CATALOG_MACRO_SECTIONS.find((s) => s.slug === slug);
+}

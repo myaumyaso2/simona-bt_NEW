@@ -1,78 +1,32 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import redirectsMap from '@/data/redirects.json';
+import {
+  resolveBrandEntry,
+  brandNameToSlug,
+  extractBrandFromUmiSegments,
+  inferCategorySlugFromUmiSlug,
+} from '@/lib/catalog/brandsRegistry';
 
 const redirects: Record<string, string> = redirectsMap;
 
-// 1. Tier-1 anchor brand slugs (13 flagship brands)
-const TIER1_BRANDS: Record<string, string> = {
-  miele: 'miele',
-  asko: 'asko',
-  smeg: 'smeg',
-  liebherr: 'liebherr',
-  korting: 'korting',
-  koerting: 'korting',
-  omoikiri: 'omoikiri',
-  falmec: 'falmec',
-  vard: 'vard',
-  midea: 'midea',
-  bosch: 'bosch',
-  elica: 'elica',
-  gorenje: 'gorenje',
-  evelux: 'evelux',
-};
+// Canonical slugs of brands that currently have active inventory in SIMONA catalog
+const ACTIVE_BRAND_SLUGS = new Set<string>([
+  'omoikiri', 'smeg', 'korting', 'elica', 'falmec', 'asko', 'longran', 'elikor',
+  'bertazzoni', 'evelux', 'siemens-lv', 'graude', 'riedel', 'meyvel', 'liebherr',
+  'bosch', 'dunavox', 'franke', 'vard', 'midea', 'kuppersberg', 'caso', 'miele',
+  'gorenje', 'jetair', 'schulthess', 'steba', 'hiberg', 'nivona', 'laurastar',
+  'jackys', 'eko', 'status', 'rommelsbacher', 'bone-crusher', 'siemens', 'mikadzo',
+  'hobot', 'faber', 'haier', 'electrolux', 'alveus', 'beko', 'bugatti', 'neff',
+  'lg', 'indesit', 'peugeot', 'nachtmann', 'gira', 'black-decker', 'boneco',
+  'aeg', 'gaggenau', 'vitek', 'philips', 'kuppersbusch', 'esperanza', 'daichi',
+  'maunfeld', 'samsung',
+]);
 
-// 2. Canonical brand names for Tier-2 and filtering
-const BRAND_CANONICAL_NAMES: Record<string, string> = {
-  siemens: 'SIEMENS',
-  neff: 'NEFF',
-  gaggenau: 'Gaggenau',
-  dedietrich: 'De Dietrich',
-  de_dietrich: 'De Dietrich',
-  bertazzoni: 'BERTAZZONI',
-  riedel: 'RIEDEL',
-  nivona: 'NIVONA',
-  meyvel: 'Meyvel',
-  dunavox: 'Dunavox',
-  franke: 'FRANKE',
-  teka: 'TEKA',
-  laurastar: 'Laurastar',
-  graude: 'GRAUDE',
-  elikor: 'ELIKOR',
-  longran: 'LONGRAN',
-  kuppersberg: 'KUPPERSBERG',
-  caso: 'CASO',
-  jetair: 'JETAIR',
-  schulthess: 'SCHULTHESS',
-  steba: 'STEBA',
-  hiberg: 'HIBERG',
-  indesit: 'INDESIT',
-  bone_crusher: 'BONE CRUSHER',
-  bonecrusher: 'BONE CRUSHER',
-  karcher: 'KARCHER',
-  beko: 'BEKO',
-  whirlpool: 'WHIRLPOOL',
-  hitachi: 'HITACHI',
-  miele: 'Miele',
-  asko: 'ASKO',
-  smeg: 'SMEG',
-  liebherr: 'Liebherr',
-  korting: 'KÖRTING',
-  koerting: 'KÖRTING',
-  omoikiri: 'OMOIKIRI',
-  falmec: 'Falmec',
-  vard: 'VARD',
-  midea: 'MIDEA',
-  bosch: 'BOSCH',
-  elica: 'ELICA',
-  gorenje: 'Gorenje',
-  evelux: 'Evelux',
-};
-
-// 3. Mapping of old UMI.CMS category paths to new catalog categories / sections
+// Mapping of old UMI.CMS category paths to canonical /catalog/[slug] routes (categories & macro-sections)
 const UMI_CATEGORY_MAP: Record<string, string> = {
   'vstraivaemaya_tehnika/varochnye_paneli': 'varochnye-paneli',
-  'vstraivaemaya_tehnika/duhovye_shkafy': 'duhovye-shkafy',
+  'vstraivaemaya_tehnika/duhovye_shkafy': 'vstraivaemye-duhovye-shkafy',
   'vstraivaemaya_tehnika/vytyazhki': 'vytyazhki',
   'vstraivaemaya_tehnika/posudomoechnye_mashiny_vstroika': 'vstraivaemye-posudomoechnye-mashiny',
   'vstraivaemaya_tehnika/holodilniki_vstroika': 'vstraivaemye-holodilniki',
@@ -160,22 +114,34 @@ const UMI_CATEGORY_MAP: Record<string, string> = {
   'aksessuary': 'uhod-i-aksessuary',
 };
 
-// 4. Legacy static utility page redirects
+// Legacy static utility page redirects
 const LEGACY_UTILITY_ROUTES: Record<string, string> = {
+  '/main': '/',
   '/politika': '/policy',
+  '/privacy': '/policy',
   '/delivery_payment': '/delivery-payment',
+  '/kredit': '/delivery-payment',
   '/service_warranty': '/warranty',
   '/return_exchange_warranty': '/returns',
   '/nashli_deshevle_snizim_cenu': '/price-match',
   '/optovyj_otdel': '/opt',
+  '/partners': '/designers',
+  '/podbor_bytovoj_tehniki': '/services',
+  '/akcii_dlya_tovarov': '/promos',
+  '/rasprodazha': '/catalog/ucenennye-tovary',
+  '/catalog/duhovye-shkafy': '/catalog/vstraivaemye-duhovye-shkafy',
   '/catalog/izmelchiteli-othodov': '/catalog/izmelchiteli-pishchevyh-othodov',
 };
 
-// Helper to construct 301 redirect URL while strictly preserving incoming query parameters
-// (such as ?ysclid=..., ?yclid=..., ?gclid=..., and UTM parameters)
+// Renamed promo slugs -> current active promo slugs
+const LEGACY_PROMO_SLUG_MAP: Record<string, string> = {
+  'vard-podarok-nabor-melnic-vsmps26t-2026': '/promos/vard-podarok-nabor-melnic',
+  'evelux-skidki-pri-pokupke-komplekta': '/promos/evelux-kaskad',
+};
+
+// Preserves incoming tracking parameters (?ysclid=..., ?yclid=..., ?gclid=..., UTM) across 301 hops
 function buildRedirectUrl(destination: string, request: NextRequest): URL {
   const targetUrl = new URL(destination, request.url);
-  // Merge original search parameters from request.nextUrl, keeping any destination-specific parameters intact
   request.nextUrl.searchParams.forEach((value, key) => {
     if (!targetUrl.searchParams.has(key)) {
       targetUrl.searchParams.set(key, value);
@@ -185,8 +151,18 @@ function buildRedirectUrl(destination: string, request: NextRequest): URL {
 }
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const cleanPath = pathname.replace(/\/+$/, '');
+  let rawPathname = request.nextUrl.pathname;
+
+  // 0. Sanitize malformed UMI / Yandex Dzen paths containing `/&param=val` without `?`
+  if (rawPathname.includes('/&')) {
+    const idx = rawPathname.indexOf('/&');
+    rawPathname = idx === 0 ? '/' : rawPathname.slice(0, idx) || '/';
+    if (rawPathname === '/') {
+      return NextResponse.redirect(buildRedirectUrl('/', request), 301);
+    }
+  }
+
+  const cleanPath = rawPathname.replace(/\/+$/, '') || '/';
 
   // =========================================================================
   // 1. Legacy Static Utility Routes (301 Permanent Redirect)
@@ -196,97 +172,118 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(buildRedirectUrl(target, request), 301);
   }
 
-  if (pathname.startsWith('/actions_sales')) {
+  if (cleanPath.startsWith('/rasprodazha/')) {
+    return NextResponse.redirect(buildRedirectUrl('/catalog/ucenennye-tovary', request), 301);
+  }
+
+  if (cleanPath === '/actions_sales' || cleanPath.startsWith('/actions_sales/')) {
+    const subSlug = cleanPath.replace(/^\/actions_sales\/?/, '').split('/')[0]?.toLowerCase();
+    if (subSlug && subSlug in LEGACY_PROMO_SLUG_MAP) {
+      return NextResponse.redirect(buildRedirectUrl(LEGACY_PROMO_SLUG_MAP[subSlug], request), 301);
+    }
     return NextResponse.redirect(buildRedirectUrl('/promos', request), 301);
   }
 
+  if (cleanPath.startsWith('/promos/')) {
+    const promoSlug = cleanPath.replace(/^\/promos\//, '').toLowerCase();
+    if (promoSlug in LEGACY_PROMO_SLUG_MAP) {
+      return NextResponse.redirect(buildRedirectUrl(LEGACY_PROMO_SLUG_MAP[promoSlug], request), 301);
+    }
+  }
+
   // =========================================================================
-  // 2. Legacy Brand URLs: /brendy and /brendy/:slug
+  // 2. Legacy Brand URLs: /brendy, /brendy/:slug, /index/brendy, /index/brendy/:slug
   // =========================================================================
-  if (pathname === '/brendy' || pathname === '/brendy/') {
+  if (cleanPath === '/brendy' || cleanPath === '/index/brendy') {
     return NextResponse.redirect(buildRedirectUrl('/brands', request), 301);
   }
 
-  if (pathname.startsWith('/brendy/')) {
-    const brandSlugRaw = pathname.replace(/^\/brendy\//, '').split('/')[0]?.toLowerCase();
+  if (cleanPath.startsWith('/brendy/') || cleanPath.startsWith('/index/brendy/')) {
+    const brandSlugRaw = cleanPath
+      .replace(/^\/(?:index\/)?brendy\//, '')
+      .split('/')[0]
+      ?.toLowerCase();
+
     if (brandSlugRaw) {
-      // Tier-1: 13 anchor brands -> /brands/:slug
-      if (brandSlugRaw in TIER1_BRANDS) {
-        const canonicalSlug = TIER1_BRANDS[brandSlugRaw];
+      const regEntry = resolveBrandEntry(brandSlugRaw);
+      const canonicalSlug = regEntry ? regEntry.slug : brandNameToSlug(brandSlugRaw);
+
+      if (canonicalSlug && ACTIVE_BRAND_SLUGS.has(canonicalSlug)) {
         return NextResponse.redirect(buildRedirectUrl(`/brands/${canonicalSlug}`, request), 301);
       }
-
-      // Tier-2: other brands -> /catalog?brand=:BRAND
-      const brandName =
-        BRAND_CANONICAL_NAMES[brandSlugRaw] || brandSlugRaw.toUpperCase();
-      return NextResponse.redirect(
-        buildRedirectUrl(`/catalog?brand=${encodeURIComponent(brandName)}`, request),
-        301
-      );
     }
     return NextResponse.redirect(buildRedirectUrl('/brands', request), 301);
   }
 
   // =========================================================================
-  // 3. Legacy Shop URLs: /shop/:path*
+  // 3. Legacy Shop URLs: /shop and /shop/:path*
   // =========================================================================
-  if (pathname.startsWith('/shop/')) {
-    // 3.1. Direct product match from redirects.json
-    let target = redirects[pathname];
-    if (!target && !pathname.endsWith('/')) {
-      target = redirects[pathname + '/'];
-    }
-    if (!target && pathname.endsWith('/')) {
-      target = redirects[pathname.slice(0, -1)];
-    }
+  if (cleanPath === '/shop') {
+    return NextResponse.redirect(buildRedirectUrl('/catalog', request), 301);
+  }
+
+  if (cleanPath.startsWith('/shop/')) {
+    // 3.1. Direct product match from redirects.json (checking sanitized path with & without trailing slash)
+    const target =
+      redirects[rawPathname] ||
+      redirects[cleanPath] ||
+      redirects[`${cleanPath}/`];
 
     if (target) {
       return NextResponse.redirect(buildRedirectUrl(target, request), 301);
     }
 
-    // 3.2. Smart category and brand matching for old UMI.CMS category trees
-    const segments = pathname.replace(/^\/shop\//, '').replace(/\/+$/, '').split('/');
+    const segments = cleanPath.replace(/^\/shop\//, '').split('/').filter(Boolean);
 
-    // Check 3-level or 2-level category path
+    // 3.2. Outlet & Discontinued Showroom Sale Section: /shop/ucenennye_tovary/...
+    if (segments[0]?.toLowerCase() === 'ucenennye_tovary') {
+      if (segments.length === 1) {
+        return NextResponse.redirect(buildRedirectUrl('/catalog/ucenennye-tovary', request), 301);
+      }
+
+      // Sold / archived outlet item -> redirect to its closest category + brand (or /catalog/ucenennye-tovary)
+      const restSlug = segments.slice(1).join('/');
+      const inferredCategory = inferCategorySlugFromUmiSlug(restSlug);
+      const detectedBrand = extractBrandFromUmiSegments(segments.slice(1));
+      const validBrand = detectedBrand && ACTIVE_BRAND_SLUGS.has(detectedBrand.slug) ? detectedBrand : null;
+
+      if (inferredCategory) {
+        const dest = validBrand
+          ? `/catalog/${inferredCategory}?brand=${encodeURIComponent(validBrand.dbBrand)}`
+          : `/catalog/${inferredCategory}`;
+        return NextResponse.redirect(buildRedirectUrl(dest, request), 301);
+      }
+
+      if (validBrand) {
+        return NextResponse.redirect(buildRedirectUrl(`/brands/${validBrand.slug}`, request), 301);
+      }
+
+      return NextResponse.redirect(buildRedirectUrl('/catalog/ucenennye-tovary', request), 301);
+    }
+
+    // 3.3. Smart category, macro-section, and compound-brand matching for old UMI.CMS category trees
     let matchedCategorySlug: string | null = null;
-    let detectedBrand: string | null = null;
+    let detectedBrandEntry = null;
 
     for (let len = Math.min(segments.length, 3); len >= 1; len--) {
-      const candidateKey = segments.slice(0, len).join('/');
+      const candidateKey = segments.slice(0, len).join('/').toLowerCase();
       if (candidateKey in UMI_CATEGORY_MAP) {
         matchedCategorySlug = UMI_CATEGORY_MAP[candidateKey];
-        // Check remaining segments for brand keywords
         const restSegments = segments.slice(len);
-        for (const seg of restSegments) {
-          const segLower = seg.toLowerCase();
-          if (segLower in BRAND_CANONICAL_NAMES) {
-            detectedBrand = BRAND_CANONICAL_NAMES[segLower];
-            break;
-          }
-        }
+        detectedBrandEntry = extractBrandFromUmiSegments(restSegments);
         break;
       }
     }
 
     if (matchedCategorySlug) {
-      // Section or specific category
-      const isDirectCategory = !matchedCategorySlug.endsWith('-tehnika') &&
-        matchedCategorySlug !== 'mojki-i-smesiteli' &&
-        matchedCategorySlug !== 'bokaly-i-posuda' &&
-        matchedCategorySlug !== 'uhod-i-aksessuary';
-
-      let destination = isDirectCategory
-        ? `/catalog/${matchedCategorySlug}`
-        : `/catalog?category=${matchedCategorySlug}`;
-
-      if (detectedBrand) {
-        destination += (destination.includes('?') ? '&' : '?') + `brand=${encodeURIComponent(detectedBrand)}`;
+      let destination = `/catalog/${matchedCategorySlug}`;
+      if (detectedBrandEntry && ACTIVE_BRAND_SLUGS.has(detectedBrandEntry.slug)) {
+        destination += `?brand=${encodeURIComponent(detectedBrandEntry.dbBrand)}`;
       }
-
       return NextResponse.redirect(buildRedirectUrl(destination, request), 301);
     }
 
-    // 3.3. Fallback for completely unrecognizable paths -> pass to 404 page (Zero Soft 404 in Yandex)
+    // 3.4. Fallback for completely unrecognizable paths -> pass to 404 page (Zero Soft 404)
     return NextResponse.next();
   }
 
@@ -295,17 +292,42 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/&(.*)',
+    '/shop',
     '/shop/:path*',
-    '/brendy/:path*',
     '/brendy',
+    '/brendy/:path*',
+    '/index/brendy',
+    '/index/brendy/:path*',
+    '/rasprodazha',
+    '/rasprodazha/:path*',
+    '/main',
+    '/main/:path*',
     '/politika',
+    '/politika/:path*',
+    '/privacy',
     '/delivery_payment',
+    '/delivery_payment/:path*',
+    '/kredit',
+    '/kredit/:path*',
     '/service_warranty',
+    '/service_warranty/:path*',
     '/return_exchange_warranty',
+    '/return_exchange_warranty/:path*',
     '/nashli_deshevle_snizim_cenu',
-    '/actions_sales/:path*',
+    '/nashli_deshevle_snizim_cenu/:path*',
     '/actions_sales',
+    '/actions_sales/:path*',
+    '/akcii_dlya_tovarov',
+    '/akcii_dlya_tovarov/:path*',
+    '/promos/:path*',
     '/optovyj_otdel',
+    '/optovyj_otdel/:path*',
+    '/partners',
+    '/partners/:path*',
+    '/podbor_bytovoj_tehniki',
+    '/podbor_bytovoj_tehniki/:path*',
+    '/catalog/duhovye-shkafy',
     '/catalog/izmelchiteli-othodov',
   ],
 };

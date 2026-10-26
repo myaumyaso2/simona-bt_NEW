@@ -6,6 +6,7 @@ import { PlexusConstellationBackground } from '@/components/backgrounds/PlexusCo
 import { useSiteContent } from '@/components/providers/ContentContext';
 import { BrandCardData } from '@/lib/catalog/brandStats';
 import { getBrandFlagshipCategory } from '@/lib/catalog/brandCategories';
+import { brandNameToSlug } from '@/lib/catalog/brandsRegistry';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -59,9 +60,12 @@ function BrandCardItem({ brand }: { brand: BrandCardData }) {
   };
 
   const flagshipCategory = getBrandFlagshipCategory(brand.slug || brand.name);
+  const canonicalBrandSlug = brandNameToSlug(brand.slug || brand.name);
   const targetHref = flagshipCategory
     ? `/catalog/${encodeURIComponent(flagshipCategory)}?brand=${encodeURIComponent(brand.slug)}`
-    : `/catalog?brand=${encodeURIComponent(brand.slug)}`;
+    : canonicalBrandSlug
+      ? `/brands/${encodeURIComponent(canonicalBrandSlug)}`
+      : '/brands';
 
   return (
     <Link

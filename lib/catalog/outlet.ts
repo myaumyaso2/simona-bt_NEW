@@ -76,11 +76,12 @@ export function getOutletCategorySlug(product: {
   if (/блендер/i.test(str)) return 'blendery';
   if (/миксер/i.test(str)) return 'miksery';
   if (/соковыжималк/i.test(str)) return 'sokovyzhimalki';
-  if (/мойк/i.test(str)) return 'kuhonnye-mojki';
-  if (/смесител/i.test(str)) return 'smesiteli';
+  if (/робот.*окон|мойк.*окон/i.test(str)) return 'roboty-dlya-mojki-okon';
+  if (/мойк/i.test(str)) return 'mojki-dlya-kuhni';
+  if (/смесител/i.test(str)) return 'smesiteli-dlya-kuhni';
   if (/пароварк/i.test(str)) return 'parovarki';
   if (/подогреват/i.test(str)) return 'podogrevateli-posudy';
-  if (/измельчител/i.test(str)) return 'izmelchiteli-othodov';
+  if (/измельчител/i.test(str)) return 'izmelchiteli-pishchevyh-othodov';
 
   return null;
 }
@@ -135,8 +136,9 @@ export function getOutletApplianceGroup(product: {
   if (slug === 'blendery') return 'Блендер';
   if (slug === 'miksery') return 'Миксер';
   if (slug === 'sokovyzhimalki') return 'Соковыжималка';
-  if (slug === 'kuhonnye-mojki') return 'Кухонная мойка';
-  if (slug === 'smesiteli') return 'Смеситель';
+  if (slug === 'mojki-dlya-kuhni') return 'Кухонная мойка';
+  if (slug === 'smesiteli-dlya-kuhni') return 'Смеситель';
+  if (slug === 'izmelchiteli-pishchevyh-othodov') return 'Измельчитель отходов';
 
   return 'Другая техника';
 }

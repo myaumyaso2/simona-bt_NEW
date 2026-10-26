@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { BrandCategoryTab } from '@/lib/catalog/brandCategories';
@@ -12,6 +13,11 @@ export interface PresenceTabItem {
   id: PhysicalTabType;
   label: string;
   count: number;
+}
+
+export interface SubcategoryLinkItem {
+  label: string;
+  href: string;
 }
 
 interface CatalogHeroProps {
@@ -28,6 +34,7 @@ interface CatalogHeroProps {
   brandCategories?: BrandCategoryTab[];
   activeCategorySlug?: string;
   onSelectCategory?: (slug: string) => void;
+  subcategoryLinks?: SubcategoryLinkItem[];
 }
 
 export function CatalogHero({
@@ -36,11 +43,11 @@ export function CatalogHero({
   totalCount,
   presenceCounts,
   categoryTitle = 'Каталог техники',
-  categoryDescription = 'Официальные авторизованные поставки премиальной бытовой техники от ведущих европейских брендов.',
-  brandName,
+  categoryDescription = 'Официальный каталог бытовой техники с проверкой наличия в салонах и на центральном складе в Нижнем Новгороде.',
   brandCategories,
   activeCategorySlug,
   onSelectCategory,
+  subcategoryLinks,
 }: CatalogHeroProps) {
   const allTabs: PresenceTabItem[] = [
     { id: 'ALL', label: 'Все', count: presenceCounts?.ALL ?? totalCount },
@@ -87,9 +94,27 @@ export function CatalogHero({
         </div>
 
         {/* 3. Description Subtitle */}
-        <p className="text-sm text-[#87888A] max-w-2xl leading-relaxed mb-6">
+        <p className="text-sm text-[#87888A] max-w-2xl leading-relaxed mb-5">
           {categoryDescription}
         </p>
+
+        {/* 3.5. Macro-Section Subcategory Navigation */}
+        {subcategoryLinks && subcategoryLinks.length > 0 && (
+          <nav
+            aria-label="Подкатегории раздела"
+            className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 sm:flex-wrap sm:overflow-visible mb-5"
+          >
+            {subcategoryLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="shrink-0 px-3.5 py-1.5 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 text-xs font-medium text-[#D7D9DB] hover:text-white transition"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        )}
 
         {/* 4. Controls Slot: 
              If Brand Page: Raised Brand Categories Switcher (exact style & animation of presence slider)

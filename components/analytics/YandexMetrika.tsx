@@ -70,20 +70,18 @@ export function YandexMetrika() {
               trackLinks: true,
               accurateTrackBounce: true,
               webvisor: true,
-              ecommerce: "dataLayer"
+              ecommerce: "dataLayer",
+              url: window.location.href,
+              referrer: document.referrer
             });
           `,
         }}
       />
-      <noscript>
-        <div>
-          <img
-            src={`https://mc.yandex.ru/watch/${METRIKA_COUNTER_ID}`}
-            style={{ position: 'absolute', left: '-9999px' }}
-            alt=""
-          />
-        </div>
-      </noscript>
+      <noscript
+        dangerouslySetInnerHTML={{
+          __html: `<div><img src="https://mc.yandex.ru/watch/${METRIKA_COUNTER_ID}" style="position:absolute;left:-9999px;" alt="" /></div>`,
+        }}
+      />
     </>
   );
 }

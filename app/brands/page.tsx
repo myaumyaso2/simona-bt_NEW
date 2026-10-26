@@ -8,11 +8,16 @@ import {
   SimonaIconBuilding,
 } from '@/components/brand/SimonaIcons';
 import { prisma } from '@/lib/prisma';
+import { brandNameToSlug, resolveBrandEntry } from '@/lib/catalog/brandsRegistry';
+import { formatBrandName } from '@/lib/formatters';
 
 export const metadata: Metadata = {
-  title: 'Мировые бренды бытовой техники | Салоны СИМОНА',
+  title: 'Бренды бытовой техники в Нижнем Новгороде | Салоны СИМОНА',
   description:
-    'Официальный дилер европейских производителей в Нижнем Новгороде: Miele, ASKO, Liebherr, SMEG, OMOIKIRI, Bertazzoni, Falmec, VARD, Körting. Флагманские экспозиции в салонах на ул. Белинского 15 и 11/66.',
+    'Полный каталог мировых производителей бытовой техники в салонах «СИМОНА» в Нижнем Новгороде: Miele, Asko, Liebherr, Smeg, Omoikiri, Bosch, Neff, Siemens, Körting, Midea и более 50 брендов. Экспозиции на ул. Белинского 15 и 11/66.',
+  alternates: {
+    canonical: 'https://www.simona-bt.ru/brands',
+  },
 };
 
 export const dynamic = 'force-dynamic';
@@ -198,8 +203,10 @@ const BRANDS_DIRECTORY: BrandMeta[] = [
 ];
 
 export default async function BrandsPage() {
-  // Count products per brand from DB
+  // Count products per brand from DB & build full A-Z index
   const brandCounts: Record<string, number> = {};
+  const allActiveBrandsMap = new Map<string, { slug: string; displayName: string; country: string; count: number }>();
+
   try {
     const rawCounts = await prisma.product.groupBy({
       by: ['brand'],
@@ -208,12 +215,33 @@ export default async function BrandsPage() {
     });
     for (const item of rawCounts) {
       if (item.brand) {
-        brandCounts[item.brand.toUpperCase()] = item._count.id;
+        const upper = item.brand.trim().toUpperCase();
+        if (upper === 'СИМОНА') continue;
+        brandCounts[upper] = (brandCounts[upper] || 0) + item._count.id;
+
+        const slug = brandNameToSlug(item.brand);
+        if (!slug) continue;
+        const reg = resolveBrandEntry(item.brand);
+        const existing = allActiveBrandsMap.get(slug);
+        if (existing) {
+          existing.count += item._count.id;
+        } else {
+          allActiveBrandsMap.set(slug, {
+            slug,
+            displayName: reg ? reg.displayName : formatBrandName(item.brand),
+            country: reg ? reg.country : 'Международный бренд',
+            count: item._count.id,
+          });
+        }
       }
     }
   } catch (err) {
     console.error('Error fetching brand counts:', err);
   }
+
+  const alphabeticalBrands = Array.from(allActiveBrandsMap.values()).sort((a, b) =>
+    a.displayName.localeCompare(b.displayName, 'en', { sensitivity: 'base' })
+  );
 
   return (
     <main className="min-h-screen bg-[#111315] text-[#D7D9DB]">
@@ -227,10 +255,10 @@ export default async function BrandsPage() {
 
             <div className="max-w-3xl text-left space-y-4">
               <h1 className="text-3xl sm:text-5xl font-montserrat font-bold text-white tracking-tight leading-tight">
-                Атлас брендов премиальной техники
+                Атлас брендов бытовой техники
               </h1>
               <p className="text-sm sm:text-base text-[#87888A] leading-relaxed">
-                «СИМОНА» представляет ведущие европейские фабрики с вековой историей мастерства. Мы гарантируем оригинальное происхождение каждого прибора, официальную заводскую гарантию и наличие физической экспозиции в шоурумах Нижнего Новгорода.
+                Более 30 лет опыта позволили «СИМОНА» отобрать проверенных производителей бытовой техники в каждом ценовом сегменте. Официальная гарантия, складской запас в Нижнем Новгороде и живая экспозиция в салонах на ул. Белинского.
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <span className="text-xs text-[#87888A]">Физические экспозиции:</span>
@@ -238,7 +266,7 @@ export default async function BrandsPage() {
                   Белинского, 15 (Флагман)
                 </span>
                 <span className="px-3 py-1 rounded-md bg-[#1E2228] border border-[#2B313A] text-xs text-white">
-                  Белинского, 11/66 (OMOIKIRI & Körting)
+                  Белинского, 11/66 (Omoikiri & Körting)
                 </span>
               </div>
             </div>
@@ -248,7 +276,7 @@ export default async function BrandsPage() {
           <div className="space-y-6">
             <div className="text-left space-y-2">
               <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
-                Производители европейской и мировой техники
+                Якорные бренды салонов «СИМОНА»
               </h2>
             </div>
 
@@ -292,21 +320,14 @@ export default async function BrandsPage() {
                     </div>
                   </div>
 
-                  {/* Links */}
+                  {/* Canonical Brand Page Link */}
                   <div className="pt-4 border-t border-[#2B313A] flex items-center justify-between">
                     <Link
                       href={`/brands/${b.slug}`}
                       className="text-xs font-semibold text-white group-hover:text-simona-teal transition flex items-center space-x-1"
                     >
-                      <span>О бренде и серии</span>
+                      <span>Перейти к моделям бренда</span>
                       <SimonaIconArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-
-                    <Link
-                      href={`/catalog?brand=${encodeURIComponent(b.name)}`}
-                      className="text-[11px] text-[#87888A] hover:text-white transition"
-                    >
-                      В каталог →
                     </Link>
                   </div>
                 </div>
@@ -314,6 +335,42 @@ export default async function BrandsPage() {
             })}
           </div>
         </div>
+
+        {/* Full Alphabetical Directory for Internal SEO Linking (All ~60 Active Brands) */}
+        {alphabeticalBrands.length > 0 && (
+          <section className="space-y-6 pt-4 border-t border-[#2B313A]">
+            <div className="text-left space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white tracking-tight">
+                Алфавитный указатель всех брендов каталога
+              </h2>
+              <p className="text-sm text-[#87888A] max-w-3xl">
+                Полный перечень производителей бытовой техники, кухонных моек, винных шкафов и аксессуаров, доступных к заказу в салонах и на складе «СИМОНА».
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              {alphabeticalBrands.map((brand) => (
+                <Link
+                  key={brand.slug}
+                  href={`/brands/${brand.slug}`}
+                  className="px-4 py-3 rounded-xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 transition flex items-center justify-between gap-2 group"
+                >
+                  <div className="min-w-0 text-left">
+                    <div className="text-sm font-medium text-white group-hover:text-simona-teal transition truncate">
+                      {brand.displayName}
+                    </div>
+                    <div className="text-[11px] text-[#87888A] truncate">
+                      {brand.country}
+                    </div>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-md bg-[#1E2228] border border-[#2B313A] text-[11px] font-mono text-zinc-300 shrink-0">
+                    {brand.count}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Brand Guarantee Bar */}
         <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">

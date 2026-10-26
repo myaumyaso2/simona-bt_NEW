@@ -33,6 +33,10 @@ export default function robots(): MetadataRoute.Robots {
         '/checkout/',
         '/api/',
         '/admin/',
+        '/emarket/',
+        '/udata/',
+        '/upage/',
+        '/users/',
       ],
     },
     sitemap: [

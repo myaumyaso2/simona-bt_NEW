@@ -10,13 +10,15 @@
 
 ## Решение
 
-### 1. Единый канонический формат для связки «Категория + Бренд» (Faceted Indexing)
+### 1. Единый канонический формат для связки «Категория + Бренд» и брендовых хабов
 - Каноническим форматом для срезов «Категория + Бренд» утверждается ЧПУ-вид:
-  `/catalog/[category]?brand=[brand]` (например, `/catalog/duhovye-shkafy?brand=Bosch`).
-- Все ссылки из Брендового атласа на главной странице (`BrandAtlas.tsx`) обновляются на этот канонический вид.
-- Входные запросы устаревшего формата `/catalog?brand=X&category=Y` автоматически перенаправляются 301-редиректом на канонический `/catalog/Y?brand=X`.
-- Для страниц `/catalog/[category]?brand=[brand]` формируются динамический уникальный Title, Description, H1 и тег `rel="canonical"` на самого себя.
-- Все остальные комбинации фильтров (цена, сортировка, табы наличия, пагинация) получают `rel="canonical"` на базовый адрес категории во избежание размытия краулингового бюджета.
+  `/catalog/[category]?brand=[BRAND]` (например, `/catalog/vstraivaemye-duhovye-shkafy?brand=BOSCH`), все непустые комбинации (`>= 1` активного товара, 378 пар) включаются в `sitemap.xml`, а пустые пары отдают `noindex, follow`.
+- Все активные бренды каталога (~61 бренд) получают полноценные ЧПУ-хабы `/brands/[slug]`, включаются в `sitemap.xml` и перелинкованы через алфавитный указатель на `/brands`. Старые ссылки `/brendy/:slug`, `/index/brendy/:slug` и параметрические дубли `/catalog?brand=X` склеиваются 301/308-редиректом на `/brands/[slug]`.
+- 7 макро-разделов верхнего уровня (`/catalog/vstraivaemaya-tehnika`, `/catalog/krupnaya-bytovaya-tehnika`, `/catalog/malaya-bytovaya-tehnika`, `/catalog/mojki-i-smesiteli`, `/catalog/klimaticheskaya-tehnika`, `/catalog/bokaly-i-posuda`, `/catalog/uhod-i-aksessuary`) и раздел дисконта/экспозиции (`/catalog/ucenennye-tovary`) работают как полноценные ЧПУ-хабы и включены в `sitemap.xml`.
+- Все ссылки из Брендового атласа на главной странице (`BrandAtlas.tsx`) ведут напрямую на канонический ЧПУ-адрес без промежуточных редиректов.
+- Входные запросы устаревшего формата `/catalog?brand=X&category=Y` автоматически перенаправляются постоянным редиректом на канонический `/catalog/Y?brand=X`, а составные брендовые слаги UMI.CMS (`varochnye_paneli_bosch1`, `stiralnye_mashiny_solo_asko`, `holodil_niki_solo_smeg1`) распознаются через единый реестр `lib/catalog/brandsRegistry.ts`.
+- Ускорение переобхода Яндексом обеспечивается автоматической отправкой канонических URL через протокол `IndexNow` (`scripts/push_indexnow.js`).
+- Инвариант Яндекс Метрики (`YandexMetrika.tsx`): тег `<noscript>` рендерится строго через `dangerouslySetInnerHTML`, чтобы исключить генерацию `<link rel="preload" as="image" href="https://mc.yandex.ru/watch/1351807"/>` в React SSR и потерю поискового `referer` сессий.
 
 ### 2. Динамические коммерческие сниппеты для Нижнего Новгорода
 - Мета-теги `Title` и `Description` категорий генерируются динамически на основе актуальных данных из каталога:

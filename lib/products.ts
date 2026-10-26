@@ -14,7 +14,12 @@ export function formatPrismaProduct(p: Product): ProductItem {
 
   let images: string[] = [];
   try {
-    images = JSON.parse(p.imagesJson || '[]');
+    const parsed: string[] = JSON.parse(p.imagesJson || '[]');
+    images = parsed.map((img) =>
+      typeof img === 'string'
+        ? img.replace(/^https?:\/\/simona-bt\.ru\//i, 'https://www.simona-bt.ru/')
+        : img
+    );
   } catch {
     images = [];
   }
@@ -467,6 +472,64 @@ export async function searchCatalogProducts(
   const products = scored.slice(0, limit).map((s) => s.product);
 
   return { products, total };
+}
+
+/**
+ * Fetches all active outlet (discounted) and showroom exhibition appliances
+ * for the SEO landing hub `/catalog/ucenennye-tovary`.
+ */
+export async function getOutletAndShowroomProducts(brand?: string): Promise<{
+  products: ProductItem[];
+  total: number;
+}> {
+  try {
+    let brandFilter: Record<string, unknown> = {};
+    if (brand) {
+      const b = brand.trim();
+      const variants = new Set<string>([
+        b,
+        b.toUpperCase(),
+        b.toLowerCase(),
+        b.charAt(0).toUpperCase() + b.slice(1).toLowerCase(),
+      ]);
+      if (b.toLowerCase().includes('korting') || b.toLowerCase().includes('körting')) {
+        variants.add('KORTING');
+        variants.add('KÖRTING');
+        variants.add('Korting');
+        variants.add('Körting');
+      }
+      brandFilter = { brand: { in: Array.from(variants) } };
+    }
+
+    const items = await prisma.product.findMany({
+      where: {
+        isActive: true,
+        ...brandFilter,
+        OR: [
+          { isDiscount: true },
+          { category: { contains: 'Уцен' } },
+          { oldUrl: { contains: 'ucen' } },
+          { physicalStatus: { in: ['DISCOUNT', 'SHOWROOM', 'EXHIBITION_15', 'EXHIBITION_11', 'ACTIVE_KITCHEN'] } },
+          { stockBelinskogo15: { gt: 0 } },
+        ],
+      },
+      orderBy: [
+        { isDiscount: 'desc' },
+        { inStock: 'desc' },
+        { price: 'asc' },
+      ],
+      take: 1500,
+    });
+
+    const formatted = items.map(formatPrismaProduct);
+    return {
+      products: formatted,
+      total: formatted.length,
+    };
+  } catch (err) {
+    console.error('Error fetching outlet and showroom products:', err);
+    return { products: [], total: 0 };
+  }
 }
 
 

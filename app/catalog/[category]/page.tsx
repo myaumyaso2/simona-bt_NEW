@@ -1,13 +1,21 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { CatalogView } from '@/components/catalog/CatalogView';
-import { getCatalogProducts } from '@/lib/products';
+import { getCatalogProducts, getOutletAndShowroomProducts } from '@/lib/products';
 import { prisma } from '@/lib/prisma';
-import { CATALOG_CATEGORIES, getCategoryBySlug } from '@/data/catalogCategories';
+import {
+  CATALOG_CATEGORIES,
+  CATALOG_MACRO_SECTIONS,
+  getCategoryBySlug,
+  getCategoriesBySection,
+  getMacroSectionBySlug,
+} from '@/data/catalogCategories';
 import { SchemaOrgBreadcrumbs } from '@/components/seo/SchemaOrgBreadcrumbs';
 import { SchemaOrgItemList } from '@/components/seo/SchemaOrgItemList';
 import { CategorySeoBlock } from '@/components/catalog/CategorySeoBlock';
+import { formatBrandName } from '@/lib/formatters';
+import { resolveBrandEntry, getBrandDbVariants } from '@/lib/catalog/brandsRegistry';
 
 interface CategoryPageProps {
   params: {
@@ -19,40 +27,125 @@ interface CategoryPageProps {
 }
 
 export async function generateStaticParams() {
-  return CATALOG_CATEGORIES.map((cat) => ({
-    category: cat.slug,
-  }));
+  return [
+    ...CATALOG_CATEGORIES.map((cat) => ({ category: cat.slug })),
+    ...CATALOG_MACRO_SECTIONS.map((sec) => ({ category: sec.slug })),
+    { category: 'ucenennye-tovary' },
+  ];
+}
+
+function normalizeCanonicalImage(url: string, siteUrl: string): string {
+  const fixed = url.replace(/^https?:\/\/simona-bt\.ru\//i, 'https://www.simona-bt.ru/');
+  return fixed.startsWith('http') ? fixed : `${siteUrl}${fixed}`;
 }
 
 export async function generateMetadata({ params, searchParams }: CategoryPageProps): Promise<Metadata> {
-  const category = getCategoryBySlug(params.category);
-  if (!category) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.simona-bt.ru';
+  const rawBrand = searchParams?.brand?.trim();
+  const brandReg = rawBrand ? resolveBrandEntry(rawBrand) : null;
+  const brandDisplay = rawBrand ? (brandReg ? brandReg.displayName : formatBrandName(rawBrand)) : '';
+  const canonicalBrandParam = rawBrand ? (brandReg ? brandReg.dbBrand : rawBrand.toUpperCase()) : '';
+
+  // 1. Dedicated Outlet & Showroom Sale Hub: /catalog/ucenennye-tovary
+  if (params.category === 'ucenennye-tovary') {
+    const title = brandDisplay
+      ? `Уцененная техника и витринные образцы ${brandDisplay} в Нижнем Новгороде | Салоны СИМОНА`
+      : 'Уцененная бытовая техника и витринные образцы в Нижнем Новгороде — распродажа экспозиции | СИМОНА';
+    const description = brandDisplay
+      ? `Купить витринные образцы со смены экспозиции и уцененную бытовую технику ${brandDisplay} со скидкой в салонах «СИМОНА» в Нижнем Новгороде (ул. Белинского 15 и 11/66). Полная предпродажная проверка и официальная гарантия.`
+      : 'Распродажа витринных образцов со смены экспозиции салонов на ул. Белинского 15 и 11/66 и уцененной бытовой техники в Нижнем Новгороде. Честное описание состояния каждого прибора, официальная гарантия и аккуратная доставка.';
+    const canonicalUrl = `${siteUrl}/catalog/ucenennye-tovary${canonicalBrandParam ? `?brand=${encodeURIComponent(canonicalBrandParam)}` : ''}`;
+
     return {
-      title: 'Каталог техники | СИМОНА — Премиальная бытовая техника',
+      title,
+      description,
+      alternates: { canonical: canonicalUrl },
+      openGraph: {
+        title,
+        description,
+        url: canonicalUrl,
+      },
     };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.simona-bt.ru';
-  const brand = searchParams?.brand;
+  // 2. Macro-Section Hubs: /catalog/vstraivaemaya-tehnika, etc.
+  const macroSection = getMacroSectionBySlug(params.category);
+  if (macroSection) {
+    const sectionCats = getCategoriesBySection(macroSection.slug);
+    const dbCats = sectionCats.flatMap((c) => c.dbCategories);
+    const brandVariants = rawBrand ? getBrandDbVariants(brandReg || rawBrand) : [];
 
-  let minPriceFormatted = '';
-  try {
-    const minProduct = await prisma.product.findFirst({
-      where: {
+    let minPriceFormatted = '';
+    let matchCount = 0;
+    try {
+      const whereClause = {
         isActive: true,
         price: { gt: 0 },
-        category: { in: category.dbCategories },
-        ...(brand
-          ? {
-              brand: {
-                in: [brand, brand.toUpperCase(), brand.toLowerCase()],
-              },
-            }
-          : {}),
+        category: { in: dbCats },
+        ...(brandVariants.length > 0 ? { brand: { in: brandVariants } } : {}),
+      };
+      const [minProduct, count] = await Promise.all([
+        prisma.product.findFirst({ where: whereClause, orderBy: { price: 'asc' }, select: { price: true } }),
+        prisma.product.count({ where: whereClause }),
+      ]);
+      matchCount = count;
+      if (minProduct?.price) {
+        minPriceFormatted = `${minProduct.price.toLocaleString('ru-RU')} ₽`;
+      }
+    } catch (err) {
+      console.error('Error fetching macro-section metadata stats:', err);
+    }
+
+    const pageTitle = brandDisplay ? `${macroSection.title} ${brandDisplay}` : macroSection.title;
+    const title = minPriceFormatted
+      ? `${pageTitle} в Нижнем Новгороде — купить по цене от ${minPriceFormatted} | Салоны СИМОНА`
+      : `${pageTitle} в Нижнем Новгороде | Салоны бытовой техники СИМОНА`;
+    const description = brandDisplay
+      ? `Купить ${macroSection.title.toLowerCase()} ${brandDisplay} в Нижнем Новгороде${minPriceFormatted ? ` по цене от ${minPriceFormatted}` : ''}. Склад в Нижнем Новгороде (ул. Коминтерна 27), салоны на ул. Белинского 15 и 11/66, официальная гарантия.`
+      : `${macroSection.description}${minPriceFormatted ? ` Цены от ${minPriceFormatted}.` : ''} Официальная гарантия и аккуратная доставка собственной службой.`;
+    const canonicalUrl = `${siteUrl}/catalog/${macroSection.slug}${canonicalBrandParam ? `?brand=${encodeURIComponent(canonicalBrandParam)}` : ''}`;
+
+    return {
+      title,
+      description,
+      alternates: { canonical: canonicalUrl },
+      ...(rawBrand && matchCount === 0 ? { robots: { index: false, follow: true } } : {}),
+      openGraph: {
+        title,
+        description,
+        url: canonicalUrl,
       },
-      orderBy: { price: 'asc' },
-      select: { price: true },
-    });
+    };
+  }
+
+  // 3. Leaf Catalog Category: /catalog/[category]
+  const category = getCategoryBySlug(params.category);
+  if (!category) {
+    return {
+      title: 'Раздел не найден — 404 | СИМОНА Нижний Новгород',
+      robots: { index: false, follow: true },
+    };
+  }
+
+  const brandVariants = rawBrand ? getBrandDbVariants(brandReg || rawBrand) : [];
+  let minPriceFormatted = '';
+  let matchCount = 0;
+  try {
+    const whereClause = {
+      isActive: true,
+      price: { gt: 0 },
+      category: { in: category.dbCategories },
+      ...(brandVariants.length > 0 ? { brand: { in: brandVariants } } : {}),
+    };
+    const [minProduct, count] = await Promise.all([
+      prisma.product.findFirst({
+        where: whereClause,
+        orderBy: { price: 'asc' },
+        select: { price: true },
+      }),
+      prisma.product.count({ where: whereClause }),
+    ]);
+    matchCount = count;
     if (minProduct?.price) {
       minPriceFormatted = `${minProduct.price.toLocaleString('ru-RU')} ₽`;
     }
@@ -65,21 +158,21 @@ export async function generateMetadata({ params, searchParams }: CategoryPagePro
   let title = '';
   let pageDescription = '';
 
-  if (brand) {
-    pageTitle = `${baseCategoryName} ${brand}`;
+  if (brandDisplay) {
+    pageTitle = `${baseCategoryName} ${brandDisplay}`;
     title = minPriceFormatted
       ? `${pageTitle} в Нижнем Новгороде — купить по цене от ${minPriceFormatted} | Салон СИМОНА`
-      : `${pageTitle} в Нижнем Новгороде — купить в официальном салоне СИМОНА | Официальная гарантия`;
-    pageDescription = `Купить ${baseCategoryName.toLowerCase()} ${brand} в официальном салоне СИМОНА в Нижнем Новгороде${minPriceFormatted ? ` по цене от ${minPriceFormatted}` : ''}. Авторизованная гарантия производителя, складской резерв (ул. Коминтерна 27), экспозиция на ул. Белинского 15 и тест-драйв на «Активной кухне».`;
+      : `${pageTitle} в Нижнем Новгороде — купить в салоне СИМОНА | Официальная гарантия`;
+    pageDescription = `Купить ${baseCategoryName.toLowerCase()} ${brandDisplay} в салоне «СИМОНА» в Нижнем Новгороде${minPriceFormatted ? ` по цене от ${minPriceFormatted}` : ''}. Официальная гарантия, складской запас (ул. Коминтерна 27), экспозиция на ул. Белинского 15 и 11/66.`;
   } else {
     pageTitle = category.title;
     title = minPriceFormatted
       ? `Купить ${category.title.toLowerCase()} в Нижнем Новгороде — цены от ${minPriceFormatted} в салоне СИМОНА | Официальная гарантия`
       : `Купить ${category.title.toLowerCase()} в Нижнем Новгороде | Салоны техники СИМОНА`;
-    pageDescription = `${category.heroSubtitle} Авторизованные поставки европейских брендов: ${category.featuredBrands.join(', ')}. Экспозиция в салонах на ул. Белинского 15 и 11/66, наличие на центральном складе, тест-драйв на «Активной кухне».`;
+    pageDescription = `${category.heroSubtitle} Проверенные бренды: ${category.featuredBrands.slice(0, 8).map((b) => formatBrandName(b)).join(', ')}. Экспозиция в салонах на ул. Белинского 15 и 11/66, наличие на центральном складе.`;
   }
 
-  const canonicalUrl = `${siteUrl}/catalog/${category.slug}${brand ? `?brand=${encodeURIComponent(brand)}` : ''}`;
+  const canonicalUrl = `${siteUrl}/catalog/${category.slug}${canonicalBrandParam ? `?brand=${encodeURIComponent(canonicalBrandParam)}` : ''}`;
 
   return {
     title,
@@ -87,13 +180,14 @@ export async function generateMetadata({ params, searchParams }: CategoryPagePro
     alternates: {
       canonical: canonicalUrl,
     },
+    ...(rawBrand && matchCount === 0 ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title,
       description: pageDescription,
       url: canonicalUrl,
       images: [
         {
-          url: category.image.startsWith('http') ? category.image : `${siteUrl}${category.image}`,
+          url: normalizeCanonicalImage(category.image, siteUrl),
           width: 1200,
           height: 630,
           alt: pageTitle,
@@ -106,15 +200,121 @@ export async function generateMetadata({ params, searchParams }: CategoryPagePro
 export const dynamic = 'force-dynamic';
 
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
+  const rawBrand = searchParams?.brand?.trim();
+  const brandReg = rawBrand ? resolveBrandEntry(rawBrand) : null;
+  const brandDisplay = rawBrand ? (brandReg ? brandReg.displayName : formatBrandName(rawBrand)) : undefined;
+  const canonicalBrandParam = rawBrand ? (brandReg ? brandReg.dbBrand : rawBrand) : undefined;
+
+  // Legacy safety redirect if /catalog/duhovye-shkafy is ever hit directly
+  if (params.category === 'duhovye-shkafy') {
+    permanentRedirect(
+      `/catalog/vstraivaemye-duhovye-shkafy${canonicalBrandParam ? `?brand=${encodeURIComponent(canonicalBrandParam)}` : ''}`
+    );
+  }
+
+  // 1. Outlet & Showroom Sale Hub: /catalog/ucenennye-tovary
+  if (params.category === 'ucenennye-tovary') {
+    const { products, total } = await getOutletAndShowroomProducts();
+    const pageTitle = brandDisplay
+      ? `Уцененная техника и витринные образцы ${brandDisplay}`
+      : 'Уцененная бытовая техника и витринные образцы';
+
+    const breadcrumbs = [
+      { name: 'Главная', url: '/' },
+      { name: 'Каталог', url: '/catalog' },
+      { name: 'Уценка и витринные образцы', url: '/catalog/ucenennye-tovary' },
+      ...(brandDisplay && canonicalBrandParam
+        ? [{ name: brandDisplay, url: `/catalog/ucenennye-tovary?brand=${encodeURIComponent(canonicalBrandParam)}` }]
+        : []),
+    ];
+
+    const brandVariantsUpper = canonicalBrandParam
+      ? new Set(getBrandDbVariants(brandReg || canonicalBrandParam).map((v) => v.toUpperCase()))
+      : null;
+    const schemaProducts = brandVariantsUpper
+      ? products.filter((p) => brandVariantsUpper.has((p.brand || '').trim().toUpperCase()))
+      : products;
+
+    return (
+      <>
+        <SchemaOrgBreadcrumbs items={breadcrumbs} />
+        <SchemaOrgItemList products={schemaProducts} categoryTitle={pageTitle} />
+        <Suspense fallback={<div className="min-h-screen bg-[#111315]" />}>
+          <CatalogView
+            initialProducts={products}
+            totalCount={total}
+            categorySlug="ucenennye-tovary"
+            categoryTitle={pageTitle}
+            categoryDescription="Оригинальные приборы со смены экспозиции салонов на ул. Белинского 15 и 11/66 и товары с уценкой упаковки. Каждый прибор проходит проверку и сопровождается официальной гарантией."
+            initialBrand={canonicalBrandParam}
+          />
+        </Suspense>
+        <CategorySeoBlock categoryTitle="Уцененная техника и витринные образцы" brand={brandDisplay} />
+      </>
+    );
+  }
+
+  // 2. Macro-Section Hub: /catalog/vstraivaemaya-tehnika, etc.
+  const macroSection = getMacroSectionBySlug(params.category);
+  if (macroSection) {
+    const sectionCategories = getCategoriesBySection(macroSection.slug);
+    const dbCategories = sectionCategories.flatMap((c) => c.dbCategories);
+    const { products, total } = await getCatalogProducts({
+      categories: dbCategories,
+      limit: 1500,
+    });
+
+    const pageTitle = brandDisplay ? `${macroSection.title} ${brandDisplay}` : macroSection.title;
+    const breadcrumbs = [
+      { name: 'Главная', url: '/' },
+      { name: 'Каталог', url: '/catalog' },
+      { name: macroSection.title, url: `/catalog/${macroSection.slug}` },
+      ...(brandDisplay && canonicalBrandParam
+        ? [{ name: brandDisplay, url: `/catalog/${macroSection.slug}?brand=${encodeURIComponent(canonicalBrandParam)}` }]
+        : []),
+    ];
+
+    const brandVariantsUpper = canonicalBrandParam
+      ? new Set(getBrandDbVariants(brandReg || canonicalBrandParam).map((v) => v.toUpperCase()))
+      : null;
+    const schemaProducts = brandVariantsUpper
+      ? products.filter((p) => brandVariantsUpper.has((p.brand || '').trim().toUpperCase()))
+      : products;
+
+    const subcategoryLinks = sectionCategories.map((subCat) => ({
+      label: subCat.menuTitle || subCat.title,
+      href: canonicalBrandParam
+        ? `/catalog/${subCat.slug}?brand=${encodeURIComponent(canonicalBrandParam)}`
+        : `/catalog/${subCat.slug}`,
+    }));
+
+    return (
+      <>
+        <SchemaOrgBreadcrumbs items={breadcrumbs} />
+        <SchemaOrgItemList products={schemaProducts} categoryTitle={pageTitle} />
+        <Suspense fallback={<div className="min-h-screen bg-[#111315]" />}>
+          <CatalogView
+            initialProducts={products}
+            totalCount={total}
+            categorySlug={macroSection.slug}
+            categoryTitle={pageTitle}
+            categoryDescription={macroSection.description}
+            initialBrand={canonicalBrandParam}
+            subcategoryLinks={subcategoryLinks}
+          />
+        </Suspense>
+        <CategorySeoBlock categoryTitle={macroSection.title} brand={brandDisplay} />
+      </>
+    );
+  }
+
+  // 3. Leaf Catalog Category: /catalog/[category]
   const category = getCategoryBySlug(params.category);
 
   if (!category) {
     notFound();
   }
 
-  const brand = searchParams?.brand;
-
-  // Fetch products matching database category names
   const { products, total } = await getCatalogProducts({
     categories: category.dbCategories,
     categorySlug: category.slug,
@@ -123,19 +323,29 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   });
 
   const baseCategoryName = category.slug === 'holodilniki' ? 'Холодильники' : (category.menuTitle || category.title);
-  const pageTitle = brand ? `${baseCategoryName} ${brand}` : category.title;
+  const pageTitle = brandDisplay ? `${baseCategoryName} ${brandDisplay}` : category.title;
 
   const breadcrumbs = [
     { name: 'Главная', url: '/' },
     { name: 'Каталог', url: '/catalog' },
+    { name: category.sectionTitle, url: `/catalog/${category.sectionSlug}` },
     { name: category.title, url: `/catalog/${category.slug}` },
-    ...(brand ? [{ name: brand, url: `/catalog/${category.slug}?brand=${encodeURIComponent(brand)}` }] : []),
+    ...(brandDisplay && canonicalBrandParam
+      ? [{ name: brandDisplay, url: `/catalog/${category.slug}?brand=${encodeURIComponent(canonicalBrandParam)}` }]
+      : []),
   ];
+
+  const brandVariantsUpper = canonicalBrandParam
+    ? new Set(getBrandDbVariants(brandReg || canonicalBrandParam).map((v) => v.toUpperCase()))
+    : null;
+  const schemaProducts = brandVariantsUpper
+    ? products.filter((p) => brandVariantsUpper.has((p.brand || '').trim().toUpperCase()))
+    : products;
 
   return (
     <>
       <SchemaOrgBreadcrumbs items={breadcrumbs} />
-      <SchemaOrgItemList products={products} categoryTitle={pageTitle} />
+      <SchemaOrgItemList products={schemaProducts} categoryTitle={pageTitle} />
       <Suspense fallback={<div className="min-h-screen bg-[#111315]" />}>
         <CatalogView
           initialProducts={products}
@@ -143,10 +353,10 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           categorySlug={category.slug}
           categoryTitle={pageTitle}
           categoryDescription={category.heroSubtitle}
-          initialBrand={brand}
+          initialBrand={canonicalBrandParam}
         />
       </Suspense>
-      <CategorySeoBlock categoryTitle={category.title} brand={brand} />
+      <CategorySeoBlock categoryTitle={category.title} brand={brandDisplay} />
     </>
   );
 }

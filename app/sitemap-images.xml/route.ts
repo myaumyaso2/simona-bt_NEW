@@ -56,7 +56,8 @@ export async function GET() {
       xml += `  <url>\n`;
       xml += `    <loc>${escapeXml(productUrl)}</loc>\n`;
       for (const img of images.slice(0, 5)) {
-        const fullImgUrl = img.startsWith('http') ? img : `${siteUrl}${img}`;
+        const normalizedImg = img.replace(/^https?:\/\/simona-bt\.ru\//i, 'https://www.simona-bt.ru/');
+        const fullImgUrl = normalizedImg.startsWith('http') ? normalizedImg : `${siteUrl}${normalizedImg}`;
         xml += `    <image:image>\n`;
         xml += `      <image:loc>${escapeXml(fullImgUrl)}</image:loc>\n`;
         xml += `      <image:title>${escapeXml(title)}</image:title>\n`;
