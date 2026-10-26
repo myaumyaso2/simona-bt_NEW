@@ -40,6 +40,13 @@ export function SchemaOrgItemList({
           name: formattedTitle,
           url: `${siteUrl}/product/${product.slug}`,
           image: fullImageUrl,
+          sku: product.sku || undefined,
+          brand: product.brand
+            ? {
+                '@type': 'Brand',
+                name: product.brand,
+              }
+            : undefined,
           offers: {
             '@type': 'Offer',
             price: product.price,
