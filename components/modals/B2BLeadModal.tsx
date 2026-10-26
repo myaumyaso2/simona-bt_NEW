@@ -84,6 +84,7 @@ export function B2BLeadModal() {
       trackGoal('B2B_CLUB', {
         name,
         phone,
+        comment: compiledComment,
         hasFile: !!projectFile,
         portfolioUrl: portfolio,
       });

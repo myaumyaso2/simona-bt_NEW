@@ -56,6 +56,7 @@ export function QuickConsultModal() {
       trackGoal('QUICK_CONSULT', {
         name,
         phone,
+        comment,
         productId: modal.product?.id,
       });
     } catch (err: unknown) {

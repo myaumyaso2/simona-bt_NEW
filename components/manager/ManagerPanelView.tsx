@@ -129,6 +129,7 @@ const LEAD_STATUS_OPTIONS = [
   { value: 'NEW', label: 'Новая', badgeClass: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
   { value: 'IN_PROGRESS', label: 'В работе', badgeClass: 'bg-blue-500/15 text-blue-300 border-blue-500/30' },
   { value: 'DONE', label: 'Обработана', badgeClass: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
+  { value: 'TEST', label: 'Тестовая', badgeClass: 'bg-zinc-700/30 text-zinc-400 border-zinc-600/40' },
 ];
 
 const LEAD_TYPE_MAP: Record<string, string> = {
@@ -372,7 +373,12 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Ошибка обновления заявки');
       setLeads((prev) => prev.map((l) => (l.id === leadId ? data.lead : l)));
-      showToast('success', 'Статус заявки обновлен');
+      showToast(
+        'success',
+        newStatus === 'TEST'
+          ? 'Заявка помечена как тестовая (исключена из аналитики)'
+          : 'Статус заявки обновлен'
+      );
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Ошибка обновления заявки';
       showToast('error', message);
@@ -974,28 +980,49 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
                 <button
                   type="button"
                   onClick={() => setLeadStatusFilter('ALL')}
-                  className={`px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
+                  className={`px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer flex items-center space-x-1.5 ${
                     leadStatusFilter === 'ALL'
                       ? 'bg-simona-teal text-white'
                       : 'bg-[#1E2228] text-[#87888A] hover:text-white border border-[#2B313A]'
                   }`}
                 >
-                  Все статусы
-                </button>
-                {LEAD_STATUS_OPTIONS.map((st) => (
-                  <button
-                    key={st.value}
-                    type="button"
-                    onClick={() => setLeadStatusFilter(st.value)}
-                    className={`px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
-                      leadStatusFilter === st.value
-                        ? 'bg-simona-teal text-white'
-                        : 'bg-[#1E2228] text-[#87888A] hover:text-white border border-[#2B313A]'
+                  <span>Все статусы</span>
+                  <span
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                      leadStatusFilter === 'ALL' ? 'bg-black/30 text-white' : 'bg-white/10 text-[#D7D9DB]'
                     }`}
                   >
-                    {st.label}
-                  </button>
-                ))}
+                    {leads.length}
+                  </span>
+                </button>
+                {LEAD_STATUS_OPTIONS.map((st) => {
+                  const count = leads.filter((l) => l.status === st.value).length;
+                  return (
+                    <button
+                      key={st.value}
+                      type="button"
+                      onClick={() => setLeadStatusFilter(st.value)}
+                      className={`px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer flex items-center space-x-1.5 ${
+                        leadStatusFilter === st.value
+                          ? 'bg-simona-teal text-white'
+                          : 'bg-[#1E2228] text-[#87888A] hover:text-white border border-[#2B313A]'
+                      }`}
+                    >
+                      <span>{st.label}</span>
+                      {count > 0 && (
+                        <span
+                          className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                            leadStatusFilter === st.value
+                              ? 'bg-black/30 text-white'
+                              : 'bg-white/10 text-[#D7D9DB]'
+                          }`}
+                        >
+                          {count}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -1009,10 +1036,15 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
                   const stMeta =
                     LEAD_STATUS_OPTIONS.find((s) => s.value === lead.status) ||
                     LEAD_STATUS_OPTIONS[0];
+                  const isTestLead = lead.status === 'TEST';
                   return (
                     <div
                       key={lead.id}
-                      className="p-5 rounded-2xl bg-[#16191D] border border-[#2B313A] flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-left"
+                      className={`p-5 rounded-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-left transition ${
+                        isTestLead
+                          ? 'bg-[#141618] border border-zinc-800/80 opacity-70'
+                          : 'bg-[#16191D] border border-[#2B313A]'
+                      }`}
                     >
                       <div className="space-y-2 flex-1">
                         <div className="flex flex-wrap items-center gap-2">

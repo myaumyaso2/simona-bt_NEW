@@ -83,7 +83,7 @@ export default function ServicesPage() {
       if (!res.ok) throw new Error('Ошибка отправки заявки');
 
       setSuccess(true);
-      trackGoal('SERVICE_REQUEST_SUBMIT', { serviceType, name, phone });
+      trackGoal('SERVICE_REQUEST_SUBMIT', { serviceType, name, phone, comment });
     } catch (err) {
       console.error(err);
       alert(`Ошибка при отправке. Пожалуйста, свяжитесь с нами: ${contacts.phoneService || '+7 (951) 905-33-91'}`);

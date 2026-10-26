@@ -91,6 +91,9 @@ export function trackEcommercePurchase(order: {
   id: string;
   revenue: number;
   shipping?: number;
+  phone?: string;
+  name?: string;
+  comment?: string;
   products: {
     id: string;
     name: string;
@@ -101,6 +104,10 @@ export function trackEcommercePurchase(order: {
   }[];
 }) {
   if (typeof window === 'undefined') return;
+  if (isTestSubmission(order)) {
+    console.info('[Analytics] Ecommerce purchase пропущен: обнаружены тестовые данные заказа.');
+    return;
+  }
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     ecommerce: {
@@ -125,10 +132,57 @@ export function trackEcommercePurchase(order: {
 }
 
 /**
+ * Проверяет, являются ли данные заявки тестовыми:
+ * 1. Телефон содержит 7 одинаковых цифр подряд (0000000, 1111111, ..., 9999999);
+ * 2. Имя, комментарий или другое поле содержит ключевое слово "тест" или "test" (без учета регистра).
+ * Достаточно выполнения любого из условий (ИЛИ).
+ */
+export function isTestSubmission(data?: Record<string, any>): boolean {
+  if (!data) return false;
+
+  // 1. Проверка номера телефона на 7 одинаковых цифр подряд (0000000..9999999)
+  const phoneVal = data.phone || data.customerPhone || data.userPhone;
+  if (phoneVal) {
+    const digits = String(phoneVal).replace(/\D/g, '');
+    if (/(\d)\1{6,}/.test(digits)) {
+      return true;
+    }
+  }
+
+  // 2. Проверка на наличие слова "тест" или "test" в имени, комментарии, сообщении
+  const testRegex = /тест|test/i;
+  const fieldsToCheck = [
+    data.name,
+    data.customerName,
+    data.comment,
+    data.message,
+    data.notes,
+    data.feedback,
+  ];
+
+  for (const field of fieldsToCheck) {
+    if (field && typeof field === 'string' && testRegex.test(field)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
  * Достижение цели в Яндекс Метрике
+ * Если переданные параметры соответствуют тестовым данным, отправка цели блокируется.
  */
 export function trackGoal(goalName: string, params?: Record<string, any>) {
   if (typeof window === 'undefined' || typeof window.ym !== 'function') return;
+
+  if (params && isTestSubmission(params)) {
+    console.info(
+      `[Analytics] Отправка цели "${goalName}" в Яндекс Метрику отменена: обнаружены тестовые данные (телефон / имя / комментарий).`
+    );
+    return;
+  }
+
   try {
     window.ym(METRIKA_COUNTER_ID, 'reachGoal', goalName, params);
   } catch (e) {

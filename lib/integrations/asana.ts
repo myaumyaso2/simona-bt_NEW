@@ -239,3 +239,82 @@ export async function createAsanaOrderTask(order: OrderEmailData): Promise<Asana
     sectionId: process.env.ASANA_ORDERS_SECTION_ID || undefined,
   });
 }
+
+/**
+ * Помечает задачу в Asana как тестовую:
+ * 1. Публикует комментарий в историю задачи: "[ТЕСТ] Заявка помечена менеджером как тестовая";
+ * 2. Переводит задачу в статус завершенной (completed: true).
+ */
+export async function markAsanaTaskAsTest(taskId: string): Promise<{ success: boolean; error?: string }> {
+  const token = process.env.ASANA_ACCESS_TOKEN || '';
+
+  if (!token || taskId.startsWith('asana-')) {
+    logAsanaEvent({
+      mode: 'LOCAL_QUEUE',
+      action: 'MARK_TEST',
+      taskId,
+      notes: '[ТЕСТ] Заявка помечена менеджером как тестовая (завершена)',
+    });
+    return { success: true };
+  }
+
+  try {
+    // 1. Добавляем комментарий в Asana Task Stories
+    await fetch(`${ASANA_API_BASE}/tasks/${taskId}/stories`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        data: {
+          text: '[ТЕСТ] Заявка помечена менеджером как тестовая',
+        },
+      }),
+    });
+
+    // 2. Закрываем задачу в Asana
+    const completeRes = await fetch(`${ASANA_API_BASE}/tasks/${taskId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        data: {
+          completed: true,
+        },
+      }),
+    });
+
+    if (!completeRes.ok) {
+      const errText = await completeRes.text();
+      logAsanaEvent({
+        mode: 'LIVE_API',
+        action: 'MARK_TEST_FAILED',
+        taskId,
+        error: errText,
+      });
+      return { success: false, error: errText };
+    }
+
+    logAsanaEvent({
+      mode: 'LIVE_API',
+      action: 'MARK_TEST_COMPLETED',
+      taskId,
+    });
+
+    return { success: true };
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    logAsanaEvent({
+      mode: 'LIVE_API',
+      action: 'MARK_TEST_ERROR',
+      taskId,
+      error: errMsg,
+    });
+    return { success: false, error: errMsg };
+  }
+}

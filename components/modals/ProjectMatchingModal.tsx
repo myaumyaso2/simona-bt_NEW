@@ -87,6 +87,7 @@ export function ProjectMatchingModal() {
         name,
         phone,
         budget,
+        comment: compiledComment,
         hasFile: !!projectFile,
         productId: modal.product?.id,
       });

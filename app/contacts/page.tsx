@@ -175,7 +175,7 @@ export default function ContactsPage() {
       });
       if (!res.ok) throw new Error('Ошибка отправки сообщения');
       setSuccess(true);
-      trackGoal('CONTACT_FEEDBACK_SUBMIT', { name, phone });
+      trackGoal('CONTACT_FEEDBACK_SUBMIT', { name, phone, message });
     } catch (err) {
       console.error(err);
       alert('Ошибка при отправке. Пожалуйста, позвоните нам: +7 (831) 423-76-00');

@@ -96,6 +96,7 @@ export function PriceMatchModal() {
       trackGoal('PRICE_MATCH', {
         name: name.trim() || 'Покупатель (Снизим цену)',
         phone: phone.trim(),
+        comment: compiledComment,
         productName: product ? formatProductName(product) : undefined,
         competitorPrice: competitorPrice.trim(),
         competitorUrl: competitorUrl.trim(),

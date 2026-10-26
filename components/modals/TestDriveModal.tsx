@@ -62,6 +62,7 @@ export function TestDriveModal() {
       trackGoal('ACTIVE_KITCHEN_TESTDRIVE', {
         name,
         phone,
+        comment,
         preferredDate: date,
         preferredTime: time,
         productId: modal.product?.id,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { isAuthorized } from '@/lib/adminAuth';
+import { markAsanaTaskAsTest } from '@/lib/integrations/asana';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,6 +34,20 @@ export async function PATCH(req: NextRequest) {
 
     if (!id || !status) {
       return NextResponse.json({ error: 'Не указан ID или статус заявки' }, { status: 400 });
+    }
+
+    const currentLead = await prisma.lead.findUnique({
+      where: { id },
+      select: { id: true, status: true, asanaTaskId: true },
+    });
+
+    if (!currentLead) {
+      return NextResponse.json({ error: 'Заявка не найдена' }, { status: 404 });
+    }
+
+    // Если заявка переводится в статус TEST, добавляем комментарий в Asana и закрываем задачу
+    if (status === 'TEST' && currentLead.asanaTaskId) {
+      await markAsanaTaskAsTest(currentLead.asanaTaskId);
     }
 
     const updated = await prisma.lead.update({

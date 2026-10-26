@@ -53,9 +53,12 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    // 3. Fetch leads count in period for funnel calculation
+    // 3. Fetch leads count in period for funnel calculation (excluding TEST leads)
     const leadsCount = await prisma.lead.count({
-      where: dateFilter,
+      where: {
+        ...dateFilter,
+        status: { not: 'TEST' },
+      },
     });
 
     // 4. Fetch Direct stats, Metrika traffic stats, and Webmaster health in parallel
