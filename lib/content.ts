@@ -116,17 +116,21 @@ export function getSiteContent(): SiteContent {
         steps: parsed.priceMatchPage?.steps || (defaultSiteContent as any).priceMatchPage?.steps || [],
       },
       certificatePage: {
-        ...((defaultSiteContent as any).certificatePage || {}),
+        ...defaultSiteContent.certificatePage,
         ...(parsed.certificatePage || {}),
         salonBlock: {
-          ...((defaultSiteContent as any).certificatePage?.salonBlock || {}),
+          ...defaultSiteContent.certificatePage.salonBlock,
           ...(parsed.certificatePage?.salonBlock || {}),
         },
         rulesSection: {
-          ...((defaultSiteContent as any).certificatePage?.rulesSection || {}),
+          ...defaultSiteContent.certificatePage.rulesSection,
           ...(parsed.certificatePage?.rulesSection || {}),
-          rules: parsed.certificatePage?.rulesSection?.rules || (defaultSiteContent as any).certificatePage?.rulesSection?.rules || [],
+          rules: parsed.certificatePage?.rulesSection?.rules || defaultSiteContent.certificatePage.rulesSection.rules || [],
         },
+      },
+      seoBlocks: {
+        ...defaultSiteContent.seoBlocks,
+        ...(parsed.seoBlocks || {}),
       },
       footer: { ...defaultSiteContent.footer, ...(parsed.footer || {}) },
     };

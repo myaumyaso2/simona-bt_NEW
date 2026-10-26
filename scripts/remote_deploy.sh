@@ -21,6 +21,7 @@ ADMIN_PASSWORD="Vzevzcj2"
 OFFLINE_CONVERSION_SECRET="simona_offline_secret_2026"
 CRON_SECRET="simona_cron_secret_2026"
 NEXT_PUBLIC_YM_ID="1351807"
+YANDEX_WEBMASTER_TOKEN="y0__wgBEPrbriIYwdtNIJu5nMUZMLGvoo8IjKGnUlaAgvy3ORFiKYARbNTZ3to"
 ENVEOF
 cp .env .env.production
 

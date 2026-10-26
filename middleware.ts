@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import redirectsMap from '@/data/redirects.json';
+import { MANUFACTURER_PROMOS } from '@/data/promosData';
 import {
   resolveBrandEntry,
   brandNameToSlug,
@@ -9,6 +10,10 @@ import {
 } from '@/lib/catalog/brandsRegistry';
 
 const redirects: Record<string, string> = redirectsMap;
+
+const ACTIVE_PROMO_SLUGS = new Set<string>(
+  MANUFACTURER_PROMOS.filter((p) => p.isActive !== false).map((p) => p.slug.toLowerCase())
+);
 
 // Canonical slugs of brands that currently have active inventory in SIMONA catalog
 const ACTIVE_BRAND_SLUGS = new Set<string>([
@@ -40,6 +45,8 @@ const UMI_CATEGORY_MAP: Record<string, string> = {
   'vstraivaemaya_tehnika/izmelchiteli_pishevyh_othodov': 'izmelchiteli-pishchevyh-othodov',
   'vstraivaemaya_tehnika/vakuumatory': 'vstraivaemye-vakuumatory',
   'vstraivaemaya_tehnika/sortery_vedra': 'aksessuary-dlya-moek',
+  'vstraivaemaya_tehnika/smesiteli': 'smesiteli-dlya-kuhni',
+  'vstraivaemaya_tehnika/mojki_dlya_kuhni': 'mojki-dlya-kuhni',
   'vstraivaemaya_tehnika': 'vstraivaemaya-tehnika',
 
   'krupnaya_bytovaya_tehnika/holodilniki': 'holodilniki',
@@ -114,36 +121,62 @@ const UMI_CATEGORY_MAP: Record<string, string> = {
   'aksessuary': 'uhod-i-aksessuary',
 };
 
-// Legacy static utility page redirects
+// Legacy static utility page redirects (1-hop 301)
 const LEGACY_UTILITY_ROUTES: Record<string, string> = {
   '/main': '/',
+  '/index': '/',
   '/politika': '/policy',
   '/privacy': '/policy',
   '/delivery_payment': '/delivery-payment',
   '/kredit': '/delivery-payment',
   '/service_warranty': '/warranty',
-  '/return_exchange_warranty': '/returns',
+  '/return_exchange_warranty': '/warranty',
+  '/returns': '/warranty',
   '/nashli_deshevle_snizim_cenu': '/price-match',
   '/optovyj_otdel': '/opt',
+  '/optovyj-otdel': '/opt',
   '/partners': '/designers',
   '/podbor_bytovoj_tehniki': '/services',
   '/akcii_dlya_tovarov': '/promos',
+  '/bonus': '/promos',
+  '/rekvizity': '/contacts',
+  '/vakansii': '/contacts',
+  '/otzyvy': '/showrooms',
+  '/index/otzyvy': '/showrooms',
+  '/news_events': '/showrooms',
   '/rasprodazha': '/catalog/ucenennye-tovary',
   '/catalog/duhovye-shkafy': '/catalog/vstraivaemye-duhovye-shkafy',
   '/catalog/izmelchiteli-othodov': '/catalog/izmelchiteli-pishchevyh-othodov',
+  '/admin/exchange/get_export/8648317': '/feeds/yandex.xml',
 };
 
-// Renamed promo slugs -> current active promo slugs
+// Renamed or legacy promo slugs -> current active promo slugs
 const LEGACY_PROMO_SLUG_MAP: Record<string, string> = {
   'vard-podarok-nabor-melnic-vsmps26t-2026': '/promos/vard-podarok-nabor-melnic',
   'evelux-skidki-pri-pokupke-komplekta': '/promos/evelux-kaskad',
+  'evelux_skidki_pri_pokupke_komplekta': '/promos/evelux-kaskad',
+  'korting-ckidka-pri-pokupke-komplekta': '/promos/korting-kaskad',
+  'korting_ckidka_pri_pokupke_komplekta': '/promos/korting-kaskad',
+  'vard-skidki-pri-pokupke-komplekta': '/promos/vard-kaskad',
+  'vard_skidki_pri_pokupke_komplekta': '/promos/vard-kaskad',
+  'falmec-water-50': '/promos/falmec-akciya-water-50',
+  'falmec_water_50': '/promos/falmec-akciya-water-50',
 };
 
+function isProductionDomain(host: string): boolean {
+  return host === 'simona-bt.ru' || host === 'www.simona-bt.ru';
+}
+
 // Preserves incoming tracking parameters (?ysclid=..., ?yclid=..., ?gclid=..., UTM) across 301 hops
-function buildRedirectUrl(destination: string, request: NextRequest): URL {
-  const targetUrl = new URL(destination, request.url);
+// and directly targets https://www.simona-bt.ru on production so HTTP/non-www + path redirects happen in 1 hop.
+function buildRedirectUrl(destination: string, request: NextRequest, stripQueryKeys?: string[]): URL {
+  const host = (request.headers.get('host') || '').split(':')[0]?.toLowerCase() || '';
+  const baseOrigin = isProductionDomain(host) ? 'https://www.simona-bt.ru' : request.url;
+  const targetUrl = new URL(destination, baseOrigin);
+
+  const ignoredKeys = new Set(stripQueryKeys || []);
   request.nextUrl.searchParams.forEach((value, key) => {
-    if (!targetUrl.searchParams.has(key)) {
+    if (!ignoredKeys.has(key) && !targetUrl.searchParams.has(key)) {
       targetUrl.searchParams.set(key, value);
     }
   });
@@ -151,6 +184,18 @@ function buildRedirectUrl(destination: string, request: NextRequest): URL {
 }
 
 export function middleware(request: NextRequest) {
+  const host = (request.headers.get('host') || '').split(':')[0]?.toLowerCase() || '';
+  const forwardedProto = (
+    request.headers.get('x-forwarded-proto') ||
+    request.nextUrl.protocol.replace(':', '')
+  )
+    .split(',')[0]
+    ?.trim()
+    .toLowerCase();
+
+  const needsCanonicalOrigin =
+    isProductionDomain(host) && (host !== 'www.simona-bt.ru' || forwardedProto === 'http');
+
   let rawPathname = request.nextUrl.pathname;
 
   // 0. Sanitize malformed UMI / Yandex Dzen paths containing `/&param=val` without `?`
@@ -164,12 +209,21 @@ export function middleware(request: NextRequest) {
 
   const cleanPath = rawPathname.replace(/\/+$/, '') || '/';
 
+  // 0.5. Legacy UMI YML export feed -> clean /feeds/yandex.xml without ?as_file=0
+  if (cleanPath === '/admin/exchange/get_export/8648317') {
+    return NextResponse.redirect(buildRedirectUrl('/feeds/yandex.xml', request, ['as_file']), 301);
+  }
+
   // =========================================================================
-  // 1. Legacy Static Utility Routes (301 Permanent Redirect)
+  // 1. Legacy Static Utility & Editorial Routes (1-hop 301 Permanent Redirect)
   // =========================================================================
   if (cleanPath in LEGACY_UTILITY_ROUTES) {
     const target = LEGACY_UTILITY_ROUTES[cleanPath];
     return NextResponse.redirect(buildRedirectUrl(target, request), 301);
+  }
+
+  if (cleanPath.startsWith('/news_events/') || cleanPath.startsWith('/index/otzyvy/')) {
+    return NextResponse.redirect(buildRedirectUrl('/showrooms', request), 301);
   }
 
   if (cleanPath.startsWith('/rasprodazha/')) {
@@ -177,9 +231,18 @@ export function middleware(request: NextRequest) {
   }
 
   if (cleanPath === '/actions_sales' || cleanPath.startsWith('/actions_sales/')) {
-    const subSlug = cleanPath.replace(/^\/actions_sales\/?/, '').split('/')[0]?.toLowerCase();
-    if (subSlug && subSlug in LEGACY_PROMO_SLUG_MAP) {
-      return NextResponse.redirect(buildRedirectUrl(LEGACY_PROMO_SLUG_MAP[subSlug], request), 301);
+    const subSlugRaw = cleanPath.replace(/^\/actions_sales\/?/, '').split('/')[0]?.toLowerCase();
+    if (subSlugRaw) {
+      if (subSlugRaw in LEGACY_PROMO_SLUG_MAP) {
+        return NextResponse.redirect(buildRedirectUrl(LEGACY_PROMO_SLUG_MAP[subSlugRaw], request), 301);
+      }
+      const hyphenSlug = subSlugRaw.replace(/_/g, '-');
+      if (hyphenSlug in LEGACY_PROMO_SLUG_MAP) {
+        return NextResponse.redirect(buildRedirectUrl(LEGACY_PROMO_SLUG_MAP[hyphenSlug], request), 301);
+      }
+      if (ACTIVE_PROMO_SLUGS.has(hyphenSlug)) {
+        return NextResponse.redirect(buildRedirectUrl(`/promos/${hyphenSlug}`, request), 301);
+      }
     }
     return NextResponse.redirect(buildRedirectUrl('/promos', request), 301);
   }
@@ -188,6 +251,9 @@ export function middleware(request: NextRequest) {
     const promoSlug = cleanPath.replace(/^\/promos\//, '').toLowerCase();
     if (promoSlug in LEGACY_PROMO_SLUG_MAP) {
       return NextResponse.redirect(buildRedirectUrl(LEGACY_PROMO_SLUG_MAP[promoSlug], request), 301);
+    }
+    if (!ACTIVE_PROMO_SLUGS.has(promoSlug)) {
+      return NextResponse.redirect(buildRedirectUrl('/promos', request), 301);
     }
   }
 
@@ -283,8 +349,22 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(buildRedirectUrl(destination, request), 301);
     }
 
-    // 3.4. Fallback for completely unrecognizable paths -> pass to 404 page (Zero Soft 404)
+    // 3.4. Fallback for completely unrecognizable /shop/ paths -> pass to 404 page (Zero Soft 404)
+    if (needsCanonicalOrigin) {
+      return NextResponse.redirect(buildRedirectUrl(rawPathname, request), 301);
+    }
     return NextResponse.next();
+  }
+
+  // =========================================================================
+  // 4. Canonical Trailing-Slash Removal & HTTP/Non-WWW Enforcement (1-hop 301)
+  // =========================================================================
+  if (rawPathname.length > 1 && rawPathname.endsWith('/')) {
+    return NextResponse.redirect(buildRedirectUrl(cleanPath, request), 301);
+  }
+
+  if (needsCanonicalOrigin) {
+    return NextResponse.redirect(buildRedirectUrl(cleanPath, request), 301);
   }
 
   return NextResponse.next();
@@ -292,42 +372,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/&(.*)',
-    '/shop',
-    '/shop/:path*',
-    '/brendy',
-    '/brendy/:path*',
-    '/index/brendy',
-    '/index/brendy/:path*',
-    '/rasprodazha',
-    '/rasprodazha/:path*',
-    '/main',
-    '/main/:path*',
-    '/politika',
-    '/politika/:path*',
-    '/privacy',
-    '/delivery_payment',
-    '/delivery_payment/:path*',
-    '/kredit',
-    '/kredit/:path*',
-    '/service_warranty',
-    '/service_warranty/:path*',
-    '/return_exchange_warranty',
-    '/return_exchange_warranty/:path*',
-    '/nashli_deshevle_snizim_cenu',
-    '/nashli_deshevle_snizim_cenu/:path*',
-    '/actions_sales',
-    '/actions_sales/:path*',
-    '/akcii_dlya_tovarov',
-    '/akcii_dlya_tovarov/:path*',
-    '/promos/:path*',
-    '/optovyj_otdel',
-    '/optovyj_otdel/:path*',
-    '/partners',
-    '/partners/:path*',
-    '/podbor_bytovoj_tehniki',
-    '/podbor_bytovoj_tehniki/:path*',
-    '/catalog/duhovye-shkafy',
-    '/catalog/izmelchiteli-othodov',
+    '/((?!api|_next/static|_next/image|images|uploads|favicon\\.ico|icon\\.svg).*)',
   ],
 };

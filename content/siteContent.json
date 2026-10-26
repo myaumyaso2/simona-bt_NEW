@@ -885,5 +885,17 @@
       "pdfButtonText": "Подробные правила использования сертификата",
       "pdfUrl": "/docs/polozhenie_o_podarochnyh_sertifikatah.pdf"
     }
+  },
+  "seoBlocks": {
+    "categoryBrandsHeading": "Популярные производители в разделе",
+    "categoryResetBrandText": "Все производители раздела",
+    "categoryPillarGuaranteeTitle": "Официальная гарантия производителей",
+    "categoryPillarGuaranteeDesc": "Авторизованные поставки и обслуживание в сертифицированных сервисных центрах Нижнего Новгорода.",
+    "categoryPillarLogisticsTitle": "Склад и салоны в Нижнем Новгороде",
+    "categoryPillarLogisticsDesc": "Аккуратная доставка и подъем на этаж собственной службой со склада на ул. Коминтерна, 27 и экспозиции на ул. Белинского, 15 и 11/66.",
+    "categoryPillarInstallTitle": "Профессиональная установка встройки",
+    "categoryPillarInstallDesc": "Профессионально устанавливаем и подключаем встраиваемую бытовую технику, сверяем схемы ниш и бесплатно храним заказ на складе до окончания ремонта.",
+    "brandFaqTitle": "Частые вопросы о технике бренда",
+    "brandCategoriesHeading": "Разделы каталога бренда в салонах «СИМОНА»"
   }
 }

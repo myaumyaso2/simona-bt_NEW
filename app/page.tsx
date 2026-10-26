@@ -1,4 +1,5 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { ManufacturerPromosSection } from '@/components/sections/ManufacturerPromosSection';
 import { BrandAtlas } from '@/components/sections/BrandAtlas';
@@ -9,6 +10,12 @@ import { TelegramLiveSection } from '@/components/sections/TelegramLiveSection';
 import { ShowroomMapSection } from '@/components/sections/ShowroomMapSection';
 import { getDynamicBrandAtlas } from '@/lib/catalog/brandStats';
 import { getTelegramVideos } from '@/lib/telegram';
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: 'https://www.simona-bt.ru',
+  },
+};
 
 export const dynamic = 'force-dynamic';
 

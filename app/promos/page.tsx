@@ -5,11 +5,14 @@ import { PromosHubView } from '@/components/promos/PromosHubView';
 export const metadata: Metadata = {
   title: 'Акции производителей бытовой техники в Нижнем Новгороде | СИМОНА',
   description:
-    'Официальные программы выгоды, скидки на комплекты и подарки от ведущих европейских брендов: Miele, ASKO, Liebherr, SMEG, Falmec, OMOIKIRI. Шоурумы на ул. Белинского 15 и 11/66.',
+    'Официальные программы выгоды, скидки на комплекты и подарки от ведущих брендов: Miele, Asko, Liebherr, Smeg, Falmec, Körting, Omoikiri, Evelux, Vard. Салоны на ул. Белинского 15 и 11/66.',
+  alternates: {
+    canonical: 'https://www.simona-bt.ru/promos',
+  },
   openGraph: {
-    title: 'Акции европейских брендов бытовой техники | СИМОНА',
+    title: 'Акции производителей бытовой техники | СИМОНА',
     description:
-      'Официальные спецпредложения и комплекты со скидкой от авторизованного партнера в Нижнем Новгороде.',
+      'Официальные спецпредложения и комплекты со скидкой в салонах «СИМОНА» в Нижнем Новгороде.',
     url: 'https://www.simona-bt.ru/promos',
   },
 };

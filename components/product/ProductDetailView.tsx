@@ -11,10 +11,12 @@ import { ProductStickySubNav } from './ProductStickySubNav';
 import { ProductTabsSection } from './ProductTabsSection';
 import { ProductMobileBottomBar } from './ProductMobileBottomBar';
 import { OneClickBuyModal } from './OneClickBuyModal';
-import { ArrowLeft } from 'lucide-react';
+import { SimonaIconArrowLeft } from '@/components/brand/SimonaIcons';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
-import { getCategorySlugByName } from '@/data/catalogCategories';
+import { getCategoryBySlug, getCategorySlugByName } from '@/data/catalogCategories';
 import { formatProductName } from '@/lib/catalog/productTitle';
+import { resolveBrandEntry } from '@/lib/catalog/brandsRegistry';
+import { formatBrandName } from '@/lib/formatters';
 
 interface ProductDetailViewProps {
   product: ProductItem;
@@ -22,6 +24,20 @@ interface ProductDetailViewProps {
 
 export function ProductDetailView({ product }: ProductDetailViewProps) {
   const categorySlug = getCategorySlugByName(product.category);
+  const categoryObj = getCategoryBySlug(categorySlug);
+  const categoryDisplayName = categoryObj ? categoryObj.title : product.category;
+
+  const brandReg = resolveBrandEntry(product.brand);
+  const brandDisplay =
+    product.brand && product.brand.toUpperCase() !== 'СИМОНА'
+      ? brandReg
+        ? brandReg.displayName
+        : formatBrandName(product.brand)
+      : '';
+  const canonicalBrandParam = brandReg
+    ? brandReg.dbBrand
+    : (product.brand || '').trim().toUpperCase();
+
   const [activeTab, setActiveTab] = useState('specs');
   const [isOneClickBuyOpen, setIsOneClickBuyOpen] = useState(false);
 
@@ -40,12 +56,20 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
   return (
     <div className="min-h-screen bg-[#111315] text-white flex flex-col justify-between selection:bg-simona-teal selection:text-white pb-20 md:pb-0">
       <div>
-        {/* 1. Breadcrumbs Bar with Category Return Link */}
+        {/* 1. Breadcrumbs Bar with Category & Brand Internal Links */}
         <Breadcrumbs
           skipJsonLd
           items={[
             { name: 'Каталог', url: '/catalog' },
-            { name: product.category, url: `/catalog/${categorySlug}` },
+            { name: categoryDisplayName, url: `/catalog/${categorySlug}` },
+            ...(brandDisplay && canonicalBrandParam
+              ? [
+                  {
+                    name: `${categoryObj?.menuTitle || categoryDisplayName} ${brandDisplay}`,
+                    url: `/catalog/${categorySlug}?brand=${encodeURIComponent(canonicalBrandParam)}`,
+                  },
+                ]
+              : []),
             { name: formatProductName(product) },
           ]}
           rightContent={
@@ -53,7 +77,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
               href={`/catalog/${categorySlug}`}
               className="inline-flex items-center gap-1.5 text-simona-teal hover:text-simona-teal-light transition-colors font-medium shrink-0"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
+              <SimonaIconArrowLeft className="w-3.5 h-3.5" />
               <span>Вернуться в категорию</span>
             </Link>
           }

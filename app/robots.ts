@@ -26,13 +26,20 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
-      allow: '/',
+      allow: [
+        '/',
+        '/feeds/',
+        '/api/feeds/',
+        '/api/og',
+      ],
       disallow: [
-        '/manager/',
-        '/profile/',
-        '/checkout/',
+        '/manager',
+        '/profile',
+        '/checkout',
+        '/compare',
+        '/analytics',
         '/api/',
-        '/admin/',
+        '/admin',
         '/emarket/',
         '/udata/',
         '/upage/',

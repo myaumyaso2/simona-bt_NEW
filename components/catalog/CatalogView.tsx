@@ -40,6 +40,7 @@ interface CatalogViewProps {
   categoryDescription?: string;
   initialBrand?: string;
   initialCategorySlug?: string;
+  initialPage?: number;
   searchQuery?: string;
   brandDetails?: BrandDetails;
   subcategoryLinks?: SubcategoryLinkItem[];
@@ -54,6 +55,7 @@ export function CatalogView({
   categoryDescription,
   initialBrand,
   initialCategorySlug,
+  initialPage,
   searchQuery,
   brandDetails,
   subcategoryLinks,
@@ -148,7 +150,24 @@ export function CatalogView({
   }, [isDedicatedBrandPage, activeCategorySlug, rawProducts]);
   const [sort, setSort] = useState<SortOption>('popular');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState<number>(() => {
+    const raw = initialPage ?? Number(searchParams.get('page') || '1');
+    return Number.isFinite(raw) && raw >= 1 ? Math.floor(raw) : 1;
+  });
+
+  const handlePageSelect = (nextPage: number) => {
+    setCurrentPage(nextPage);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (nextPage > 1) {
+        url.searchParams.set('page', String(nextPage));
+      } else {
+        url.searchParams.delete('page');
+      }
+      window.history.replaceState(null, '', url.pathname + url.search);
+      window.scrollTo({ top: 260, behavior: 'smooth' });
+    }
+  };
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [techFilter, setTechFilter] = useState<{ query: string; label: string } | null>(null);
 
@@ -916,10 +935,10 @@ export function CatalogView({
                 totalPages={totalPages}
                 totalItems={filteredProducts.length}
                 shownItems={paginatedProducts.length}
-                onPageChange={setCurrentPage}
+                onPageChange={handlePageSelect}
                 onLoadMore={() => {
                   if (currentPage < totalPages) {
-                    setCurrentPage((prev) => prev + 1);
+                    handlePageSelect(currentPage + 1);
                   }
                 }}
               />

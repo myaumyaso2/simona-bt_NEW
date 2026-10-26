@@ -8,7 +8,6 @@ import { ProductItem } from '@/types';
 import { groupProductFeatures } from '@/lib/productFeatures';
 import { formatPrice } from '@/lib/utils';
 import { useStore } from '@/components/providers/StoreContext';
-import { Plus, ArrowRight } from 'lucide-react';
 import {
   SimonaIconCart,
   SimonaIconDownload,
@@ -20,8 +19,12 @@ import {
   SimonaIconSearch,
   SimonaIconClock,
   SimonaIconArrowRight,
+  SimonaIconPlus,
 } from '@/components/brand/SimonaIcons';
 import { formatBrandName } from '@/lib/formatters';
+import { formatProductName } from '@/lib/catalog/productTitle';
+import { resolveBrandEntry, brandNameToSlug } from '@/lib/catalog/brandsRegistry';
+import { getCategoryBySlug, getCategorySlugByName } from '@/data/catalogCategories';
 import { getProductBundle } from '@/lib/productBundles';
 import { AccessoryItem } from '@/data/catalogData';
 import { getPromosForProduct, getPromosForCategory } from '@/data/promosData';
@@ -40,6 +43,17 @@ export function ProductTabsSection({
   const { addToCart, setIsCartOpen, openModal } = useStore();
 
   const brandFormatted = formatBrandName(product.brand);
+  const formattedTitle = formatProductName(product);
+  const brandReg = resolveBrandEntry(product.brand);
+  const brandSlug =
+    product.brand && product.brand.toUpperCase() !== 'СИМОНА'
+      ? brandReg?.slug || brandNameToSlug(product.brand)
+      : null;
+  const canonicalBrandParam = brandReg
+    ? brandReg.dbBrand
+    : (product.brand || '').trim().toUpperCase();
+  const categorySlug = getCategorySlugByName(product.category);
+  const categoryObj = getCategoryBySlug(categorySlug);
   const bundleResult = useMemo(() => getProductBundle(product), [product]);
 
   // Bundle selection state
@@ -178,116 +192,128 @@ export function ProductTabsSection({
   return (
     <div className="w-full max-w-[1280px] mx-auto px-4 sm:px-6 py-10 sm:py-16">
       {/* ========================================================================= */}
-      {/* TAB 1: О ПРИБОРЕ И ТЕХНОЛОГИЯХ (Adaptive, Zero Dead Ends) */}
+      {/* TAB 1: О ПРИБОРЕ И ТЕХНОЛОГИЯХ (SSR-rendered for SEO, Zero Dead Ends) */}
       {/* ========================================================================= */}
-      {activeTab === 'about' && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="flex flex-col gap-10"
-        >
-          {product.technologies && product.technologies.length > 0 ? (
-            <>
-              <div className="flex flex-col gap-2">
-                <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
-                  Инженерные технологии {brandFormatted}
-                </h2>
-              </div>
+      <div
+        className={activeTab === 'about' ? 'flex flex-col gap-10' : 'hidden'}
+        aria-hidden={activeTab !== 'about'}
+      >
+        {product.technologies && product.technologies.length > 0 ? (
+          <>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
+                Инженерные технологии {brandFormatted}
+              </h2>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {product.technologies.map((tech, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group"
-                  >
-                    <div className="h-52 w-full overflow-hidden bg-[#1E2228] relative">
-                      <img
-                        src={tech.imageUrl}
-                        alt={tech.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#16191D] via-transparent to-transparent opacity-80" />
-                    </div>
-                    <div className="p-6 flex flex-col flex-1 justify-between">
-                      <div>
-                        <span className="text-[11px] font-mono text-[#87888A] uppercase tracking-wider">
-                          {tech.subtitle}
-                        </span>
-                        <h3 className="text-base font-bold text-white mt-1 group-hover:text-simona-teal transition-colors">
-                          {tech.title}
-                        </h3>
-                        <p className="mt-2.5 text-xs text-[#87888A] leading-relaxed">
-                          {tech.description}
-                        </p>
-                      </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {product.technologies.map((tech, idx) => (
+                <div
+                  key={idx}
+                  className="bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/50 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group"
+                >
+                  <div className="h-52 w-full overflow-hidden bg-[#1E2228] relative">
+                    <img
+                      src={tech.imageUrl}
+                      alt={tech.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#16191D] via-transparent to-transparent opacity-80" />
+                  </div>
+                  <div className="p-6 flex flex-col flex-1 justify-between">
+                    <div>
+                      <span className="text-[11px] font-mono text-[#87888A] tracking-wider">
+                        {tech.subtitle}
+                      </span>
+                      <h3 className="text-base font-bold text-white mt-1 group-hover:text-simona-teal transition-colors">
+                        {tech.title}
+                      </h3>
+                      <p className="mt-2.5 text-xs text-[#87888A] leading-relaxed">
+                        {tech.description}
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            /* Zero Dead Ends: Rich editorial overview when no specific technologies array is supplied */
-            <div className="flex flex-col gap-8">
-              <div className="flex flex-col gap-2">
-                <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
-                  Инженерия и дизайн {product.name}
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                <div className="lg:col-span-8 bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 sm:p-8 flex flex-col gap-5 shadow-lg">
-                  <h3 className="text-lg font-montserrat font-semibold text-white">
-                    Описание и особенности эксплуатации
-                  </h3>
-                  <p className="text-sm text-[#D7D9DB] leading-relaxed whitespace-pre-line">
-                    {product.description ||
-                      `${product.name} — премиальное решение от европейского производителя ${brandFormatted}. Прибор спроектирован с учетом строгих стандартов энергоэффективности, эргономики и надежности.`}
-                  </p>
-
-                  {product.shortDesc && (
-                    <div className="pt-4 border-t border-[#2B313A] flex flex-wrap items-center gap-3 text-xs text-simona-teal font-medium">
-                      <span>Ключевые преимущества:</span>
-                      <span className="text-white font-normal">{product.shortDesc}</span>
-                    </div>
-                  )}
                 </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          /* Zero Dead Ends: Rich editorial overview when no specific technologies array is supplied */
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-2">
+              <h2 className="text-2xl sm:text-3xl font-montserrat font-bold text-white text-left">
+                Инженерия и дизайн {formattedTitle}
+              </h2>
+            </div>
 
-                <div className="lg:col-span-4 flex flex-col gap-4">
-                  <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 flex flex-col gap-3">
-                    <span className="text-xs text-white font-semibold">
-                      Нужна помощь с интеграцией в проект?
-                    </span>
-                    <p className="text-xs text-[#87888A] leading-relaxed">
-                      Инженеры салона выверят чертежи подключения и проконсультируют по требованиям к вентиляции и электрике.
-                    </p>
-                    <button
-                      onClick={() =>
-                        openModal('EQUIPMENT_SELECTION', { product })
-                      }
-                      className="w-full h-10 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-colors cursor-pointer mt-1"
-                    >
-                      Запросить консультацию инженера
-                    </button>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              <div className="lg:col-span-8 bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 sm:p-8 flex flex-col gap-5 shadow-lg">
+                <h3 className="text-lg font-montserrat font-semibold text-white">
+                  Описание и особенности эксплуатации
+                </h3>
+                <p className="text-sm text-[#D7D9DB] leading-relaxed whitespace-pre-line">
+                  {product.description ||
+                    `${formattedTitle} — надежное решение от производителя ${brandFormatted}${brandReg?.country && brandReg.country !== 'Международный бренд' ? ` (${brandReg.country})` : ''}. Прибор отобран экспертами сети салонов «СИМОНА» с учетом стандартов энергоэффективности, эргономики и долговечности эксплуатации.`}
+                </p>
+
+                {product.shortDesc && (
+                  <div className="pt-4 border-t border-[#2B313A] flex flex-wrap items-center gap-3 text-xs text-simona-teal font-medium">
+                    <span>Ключевые преимущества:</span>
+                    <span className="text-white font-normal">{product.shortDesc}</span>
                   </div>
+                )}
+
+                {brandSlug && (
+                  <div className="pt-4 border-t border-[#2B313A] flex flex-wrap items-center gap-2.5 text-xs">
+                    <Link
+                      href={`/catalog/${categorySlug}?brand=${encodeURIComponent(canonicalBrandParam)}`}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal/60 text-[#D7D9DB] hover:text-white font-medium transition-colors"
+                    >
+                      <span>{categoryObj?.menuTitle || product.category} {brandFormatted}</span>
+                      <SimonaIconArrowRight className="w-3 h-3 text-simona-teal" />
+                    </Link>
+                    <Link
+                      href={`/brands/${brandSlug}`}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#1E2228] border border-[#2B313A] hover:border-simona-teal/60 text-[#D7D9DB] hover:text-white font-medium transition-colors"
+                    >
+                      <span>Все приборы {brandFormatted}</span>
+                      <SimonaIconArrowRight className="w-3 h-3 text-simona-teal" />
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              <div className="lg:col-span-4 flex flex-col gap-4">
+                <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-6 flex flex-col gap-3">
+                  <span className="text-xs text-white font-semibold">
+                    Нужна помощь с интеграцией в проект?
+                  </span>
+                  <p className="text-xs text-[#87888A] leading-relaxed">
+                    Инженеры салона выверят чертежи подключения и проконсультируют по требованиям к вентиляции и электрике.
+                  </p>
+                  <button
+                    onClick={() =>
+                      openModal('EQUIPMENT_SELECTION', { product })
+                    }
+                    className="w-full h-10 rounded-xl bg-simona-teal hover:bg-simona-teal-light text-white text-xs font-bold transition-colors cursor-pointer mt-1"
+                  >
+                    Запросить консультацию инженера
+                  </button>
                 </div>
               </div>
             </div>
-          )}
-        </motion.div>
-      )}
+          </div>
+        )}
+      </div>
 
       {/* ========================================================================= */}
-      {/* TAB 2: ХАРАКТЕРИСТИКИ */}
+      {/* TAB 2: ХАРАКТЕРИСТИКИ (SSR-rendered for SEO) */}
       {/* ========================================================================= */}
-      {activeTab === 'specs' && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="flex flex-col gap-8"
-        >
+      <div
+        className={activeTab === 'specs' ? 'flex flex-col gap-8' : 'hidden'}
+        aria-hidden={activeTab !== 'specs'}
+      >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#2B313A]">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
@@ -390,8 +416,7 @@ export function ProductTabsSection({
               )}
             </div>
           )}
-        </motion.div>
-      )}
+      </div>
 
       {/* ========================================================================= */}
       {/* TAB: АКЦИИ И ПОДАРКИ ПРОИЗВОДИТЕЛЯ (PROMOTIONS & GIFTS) */}
@@ -669,7 +694,7 @@ export function ProductTabsSection({
 
                         {index < bundleResult.bundleItems.length - 1 && (
                           <div className="hidden sm:flex items-center justify-center text-[#87888A]">
-                            <Plus className="w-5 h-5" />
+                            <SimonaIconPlus className="w-5 h-5" />
                           </div>
                         )}
                       </React.Fragment>

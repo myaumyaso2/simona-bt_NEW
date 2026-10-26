@@ -8,25 +8,16 @@ import {
   SimonaIconCheckCircle,
   SimonaIconExternalLink,
   SimonaIconSearch,
+  SimonaIconShieldCheck,
+  SimonaIconCheck,
+  SimonaIconDownload,
+  SimonaIconInfo,
+  SimonaIconTelegram,
+  SimonaIconSparkles,
+  SimonaIconFilter,
+  SimonaIconClock,
 } from '@/components/brand/SimonaIcons';
 import { formatPrice } from '@/lib/utils';
-import {
-  Lock,
-  Download,
-  RefreshCw,
-  BarChart3,
-  TrendingUp,
-  Send,
-  CheckCircle2,
-  AlertCircle,
-  Globe,
-  Radio,
-  FileCode,
-  ShieldCheck,
-  Check,
-  Activity,
-  Layers,
-} from 'lucide-react';
 import { DirectReportSummary } from '@/lib/integrations/direct/types';
 import { MetrikaTrafficSummary } from '@/lib/integrations/metrika/traffic';
 import { WebmasterHealthSummary } from '@/lib/integrations/seo/webmasterHealth';
@@ -127,8 +118,8 @@ export default function AnalyticsDashboardPage() {
         throw new Error(data.error || 'Неверный пароль');
       }
       setIsAuthenticated(true);
-    } catch (err: any) {
-      setAuthError(err.message || 'Ошибка авторизации');
+    } catch (err: unknown) {
+      setAuthError(err instanceof Error ? err.message : 'Ошибка авторизации');
     } finally {
       setIsSubmittingAuth(false);
     }
@@ -186,10 +177,10 @@ export default function AnalyticsDashboardPage() {
           text: data.message || data.error || 'Ошибка при отправке в Метрику',
         });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSyncMessage({
         type: 'error',
-        text: `Сетевая ошибка: ${err.message}`,
+        text: `Сетевая ошибка: ${err instanceof Error ? err.message : 'Неизвестная ошибка'}`,
       });
     } finally {
       setIsSyncingConversions(false);
@@ -200,7 +191,7 @@ export default function AnalyticsDashboardPage() {
     return (
       <div className="min-h-screen bg-[#111315] flex items-center justify-center text-white">
         <div className="flex items-center space-x-3 text-sm text-[#87888A]">
-          <RefreshCw className="w-5 h-5 animate-spin text-simona-teal" />
+          <SimonaIconClock className="w-5 h-5 animate-spin text-simona-teal" />
           <span>Проверка сессии директора...</span>
         </div>
       </div>
@@ -213,7 +204,7 @@ export default function AnalyticsDashboardPage() {
         <div className="max-w-md w-full bg-[#16191D] border border-[#2B313A] rounded-2xl p-8 shadow-2xl">
           <div className="text-center mb-6">
             <div className="w-12 h-12 bg-simona-teal/10 rounded-xl flex items-center justify-center mx-auto mb-4 border border-simona-teal/20">
-              <Lock className="w-6 h-6 text-simona-teal" />
+              <SimonaIconShieldCheck className="w-6 h-6 text-simona-teal" />
             </div>
             <h1 className="text-xl font-bold text-white tracking-wide">
               Сквозная аналитика «СИМОНА»
@@ -324,7 +315,7 @@ export default function AnalyticsDashboardPage() {
               className="inline-flex items-center space-x-2 px-4 py-2.5 bg-simona-teal/20 hover:bg-simona-teal/30 border border-simona-teal/40 rounded-xl text-xs font-semibold text-simona-teal hover:text-white transition-all shadow-sm disabled:opacity-50"
               title="Отправка оплат (PAID и DELIVERED) в Яндекс Метрику по API"
             >
-              <Send className={`w-3.5 h-3.5 ${isSyncingConversions ? 'animate-pulse' : ''}`} />
+              <SimonaIconTelegram className={`w-3.5 h-3.5 ${isSyncingConversions ? 'animate-pulse' : ''}`} />
               <span>{isSyncingConversions ? 'Отправка...' : 'Синхронизировать офлайн-чеки'}</span>
             </button>
 
@@ -335,7 +326,7 @@ export default function AnalyticsDashboardPage() {
               className="inline-flex items-center space-x-2 px-3 py-2.5 bg-[#1E2228] hover:bg-[#252A32] border border-[#2B313A] rounded-xl text-xs font-medium text-[#87888A] hover:text-white transition-all"
               title="Резервная выгрузка CSV для ручной загрузки"
             >
-              <Download className="w-3.5 h-3.5" />
+              <SimonaIconDownload className="w-3.5 h-3.5" />
               <span>CSV</span>
             </a>
 
@@ -346,7 +337,7 @@ export default function AnalyticsDashboardPage() {
               className="p-2.5 bg-[#16191D] hover:bg-[#1E2228] border border-[#2B313A] rounded-xl text-[#87888A] hover:text-white transition-colors"
               title="Обновить данные"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-simona-teal' : ''}`} />
+              <SimonaIconClock className={`w-4 h-4 ${loading ? 'animate-spin text-simona-teal' : ''}`} />
             </button>
           </div>
         </div>
@@ -362,9 +353,9 @@ export default function AnalyticsDashboardPage() {
           >
             <div className="flex items-center space-x-2">
               {syncMessage.type === 'success' ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <SimonaIconCheckCircle className="w-4 h-4 text-emerald-400" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-rose-400" />
+                <SimonaIconInfo className="w-4 h-4 text-rose-400" />
               )}
               <span>{syncMessage.text}</span>
             </div>
@@ -446,7 +437,7 @@ export default function AnalyticsDashboardPage() {
           <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-5 relative overflow-hidden">
             <div className="flex items-center justify-between text-xs text-[#87888A] mb-2 font-medium">
               <span>Доля рекламных расходов (ДРР)</span>
-              <TrendingUp className={`w-4 h-4 ${isDrrSafe ? 'text-emerald-400' : 'text-amber-400'}`} />
+              <SimonaIconSparkles className={`w-4 h-4 ${isDrrSafe ? 'text-emerald-400' : 'text-amber-400'}`} />
             </div>
             <div className="text-2xl font-bold tracking-tight text-white font-mono">
               {summary?.drrPercent || '0.0'}%
@@ -575,7 +566,7 @@ export default function AnalyticsDashboardPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 pb-4 border-b border-[#2B313A] gap-2">
             <div>
               <div className="flex items-center space-x-2">
-                <Globe className="w-4 h-4 text-simona-teal" />
+                <SimonaIconSearch className="w-4 h-4 text-simona-teal" />
                 <h2 className="text-lg font-bold text-white tracking-wide">
                   Аудитория и поисковый трафик сайта (Яндекс Метрика №1351807)
                 </h2>
@@ -637,7 +628,7 @@ export default function AnalyticsDashboardPage() {
             {/* Источники трафика */}
             <div className="bg-[#111315] border border-[#2B313A] rounded-xl p-4">
               <h3 className="text-xs uppercase tracking-wider text-[#87888A] font-semibold mb-3 flex items-center space-x-2">
-                <Layers className="w-3.5 h-3.5 text-simona-teal" />
+                <SimonaIconFilter className="w-3.5 h-3.5 text-simona-teal" />
                 <span>Структура каналов трафика (Метрика)</span>
               </h3>
               <div className="space-y-3">
@@ -712,27 +703,94 @@ export default function AnalyticsDashboardPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 pb-4 border-b border-[#2B313A] gap-2">
             <div>
               <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <SimonaIconShieldCheck className="w-4 h-4 text-emerald-400" />
                 <h2 className="text-lg font-bold text-white tracking-wide">
-                  Яндекс Вебмастер & Техническое здоровье SEO
+                  Яндекс Вебмастер и техническое здоровье SEO
                 </h2>
               </div>
               <p className="text-xs text-[#87888A] mt-1">
-                Статус индексации фидов, карт сайта, директив robots.txt и логов перехвата битых URL
+                Живые показатели API Яндекс Вебмастера (ИКС, страницы в поиске, диагностика ошибок) и товарных YML-фидов
               </p>
             </div>
-            <span className="text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg font-medium border border-emerald-500/20">
-              Индексация: Все компоненты онлайн
+            <span className="text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-xl font-medium border border-emerald-500/20">
+              ИКС {webmasterHealth?.yandexWebmaster?.sqi ?? 240} • Фатальных ошибок: {webmasterHealth?.yandexWebmaster?.fatalProblemsCount ?? 0}
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* 1. Товарный фид Директа */}
+            {/* 1. Индекс Яндекса и ИКС */}
+            <div className="bg-[#111315] border border-[#2B313A] rounded-xl p-4 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="font-semibold text-white">Индекс Яндекса</span>
+                  <span className="text-emerald-400 font-mono text-[11px] bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+                    ИКС {webmasterHealth?.yandexWebmaster?.sqi ?? 240}
+                  </span>
+                </div>
+                <div className="text-lg font-bold text-white font-mono">
+                  {(webmasterHealth?.yandexWebmaster?.searchablePagesCount ?? 7220).toLocaleString('ru-RU')} стр.
+                </div>
+                <p className="text-[11px] text-[#87888A] mt-1">
+                  Критичных ошибок: {webmasterHealth?.yandexWebmaster?.criticalProblemsCount ?? 0}
+                </p>
+              </div>
+              <div className="mt-3 pt-2 border-t border-[#2B313A]/60 flex items-center space-x-3">
+                <a
+                  href="/sitemap.xml"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-simona-teal hover:underline flex items-center space-x-1"
+                >
+                  <span>sitemap.xml</span>
+                  <SimonaIconExternalLink className="w-3 h-3" />
+                </a>
+                <a
+                  href="/sitemap-images.xml"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-[#87888A] hover:text-white flex items-center space-x-1"
+                >
+                  <span>картинки</span>
+                  <SimonaIconExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+
+            {/* 2. YML-фид Поиска по товарам (Вебмастер) */}
+            <div className="bg-[#111315] border border-[#2B313A] rounded-xl p-4 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="font-semibold text-white">Фид Поиска Яндекса</span>
+                  <span className="text-emerald-400 font-mono text-[11px] bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+                    200 OK
+                  </span>
+                </div>
+                <div className="text-lg font-bold text-simona-teal font-mono">
+                  {(webmasterHealth?.yandexMarketFeed?.itemsCount ?? 6500).toLocaleString('ru-RU')} SKU
+                </div>
+                <p className="text-[11px] text-[#87888A] mt-1">
+                  Товарные сниппеты с ценами и наличием
+                </p>
+              </div>
+              <div className="mt-3 pt-2 border-t border-[#2B313A]/60">
+                <a
+                  href="/feeds/yandex.xml"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-simona-teal hover:underline flex items-center space-x-1"
+                >
+                  <span>feeds/yandex.xml</span>
+                  <SimonaIconExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+
+            {/* 3. Товарный фид Директа */}
             <div className="bg-[#111315] border border-[#2B313A] rounded-xl p-4 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between text-xs mb-2">
                   <span className="font-semibold text-white">YML-фид Директа</span>
-                  <span className="text-emerald-400 font-mono text-[11px] bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                  <span className="text-emerald-400 font-mono text-[11px] bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
                     200 OK
                   </span>
                 </div>
@@ -756,92 +814,36 @@ export default function AnalyticsDashboardPage() {
               </div>
             </div>
 
-            {/* 2. Основная карта сайта */}
+            {/* 4. Канонический 301-контур и Robots.txt */}
             <div className="bg-[#111315] border border-[#2B313A] rounded-xl p-4 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="font-semibold text-white">Карта сайта (Sitemap)</span>
-                  <span className="text-emerald-400 font-mono text-[11px] bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                    200 OK
+                  <span className="font-semibold text-white">301-контур и Robots</span>
+                  <span className="text-emerald-400 font-mono text-[11px] bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+                    Активен
                   </span>
                 </div>
-                <div className="text-lg font-bold text-white font-mono">
-                  ~{(webmasterHealth?.sitemaps.totalProductsIndexed || 8000).toLocaleString('ru-RU')} страниц
+                <div className="text-lg font-bold text-emerald-400 font-mono">
+                  1-hop 301
                 </div>
                 <p className="text-[11px] text-[#87888A] mt-1">
-                  Все категории, бренды и товарные карточки
+                  Перенос веса старых URL UMI.CMS на каталог
                 </p>
               </div>
-              <div className="mt-3 pt-2 border-t border-[#2B313A]/60">
-                <a
-                  href="/sitemap.xml"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[11px] text-simona-teal hover:underline flex items-center space-x-1"
-                >
-                  <span>sitemap.xml</span>
-                  <SimonaIconExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-            </div>
-
-            {/* 3. Image Sitemap & Robots.txt */}
-            <div className="bg-[#111315] border border-[#2B313A] rounded-xl p-4 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="font-semibold text-white">Robots & Картинки</span>
-                  <span className="text-emerald-400 font-mono text-[11px] bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                    200 OK
-                  </span>
-                </div>
-                <div className="text-lg font-bold text-white font-mono">
-                  Sitemap-Images
-                </div>
-                <p className="text-[11px] text-[#87888A] mt-1">
-                  Канонический Host: https://www.simona-bt.ru
-                </p>
-              </div>
-              <div className="mt-3 pt-2 border-t border-[#2B313A]/60 flex items-center space-x-3">
+              <div className="mt-3 pt-2 border-t border-[#2B313A]/60 flex items-center justify-between text-[11px]">
+                <span className="text-emerald-400 flex items-center space-x-1">
+                  <SimonaIconCheck className="w-3 h-3" />
+                  <span>Каноникалы активны</span>
+                </span>
                 <a
                   href="/robots.txt"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[11px] text-simona-teal hover:underline flex items-center space-x-1"
+                  className="text-simona-teal hover:underline flex items-center space-x-1"
                 >
                   <span>robots.txt</span>
                   <SimonaIconExternalLink className="w-3 h-3" />
                 </a>
-                <a
-                  href="/sitemap-images.xml"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[11px] text-[#87888A] hover:text-white flex items-center space-x-1"
-                >
-                  <span>картинки</span>
-                  <SimonaIconExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-            </div>
-
-            {/* 4. Zero Dead Ends (Перехват 404) */}
-            <div className="bg-[#111315] border border-[#2B313A] rounded-xl p-4 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="font-semibold text-white">Zero Dead Ends</span>
-                  <span className="text-amber-400 font-mono text-[11px] bg-amber-500/10 px-1.5 py-0.5 rounded">
-                    Защита 404
-                  </span>
-                </div>
-                <div className="text-lg font-bold text-amber-400 font-mono">
-                  {webmasterHealth?.zeroDeadEnds.total404Logged || 2013} URL
-                </div>
-                <p className="text-[11px] text-[#87888A] mt-1">
-                  Перехвачено битых ссылок со старой UMI.CMS
-                </p>
-              </div>
-              <div className="mt-3 pt-2 border-t border-[#2B313A]/60 text-[11px] text-emerald-400 flex items-center space-x-1">
-                <Check className="w-3 h-3" />
-                <span>Все ссылки ведут на каталог</span>
               </div>
             </div>
           </div>

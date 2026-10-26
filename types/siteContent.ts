@@ -152,6 +152,7 @@ export interface SiteContent {
   deliveryPaymentPage: DeliveryPaymentPageContent;
   priceMatchPage: PriceMatchPageContent;
   certificatePage: CertificatePageContent;
+  seoBlocks: SeoBlocksContent;
   footer: {
     brandTagline: string;
     kuhniLinkText: string;
@@ -416,6 +417,19 @@ export interface CertificatePageContent {
     pdfButtonText: string;
     pdfUrl: string;
   };
+}
+
+export interface SeoBlocksContent {
+  categoryBrandsHeading: string;
+  categoryResetBrandText: string;
+  categoryPillarGuaranteeTitle: string;
+  categoryPillarGuaranteeDesc: string;
+  categoryPillarLogisticsTitle: string;
+  categoryPillarLogisticsDesc: string;
+  categoryPillarInstallTitle: string;
+  categoryPillarInstallDesc: string;
+  brandFaqTitle: string;
+  brandCategoriesHeading: string;
 }
 
 
