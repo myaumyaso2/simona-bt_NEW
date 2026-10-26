@@ -131,20 +131,27 @@ export function trackEcommercePurchase(order: {
   });
 }
 
+const KNOWN_TEST_PHONES = [
+  '79535504787', // Внутренний тестовый номер
+];
+
 /**
  * Проверяет, являются ли данные заявки тестовыми:
- * 1. Телефон содержит 7 одинаковых цифр подряд (0000000, 1111111, ..., 9999999);
+ * 1. Телефон содержит 7 одинаковых цифр подряд (0000000..9999999) или входит в KNOWN_TEST_PHONES;
  * 2. Имя, комментарий или другое поле содержит ключевое слово "тест" или "test" (без учета регистра).
  * Достаточно выполнения любого из условий (ИЛИ).
  */
 export function isTestSubmission(data?: Record<string, any>): boolean {
   if (!data) return false;
 
-  // 1. Проверка номера телефона на 7 одинаковых цифр подряд (0000000..9999999)
+  // 1. Проверка номера телефона
   const phoneVal = data.phone || data.customerPhone || data.userPhone;
   if (phoneVal) {
     const digits = String(phoneVal).replace(/\D/g, '');
     if (/(\d)\1{6,}/.test(digits)) {
+      return true;
+    }
+    if (KNOWN_TEST_PHONES.some((p) => digits.endsWith(p.slice(-10)))) {
       return true;
     }
   }

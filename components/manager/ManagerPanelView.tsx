@@ -1040,13 +1040,13 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
                   return (
                     <div
                       key={lead.id}
-                      className={`p-5 rounded-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-left transition ${
+                      className={`p-5 rounded-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-left transition overflow-hidden ${
                         isTestLead
                           ? 'bg-[#141618] border border-zinc-800/80 opacity-70'
                           : 'bg-[#16191D] border border-[#2B313A]'
                       }`}
                     >
-                      <div className="space-y-2 flex-1">
+                      <div className="space-y-2 flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="px-2.5 py-0.5 rounded-md bg-simona-teal/15 border border-simona-teal/30 text-simona-teal text-xs font-semibold">
                             {LEAD_TYPE_MAP[lead.type] || lead.type}
@@ -1081,11 +1081,11 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
                             </span>
                           )}
                           {lead.productName && <span>Прибор: {lead.productName}</span>}
-                          {lead.portfolioUrl && <span>Ссылка: {lead.portfolioUrl}</span>}
+                          {lead.portfolioUrl && <span className="break-all">Ссылка: {lead.portfolioUrl}</span>}
                         </div>
 
                         {lead.comment && (
-                          <div className="p-3 rounded-xl bg-[#1E2228] border border-[#2B313A] text-xs text-[#D7D9DB]">
+                          <div className="p-3 rounded-xl bg-[#1E2228] border border-[#2B313A] text-xs text-[#D7D9DB] break-all whitespace-pre-wrap">
                             {lead.comment}
                           </div>
                         )}
