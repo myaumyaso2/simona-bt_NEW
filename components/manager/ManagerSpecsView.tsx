@@ -37,12 +37,14 @@ export function ManagerSpecsView() {
   const [loading, setLoading] = useState(true);
   const [tree, setTree] = useState<SpecGlobalCategoryNode[]>([]);
   const [totalCatalogCount, setTotalCatalogCount] = useState(0);
+  const [needFillTotal, setNeedFillTotal] = useState(0);
+  const [filledSpecsTotal, setFilledSpecsTotal] = useState(0);
   const [missingSpecsTotal, setMissingSpecsTotal] = useState(0);
   const [incompleteSpecsTotal, setIncompleteSpecsTotal] = useState(0);
   const [filteredCount, setFilteredCount] = useState(0);
 
-  // Filters
-  const [filterMode, setFilterMode] = useState<'missing' | 'incomplete' | 'all'>('missing');
+  // Filters: 2 tabs ("Заполнить" vs "Заполненные")
+  const [filterMode, setFilterMode] = useState<'need_fill' | 'filled'>('need_fill');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Accordion expanded state maps
@@ -105,6 +107,17 @@ export function ManagerSpecsView() {
 
       setTree(data.tree || []);
       setTotalCatalogCount(data.totalCatalogCount || 0);
+      setNeedFillTotal(
+        data.needFillTotal ?? (data.missingSpecsTotal || 0) + (data.incompleteSpecsTotal || 0)
+      );
+      setFilledSpecsTotal(
+        data.filledSpecsTotal ??
+          Math.max(
+            0,
+            (data.totalCatalogCount || 0) -
+              ((data.missingSpecsTotal || 0) + (data.incompleteSpecsTotal || 0))
+          )
+      );
       setMissingSpecsTotal(data.missingSpecsTotal || 0);
       setIncompleteSpecsTotal(data.incompleteSpecsTotal || 0);
       setFilteredCount(data.filteredCount || 0);
@@ -430,7 +443,7 @@ export function ManagerSpecsView() {
                   Характеристики товаров
                 </h1>
                 <p className="text-xs text-zinc-400">
-                  Эталонные шаблоны спецификаций, выгрузка Excel по подкатегориям и AI-обогащение новинок
+                  Эталонные шаблоны спецификаций и выгрузка Excel по подкатегориям
                 </p>
               </div>
             </div>
@@ -442,10 +455,11 @@ export function ManagerSpecsView() {
               </span>
               <span className="px-3 py-1.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                Без характеристик: <strong className="text-amber-200 ml-1">{missingSpecsTotal}</strong>
+                Требуют заполнения: <strong className="text-amber-200 ml-1">{needFillTotal}</strong>
               </span>
-              <span className="px-3 py-1.5 rounded-md bg-sky-500/10 border border-sky-500/30 text-sky-300">
-                Неполные (&lt; 4 полей): <strong className="text-sky-200 ml-1">{incompleteSpecsTotal}</strong>
+              <span className="px-3 py-1.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center gap-1.5">
+                <SimonaIconCheck className="w-3.5 h-3.5 text-emerald-400" />
+                Заполнены: <strong className="text-emerald-200 ml-1">{filledSpecsTotal}</strong>
               </span>
             </div>
           </div>
@@ -471,37 +485,27 @@ export function ManagerSpecsView() {
 
         {/* Toolbar: Filter switcher and Search */}
         <div className="mt-6 pt-5 border-t border-[#2B313A] flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-          {/* 3 Filter Tabs */}
+          {/* 2 Filter Tabs: Заполнить vs Заполненные */}
           <div className="flex items-center gap-1.5 bg-[#111315] p-1 rounded-xl border border-[#2B313A]">
             <button
-              onClick={() => setFilterMode('missing')}
+              onClick={() => setFilterMode('need_fill')}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                filterMode === 'missing'
-                  ? 'bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm'
+                filterMode === 'need_fill'
+                  ? 'bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm font-semibold'
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              Без характеристик ({missingSpecsTotal})
+              Заполнить ({needFillTotal})
             </button>
             <button
-              onClick={() => setFilterMode('incomplete')}
+              onClick={() => setFilterMode('filled')}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                filterMode === 'incomplete'
-                  ? 'bg-sky-500/20 text-sky-200 border border-sky-500/40 shadow-sm'
+                filterMode === 'filled'
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm font-semibold'
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              Неполные ({incompleteSpecsTotal})
-            </button>
-            <button
-              onClick={() => setFilterMode('all')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                filterMode === 'all'
-                  ? 'bg-simona-teal/20 text-simona-teal border border-simona-teal/40 shadow-sm'
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
-            >
-              Все товары ({totalCatalogCount})
+              Заполненные ({filledSpecsTotal})
             </button>
           </div>
 
@@ -536,11 +540,11 @@ export function ManagerSpecsView() {
       ) : tree.length === 0 ? (
         <div className="bg-[#16191D] border border-[#2B313A] rounded-xl p-12 text-center">
           <SimonaIconCheckCircle className="w-12 h-12 text-emerald-400/50 mx-auto mb-3" />
-          <h3 className="text-base font-semibold text-white">Все характеристики заполнены!</h3>
+          <h3 className="text-base font-semibold text-white">Все приборы обработаны!</h3>
           <p className="text-xs text-zinc-400 mt-1">
-            {filterMode === 'missing'
-              ? 'В каталоге нет активных товаров с нулевым количеством характеристик.'
-              : 'По выбранным критериям фильтрации товары не найдены.'}
+            {filterMode === 'need_fill'
+              ? 'В каталоге нет активных товаров с неполными характеристиками. Все товары полностью заполнены!'
+              : 'По выбранным критериям товары не найдены.'}
           </p>
         </div>
       ) : (
@@ -580,9 +584,9 @@ export function ManagerSpecsView() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {globalNode.missingCount > 0 && (
+                    {filterMode === 'need_fill' && (globalNode.needFillCount ?? globalNode.missingCount) > 0 && (
                       <span className="px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-medium">
-                        {globalNode.missingCount} без хар-к
+                        {globalNode.needFillCount ?? globalNode.missingCount} к заполнению
                       </span>
                     )}
                     <span className="px-2.5 py-0.5 rounded-md bg-[#111315] border border-[#2B313A] text-zinc-300 text-xs font-medium">
@@ -628,9 +632,9 @@ export function ManagerSpecsView() {
 
                             {/* Subcategory Excel buttons */}
                             <div className="flex items-center gap-2">
-                              {subNode.missingCount > 0 && (
+                              {filterMode === 'need_fill' && (subNode.needFillCount ?? subNode.missingCount) > 0 && (
                                 <span className="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 text-[11px] font-medium border border-amber-500/30">
-                                  {subNode.missingCount} новых
+                                  {subNode.needFillCount ?? subNode.missingCount} к заполнению
                                 </span>
                               )}
                               <button
@@ -691,9 +695,9 @@ export function ManagerSpecsView() {
                                       </div>
 
                                       <div className="flex items-center gap-2 text-xs">
-                                        {brandNode.missingCount > 0 && (
+                                        {filterMode === 'need_fill' && (brandNode.needFillCount ?? brandNode.missingCount) > 0 && (
                                           <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 text-[10px] font-medium border border-amber-500/20">
-                                            {brandNode.missingCount} без хар-к
+                                            {brandNode.needFillCount ?? brandNode.missingCount} к заполнению
                                           </span>
                                         )}
                                       </div>
@@ -831,39 +835,41 @@ export function ManagerSpecsView() {
 
             {/* Drawer Body */}
             <div className="p-6 space-y-6 grow">
-              {/* AI Auto-Enrichment Banner */}
-              <div className="p-4 rounded-xl bg-simona-teal/10 border border-simona-teal/30 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-simona-teal/20 flex items-center justify-center text-simona-teal shrink-0">
-                    <SimonaIconSparkles className="w-4 h-4" />
+              {/* AI Auto-Enrichment Banner - скрыт по запросу менеджера (сохранен для быстрого включения) */}
+              {false && (
+                <div className="p-4 rounded-xl bg-simona-teal/10 border border-simona-teal/30 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-simona-teal/20 flex items-center justify-center text-simona-teal shrink-0">
+                      <SimonaIconSparkles className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-white">AI-автозаполнение по модели</h4>
+                      <p className="text-[11px] text-zinc-400">
+                        Подобрать характеристики по артикулу и каноническому шаблону {editingProduct?.subcategory}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white">AI-автозаполнение по модели</h4>
-                    <p className="text-[11px] text-zinc-400">
-                      Подобрать характеристики по артикулу и каноническому шаблону {editingProduct.subcategory}
-                    </p>
-                  </div>
-                </div>
 
-                <button
-                  type="button"
-                  disabled={isAiEnriching}
-                  onClick={handleAiEnrich}
-                  className="px-3.5 py-1.5 rounded-xl bg-simona-teal hover:bg-simona-teal/90 text-white text-xs font-semibold tracking-wide transition-all shrink-0 flex items-center gap-1.5 disabled:opacity-50"
-                >
-                  {isAiEnriching ? (
-                    <>
-                      <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Поиск...</span>
-                    </>
-                  ) : (
-                    <>
-                      <SimonaIconSparkles className="w-3.5 h-3.5" />
-                      <span>Заполнить через AI</span>
-                    </>
-                  )}
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    disabled={isAiEnriching}
+                    onClick={handleAiEnrich}
+                    className="px-3.5 py-1.5 rounded-xl bg-simona-teal hover:bg-simona-teal/90 text-white text-xs font-semibold tracking-wide transition-all shrink-0 flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    {isAiEnriching ? (
+                      <>
+                        <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Поиск...</span>
+                      </>
+                    ) : (
+                      <>
+                        <SimonaIconSparkles className="w-3.5 h-3.5" />
+                        <span>Заполнить через AI</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
 
               {/* Description & Schematic Inputs */}
               <div className="space-y-4 bg-[#111315] p-4 rounded-xl border border-[#2B313A]">

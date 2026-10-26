@@ -39,6 +39,8 @@ export interface ProductSpecNodeItem {
 export interface SpecBrandNode {
   brand: string;
   count: number;
+  needFillCount: number;
+  filledCount: number;
   missingCount: number;
   incompleteCount: number;
   products: ProductSpecNodeItem[];
@@ -47,6 +49,8 @@ export interface SpecBrandNode {
 export interface SpecSubcategoryNode {
   subcategory: string;
   count: number;
+  needFillCount: number;
+  filledCount: number;
   missingCount: number;
   incompleteCount: number;
   brands: SpecBrandNode[];
@@ -55,6 +59,8 @@ export interface SpecSubcategoryNode {
 export interface SpecGlobalCategoryNode {
   globalCategory: string;
   count: number;
+  needFillCount: number;
+  filledCount: number;
   missingCount: number;
   incompleteCount: number;
   subcategories: SpecSubcategoryNode[];
@@ -68,7 +74,12 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('q')?.trim().toLowerCase() || '';
-    const filter = (searchParams.get('filter') || 'missing') as 'missing' | 'incomplete' | 'all';
+    const filter = (searchParams.get('filter') || 'need_fill') as
+      | 'need_fill'
+      | 'filled'
+      | 'missing'
+      | 'incomplete'
+      | 'all';
     const subcategoryParam = searchParams.get('subcategory')?.trim() || '';
 
     // Fetch all active products
@@ -164,13 +175,16 @@ export async function GET(req: NextRequest) {
       };
     });
 
+    const needFillTotal = missingSpecsTotal + incompleteSpecsTotal;
+    const filledSpecsTotal = totalCatalogCount - needFillTotal;
+
     // Filter items according to requested filter mode
     let filtered = enrichedItems;
 
-    if (filter === 'missing') {
-      filtered = filtered.filter((p) => p.featureCount === 0);
-    } else if (filter === 'incomplete') {
-      filtered = filtered.filter((p) => p.featureCount > 0 && p.featureCount < 4);
+    if (filter === 'need_fill' || filter === 'missing' || filter === 'incomplete') {
+      filtered = filtered.filter((p) => p.featureCount < 4);
+    } else if (filter === 'filled') {
+      filtered = filtered.filter((p) => p.featureCount >= 4);
     }
 
     if (subcategoryParam) {
@@ -198,6 +212,8 @@ export async function GET(req: NextRequest) {
         globalMap.set(p.globalCategory, {
           globalCategory: p.globalCategory,
           count: 0,
+          needFillCount: 0,
+          filledCount: 0,
           missingCount: 0,
           incompleteCount: 0,
           subcategories: [],
@@ -205,14 +221,21 @@ export async function GET(req: NextRequest) {
       }
       const gNode = globalMap.get(p.globalCategory)!;
       gNode.count++;
-      if (p.featureCount === 0) gNode.missingCount++;
-      else if (p.featureCount < 4) gNode.incompleteCount++;
+      if (p.featureCount < 4) {
+        gNode.needFillCount++;
+        if (p.featureCount === 0) gNode.missingCount++;
+        else gNode.incompleteCount++;
+      } else {
+        gNode.filledCount++;
+      }
 
       let subNode = gNode.subcategories.find((s) => s.subcategory === p.subcategory);
       if (!subNode) {
         subNode = {
           subcategory: p.subcategory,
           count: 0,
+          needFillCount: 0,
+          filledCount: 0,
           missingCount: 0,
           incompleteCount: 0,
           brands: [],
@@ -220,14 +243,21 @@ export async function GET(req: NextRequest) {
         gNode.subcategories.push(subNode);
       }
       subNode.count++;
-      if (p.featureCount === 0) subNode.missingCount++;
-      else if (p.featureCount < 4) subNode.incompleteCount++;
+      if (p.featureCount < 4) {
+        subNode.needFillCount++;
+        if (p.featureCount === 0) subNode.missingCount++;
+        else subNode.incompleteCount++;
+      } else {
+        subNode.filledCount++;
+      }
 
       let brandNode = subNode.brands.find((b) => b.brand.toLowerCase() === p.brand.toLowerCase());
       if (!brandNode) {
         brandNode = {
           brand: p.brand,
           count: 0,
+          needFillCount: 0,
+          filledCount: 0,
           missingCount: 0,
           incompleteCount: 0,
           products: [],
@@ -235,8 +265,13 @@ export async function GET(req: NextRequest) {
         subNode.brands.push(brandNode);
       }
       brandNode.count++;
-      if (p.featureCount === 0) brandNode.missingCount++;
-      else if (p.featureCount < 4) brandNode.incompleteCount++;
+      if (p.featureCount < 4) {
+        brandNode.needFillCount++;
+        if (p.featureCount === 0) brandNode.missingCount++;
+        else brandNode.incompleteCount++;
+      } else {
+        brandNode.filledCount++;
+      }
 
       brandNode.products.push(p);
     }
@@ -256,6 +291,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       success: true,
       totalCatalogCount,
+      needFillTotal,
+      filledSpecsTotal,
       missingSpecsTotal,
       incompleteSpecsTotal,
       filteredCount: filtered.length,
