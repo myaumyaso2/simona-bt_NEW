@@ -2,7 +2,7 @@ import React from 'react';
 
 export interface BreadcrumbItem {
   name: string;
-  url: string;
+  url?: string;
 }
 
 interface SchemaOrgBreadcrumbsProps {
@@ -17,12 +17,24 @@ export function SchemaOrgBreadcrumbs({
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: item.name,
-      item: item.url.startsWith('http') ? item.url : `${siteUrl}${item.url}`,
-    })),
+    itemListElement: items.map((item, index) => {
+      const entry: {
+        '@type': string;
+        position: number;
+        name: string;
+        item?: string;
+      } = {
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item.name,
+      };
+
+      if (item.url) {
+        entry.item = item.url.startsWith('http') ? item.url : `${siteUrl}${item.url}`;
+      }
+
+      return entry;
+    }),
   };
 
   return (

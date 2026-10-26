@@ -38,6 +38,7 @@ export function BrandShowcaseHero({
   return (
     <>
       <Breadcrumbs
+        skipJsonLd
         items={[
           { name: 'Бренды', url: '/brands' },
           { name: brand.name },

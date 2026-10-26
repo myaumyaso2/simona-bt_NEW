@@ -12,13 +12,6 @@ export function SchemaOrgStore() {
         telephone: '+78312118242',
         priceRange: '₽₽₽₽',
         image: 'https://www.simona-bt.ru/images/showroom_belinskogo_15.jpg',
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: '4.9',
-          reviewCount: '184',
-          bestRating: '5',
-          worstRating: '1',
-        },
         address: {
           '@type': 'PostalAddress',
           streetAddress: 'ул. Белинского, 15',
@@ -47,13 +40,6 @@ export function SchemaOrgStore() {
         url: 'https://www.simona-bt.ru',
         telephone: '+78312118242',
         priceRange: '₽₽₽₽',
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: '4.9',
-          reviewCount: '184',
-          bestRating: '5',
-          worstRating: '1',
-        },
         address: {
           '@type': 'PostalAddress',
           streetAddress: 'ул. Белинского, 11/66',

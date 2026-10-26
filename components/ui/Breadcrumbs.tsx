@@ -14,6 +14,7 @@ export interface BreadcrumbsProps {
   items: BreadcrumbItem[];
   rightContent?: React.ReactNode;
   className?: string;
+  skipJsonLd?: boolean;
 }
 
 /**
@@ -21,22 +22,22 @@ export interface BreadcrumbsProps {
  * Сквозная навигационная полоса-бар с микроразметкой Schema.org BreadcrumbList,
  * плавной адаптивностью и усечением длинных заголовков моделей.
  */
-export function Breadcrumbs({ items, rightContent, className = '' }: BreadcrumbsProps) {
+export function Breadcrumbs({ items, rightContent, className = '', skipJsonLd = false }: BreadcrumbsProps) {
   // Ensure "Главная" is always the first item in the breadcrumbs chain
   const normalizedItems: BreadcrumbItem[] =
     items.length > 0 && items[0].url === '/'
       ? items
       : [{ name: 'Главная', url: '/' }, ...items];
 
-  // Prepare items for Schema.org JSON-LD
+  // Prepare items for Schema.org JSON-LD (preserve optional url for leaf item)
   const schemaItems = normalizedItems.map((item) => ({
     name: item.name,
-    url: item.url || '/',
+    url: item.url,
   }));
 
   return (
     <>
-      <SchemaOrgBreadcrumbs items={schemaItems} />
+      {!skipJsonLd && <SchemaOrgBreadcrumbs items={schemaItems} />}
       <div className={`w-full border-b border-[#2B313A] bg-[#16191D]/60 backdrop-blur-md ${className}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
           <nav

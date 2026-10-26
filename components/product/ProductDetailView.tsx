@@ -42,6 +42,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
       <div>
         {/* 1. Breadcrumbs Bar with Category Return Link */}
         <Breadcrumbs
+          skipJsonLd
           items={[
             { name: 'Каталог', url: '/catalog' },
             { name: product.category, url: `/catalog/${categorySlug}` },

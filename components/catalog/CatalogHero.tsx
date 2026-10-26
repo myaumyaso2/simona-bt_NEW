@@ -76,6 +76,7 @@ export function CatalogHero({
   return (
     <>
       <Breadcrumbs
+        skipJsonLd
         items={[
           { name: 'Каталог', url: '/catalog' },
           { name: categoryTitle },
