@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { isAuthorized } from '@/lib/adminAuth';
 import { getDirectCampaignReports } from '@/lib/integrations/direct/reports';
+import { getMetrikaTrafficStats } from '@/lib/integrations/metrika/traffic';
+import { getWebmasterHealthStats } from '@/lib/integrations/seo/webmasterHealth';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,8 +58,12 @@ export async function GET(req: NextRequest) {
       where: dateFilter,
     });
 
-    // 4. Fetch Yandex Direct campaign reports (API or calibrated model)
-    const directStats = await getDirectCampaignReports(days);
+    // 4. Fetch Direct stats, Metrika traffic stats, and Webmaster health in parallel
+    const [directStats, trafficStats, webmasterHealth] = await Promise.all([
+      getDirectCampaignReports(days),
+      getMetrikaTrafficStats(days),
+      getWebmasterHealthStats(),
+    ]);
 
     const totalOrders = orders.length;
     let totalRevenue = 0;
@@ -153,11 +159,16 @@ export async function GET(req: NextRequest) {
             ? ((paidOrdersCount / (totalOrders + leadsCount)) * 100).toFixed(1)
             : '0.0',
         directSpend: directStats.totalCostRub,
+        costWithVat: directStats.costWithVatRub,
+        balanceRub: directStats.balanceRub,
+        initialDeposit: directStats.initialDepositRub,
         directPaidRevenue,
         directPaidCount,
         drrPercent,
       },
       directStats,
+      trafficStats,
+      webmasterHealth,
       utmStats,
       statusStats,
       recentOrders: orders.slice(0, 30),

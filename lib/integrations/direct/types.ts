@@ -7,17 +7,23 @@ export interface DirectCampaignStat {
   cpc: number;
   ctr: number;
   conversions: number;
+  status?: string;
+  region?: string;
+  feedInfo?: string;
 }
 
 export interface DirectReportSummary {
   periodDays: number;
   totalCostRub: number;
+  costWithVatRub: number;
+  balanceRub: number;
+  initialDepositRub: number;
   totalClicks: number;
   totalImpressions: number;
   avgCpc: number;
   avgCtr: number;
   campaigns: DirectCampaignStat[];
-  source: 'api' | 'mock' | 'cache';
+  source: 'api' | 'metrika_direct' | 'mock' | 'cache';
 }
 
 export interface DirectApiConfig {
