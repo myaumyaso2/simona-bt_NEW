@@ -22,30 +22,58 @@ export default function robots(): MetadataRoute.Robots {
     };
   }
 
+  // Common protected system / utility paths to disallow for all crawlers
+  const privateDisallows = [
+    '/manager',
+    '/profile',
+    '/checkout',
+    '/compare',
+    '/analytics',
+    '/api/',
+    '/admin',
+    '/emarket/',
+    '/udata/',
+    '/upage/',
+    '/users/',
+  ];
+
   // 2. Production domain (simona-bt.ru / www.simona-bt.ru)
   return {
-    rules: {
-      userAgent: '*',
-      allow: [
-        '/',
-        '/feeds/',
-        '/api/feeds/',
-        '/api/og',
-      ],
-      disallow: [
-        '/manager',
-        '/profile',
-        '/checkout',
-        '/compare',
-        '/analytics',
-        '/api/',
-        '/admin',
-        '/emarket/',
-        '/udata/',
-        '/upage/',
-        '/users/',
-      ],
-    },
+    rules: [
+      // Specialized Generative AI search crawlers (Gemini, Alice, ChatGPT, Claude, Perplexity)
+      {
+        userAgent: [
+          'YandexAdditional',
+          'Google-Extended',
+          'GPTBot',
+          'OAI-SearchBot',
+          'ClaudeBot',
+          'PerplexityBot',
+          'Applebot-Extended',
+        ],
+        allow: [
+          '/',
+          '/catalog',
+          '/brands',
+          '/promos',
+          '/feeds/',
+          '/api/feeds/',
+          '/api/og',
+        ],
+        disallow: privateDisallows,
+      },
+      // General search engines (YandexBot, Googlebot, Bingbot, etc.)
+      {
+        userAgent: '*',
+        allow: [
+          '/',
+          '/feeds/',
+          '/api/feeds/',
+          '/api/og',
+        ],
+        disallow: privateDisallows,
+      },
+    ],
     sitemap: [
       'https://www.simona-bt.ru/sitemap.xml',
       'https://www.simona-bt.ru/sitemap-images.xml',

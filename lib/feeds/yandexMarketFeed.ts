@@ -28,6 +28,47 @@ function normalizeFeedImageUrl(rawImg: string, siteUrl: string): string {
   return `${siteUrl}${canonicalHost.startsWith('/') ? '' : '/'}${canonicalHost}`.replace(/ /g, '%20');
 }
 
+/**
+ * High-value technical parameter labels prioritized by Yandex/Alice and Gemini shopping AI
+ */
+const GEO_TECHNICAL_PARAM_LABELS = new Set([
+  'Страна производства',
+  'Гарантия',
+  'Максимальный уровень шума (дБ)',
+  'Класс энергопотребления',
+  'Управление',
+  'Материал',
+  'Материал панели',
+  'Материал корпуса',
+  'Потребляемая мощность (Вт)',
+  'Количество скоростей',
+  'Режимы работы',
+  'Режимов нагрева',
+  'Максимальная производительность (м³/ч)',
+  'Количество чаш',
+  'Отверстие под смеситель',
+  'Всего конфорок',
+  'Гриль',
+  'Конвекция',
+  'Таймер',
+  'Очистка',
+  'Объем (л)',
+  'Общий объем',
+  'Ширина (см)',
+  'Высота (см)',
+  'Глубина (см)',
+  'Количество компрессоров',
+  'Морозильная камера',
+  'Защита от протечек',
+  'Луч на полу',
+  'Инверторный двигатель',
+  'Переключатели',
+  'Чугунные решетки',
+  'Электроподжиг',
+  'Газ-контроль конфорок',
+  'Возможность перенавески двери',
+]);
+
 export async function buildYandexMarketXmlResponse(): Promise<NextResponse> {
   try {
     const products = await prisma.product.findMany({
@@ -75,6 +116,12 @@ export async function buildYandexMarketXmlResponse(): Promise<NextResponse> {
     });
 
     chunks.push(`    </categories>`);
+    chunks.push(`    <delivery-options>`);
+    chunks.push(`      <option cost="0" days="1-2" order-before="18"/>`);
+    chunks.push(`    </delivery-options>`);
+    chunks.push(`    <pickup-options>`);
+    chunks.push(`      <option cost="0" days="1"/>`);
+    chunks.push(`    </pickup-options>`);
     chunks.push(`    <offers>`);
 
     const usedOfferIds = new Set<string>();
@@ -178,6 +225,36 @@ export async function buildYandexMarketXmlResponse(): Promise<NextResponse> {
               : 'Под заказ'
         }</param>`
       );
+
+      // Deep technical parameters extraction for AI Shopping Graph (Alice / YandexGPT / Gemini)
+      const addedParamLabels = new Set<string>(['Код товара', 'Цвет', 'Габариты', 'Наличие в Нижнем Новгороде']);
+      try {
+        const parsedFeat = JSON.parse(p.featuresJson || '[]');
+        if (Array.isArray(parsedFeat)) {
+          let extraCount = 0;
+          for (const item of parsedFeat) {
+            if (
+              item &&
+              typeof item.label === 'string' &&
+              typeof item.value === 'string' &&
+              item.label.trim() &&
+              item.value.trim()
+            ) {
+              const label = item.label.trim();
+              const val = item.value.trim();
+              if (GEO_TECHNICAL_PARAM_LABELS.has(label) && !addedParamLabels.has(label)) {
+                addedParamLabels.add(label);
+                chunks.push(`        <param name="${escapeXml(label)}">${escapeXml(val)}</param>`);
+                extraCount++;
+                if (extraCount >= 15) break; // Limit to 15 top technical specs per item to optimize XML size
+              }
+            }
+          }
+        }
+      } catch {
+        // Safe fallback if JSON parse fails
+      }
+
       chunks.push(`      </offer>`);
     });
 
