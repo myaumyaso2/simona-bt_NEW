@@ -430,6 +430,12 @@ export interface SeoBlocksContent {
   categoryPillarInstallDesc: string;
   brandFaqTitle: string;
   brandCategoriesHeading: string;
+  expertGuideHeading: string;
+  expertGuideSubtitle: string;
+  expertTechTableTitle: string;
+  expertMistakesTitle: string;
+  expertSegmentsTitle: string;
+  expertFaqTitle: string;
 }
 
 

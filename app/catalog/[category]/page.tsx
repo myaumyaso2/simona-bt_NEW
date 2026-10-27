@@ -15,6 +15,7 @@ import {
 import { SchemaOrgBreadcrumbs } from '@/components/seo/SchemaOrgBreadcrumbs';
 import { SchemaOrgItemList } from '@/components/seo/SchemaOrgItemList';
 import { CategorySeoBlock, CategoryBrandLinkItem } from '@/components/catalog/CategorySeoBlock';
+import { CategoryExpertGuide } from '@/components/catalog/CategoryExpertGuide';
 import { formatBrandName } from '@/lib/formatters';
 import { resolveBrandEntry, getBrandDbVariants } from '@/lib/catalog/brandsRegistry';
 
@@ -506,6 +507,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           initialPage={pageNum}
         />
       </Suspense>
+      <CategoryExpertGuide
+        categorySlug={category.slug}
+        categoryTitle={category.title}
+        brand={brandDisplay}
+      />
       <CategorySeoBlock
         categoryTitle={category.title}
         categorySlug={category.slug}
