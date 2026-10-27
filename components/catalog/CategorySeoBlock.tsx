@@ -10,6 +10,14 @@ export interface CategoryBrandLinkItem {
   isActive?: boolean;
 }
 
+export interface CategoryFacetLinkItem {
+  shortTitle: string;
+  facetSlug: string;
+  count?: number;
+  href: string;
+  isActive?: boolean;
+}
+
 interface CategorySeoBlockProps {
   categoryTitle: string;
   categorySlug?: string;
@@ -20,6 +28,7 @@ interface CategorySeoBlockProps {
   showroomCount?: number;
   minPrice?: number;
   brandLinks?: CategoryBrandLinkItem[];
+  facetLinks?: CategoryFacetLinkItem[];
 }
 
 export function CategorySeoBlock({
@@ -32,6 +41,7 @@ export function CategorySeoBlock({
   showroomCount = 0,
   minPrice = 0,
   brandLinks = [],
+  facetLinks = [],
 }: CategorySeoBlockProps) {
   const { seoBlocks } = getSiteContent();
 
@@ -74,7 +84,42 @@ export function CategorySeoBlock({
             </p>
           </div>
 
-          {/* 2. Internal Linking Hub: Category + Brand Landing Pages */}
+          {/* 2. Programmatic Long-Tail Facet Chips */}
+          {facetLinks.length > 0 && (
+            <div className="pt-5 border-t border-[#2B313A]/50 text-left">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <h3 className="text-xs sm:text-sm font-semibold text-white font-montserrat">
+                  {seoBlocks.categoryFacetsHeading}
+                </h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {facetLinks.map((facet) => (
+                  <Link
+                    key={facet.facetSlug}
+                    href={facet.href}
+                    className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-medium transition ${
+                      facet.isActive
+                        ? 'bg-simona-teal text-white border border-simona-teal shadow-sm'
+                        : 'bg-[#16191D] text-[#D7D9DB] border border-[#2B313A] hover:border-simona-teal/60 hover:text-white'
+                    }`}
+                  >
+                    <span>{facet.shortTitle}</span>
+                    {typeof facet.count === 'number' && (
+                      <span
+                        className={`text-[11px] font-mono ${
+                          facet.isActive ? 'text-white/90' : 'text-[#87888A]'
+                        }`}
+                      >
+                        {facet.count}
+                      </span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 3. Internal Linking Hub: Category + Brand Landing Pages */}
           {brandLinks.length > 0 && (
             <div className="pt-5 border-t border-[#2B313A]/50 text-left">
               <div className="flex flex-wrap items-center justify-between gap-2 mb-3">

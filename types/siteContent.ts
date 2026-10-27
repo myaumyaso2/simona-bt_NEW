@@ -420,6 +420,7 @@ export interface CertificatePageContent {
 }
 
 export interface SeoBlocksContent {
+  categoryFacetsHeading: string;
   categoryBrandsHeading: string;
   categoryResetBrandText: string;
   categoryPillarGuaranteeTitle: string;

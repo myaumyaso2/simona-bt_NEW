@@ -16,6 +16,7 @@ import { SchemaOrgBreadcrumbs } from '@/components/seo/SchemaOrgBreadcrumbs';
 import { SchemaOrgItemList } from '@/components/seo/SchemaOrgItemList';
 import { CategorySeoBlock, CategoryBrandLinkItem } from '@/components/catalog/CategorySeoBlock';
 import { CategoryExpertGuide } from '@/components/catalog/CategoryExpertGuide';
+import { getFacetsByCategory } from '@/data/catalogFacets';
 import { formatBrandName } from '@/lib/formatters';
 import { resolveBrandEntry, getBrandDbVariants } from '@/lib/catalog/brandsRegistry';
 
@@ -488,6 +489,17 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     : products;
   const pageSlice = scopedProducts.slice((pageNum - 1) * PAGE_SIZE, pageNum * PAGE_SIZE);
   const seoMetrics = computeCategorySeoMetrics(products, scopedProducts, category.slug, activeBrandUpper);
+  const facetLinks = getFacetsByCategory(category.slug)
+    .map((f) => {
+      const matchCount = products.filter((p: ProductItem) => f.filter(p)).length;
+      return {
+        shortTitle: f.shortTitle,
+        facetSlug: f.facetSlug,
+        count: matchCount,
+        href: `/catalog/${category.slug}/${f.facetSlug}`,
+      };
+    })
+    .filter((f) => f.count >= 3);
 
   return (
     <>
@@ -517,6 +529,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         categorySlug={category.slug}
         categoryDescription={category.heroSubtitle}
         brand={brandDisplay}
+        facetLinks={facetLinks}
         {...seoMetrics}
       />
     </>

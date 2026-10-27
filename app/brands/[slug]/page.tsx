@@ -235,6 +235,21 @@ export default async function BrandDetailPage({ params, searchParams }: BrandPag
     name: brandTitleFormatted,
     description: brandInfo.heroText,
     url: `${siteUrl}/brands/${canonicalSlug}`,
+    subjectOf: {
+      '@type': 'LocalBusiness',
+      '@id': 'https://www.simona-bt.ru/#organization',
+      name: 'Сеть салонов бытовой техники «СИМОНА»',
+      url: 'https://www.simona-bt.ru',
+      telephone: '+78314237600',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'ул. Белинского, 15',
+        addressLocality: 'Нижний Новгород',
+        postalCode: '603000',
+        addressCountry: 'RU',
+      },
+      description: `Авторизованный партнер бренда ${brandTitleFormatted} в Нижнем Новгороде. Экспозиция приборов в салонах на ул. Белинского 15 и 11/66, подбор комплекта под проект кухни, собственный склад (~8000 SKU) и сервисная установка.`,
+    },
   };
 
   const faqJsonLd = {

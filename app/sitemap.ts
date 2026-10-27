@@ -6,6 +6,7 @@ import {
   CATALOG_MACRO_SECTIONS,
   getCategoryByDbName,
 } from '@/data/catalogCategories';
+import { CATALOG_FACETS } from '@/data/catalogFacets';
 import { brandNameToSlug, resolveBrandEntry } from '@/lib/catalog/brandsRegistry';
 
 export const dynamic = 'force-dynamic';
@@ -64,6 +65,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: 'daily',
     priority: 0.9,
+  }));
+
+  // 3.5. Programmatic Facets for AI and Voice Long-Tail Queries
+  const programmaticFacetRoutes: MetadataRoute.Sitemap = CATALOG_FACETS.map((facet) => ({
+    url: `${siteUrl}/catalog/${facet.categorySlug}/${facet.facetSlug}`,
+    lastModified: now,
+    changeFrequency: 'daily',
+    priority: 0.88,
   }));
 
   // 4. Active Manufacturer Promos
@@ -151,6 +160,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticRoutes,
     ...macroSectionRoutes,
     ...categoryRoutes,
+    ...programmaticFacetRoutes,
     ...brandRoutes,
     ...categoryBrandRoutes,
     ...promoRoutes,
