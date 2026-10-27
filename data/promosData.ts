@@ -607,6 +607,59 @@ export const MANUFACTURER_PROMOS: ManufacturerPromo[] = [
     participatingSkus: ["88149", "88150", "88151", "88152", "89687", "84908", "86810", "86809", "90148", "84891", "89688", "86805", "85827", "89051", "89052", "84923", "88145", "88143", "84903", "84900", "84905", "84904", "89053", "89054", "89055", "89056", "89057", "89058", "85835", "85833", "85834", "89060", "84888", "85832", "89062", "85831", "85830", "89059", "89064", "84889", "89061", "89063", "84887", "84886", "89065", "89066", "89067", "89068", "84899", "85829", "84896", "84897", "86807", "89690", "89689", "89692", "85836", "89691", "88502", "88504", "84920", "84894", "84895", "84893", "84892", "84910", "84909", "84911", "84912", "86804", "86803", "88505", "88506", "84914", "84913", "84916", "91657", "91655", "89071", "89279"],
     participatingProductSlugs: ["vard-vcpa1c", "vard-vcpa1v", "vard-vcpa1a", "vard-vcpa1o", "vard-vcc-6k", "vard-vcc-5k", "vard-vmg-245pk", "vard-vmg-125pk", "vard-vmg-122pk", "vard-vmc-355hk", "vard-vdi-612lt", "vard-vdi-651c", "vard-vdi-451c", "vard-wci-4sstb", "vard-wci-4sstg", "vard-wci-4ss", "vard-vfi-177niw", "vard-vic-177niw", "vard-vhgs-6434k", "vard-vhg-6424x", "vard-vhls-9534k", "vard-vhls-6434k", "vard-vos-684sb", "vard-vos-684sg", "vard-vop-682b", "vard-vop-682g", "vard-voe-684b", "vard-voe-684g", "vard-von-564b", "vard-von-444b", "vard-von-564x", "vard-voe-554hb", "vard-voe-444i", "vard-von-444x", "vard-voc-444hb", "vard-von-441b", "vard-von-441x", "vard-voe-554hx", "vard-voe-442hb", "vard-voe-444b", "vard-voc-444hi", "vard-voe-442hx", "vard-voe-432b", "vard-voe-432y", "vard-vpe-681mb", "vard-vpe-681mg", "vard-vps-681mb", "vard-vps-681mg", "vard-vhi-9552k", "vard-vhi-6461x", "vard-vhi-6420b", "vard-vhi-6420x", "vard-vhi-3260k", "vard-vhh-8462b", "vard-vhh-6472b", "vard-vfg-665pk", "vard-vfg-664pk", "vard-vfg-661k", "vard-vsmps-26t", "vard-vsmps-15n", "vard-vrs-177ni", "vard-vhc-6464k", "vard-vhc-6464x", "vard-vhc-6421x", "vard-vhc-6421b", "vard-vwf-514b", "vard-vwf-514", "vard-vwf-314", "vard-vwf-494", "vard-vwd-514sb", "vard-vwd-514s", "vard-vwd-414b", "vard-vwd-414", "vard-vth-61b", "vard-vth-61", "vard-vth-58", "vard-vri-191m60bg", "vard-vri-192m54sx", "vard-vam-14b", "vard-vam-14g"],
   },
+  {
+    id: 'promo-smeg-cascade',
+    slug: 'smeg-kaskadnye-skidki-na-krupnuyu-bytovuyu-tehniku',
+    asanaTaskGid: '1219343964973314',
+    brand: 'Smeg',
+    brandCountry: 'Италия',
+    title: "Smeg. Каскадные скидки до 15% на крупную бытовую технику",
+    badgeText: 'Комплектная скидка',
+    discountBadge: 'Скидка до 15%',
+    timeRemaining: 'до 24 декабря 2026',
+    benefitType: 'DISCOUNT',
+    discountAmount: 'до 15%',
+    startDate: '2026-10-12',
+    endDate: '2026-12-24',
+    isActive: true,
+    bannerUrl: '/images/promos/promo-smeg-cascade-thumb.jpg',
+    thumbnailUrl: '/images/promos/promo-smeg-cascade-thumb.jpg',
+    heroBgUrl: '/images/promos/promo-smeg-cascade-hero.jpg',
+    shortDescription: "Каскадная программа выгоды Smeg: скидка 8% на духовой шкаф, 12% на комплект с варочной панелью и до 15% при заказе от 3 приборов разных категорий КБТ или комплекта техники для стирки и сушки.",
+    fullDescription: "Официальная каскадная акция итальянского бренда Smeg в салонах СИМОНА. При единовременной покупке крупной бытовой техники Smeg предоставляется прогрессивная скидка на комплект приборов для кухни, а также на технику по уходу за бельем.",
+    tiers: [
+      {
+        step: "Духовой шкаф",
+        benefit: "–8%",
+        description: "Скидка 8% при покупке любого духового шкафа Smeg"
+      },
+      {
+        step: "Духовой шкаф + варочная панель",
+        benefit: "–12%",
+        description: "Скидка 12% на комплект из духового шкафа и варочной панели Smeg"
+      },
+      {
+        step: "От 3 приборов разных категорий",
+        benefit: "–15%",
+        description: "Скидка 15% при покупке 3 и более приборов разных товарных категорий КБТ"
+      },
+      {
+        step: "Уход за бельем (1 прибор / комплект)",
+        benefit: "–10% / –15%",
+        description: "Скидка 10% на 1 стиральную или сушильную машину, либо 15% при покупке от 2 единиц техники для стирки и сушки"
+      }
+    ],
+    conditions: [
+      "В акции участвует крупная бытовая техника Smeg из наличия на складе, транзита и под заказ (при 100% предоплате).",
+      "Скидки рассчитываются от действующих розничных цен.",
+      "В акции не участвуют мойки, смесители и аксессуары.",
+      "Акция не распространяется на дизайнерскую серию холодильников Dolce&Gabbana и уцененные товары.",
+      "Предложение не суммируется с другими действующими акциями вендора.",
+      "Прием заказов по акции — по 24 декабря 2026 года включительно (отгрузка приборов не позднее 27 декабря 2026 года)."
+    ],
+    participatingSkus: ["75440","75439","64103","75438","89015","89014","87607","89016","64109","64101","64157","87046","64071","86755","75437","86756","83862","83863","84294","89124","48199","90935","91088","89310","89309","89312","76735","89311","52684","83057","88427","83936","84236","86456","62889","52317","73157","83055","83056","91818","83935","91817","91821","84813","85777","91862","90878","91536","91710","91884","61326","79840","83064","83191","83865","83864","76157","59100","59101","73469","59070","72993","58788","88629","89301","89300","89302","66716","79917","75526","66673","68104","87045","87095","86162","89634","52721","89635","89811","90109","90537","87088","90884","87113","90885","91452","15955","91561","91760","89760","15959","91823","69966","37644","37646","56010","2903","68103","2850","14505","14513","14512","89569","42282","50727","52679","52680","52681","52683","63760","64166","64165","65942","65940","65941","62883","62882","66733","67388","67558","67557","68099","69217","69952","37645","58780","73004","73158","73427","70264","77559","77897","69992","69993","69991","78555","82799","82937","83343","83341","83922","83921","83918","83920","83916","75299","83917","83919","75298","84230","84229","75431","84674","76151","85335","86798","86797","78177","78401","78402","78547","79749","79748","87394","87478","88628","89198","89299","89297","89298","86775","89387","86767","86774","90088","86768","90298","86764","86769","90297","86776","90421","90532","90529","86763","90527","86773","80063","90533","86777","90530","90534","86766","90531","90535","90528","80556","86778","90876","81953","90874","86765","81954","90873","86770","90875","90872","81955","90960","83052","90959","91129","91458","88353","89381","91451","83054","89352","91585","83047","91703","83045","91704","89351","83050","91705","89383","83043","91759","77551","83041","83053","77797","83611","89324","89328","83613","89321","89353","83929","89316","83930","89382","83931","83927","89331","89332","89329","89336","89323","85349","85345","89380","85344","89343","85348","89326","89334","69264","86127","89357","89339","89322","89335","89327","89379","89318","89325","89354","89341","89319","89333","89350","89320","89342","89317","89349","89337","89392","87470","87481","89545","89546","90001","90003","91466","90005","91589","91588","90092","90090","90091","90089","90107","90877","90890","91560","91709","91708","91707","91706","91819"],
+    participatingProductSlugs: ["smeg-lsia-147s","smeg-lsia-127","smeg-cpr-915n","smeg-lbi-147","smeg-mp-722ao","smeg-fmi-025b3","smeg-dt-393ru4","smeg-mp-822nao","smeg-cpv-315x","smeg-cpr-315x","smeg-fmi-017-x","smeg-cpv-115b3","smeg-mp-322-x1","smeg-scv-115g","smeg-lsf-147e","smeg-scv-115gs","smeg-wm-3t04ru","smeg-wm-3t60cru","smeg-wm-3t24ru","smeg-wm-3t04ru4","smeg-spr-864-bgh","smeg-wm-3t04ru-2","smeg-wm-3t60cru-2","smeg-sf-68c1po","smeg-sf-68c1ao","smeg-sop-6302s2pn","smeg-cpr-915x","smeg-so-6104s4pb3","smeg-sr-975pgh","smeg-cpr-115b3","smeg-sf-6400s1pzb","smeg-cpr-315n","smeg-cpr-915p","smeg-ctp9015b","smeg-se-364-etbm","smeg-mp-822-po","smeg-mp-822npo","smeg-fmi-120b3","smeg-mp-122b3","smeg-cvi-329xe","smeg-so-4301m0n","smeg-cvi-129b3e","smeg-cvi-338lx1","smeg-so-4301m0x","smeg-so-4101m0b3","smeg-cvi-638rn1","smeg-fmi-125g","smeg-fmi-225bi","smeg-fmi-325n","smeg-fmi-020-x","smeg-srv-896-pogh","smeg-suk-91mfx9","smeg-c-9gmx2","smeg-c-6imxt2","smeg-cg-90cixt","smeg-c-9gmmb2","smeg-stl-323bqlh","smeg-srv-876-aogh","smeg-srv-896-aogh","smeg-c-8175tne-3","smeg-srv-864-aogh","smeg-c-8194tne-2","smeg-srv-876-pogh","smeg-cx-91gmbl","smeg-cx-91imbl","smeg-c-95gmcmb2","smeg-sx-91gm","smeg-kseg-5xsa","smeg-stl-342csl","smeg-s-8f174dne","smeg-kseg-7xsa","smeg-ks-905-sxe2","smeg-stl-362dq","smeg-stl-262d","smeg-u-8l080de","smeg-stl-7324aql","smeg-sr-975xgh","smeg-stl-7332cl","smeg-stl-5352c","smeg-stl-7322bql","smeg-stl-7324aqllw","smeg-s-8f174ne","smeg-st-4522din","smeg-c-3170ne","smeg-st-4533cin","smeg-stl-362dq-2","smeg-pgf-30b","smeg-st-4523din","smeg-stl-362dq-3","smeg-u-8f082de","smeg-pgf-32g","smeg-st-4512ein","smeg-ks-905-bxe2","smeg-pgf-64-4","smeg-pgf-95-4","smeg-sf-6381-x","smeg-se-70-sgh-5","smeg-ks-905-nxe2","smeg-ser-60-sgh-3","smeg-sr-764-ao","smeg-sr-775-ao","smeg-sr-775-po","smeg-kv-194-g","smeg-pgf-32i-1","smeg-si-5322-b","smeg-sr-964ngh","smeg-sr-964pgh","smeg-sr-964xgh","smeg-sr-975ngh","smeg-p-864-po","smeg-p-875-po","smeg-p-864-ao","smeg-pv-332-cn","smeg-p-875-ao","smeg-pv-331-cn","smeg-px-375","smeg-px-364-l","smeg-si1m-7643b","smeg-si-964-pm","smeg-si-964nm","smeg-si-764aom","smeg-si-764pom","smeg-si4642d","smeg-si-964xm","smeg-pgf-75-4","smeg-pv-675-cnr","smeg-fc-18en4ax","smeg-pm-3643d","smeg-pv-864po","smeg-si-364bm","smeg-sia-1963d","smeg-si-2641dp","smeg-sf-6905-p1","smeg-sf-6905-x1","smeg-sf-6905-n1","smeg-si1m-4954d","smeg-se-484emtd","smeg-se-495etd","smeg-sim-3864d","smeg-pv-364n","smeg-sim-3323d","smeg-si-2321d","smeg-px-375mb","smeg-se-464td","smeg-pv-375n","smeg-sop-6302tx","smeg-px-364lmb","smeg-se-464tb","smeg-sop-6301s2x","smeg-si1m-4854d","smeg-si1m-4644d","smeg-so-6302tx","smeg-si1m-4634d","smeg-so-6102ts","smeg-sim-1964d","smeg-hobd-482d2","smeg-hobd-472d2","smeg-so-6302s3px","smeg-sop-6902s2pn","smeg-sop-6902s2pp","smeg-so-6302m2x","smeg-mte-40","smeg-mte-30","smeg-pgf-962","smeg-hobd-682d2","smeg-pv-264b","smeg-si2m-5643d1","smeg-sim-3644d","smeg-pgf-31g2","smeg-si1m-5633d1","smeg-fab-10rpg6","smeg-pv-164b3","smeg-fab-10lwh6","smeg-fab-10rpb6","smeg-sim-3644n","smeg-fab-10rbl6","smeg-sim-3964n","smeg-fab-10lcr6","smeg-fab-10rcr6","smeg-hobd-382n2","smeg-fab-10rpk6","smeg-pvl-664-cn","smeg-sisl-7844x","smeg-sim-3644mwh","smeg-fab-10lbl6","smeg-hhsl-7844mb","smeg-fab-10ror6","smeg-so-4302s3x","smeg-sisl-7964","smeg-fab-10rrd6","smeg-sisl-7844","smeg-sisl-7964mb","smeg-fab-10lrd6","smeg-sisl-7844mb","smeg-sisl-7964x","smeg-hhsl-7844x","smeg-sop-6302s2px","smeg-fab-10rwh6","smeg-sim-3964mwh","smeg-sop-6900tn","smeg-si1m-24854d","smeg-fab-10lor6","smeg-sop-6900tx","smeg-si1m-24644d","smeg-fab-10rduj6","smeg-si2b-22641d","smeg-si1b-22641d","smeg-sop-6902s2px","smeg-sim-3864n","smeg-sop-6102s2pb3","smeg-si1m-24954d","smeg-se-232td2","smeg-se-263td2","smeg-fab-10rdlm5","smeg-fab-5lpb6","smeg-se-264td2","smeg-sop-6900tp","smeg-fab-28rpg6","smeg-se-232tx2","smeg-so-6102tb3","smeg-hhsl-7845x","smeg-so-6102s3pb3","smeg-sisl-7845x","smeg-fab-28rpb6","smeg-sop-6101s2b3","smeg-sisl-7955x","smeg-fab-5lsv6","smeg-so-6102m2b3","smeg-si-2641d","smeg-sr-764-po","smeg-so-4102s3b3","smeg-sop-6102tb3","smeg-srv-864-pogh","smeg-so-4102m1b3","smeg-fab-5rpb6","smeg-fab-5rsv6","smeg-so-6101s2b3","smeg-fab-5rcr6","smeg-fab-28rpk6","smeg-so-4902m1n","smeg-fab-5lor6","smeg-so-4902m1p","smeg-fab-5lpg6","smeg-so-4902m1x","smeg-sf-6301tn","smeg-fab-28lbl6","smeg-fab-28lcr6","smeg-fab-5rwh6","smeg-fab-28lpk6","smeg-fab-5ror6","smeg-so-6302m2n","smeg-so-4101m1b3","smeg-fab-5lcr6","smeg-so-4302m1x","smeg-fab-28rcr6","smeg-so-6104apb3","smeg-fab-5rpk6","smeg-fab-28lpb6","smeg-sf-6301-tvx","smeg-sfp-9302tx","smeg-fab-28rwh6","smeg-fab-28lwh6","smeg-fab-5rduj6","smeg-fab-28lpg6","smeg-fab-5rrd6","smeg-fab-5lbl6","smeg-fab-5lrd6","smeg-fab-5rpg6","smeg-fab-28rrd6","smeg-fab-28rbe6","smeg-fab-5lwh6","smeg-fab-28lor6","smeg-fab-28ror6","smeg-fab-5rbl6","smeg-fab-28rbl6","smeg-fab-5lpk6","smeg-fab-28rli6","smeg-fab-28lrd6","smeg-fab-28rpb5","smeg-sop-6104s2pb3","smeg-so-6303apn","smeg-sf-67c1ao","smeg-sf-67c1po","smeg-sf-6100vb3ru","smeg-sfp-61tb3fr","smeg-fqi-48xe","smeg-sf-6100vb3","smeg-fqi-48xd","smeg-fqi-48kd","smeg-sfp-68c1tpo","smeg-sfp-67c1tpo","smeg-sfp-68c1tao","smeg-sfp-67c1tao","smeg-sf-68c1b","smeg-sf-6200tb","smeg-sf-6381-x-2","smeg-sfp-6201tb","smeg-sop-6202tb","smeg-so-6204apb","smeg-so-6202m2b","smeg-so-6201s2b","smeg-sop-6204s2pb"],
+  },
 ];
 
 export function getActivePromos(): ManufacturerPromo[] {
@@ -618,7 +671,7 @@ export function getFeaturedPromos(): ManufacturerPromo[] {
 }
 
 export function getPromoBySlug(slug: string): ManufacturerPromo | undefined {
-  return MANUFACTURER_PROMOS.find((promo) => promo.slug === slug);
+  return MANUFACTURER_PROMOS.find((promo) => promo.slug === slug || (slug === 'smeg-skidki-na-komplekty' && promo.id === 'promo-smeg-cascade'));
 }
 
 export function getPromosByBrand(brand: string): ManufacturerPromo[] {
