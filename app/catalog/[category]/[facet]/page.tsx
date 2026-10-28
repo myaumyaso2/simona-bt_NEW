@@ -13,7 +13,7 @@ import {
 } from '@/data/catalogFacets';
 import { SchemaOrgBreadcrumbs } from '@/components/seo/SchemaOrgBreadcrumbs';
 import { SchemaOrgItemList } from '@/components/seo/SchemaOrgItemList';
-import { CategorySeoBlock, CategoryBrandLinkItem, CategoryFacetLinkItem } from '@/components/catalog/CategorySeoBlock';
+import { CategoryFacetLinkItem } from '@/components/catalog/CatalogHero';
 import { CategoryExpertGuide } from '@/components/catalog/CategoryExpertGuide';
 import { formatBrandName } from '@/lib/formatters';
 import { resolveBrandEntry, getBrandDbVariants } from '@/lib/catalog/brandsRegistry';
@@ -176,73 +176,17 @@ export default async function CatalogFacetPage({ params, searchParams }: FacetPa
 
   const pageSlice = scopedProducts.slice((pageNum - 1) * PAGE_SIZE, pageNum * PAGE_SIZE);
 
-  // Metrics
-  let minPrice = 0;
-  let inStockCount = 0;
-  let showroomCount = 0;
-
-  for (const p of scopedProducts) {
-    if (p.price > 0 && (minPrice === 0 || p.price < minPrice)) {
-      minPrice = p.price;
-    }
-    if (p.inStock || p.stockCount > 0 || (p.stockKominterna && p.stockKominterna > 0)) {
-      inStockCount++;
-    }
-    if (
-      (p.stockBelinskogo15 && p.stockBelinskogo15 > 0) ||
-      p.physicalStatus === 'ACTIVE_KITCHEN' ||
-      p.physicalStatus === 'EXHIBITION_15' ||
-      p.physicalStatus === 'EXHIBITION_11'
-    ) {
-      showroomCount++;
-    }
-  }
-
-  // Brand link chips for this facet
-  const brandMap = new Map<string, { displayName: string; dbBrand: string; count: number }>();
-  for (const p of facetProducts) {
-    const rawB = (p.brand || '').trim();
-    if (!rawB || rawB.toUpperCase() === 'СИМОНА') continue;
-    const reg = resolveBrandEntry(rawB);
-    const dbKey = reg ? reg.dbBrand : rawB.toUpperCase();
-    const displayName = reg ? reg.displayName : formatBrandName(rawB);
-    const existing = brandMap.get(dbKey);
-    if (existing) {
-      existing.count += 1;
-    } else {
-      brandMap.set(dbKey, { displayName, dbBrand: dbKey, count: 1 });
-    }
-  }
-
-  const brandLinks: CategoryBrandLinkItem[] = Array.from(brandMap.values())
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 18)
-    .map((item) => ({
-      displayName: item.displayName,
-      dbBrand: item.dbBrand,
-      count: item.count,
-      href: `/catalog/${params.category}/${params.facet}?brand=${encodeURIComponent(item.dbBrand)}`,
-      isActive: Boolean(activeBrandUpper && item.dbBrand.toUpperCase() === activeBrandUpper),
-    }));
-
-  // Sibling facet link chips + parent category chip
+  // Sibling facet link chips for popular collections slider
   const siblingFacets = getFacetsByCategory(params.category);
-  const facetLinks: CategoryFacetLinkItem[] = [
-    {
-      shortTitle: 'Все типы раздела',
-      facetSlug: 'all',
-      count: allCategoryProducts.length,
-      href: `/catalog/${params.category}`,
-      isActive: false,
-    },
-    ...siblingFacets.map((sf) => ({
+  const facetLinks: CategoryFacetLinkItem[] = siblingFacets
+    .map((sf) => ({
       shortTitle: sf.shortTitle,
       facetSlug: sf.facetSlug,
       count: allCategoryProducts.filter((p: ProductItem) => sf.filter(p)).length,
       href: `/catalog/${params.category}/${sf.facetSlug}`,
       isActive: sf.facetSlug === params.facet,
-    })),
-  ];
+    }))
+    .filter((f) => (f.count ?? 0) >= 3);
 
   // Breadcrumbs
   const breadcrumbs = [
@@ -302,6 +246,9 @@ export default async function CatalogFacetPage({ params, searchParams }: FacetPa
           initialBrand={canonicalBrandParam}
           initialPage={pageNum}
           breadcrumbs={heroBreadcrumbs}
+          facetLinks={facetLinks}
+          activeFacetSlug={facetDef.facetSlug}
+          facetAllCount={allCategoryProducts.length}
         />
       </Suspense>
 
@@ -309,19 +256,6 @@ export default async function CatalogFacetPage({ params, searchParams }: FacetPa
         categorySlug={category.slug}
         categoryTitle={category.title}
         brand={brandDisplay}
-      />
-
-      <CategorySeoBlock
-        categoryTitle={facetDef.h1}
-        categorySlug={category.slug}
-        categoryDescription={facetDef.seoLeadText}
-        brand={brandDisplay}
-        facetLinks={facetLinks}
-        brandLinks={brandLinks}
-        totalModels={scopedProducts.length}
-        inStockCount={inStockCount}
-        showroomCount={showroomCount}
-        minPrice={minPrice}
       />
     </>
   );

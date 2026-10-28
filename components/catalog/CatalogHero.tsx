@@ -26,6 +26,14 @@ export interface CatalogHeroBreadcrumbItem {
   href?: string;
 }
 
+export interface CategoryFacetLinkItem {
+  shortTitle: string;
+  facetSlug: string;
+  count?: number;
+  href: string;
+  isActive?: boolean;
+}
+
 interface CatalogHeroProps {
   activeSubcategory?: string;
   onSelectSubcategory?: (id: string) => void;
@@ -42,6 +50,9 @@ interface CatalogHeroProps {
   onSelectCategory?: (slug: string) => void;
   subcategoryLinks?: SubcategoryLinkItem[];
   breadcrumbs?: CatalogHeroBreadcrumbItem[];
+  facetLinks?: CategoryFacetLinkItem[];
+  activeFacetSlug?: string;
+  facetAllCount?: number;
 }
 
 export function CatalogHero({
@@ -56,6 +67,10 @@ export function CatalogHero({
   onSelectCategory,
   subcategoryLinks,
   breadcrumbs,
+  categorySlug,
+  facetLinks,
+  activeFacetSlug,
+  facetAllCount,
 }: CatalogHeroProps) {
   const allTabs: PresenceTabItem[] = [
     { id: 'ALL', label: 'Все', count: presenceCounts?.ALL ?? totalCount },
@@ -183,6 +198,90 @@ export function CatalogHero({
                 </button>
               );
             })}
+          </div>
+        )}
+
+        {/* 4.5. Popular Facet Collections Slider */}
+        {facetLinks && facetLinks.length > 0 && (
+          <div className="mt-3.5 flex flex-wrap items-center gap-2">
+            <span className="text-xs text-[#87888A] font-medium shrink-0">
+              Подборки:
+            </span>
+            <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
+              {/* "Все" Tab */}
+              {(() => {
+                const isAllActive =
+                  !activeFacetSlug ||
+                  !facetLinks.some(
+                    (f) => f.isActive || f.facetSlug === activeFacetSlug
+                  );
+                const allHref = `/catalog/${categorySlug || ''}`;
+                return (
+                  <Link
+                    href={allHref}
+                    className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none inline-flex items-center ${
+                      isAllActive
+                        ? 'text-white'
+                        : 'text-[#87888A] hover:text-[#D7D9DB]'
+                    }`}
+                  >
+                    {isAllActive && (
+                      <motion.div
+                        layoutId="facetActiveTab"
+                        className="absolute inset-0 rounded-lg shadow-sm -z-10 bg-[#1E2228] border border-[#2B313A]"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <span>Все</span>
+                    {typeof facetAllCount === 'number' && facetAllCount > 0 && (
+                      <span
+                        className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
+                          isAllActive ? 'text-simona-teal font-semibold' : 'text-[#87888A] font-normal'
+                        }`}
+                      >
+                        ({facetAllCount})
+                      </span>
+                    )}
+                  </Link>
+                );
+              })()}
+
+              {/* Facet Tabs */}
+              {facetLinks.map((facet) => {
+                const isActive = Boolean(
+                  facet.isActive || (activeFacetSlug && facet.facetSlug === activeFacetSlug)
+                );
+                return (
+                  <Link
+                    key={facet.facetSlug}
+                    href={facet.href}
+                    className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none inline-flex items-center ${
+                      isActive
+                        ? 'text-white'
+                        : 'text-[#87888A] hover:text-[#D7D9DB]'
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="facetActiveTab"
+                        className="absolute inset-0 rounded-lg shadow-sm -z-10 bg-[#1E2228] border border-[#2B313A]"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <span>{facet.shortTitle}</span>
+                    {typeof facet.count === 'number' && (
+                      <span
+                        className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
+                          isActive ? 'text-simona-teal font-semibold' : 'text-[#87888A] font-normal'
+                        }`}
+                      >
+                        ({facet.count})
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CATALOG_PRODUCTS } from '@/data/catalogData';
 import { MANUFACTURER_PROMOS, isProductInPromo } from '@/data/promosData';
-import { CatalogHero, PhysicalTabType, SubcategoryLinkItem, CatalogHeroBreadcrumbItem } from './CatalogHero';
+import { CatalogHero, PhysicalTabType, SubcategoryLinkItem, CatalogHeroBreadcrumbItem, CategoryFacetLinkItem } from './CatalogHero';
 import { CatalogSidebar, FilterState } from './CatalogSidebar';
 import { CatalogToolbar, SortOption, ViewMode } from './CatalogToolbar';
 import { LuxuryProductCard } from './LuxuryProductCard';
@@ -45,6 +45,9 @@ interface CatalogViewProps {
   brandDetails?: BrandDetails;
   subcategoryLinks?: SubcategoryLinkItem[];
   breadcrumbs?: CatalogHeroBreadcrumbItem[];
+  facetLinks?: CategoryFacetLinkItem[];
+  activeFacetSlug?: string;
+  facetAllCount?: number;
 }
 
 const PAGE_SIZE = 24;
@@ -61,6 +64,9 @@ export function CatalogView({
   brandDetails,
   subcategoryLinks,
   breadcrumbs,
+  facetLinks,
+  activeFacetSlug,
+  facetAllCount,
 }: CatalogViewProps = {}) {
   const searchParams = useSearchParams();
   const { openModal } = useStore();
@@ -701,6 +707,9 @@ export function CatalogView({
             onSelectCategory={handleCategorySelect}
             subcategoryLinks={subcategoryLinks}
             breadcrumbs={breadcrumbs}
+            facetLinks={facetLinks}
+            activeFacetSlug={activeFacetSlug}
+            facetAllCount={facetAllCount}
           />
 
           {/* 1.5. Inventory Presence Tabs for Brand Page (lowered below Hero per user request) */}

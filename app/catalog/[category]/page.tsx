@@ -14,7 +14,7 @@ import {
 } from '@/data/catalogCategories';
 import { SchemaOrgBreadcrumbs } from '@/components/seo/SchemaOrgBreadcrumbs';
 import { SchemaOrgItemList } from '@/components/seo/SchemaOrgItemList';
-import { CategorySeoBlock, CategoryBrandLinkItem } from '@/components/catalog/CategorySeoBlock';
+import { CategoryFacetLinkItem } from '@/components/catalog/CatalogHero';
 import { CategoryExpertGuide } from '@/components/catalog/CategoryExpertGuide';
 import { getFacetsByCategory } from '@/data/catalogFacets';
 import { formatBrandName } from '@/lib/formatters';
@@ -65,74 +65,6 @@ function buildCategoryCanonicalUrl(
   }
   const queryStr = qs.toString();
   return `${siteUrl}/catalog/${slug}${queryStr ? `?${queryStr}` : ''}`;
-}
-
-function computeCategorySeoMetrics(
-  allProducts: ProductItem[],
-  scopedProducts: ProductItem[],
-  slug: string,
-  activeBrandUpper?: string
-): {
-  totalModels: number;
-  inStockCount: number;
-  showroomCount: number;
-  minPrice: number;
-  brandLinks: CategoryBrandLinkItem[];
-} {
-  let minPrice = 0;
-  let inStockCount = 0;
-  let showroomCount = 0;
-
-  for (const p of scopedProducts) {
-    if (p.price > 0 && (minPrice === 0 || p.price < minPrice)) {
-      minPrice = p.price;
-    }
-    if (p.inStock || p.stockCount > 0 || (p.stockKominterna && p.stockKominterna > 0)) {
-      inStockCount++;
-    }
-    if (
-      (p.stockBelinskogo15 && p.stockBelinskogo15 > 0) ||
-      p.physicalStatus === 'ACTIVE_KITCHEN' ||
-      p.physicalStatus === 'EXHIBITION_15' ||
-      p.physicalStatus === 'EXHIBITION_11'
-    ) {
-      showroomCount++;
-    }
-  }
-
-  const brandMap = new Map<string, { displayName: string; dbBrand: string; count: number }>();
-  for (const p of allProducts) {
-    const rawB = (p.brand || '').trim();
-    if (!rawB || rawB.toUpperCase() === 'СИМОНА') continue;
-    const reg = resolveBrandEntry(rawB);
-    const dbKey = reg ? reg.dbBrand : rawB.toUpperCase();
-    const displayName = reg ? reg.displayName : formatBrandName(rawB);
-    const existing = brandMap.get(dbKey);
-    if (existing) {
-      existing.count += 1;
-    } else {
-      brandMap.set(dbKey, { displayName, dbBrand: dbKey, count: 1 });
-    }
-  }
-
-  const brandLinks: CategoryBrandLinkItem[] = Array.from(brandMap.values())
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 18)
-    .map((item) => ({
-      displayName: item.displayName,
-      dbBrand: item.dbBrand,
-      count: item.count,
-      href: `/catalog/${slug}?brand=${encodeURIComponent(item.dbBrand)}`,
-      isActive: Boolean(activeBrandUpper && item.dbBrand.toUpperCase() === activeBrandUpper),
-    }));
-
-  return {
-    totalModels: scopedProducts.length,
-    inStockCount,
-    showroomCount,
-    minPrice,
-    brandLinks,
-  };
 }
 
 export async function generateMetadata({ params, searchParams }: CategoryPageProps): Promise<Metadata> {
@@ -355,7 +287,6 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       ? products.filter((p) => brandVariantsUpper.has((p.brand || '').trim().toUpperCase()))
       : products;
     const pageSlice = scopedProducts.slice((pageNum - 1) * PAGE_SIZE, pageNum * PAGE_SIZE);
-    const seoMetrics = computeCategorySeoMetrics(products, scopedProducts, 'ucenennye-tovary', activeBrandUpper);
     const outletDesc =
       'Оригинальные приборы со смены экспозиции салонов на ул. Белинского 15 и 11/66 и товары с уценкой упаковки. Каждый прибор проходит проверку и сопровождается официальной гарантией.';
 
@@ -377,13 +308,6 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             initialPage={pageNum}
           />
         </Suspense>
-        <CategorySeoBlock
-          categoryTitle="Уцененная техника и витринные образцы"
-          categorySlug="ucenennye-tovary"
-          categoryDescription={outletDesc}
-          brand={brandDisplay}
-          {...seoMetrics}
-        />
       </>
     );
   }
@@ -415,7 +339,6 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       ? products.filter((p) => brandVariantsUpper.has((p.brand || '').trim().toUpperCase()))
       : products;
     const pageSlice = scopedProducts.slice((pageNum - 1) * PAGE_SIZE, pageNum * PAGE_SIZE);
-    const seoMetrics = computeCategorySeoMetrics(products, scopedProducts, macroSection.slug, activeBrandUpper);
 
     const subcategoryLinks = sectionCategories.map((subCat) => ({
       label: subCat.menuTitle || subCat.title,
@@ -443,13 +366,6 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             subcategoryLinks={subcategoryLinks}
           />
         </Suspense>
-        <CategorySeoBlock
-          categoryTitle={macroSection.title}
-          categorySlug={macroSection.slug}
-          categoryDescription={macroSection.description}
-          brand={brandDisplay}
-          {...seoMetrics}
-        />
       </>
     );
   }
@@ -488,7 +404,6 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     ? products.filter((p) => brandVariantsUpper.has((p.brand || '').trim().toUpperCase()))
     : products;
   const pageSlice = scopedProducts.slice((pageNum - 1) * PAGE_SIZE, pageNum * PAGE_SIZE);
-  const seoMetrics = computeCategorySeoMetrics(products, scopedProducts, category.slug, activeBrandUpper);
   const facetLinks = getFacetsByCategory(category.slug)
     .map((f) => {
       const matchCount = products.filter((p: ProductItem) => f.filter(p)).length;
@@ -517,6 +432,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           categoryDescription={category.heroSubtitle}
           initialBrand={canonicalBrandParam}
           initialPage={pageNum}
+          facetLinks={facetLinks}
+          facetAllCount={products.length}
           breadcrumbs={[
             { name: 'Каталог', url: '/catalog' },
             { name: category.sectionTitle, url: `/catalog/${category.sectionSlug}` },
@@ -529,14 +446,6 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         categorySlug={category.slug}
         categoryTitle={category.title}
         brand={brandDisplay}
-      />
-      <CategorySeoBlock
-        categoryTitle={category.title}
-        categorySlug={category.slug}
-        categoryDescription={category.heroSubtitle}
-        brand={brandDisplay}
-        facetLinks={facetLinks}
-        {...seoMetrics}
       />
     </>
   );
