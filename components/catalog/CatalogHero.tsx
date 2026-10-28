@@ -144,67 +144,10 @@ export function CatalogHero({
           </nav>
         )}
 
-        {/* 4. Controls Slot: 
-             If Brand Page: Raised Brand Categories Switcher (exact style & animation of presence slider)
-             If General Catalog: Presence Tabs Slider */}
-        {hasBrandCategories && brandCategories && onSelectCategory ? (
-          <BrandCategoryNav
-            categories={brandCategories}
-            activeCategorySlug={activeCategorySlug !== undefined ? activeCategorySlug : brandCategories[0].slug}
-            onSelectCategory={onSelectCategory}
-          />
-        ) : (
-          <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
-            {presenceTabs.map((tab) => {
-              const isActive = activePhysicalTab === tab.id;
-              const isDiscount = tab.id === 'DISCOUNT';
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => onSelectPhysicalTab(tab.id)}
-                  className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none ${
-                    isActive
-                      ? 'text-white'
-                      : isDiscount
-                        ? 'text-[#C9A2A4] hover:text-white'
-                        : 'text-[#87888A] hover:text-[#D7D9DB]'
-                  }`}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="presenceActiveTab"
-                      className={`absolute inset-0 rounded-lg shadow-sm -z-10 ${
-                        isDiscount
-                          ? 'bg-simona-wine border border-[#A71B20]'
-                          : 'bg-[#1E2228] border border-[#2B313A]'
-                      }`}
-                      transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-                    />
-                  )}
-                  <span>{tab.label}</span>
-                  <span
-                    className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
-                      isActive
-                        ? isDiscount
-                          ? 'text-white font-bold'
-                          : 'text-simona-teal font-semibold'
-                        : isDiscount
-                          ? 'text-[#A71B20] font-medium'
-                          : 'text-[#87888A] font-normal'
-                    }`}
-                  >
-                    ({tab.count})
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {/* 4.5. Popular Facet Collections Slider */}
+        {/* 4. Popular Facet Collections Slider (Top Row) */}
         {facetLinks && facetLinks.length > 0 && (
-          <div className="mt-3.5 flex flex-wrap items-center gap-2">
-            <span className="text-xs text-[#87888A] font-medium shrink-0">
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className="text-xs text-[#87888A] font-medium shrink-0 w-20">
               Подборки:
             </span>
             <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
@@ -279,6 +222,68 @@ export function CatalogHero({
                       </span>
                     )}
                   </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 4.5. Controls Slot: 
+             If Brand Page: Raised Brand Categories Switcher
+             If General Catalog: Presence Tabs Slider with "Наличие:" label (Bottom Row) */}
+        {hasBrandCategories && brandCategories && onSelectCategory ? (
+          <BrandCategoryNav
+            categories={brandCategories}
+            activeCategorySlug={activeCategorySlug !== undefined ? activeCategorySlug : brandCategories[0].slug}
+            onSelectCategory={onSelectCategory}
+          />
+        ) : (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs text-[#87888A] font-medium shrink-0 w-20">
+              Наличие:
+            </span>
+            <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
+              {presenceTabs.map((tab) => {
+                const isActive = activePhysicalTab === tab.id;
+                const isDiscount = tab.id === 'DISCOUNT';
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => onSelectPhysicalTab(tab.id)}
+                    className={`relative z-10 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200 whitespace-nowrap cursor-pointer select-none ${
+                      isActive
+                        ? 'text-white'
+                        : isDiscount
+                          ? 'text-[#C9A2A4] hover:text-white'
+                          : 'text-[#87888A] hover:text-[#D7D9DB]'
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="presenceActiveTab"
+                        className={`absolute inset-0 rounded-lg shadow-sm -z-10 ${
+                          isDiscount
+                            ? 'bg-simona-wine border border-[#A71B20]'
+                            : 'bg-[#1E2228] border border-[#2B313A]'
+                        }`}
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <span>{tab.label}</span>
+                    <span
+                      className={`ml-1 text-[11px] font-mono transition-colors duration-200 ${
+                        isActive
+                          ? isDiscount
+                            ? 'text-white font-bold'
+                            : 'text-simona-teal font-semibold'
+                          : isDiscount
+                            ? 'text-[#A71B20] font-medium'
+                            : 'text-[#87888A] font-normal'
+                      }`}
+                    >
+                      ({tab.count})
+                    </span>
+                  </button>
                 );
               })}
             </div>
