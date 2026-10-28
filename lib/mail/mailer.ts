@@ -819,3 +819,87 @@ export async function sendOtpEmail(
   });
 }
 
+export interface ChatMessageNotificationData {
+  sessionId: string;
+  text: string;
+  clientName?: string | null;
+  clientPhone?: string | null;
+  pageUrl?: string | null;
+  isContactSubmit?: boolean;
+}
+
+/**
+ * 6. Email-уведомление менеджерам о новом обращении в онлайн-чат
+ * Отправляется на MANAGER_EMAIL (inet@simona-bt.ru, absergin@mail.ru)
+ */
+export async function sendChatMessageNotificationEmail(params: ChatMessageNotificationData) {
+  const isContact = Boolean(
+    params.isContactSubmit ||
+      (params.clientPhone && params.text.toLowerCase().includes('контакт для связи'))
+  );
+  const subjectPrefix = isContact ? '📞 Контакт из онлайн-чата' : '💬 Новое обращение в онлайн-чат';
+  const rawName = (params.clientName || '').trim();
+  const displayName =
+    rawName && !['гость', 'гость сайта', 'посетитель онлайн-чата'].includes(rawName.toLowerCase())
+      ? rawName
+      : 'Гость сайта';
+  const directLink = `${SITE_URL}/manager/orders?tab=chat&sessionId=${encodeURIComponent(params.sessionId)}`;
+
+  const cleanPhone = params.clientPhone ? formatNonBreakingPhone(params.clientPhone) : null;
+  const safeText = params.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const bodyHtml = `
+    <h1 style="font-size:20px;font-weight:700;color:#FFFFFF;margin:0 0 12px 0;">
+      ${subjectPrefix}
+    </h1>
+    <p style="font-size:14px;color:#D7D9DB;line-height:1.6;margin:0 0 16px 0;">
+      Поступило новое сообщение в онлайн-консультант на сайте «СИМОНА».
+    </p>
+    <div style="padding:16px;background-color:#1E2228;border:1px solid #2B313A;border-radius:12px;font-size:13px;line-height:1.7;margin-bottom:16px;">
+      <div><strong style="color:#FFFFFF;">Посетитель:</strong> <span style="color:#FFFFFF;">${displayName}</span></div>
+      ${
+        cleanPhone
+          ? `<div><strong style="color:#FFFFFF;">Контактный телефон:</strong> <a href="tel:${params.clientPhone}" style="color:#00979C;font-weight:700;text-decoration:none;"><span style="white-space:nowrap;color:#00979C;font-weight:700;">${cleanPhone}</span></a></div>`
+          : '<div><strong style="color:#FFFFFF;">Телефон:</strong> <span style="color:#8E95A0;">Не указан (в процессе диалога)</span></div>'
+      }
+      ${
+        params.pageUrl
+          ? `<div><strong style="color:#FFFFFF;">Страница сайта:</strong> <a href="${params.pageUrl}" style="color:#00979C;text-decoration:none;" target="_blank"><span style="color:#00979C;">${params.pageUrl}</span></a></div>`
+          : ''
+      }
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid #2B313A;">
+        <strong style="color:#FFFFFF;">Сообщение:</strong>
+        <div style="margin-top:6px;padding:12px 14px;background-color:#16191D;border:1px solid #2B313A;border-radius:8px;color:#FFFFFF;font-size:13px;line-height:1.6;white-space:pre-wrap;">${safeText}</div>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:#8E95A0;font-family:monospace;">
+        Идентификатор сессии: [#chat_${params.sessionId}]
+      </div>
+    </div>
+    <div style="text-align:left;margin-bottom:20px;">
+      <a href="${directLink}" style="display:inline-block;padding:12px 24px;background-color:#00979C;color:#FFFFFF;text-decoration:none;border-radius:12px;font-size:13px;font-weight:600;">
+        Открыть диалог в панели менеджера
+      </a>
+    </div>
+    <p style="font-size:12px;color:#8E95A0;line-height:1.5;margin:0;">
+      Вы можете ответить клиенту прямо из панели менеджера или ответом (Reply) на сообщение в корпоративном мессенджере MAX.
+    </p>
+  `;
+
+  const subjectSuffix = params.clientPhone
+    ? ` (${params.clientPhone})`
+    : displayName !== 'Гость сайта'
+    ? ` (${displayName})`
+    : '';
+
+  return sendEmail({
+    to: MANAGER_EMAIL,
+    subject: `${subjectPrefix}${subjectSuffix} — «СИМОНА»`,
+    html: wrapLuxuryEmailHtml(
+      subjectPrefix,
+      'Онлайн-консультант simona-bt.ru',
+      bodyHtml
+    ),
+  });
+}
+
+

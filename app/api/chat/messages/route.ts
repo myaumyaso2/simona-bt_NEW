@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { notifyChatMessageInMax } from '@/lib/integrations/maxMessenger';
+import { sendChatMessageNotificationEmail } from '@/lib/mail/mailer';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,6 +55,26 @@ export async function POST(req: NextRequest) {
 
     const { sessionId, text, clientName, clientPhone, pageUrl } = parsed.data;
 
+    // Проверка истории сообщений клиента в данной сессии для определения триггеров email-уведомления
+    const previousClientMessages = await prisma.chatMessage.findMany({
+      where: { sessionId, sender: 'CLIENT' },
+      orderBy: { createdAt: 'desc' },
+      take: 1,
+    });
+
+    const isFirstMessage = previousClientMessages.length === 0;
+    const lastMsg = previousClientMessages[0];
+    const isInactiveTimeout =
+      Boolean(lastMsg) &&
+      Date.now() - new Date(lastMsg.createdAt).getTime() > 3 * 60 * 60 * 1000; // > 3 часов неактивности
+
+    const hasPhoneNow = Boolean(clientPhone && clientPhone.trim());
+    const isContactSubmission =
+      hasPhoneNow &&
+      (text.toLowerCase().includes('контакт для связи') || !lastMsg?.clientPhone);
+
+    const shouldSendEmail = isFirstMessage || isInactiveTimeout || isContactSubmission;
+
     const message = await prisma.chatMessage.create({
       data: {
         sessionId,
@@ -65,8 +86,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Трансляция сообщения консультантам в корпоративный мессенджер MAX с тегом [#chat_{sessionId}]
-    const maxResult = await notifyChatMessageInMax({
+    // 1. Трансляция сообщения консультантам в корпоративный мессенджер MAX с тегом [#chat_{sessionId}]
+    const maxPromise = notifyChatMessageInMax({
       sessionId,
       clientName: message.clientName,
       clientPhone: message.clientPhone,
@@ -74,10 +95,28 @@ export async function POST(req: NextRequest) {
       pageUrl: message.pageUrl,
     });
 
+    // 2. Отправка email-уведомления менеджерам (inet@simona-bt.ru, absergin@mail.ru)
+    let emailPromise: Promise<unknown> = Promise.resolve();
+    if (shouldSendEmail) {
+      emailPromise = sendChatMessageNotificationEmail({
+        sessionId,
+        text: message.text,
+        clientName: message.clientName,
+        clientPhone: message.clientPhone,
+        pageUrl: message.pageUrl,
+        isContactSubmit: isContactSubmission,
+      }).catch((mailErr: unknown) => {
+        console.warn('[Chat Messages POST] Email notification error:', mailErr);
+      });
+    }
+
+    const [maxResult] = await Promise.all([maxPromise, emailPromise]);
+
     return NextResponse.json({
       ok: true,
       message,
       maxAlert: maxResult,
+      emailSent: shouldSendEmail,
     });
   } catch (err: unknown) {
     console.error('[Chat Messages POST] Error:', err);

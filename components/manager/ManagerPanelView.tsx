@@ -241,10 +241,18 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
         const sessions: ChatSessionRecord[] = cData.sessions || [];
         setChatSessions(sessions);
         setSelectedChatSessionId((prev) => {
-          if (!prev && sessions.length > 0) {
+          if (prev) return prev;
+          if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const fromUrl = params.get('sessionId') || params.get('session');
+            if (fromUrl && sessions.some((s) => s.sessionId === fromUrl)) {
+              return fromUrl;
+            }
+          }
+          if (sessions.length > 0) {
             return sessions[0].sessionId;
           }
-          return prev;
+          return null;
         });
       }
 
@@ -268,12 +276,16 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
   }, [authStatus, loadAllData]);
 
   useEffect(() => {
-    // Check URL query param ?tab=
+    // Check URL query param ?tab= and ?sessionId=
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const t = params.get('tab') as ManagerTabId | null;
       if (t && ['orders', 'leads', 'products-no-photo', 'chat', 'sync'].includes(t)) {
         setActiveTab(t);
+      }
+      const sId = params.get('sessionId') || params.get('session');
+      if (sId) {
+        setSelectedChatSessionId(sId);
       }
     }
 
