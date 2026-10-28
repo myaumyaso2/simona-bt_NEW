@@ -591,6 +591,19 @@ export function CatalogView({
     }
   };
 
+  // Listen for menu clean navigation event
+  useEffect(() => {
+    const handleCategoryResetEvent = (e: Event) => {
+      const customEvt = e as CustomEvent<{ categorySlug?: string }>;
+      const targetCat = categorySlug || activeCategorySlug;
+      if (!customEvt.detail?.categorySlug || customEvt.detail.categorySlug === targetCat) {
+        handleResetFilters();
+      }
+    };
+    window.addEventListener('simona_clear_catalog_session', handleCategoryResetEvent);
+    return () => window.removeEventListener('simona_clear_catalog_session', handleCategoryResetEvent);
+  }, [categorySlug, activeCategorySlug, priceBounds, lockedBrand]);
+
   const handleToggleFeature = (label: string, value: string) => {
     const current = filters.selectedFeatures?.[label] || [];
     const next = current.includes(value)

@@ -72,6 +72,7 @@ export function clearCatalogCategorySession(categorySlug?: string): void {
         }
       }
     }
+    window.dispatchEvent(new CustomEvent('simona_clear_catalog_session', { detail: { categorySlug } }));
   } catch (err) {
     // Fallback
   }
