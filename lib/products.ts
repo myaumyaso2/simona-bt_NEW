@@ -1,4 +1,6 @@
 import { isProductInOutletCategory } from '@/lib/catalog/outlet';
+import { getProductPhysicalStatus } from '@/lib/utils';
+import { CATALOG_CATEGORIES } from '@/data/catalogCategories';
 import { Product } from '@prisma/client';
 import { ProductItem, PhysicalStatus, CategoryType, ManufacturerPromo } from '@/types';
 import { prisma } from './prisma';
@@ -75,10 +77,20 @@ export async function getProductBySlug(slug: string): Promise<ProductItem | null
   return staticProduct || null;
 }
 
+function getPhysicalPriority(p: ProductItem): number {
+  const status = getProductPhysicalStatus(p);
+  if (status === 'LOCAL_STOCK') return 1;
+  if (status === 'SHOWROOM') return 2;
+  if (status === 'REMOTE_STOCK') return 3;
+  if (status === 'DISCOUNT') return 4;
+  return 5;
+}
+
 export async function getCatalogProducts(options?: {
   category?: string;
   categories?: string[];
   categorySlug?: string;
+  categorySlugs?: string[];
   includeOutlet?: boolean;
   brand?: string;
   limit?: number;
@@ -133,7 +145,8 @@ export async function getCatalogProducts(options?: {
     ]);
 
     let formatted = items.map(formatPrismaProduct);
-    if (options?.includeOutlet && options?.categorySlug) {
+    const targetCategorySlugs = options?.categorySlugs || (options?.categorySlug ? [options.categorySlug] : []);
+    if (options?.includeOutlet && targetCategorySlugs.length > 0) {
       try {
         const outletItems = await prisma.product.findMany({
           where: {
@@ -148,7 +161,7 @@ export async function getCatalogProducts(options?: {
         });
         const formattedOutlet = outletItems.map(formatPrismaProduct);
         const matchingOutlet = formattedOutlet.filter((p) =>
-          isProductInOutletCategory(p, options.categorySlug!)
+          targetCategorySlugs.some((slug) => isProductInOutletCategory(p, slug))
         );
         const existingIds = new Set(formatted.map((p) => p.id));
         for (const op of matchingOutlet) {
@@ -161,9 +174,19 @@ export async function getCatalogProducts(options?: {
       }
     }
 
+    if (!options?.orderBy || options.orderBy === 'popular') {
+      formatted.sort((a, b) => {
+        const prioDiff = getPhysicalPriority(a) - getPhysicalPriority(b);
+        if (prioDiff !== 0) return prioDiff;
+        const featDiff = (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
+        if (featDiff !== 0) return featDiff;
+        return b.price - a.price;
+      });
+    }
+
     return {
       products: formatted,
-      total,
+      total: formatted.length > total ? formatted.length : total,
     };
   } catch (e) {
     console.error('Error fetching catalog products from DB:', e);
@@ -530,6 +553,67 @@ export async function getOutletAndShowroomProducts(brand?: string): Promise<{
     console.error('Error fetching outlet and showroom products:', err);
     return { products: [], total: 0 };
   }
+}
+
+export async function getCatalogHubCounts(): Promise<{
+  categoryCounts: Record<string, number>;
+  sectionCounts: Record<string, number>;
+  totalActive: number;
+}> {
+  const categoryCounts: Record<string, number> = {};
+  const sectionCounts: Record<string, number> = {};
+  let totalActive = 0;
+
+  try {
+    const [grouped, outletRaw, totalCount] = await Promise.all([
+      prisma.product.groupBy({
+        by: ['category'],
+        where: { isActive: true },
+        _count: { _all: true },
+      }),
+      prisma.product.findMany({
+        where: {
+          isActive: true,
+          OR: [
+            { category: { contains: 'Уцен' } },
+            { isDiscount: true },
+            { oldUrl: { contains: 'ucen' } },
+          ],
+        },
+      }),
+      prisma.product.count({ where: { isActive: true } }),
+    ]);
+
+    totalActive = totalCount;
+    const dbCatMap: Record<string, number> = {};
+    for (const row of grouped) {
+      dbCatMap[row.category] = row._count._all;
+    }
+
+    const formattedOutlet = outletRaw.map(formatPrismaProduct);
+
+    for (const cat of CATALOG_CATEGORIES) {
+      let baseCount = 0;
+      const catDbSet = new Set(cat.dbCategories);
+      for (const dbCat of cat.dbCategories) {
+        baseCount += dbCatMap[dbCat] || 0;
+      }
+      // Add outlet items that belong to this categorySlug but aren't already in cat.dbCategories
+      let extraOutlet = 0;
+      for (const op of formattedOutlet) {
+        if (!catDbSet.has(op.category) && isProductInOutletCategory(op, cat.slug)) {
+          extraOutlet++;
+        }
+      }
+      const finalCount = baseCount + extraOutlet;
+      categoryCounts[cat.slug] = finalCount;
+      sectionCounts[cat.sectionSlug] = (sectionCounts[cat.sectionSlug] || 0) + finalCount;
+    }
+  } catch (err) {
+    console.error('Error computing catalog hub counts:', err);
+  }
+
+  return { categoryCounts, sectionCounts, totalActive };
 }
 
 

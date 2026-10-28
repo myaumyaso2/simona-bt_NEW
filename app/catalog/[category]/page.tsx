@@ -319,7 +319,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     const dbCategories = sectionCategories.flatMap((c) => c.dbCategories);
     const { products, total } = await getCatalogProducts({
       categories: dbCategories,
-      limit: 2000,
+      categorySlugs: sectionCategories.map((c) => c.slug),
+      includeOutlet: true,
+      limit: 5000,
     });
 
     const pageTitle = brandDisplay ? `${macroSection.title} ${brandDisplay}` : macroSection.title;

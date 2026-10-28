@@ -9,7 +9,7 @@ import {
   getCategoryBySlug,
   getMacroSectionBySlug,
 } from '@/data/catalogCategories';
-import { searchCatalogProducts } from '@/lib/products';
+import { searchCatalogProducts, getCatalogHubCounts } from '@/lib/products';
 import { brandNameToSlug, resolveBrandEntry } from '@/lib/catalog/brandsRegistry';
 
 interface CatalogPageProps {
@@ -150,11 +150,17 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
     { name: 'Каталог', url: '/catalog' },
   ];
 
+  const { categoryCounts, sectionCounts, totalActive } = await getCatalogHubCounts();
+
   return (
     <>
       <SchemaOrgBreadcrumbs items={breadcrumbs} />
       <Suspense fallback={<div className="min-h-screen bg-[#111315]" />}>
-        <CatalogHubView />
+        <CatalogHubView
+          categoryCounts={categoryCounts}
+          sectionCounts={sectionCounts}
+          totalActiveCount={totalActive}
+        />
       </Suspense>
     </>
   );

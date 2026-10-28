@@ -53,6 +53,16 @@ interface CatalogHeroProps {
   facetLinks?: CategoryFacetLinkItem[];
   activeFacetSlug?: string;
   facetAllCount?: number;
+  facetAllHref?: string;
+}
+
+function pluralizeModels(count: number): string {
+  const abs = Math.abs(count) % 100;
+  const n1 = abs % 10;
+  if (abs > 10 && abs < 20) return 'моделей';
+  if (n1 > 1 && n1 < 5) return 'модели';
+  if (n1 === 1) return 'модель';
+  return 'моделей';
 }
 
 export function CatalogHero({
@@ -71,6 +81,7 @@ export function CatalogHero({
   facetLinks,
   activeFacetSlug,
   facetAllCount,
+  facetAllHref,
 }: CatalogHeroProps) {
   const allTabs: PresenceTabItem[] = [
     { id: 'ALL', label: 'Все', count: presenceCounts?.ALL ?? totalCount },
@@ -117,7 +128,7 @@ export function CatalogHero({
             {categoryTitle}
           </h1>
           <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-[#16191D] border border-[#2B313A] text-simona-teal shadow-sm">
-            {totalCount} моделей
+            {totalCount} {pluralizeModels(totalCount)}
           </span>
         </div>
 
@@ -159,7 +170,7 @@ export function CatalogHero({
                     (f) => f.isActive || f.facetSlug === activeFacetSlug
                   );
                 const brandQuery = facetLinks.find((f) => f.href.includes('brand='))?.href.split('?')[1];
-                const allHref = `/catalog/${categorySlug || ''}${brandQuery ? `?${brandQuery}` : ''}`;
+                const allHref = facetAllHref || `/catalog/${categorySlug || ''}${brandQuery ? `?${brandQuery}` : ''}`;
                 return (
                   <Link
                     href={allHref}

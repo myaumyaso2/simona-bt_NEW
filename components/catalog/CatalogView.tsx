@@ -25,6 +25,7 @@ import {
   isProductInCategory,
 } from '@/lib/catalog/brandCategories';
 import { getCategoryProductGroups, getProductGroup } from '@/lib/catalog/productGroups';
+import { getFacetsByCategory } from '@/data/catalogFacets';
 import { SimonaIconClose, SimonaIconSearch } from '@/components/brand/SimonaIcons';
 import { BrandDetails } from '@/data/brandDetails';
 import { BrandShowcaseHero } from '@/components/brand/BrandShowcaseHero';
@@ -34,6 +35,7 @@ import { useStore } from '@/components/providers/StoreContext';
 
 interface CatalogViewProps {
   initialProducts?: ProductItem[];
+  allCategoryProducts?: ProductItem[];
   totalCount?: number;
   categorySlug?: string;
   categoryTitle?: string;
@@ -52,8 +54,30 @@ interface CatalogViewProps {
 
 const PAGE_SIZE = 24;
 
+function matchesBrandList(product: ProductItem, targetBrands: string[]): boolean {
+  if (!targetBrands || targetBrands.length === 0) return true;
+  const pb = product.brand?.trim().toUpperCase() || '';
+  return targetBrands.some((b) => {
+    const tb = b.trim().toUpperCase();
+    if (pb === tb) return true;
+    if ((pb === 'KORTING' || pb === 'KÖRTING') && (tb === 'KORTING' || tb === 'KÖRTING')) return true;
+    if ((pb === 'SIEMENS' || pb === 'SIEMENS LV') && (tb === 'SIEMENS' || tb === 'SIEMENS LV')) return true;
+    return false;
+  });
+}
+
+function getPhysicalSortPriority(p: ProductItem): number {
+  const status = getProductPhysicalStatus(p);
+  if (status === 'LOCAL_STOCK') return 1;
+  if (status === 'SHOWROOM') return 2;
+  if (status === 'REMOTE_STOCK') return 3;
+  if (status === 'DISCOUNT') return 4;
+  return 5;
+}
+
 export function CatalogView({
   initialProducts,
+  allCategoryProducts,
   categorySlug,
   categoryTitle,
   categoryDescription,
@@ -213,11 +237,6 @@ export function CatalogView({
     };
   }, [categoryProducts]);
 
-  // Dynamic product groups from 1C column C / canonical titles
-  const availableGroups = useMemo(() => {
-    return getCategoryProductGroups(categoryProducts);
-  }, [categoryProducts]);
-
   const [filters, setFilters] = useState<FilterState>({
     selectedGroups: [],
     selectedPromos: [],
@@ -228,6 +247,85 @@ export function CatalogView({
     selectedColor: null,
     selectedFeatures: {},
   });
+
+  const effectiveFilterBrands = useMemo(() => {
+    return filters.selectedBrands.length > 0
+      ? filters.selectedBrands
+      : lockedBrand
+      ? [lockedBrand]
+      : [];
+  }, [filters.selectedBrands, lockedBrand]);
+
+  // Unified disjunctive filter matcher so sidebar facets and counts stay 100% synchronized with active selection
+  const matchesFilterCriteria = useMemo(() => {
+    return (product: ProductItem, omitDimension?: 'groups' | 'promos' | 'brands' | 'presence' | string) => {
+      if (omitDimension !== 'presence' && activePhysicalTab !== 'ALL') {
+        if (getProductPhysicalStatus(product) !== activePhysicalTab) {
+          return false;
+        }
+      }
+
+      if (omitDimension !== 'groups' && filters.selectedGroups && filters.selectedGroups.length > 0) {
+        const pGroup = getProductGroup(product);
+        if (!filters.selectedGroups.includes(pGroup)) {
+          return false;
+        }
+      }
+
+      if (omitDimension !== 'promos' && filters.selectedPromos.length > 0) {
+        const matchesPromo = filters.selectedPromos.some((promoSlug) =>
+          isProductInPromo(product, promoSlug)
+        );
+        if (!matchesPromo) return false;
+      }
+
+      if (omitDimension !== 'brands' && effectiveFilterBrands.length > 0) {
+        if (!matchesBrandList(product, effectiveFilterBrands)) {
+          return false;
+        }
+      }
+
+      if (product.price < filters.priceMin || product.price > filters.priceMax) {
+        return false;
+      }
+
+      if (filters.selectedFeatures && Object.keys(filters.selectedFeatures).length > 0) {
+        for (const [label, vals] of Object.entries(filters.selectedFeatures)) {
+          if (omitDimension === label || !vals || vals.length === 0) continue;
+          if (!matchProductFeature(product, label, vals)) {
+            return false;
+          }
+        }
+      }
+
+      if (techFilter?.query) {
+        const q = techFilter.query.toLowerCase();
+        const matches =
+          product.name.toLowerCase().includes(q) ||
+          (product.description || '').toLowerCase().includes(q) ||
+          (product.shortDesc || '').toLowerCase().includes(q) ||
+          (product.features || []).some((f) => (f.label + ' ' + f.value).toLowerCase().includes(q));
+        if (!matches) return false;
+      }
+
+      return true;
+    };
+  }, [activePhysicalTab, filters, effectiveFilterBrands, techFilter]);
+
+  // Dynamic product groups from 1C column C / canonical titles (disjunctively filtered by brand, presence, and features)
+  const availableGroups = useMemo(() => {
+    const matchingForGroups = categoryProducts.filter((p) => matchesFilterCriteria(p, 'groups'));
+    const groups = getCategoryProductGroups(matchingForGroups);
+    if (filters.selectedGroups && filters.selectedGroups.length > 0) {
+      const existingNames = new Set(groups.map((g) => g.name));
+      filters.selectedGroups.forEach((sg) => {
+        if (!existingNames.has(sg)) {
+          groups.push({ id: sg, name: sg, count: 0 });
+        }
+      });
+    }
+    return groups;
+  }, [categoryProducts, matchesFilterCriteria, filters.selectedGroups]);
 
   // Keep price filter aligned with category price bounds on mount/category change
   useEffect(() => {
@@ -371,113 +469,130 @@ export function CatalogView({
     handleToggleFeature(label, value);
   };
 
-  // Dynamic category facets calculation based on current category selection
+  // Dynamic category facets calculation based on current selection (disjunctive per facet label)
   const categoryFacets = useMemo(() => {
-    // facets remain available for all physical tabs
-    return getCategoryFacets(categoryProducts, 16);
-  }, [categoryProducts, isDedicatedBrandPage, activePhysicalTab]);
+    const brandScopedProducts =
+      effectiveFilterBrands.length > 0
+        ? categoryProducts.filter((p) => matchesBrandList(p, effectiveFilterBrands))
+        : categoryProducts;
+    const baseFacets = getCategoryFacets(brandScopedProducts, 16);
 
-  // Dynamic promo count calculation for current category and tab (Zero Dead Ends)
+    return baseFacets
+      .map((facet) => {
+        const subset = categoryProducts.filter((p) => matchesFilterCriteria(p, facet.label));
+        const selectedForFacet = filters.selectedFeatures?.[facet.label] || [];
+        const options = facet.options
+          .map((opt) => {
+            const count = subset.filter((p) => matchProductFeature(p, facet.label, [opt.value])).length;
+            return { value: opt.value, count };
+          })
+          .filter((opt) => opt.count > 0 || selectedForFacet.includes(opt.value));
+
+        const totalCount = options.reduce((sum, o) => sum + o.count, 0);
+        return {
+          label: facet.label,
+          totalCount,
+          options,
+        };
+      })
+      .filter((f) => f.options.length > 0);
+  }, [categoryProducts, effectiveFilterBrands, matchesFilterCriteria, filters.selectedFeatures]);
+
+  // Dynamic promo count calculation for current category, brand, and tab (Zero Dead Ends)
   const promoCounts = useMemo(() => {
     const counts: Record<string, number> = {};
+    const subset = categoryProducts.filter((p) => matchesFilterCriteria(p, 'promos'));
     MANUFACTURER_PROMOS.forEach((promo) => {
-      const count = categoryProducts.filter((product) => {
-        return isProductInPromo(product, promo.slug);
-      }).length;
+      const count = subset.filter((product) => isProductInPromo(product, promo.slug)).length;
       counts[promo.slug] = count;
     });
     return counts;
-  }, [categoryProducts]);
+  }, [categoryProducts, matchesFilterCriteria]);
 
-  // Dynamic brand list with real counts for the category
+  // Dynamic brand list with real counts for the category and active filters
   const availableBrands = useMemo(() => {
     const counts: Record<string, number> = {};
-    categoryProducts.forEach((p) => {
+    const subset = categoryProducts.filter((p) => matchesFilterCriteria(p, 'brands'));
+    subset.forEach((p) => {
       const b = p.brand?.trim() || 'СИМОНА';
       counts[b] = (counts[b] || 0) + 1;
+    });
+    effectiveFilterBrands.forEach((eb) => {
+      const matchKey = Object.keys(counts).find((k) => k.toUpperCase() === eb.trim().toUpperCase());
+      if (!matchKey) {
+        counts[eb.trim()] = 0;
+      }
     });
     return Object.entries(counts)
       .map(([id, count]) => ({ id, name: id, count }))
       .sort((a, b) => b.count - a.count);
-  }, [categoryProducts]);
+  }, [categoryProducts, matchesFilterCriteria, effectiveFilterBrands]);
 
   const brandCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     availableBrands.forEach((b) => {
       counts[b.id] = b.count;
+      counts[b.id.toUpperCase()] = b.count;
     });
     return counts;
   }, [availableBrands]);
 
+  // Reactive SEO collection chips ("Подборки:") synchronized with client-side brand filter
+  const { dynamicFacetLinks, dynamicFacetAllCount, dynamicFacetAllHref } = useMemo(() => {
+    if (!facetLinks || !categorySlug) {
+      return {
+        dynamicFacetLinks: facetLinks,
+        dynamicFacetAllCount: facetAllCount,
+        dynamicFacetAllHref: undefined,
+      };
+    }
+    const baseAll = allCategoryProducts || categoryProducts;
+    const brandScopedAll =
+      effectiveFilterBrands.length > 0
+        ? baseAll.filter((p) => matchesBrandList(p, effectiveFilterBrands))
+        : baseAll;
+
+    const singleBrand = effectiveFilterBrands.length === 1 ? effectiveFilterBrands[0].trim().toUpperCase() : undefined;
+    const qs = new URLSearchParams();
+    if (singleBrand) {
+      qs.set('brand', singleBrand);
+    }
+    const queryStr = qs.toString();
+    const allHref = `/catalog/${categorySlug}${queryStr ? `?${queryStr}` : ''}`;
+
+    const defs = getFacetsByCategory(categorySlug);
+    if (defs.length === 0) {
+      return {
+        dynamicFacetLinks: facetLinks,
+        dynamicFacetAllCount: brandScopedAll.length,
+        dynamicFacetAllHref: allHref,
+      };
+    }
+
+    const computedLinks: CategoryFacetLinkItem[] = defs
+      .map((def) => {
+        const count = brandScopedAll.filter((p) => def.filter(p)).length;
+        return {
+          shortTitle: def.shortTitle,
+          facetSlug: def.facetSlug,
+          count,
+          href: `/catalog/${categorySlug}/${def.facetSlug}${queryStr ? `?${queryStr}` : ''}`,
+          isActive: def.facetSlug === activeFacetSlug,
+        };
+      })
+      .filter((item) => (item.count ?? 0) >= 3 || item.isActive);
+
+    return {
+      dynamicFacetLinks: computedLinks,
+      dynamicFacetAllCount: brandScopedAll.length,
+      dynamicFacetAllHref: allHref,
+    };
+  }, [facetLinks, facetAllCount, categorySlug, allCategoryProducts, categoryProducts, effectiveFilterBrands, activeFacetSlug]);
+
   // 1. Products filtered by sidebar criteria (groups, promos, brands, price, dynamic facets) - WITHOUT physical presence tab
   const sidebarFilteredProducts = useMemo(() => {
-    return categoryProducts.filter((product) => {
-      // 0. Product Group Filter (Column C from 1C_import.csv)
-      if (filters.selectedGroups && filters.selectedGroups.length > 0) {
-        const pGroup = getProductGroup(product);
-        if (!filters.selectedGroups.includes(pGroup)) {
-          return false;
-        }
-      }
-
-      // 0.5. Promo Filter (OR logic: product participates in ANY of the selected promos)
-      if (filters.selectedPromos.length > 0) {
-        const matchesPromo = filters.selectedPromos.some((promoSlug) =>
-          isProductInPromo(product, promoSlug)
-        );
-        if (!matchesPromo) return false;
-      }
-
-      // 1. Brand Filter (case-insensitive with synonym matching)
-      const effectiveFilterBrands = filters.selectedBrands.length > 0
-        ? filters.selectedBrands
-        : (lockedBrand ? [lockedBrand] : []);
-
-      if (effectiveFilterBrands.length > 0) {
-        const matchesBrand = effectiveFilterBrands.some((b) => {
-          const tb = b.trim().toUpperCase();
-          const pb = product.brand?.trim().toUpperCase() || '';
-          if (pb === tb) return true;
-          // Korting / Körting
-          if ((pb === 'KORTING' || pb === 'KÖRTING') && (tb === 'KORTING' || tb === 'KÖRTING')) return true;
-          // Siemens
-          if ((pb === 'SIEMENS' || pb === 'SIEMENS LV') && (tb === 'SIEMENS' || tb === 'SIEMENS LV')) return true;
-          return false;
-        });
-        if (!matchesBrand) {
-          return false;
-        }
-      }
-
-      // 2. Price Filter
-      if (product.price < filters.priceMin || product.price > filters.priceMax) {
-        return false;
-      }
-
-      // 3. Dynamic Feature Facets Filter
-      if (filters.selectedFeatures && Object.keys(filters.selectedFeatures).length > 0) {
-        for (const [label, vals] of Object.entries(filters.selectedFeatures)) {
-          if (!vals || vals.length === 0) continue;
-          if (!matchProductFeature(product, label, vals)) {
-            return false;
-          }
-        }
-      }
-
-      // 4. Technology or Series active filter
-      if (techFilter?.query) {
-        const q = techFilter.query.toLowerCase();
-        const matches =
-          product.name.toLowerCase().includes(q) ||
-          (product.description || '').toLowerCase().includes(q) ||
-          (product.shortDesc || '').toLowerCase().includes(q) ||
-          (product.features || []).some((f) => (f.label + ' ' + f.value).toLowerCase().includes(q));
-        if (!matches) return false;
-      }
-
-      return true;
-    });
-  }, [categoryProducts, filters, lockedBrand, techFilter]);
+    return categoryProducts.filter((product) => matchesFilterCriteria(product, 'presence'));
+  }, [categoryProducts, matchesFilterCriteria]);
 
   // 2. Dynamic presence counts based on current sidebar filters (Zero Dead Ends reactivity)
   const presenceCounts = useMemo(() => {
@@ -520,7 +635,11 @@ export function CatalogView({
 
     return [...base].sort((a, b) => {
       if (sort === 'popular') {
-        return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
+        const prioDiff = getPhysicalSortPriority(a) - getPhysicalSortPriority(b);
+        if (prioDiff !== 0) return prioDiff;
+        const featDiff = (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
+        if (featDiff !== 0) return featDiff;
+        return b.price - a.price;
       }
       if (sort === 'price_asc') {
         return a.price - b.price;
@@ -557,7 +676,15 @@ export function CatalogView({
     }
     if (filters.selectedBrands.length === 1) {
       const b = filters.selectedBrands[0];
-      return `${baseCategoryTitle} ${formatBrandName(b)}`;
+      const brandFormatted = formatBrandName(b);
+      const brandRegex = new RegExp(`\\b${brandFormatted}\\b`, 'i');
+      if (brandRegex.test(baseCategoryTitle)) {
+        return baseCategoryTitle;
+      }
+      if (baseCategoryTitle.includes(' в Нижнем Новгороде')) {
+        return baseCategoryTitle.replace(' в Нижнем Новгороде', ` ${brandFormatted} в Нижнем Новгороде`);
+      }
+      return `${baseCategoryTitle} ${brandFormatted}`;
     }
     return baseCategoryTitle;
   }, [baseCategoryTitle, filters.selectedBrands, lockedBrand, isDedicatedBrandPage, currentBrandCategory]);
@@ -686,9 +813,10 @@ export function CatalogView({
             onSelectCategory={handleCategorySelect}
             subcategoryLinks={subcategoryLinks}
             breadcrumbs={breadcrumbs}
-            facetLinks={facetLinks}
+            facetLinks={dynamicFacetLinks}
             activeFacetSlug={activeFacetSlug}
-            facetAllCount={facetAllCount}
+            facetAllCount={dynamicFacetAllCount}
+            facetAllHref={dynamicFacetAllHref}
           />
 
           {/* 1.5. Inventory Presence Tabs for Brand Page (lowered below Hero per user request) */}

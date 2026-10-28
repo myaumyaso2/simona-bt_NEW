@@ -257,9 +257,10 @@ export default async function CatalogFacetPage({ params, searchParams }: FacetPa
       <Suspense fallback={<div className="min-h-screen bg-[#111315]" />}>
         <CatalogView
           initialProducts={facetProducts}
+          allCategoryProducts={allCategoryProducts}
           totalCount={facetProducts.length}
           categorySlug={category.slug}
-          categoryTitle={`${pageTitle} в Нижнем Новгороде`}
+          categoryTitle={`${facetDef.h1} в Нижнем Новгороде`}
           categoryDescription={facetDef.seoLeadText}
           initialBrand={canonicalBrandParam}
           initialPage={pageNum}

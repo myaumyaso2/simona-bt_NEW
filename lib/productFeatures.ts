@@ -96,8 +96,13 @@ export function groupProductFeatures(features: ProductFeature[] = []): GroupedFe
     'Дополнительные характеристики': [],
   };
 
+  const internalLabels = new Set([
+    'reason', 'причина уценки', 'причина', 'уценка', 'состояние', 'дефект',
+  ]);
+
   features.forEach((feat) => {
     if (!feat.value || feat.value === '-' || feat.value.trim() === '') return;
+    if (internalLabels.has(feat.label.trim().toLowerCase())) return;
     const group = getFeatureSemanticGroup(feat.label);
     groups[group].push(feat);
   });
@@ -291,7 +296,7 @@ export function extractKeySpecs(product: ProductItem): KeySpecBadge[] {
   if (specs.length < 4) {
     const excludeLabels = new Set([
       'бренд', 'цена', 'код', 'артикул', 'id', 'модель', 'название', 'описание',
-      'код товара', 'артикул производителя'
+      'код товара', 'артикул производителя', 'reason', 'причина уценки', 'причина', 'уценка', 'состояние', 'дефект'
     ]);
 
     for (const f of feats) {
@@ -342,6 +347,34 @@ export function groupCategoryFacets(facets: CategoryFacet[]): GroupedCategoryFac
     .filter((g) => g.facets.length > 0);
 }
 
+function normalizeWidthBucket(numCm: number): string {
+  const cm = numCm > 250 ? numCm / 10 : numCm;
+  if (cm < 37) return '30 см';
+  if (cm < 55) return '45 см';
+  if (cm < 67) return '60 см';
+  if (cm < 77) return '70–75 см';
+  if (cm < 86) return '80–85 см';
+  return '90 см и шире';
+}
+
+function inferFallbackWidthBucket(p: ProductItem): string | null {
+  const dims = (p.dimensions || '').toLowerCase();
+  const n = (p.name || '').toLowerCase();
+  if (dims && dims !== '-') {
+    const parts = dims.split(/[×x*х]/i).map((s) => parseFloat(s.replace(',', '.').trim()));
+    if (parts.length >= 2 && !isNaN(parts[1]) && parts[1] >= 25 && parts[1] <= 1200) {
+      return normalizeWidthBucket(parts[1]);
+    }
+    if (dims.includes('45 см') || dims.includes('44.') || dims.includes('45.')) return '45 см';
+    if (dims.includes('60 см') || dims.includes('59.') || dims.includes('60.')) return '60 см';
+    if (dims.includes('90 см') || dims.includes('89.') || dims.includes('90.')) return '90 см и шире';
+  }
+  if (/\b45\s*(см|cm)?\b/.test(n)) return '45 см';
+  if (/\b60\s*(см|cm)?\b/.test(n)) return '60 см';
+  if (/\b90\s*(см|cm)?\b/.test(n)) return '90 см и шире';
+  return null;
+}
+
 /**
  * Computes top dynamic filter facets for the current product selection in catalog.
  */
@@ -353,40 +386,65 @@ export function getCategoryFacets(products: ProductItem[], maxFacets = 16): Cate
     'бренд', 'цена', 'гарантия',
     'артикул', 'код', 'модель', 'id', 'описание',
     'длина (см)', 'высота (см)', 'глубина (см)', 'вес (кг)',
-    'габариты упаковки (см)', 'вес в упаковке (кг)'
+    'габариты упаковки (см)', 'вес в упаковке (кг)',
+    'reason', 'причина уценки', 'причина', 'уценка', 'состояние', 'дефект'
   ]);
 
   const labelCounts: Record<string, number> = {};
   const labelValues: Record<string, Record<string, number>> = {};
+  const productsWithWidth = new Set<string>();
 
   products.forEach((p) => {
+    const seenForProduct = new Set<string>();
     (p.features || []).forEach((f) => {
       let norm = f.label.trim();
       const lower = norm.toLowerCase();
       if (excludeLabels.has(lower)) return;
-      if (!f.value || f.value === '-' || f.value.toLowerCase() === 'нет') return;
+      const valLower = (f.value || '').trim().toLowerCase();
+      if (!valLower || valLower === '-' || valLower === 'нет' || valLower === 'отсутствует') return;
 
       let val = f.value.trim();
 
       // Normalize width values into standard Quiet Luxury installation buckets
       if (lower.includes('ширина')) {
+        if (lower.includes('упаковк') || lower.includes('ниши')) return;
         norm = 'Ширина';
         const num = parseFloat(val.replace(',', '.'));
-        if (!isNaN(num)) {
-          if (num < 37) val = '30 см';
-          else if (num < 55) val = '45 см';
-          else if (num < 67) val = '60 см';
-          else if (num < 77) val = '70–75 см';
-          else if (num < 86) val = '80–85 см';
-          else val = '90 см и шире';
+        if (!isNaN(num) && num > 0) {
+          val = normalizeWidthBucket(num);
         }
+      } else if (lower === 'цвет') {
+        norm = 'Цвет';
+        val = val.toLowerCase();
       }
 
-      labelCounts[norm] = (labelCounts[norm] || 0) + 1;
+      const dedupKey = `${norm}::${val}`;
+      if (seenForProduct.has(dedupKey)) return;
+      seenForProduct.add(dedupKey);
+
+      if (!seenForProduct.has(`__label__${norm}`)) {
+        seenForProduct.add(`__label__${norm}`);
+        labelCounts[norm] = (labelCounts[norm] || 0) + 1;
+      }
+      if (norm === 'Ширина') {
+        productsWithWidth.add(p.id);
+      }
       if (!labelValues[norm]) labelValues[norm] = {};
       labelValues[norm][val] = (labelValues[norm][val] || 0) + 1;
     });
   });
+
+  // Backfill width bucket from dimensions/name for products missing explicit "Ширина" feature in categories that use Width
+  if (labelCounts['Ширина'] && labelCounts['Ширина'] > 0) {
+    products.forEach((p) => {
+      if (productsWithWidth.has(p.id)) return;
+      const fb = inferFallbackWidthBucket(p);
+      if (fb) {
+        labelCounts['Ширина'] = (labelCounts['Ширина'] || 0) + 1;
+        labelValues['Ширина'][fb] = (labelValues['Ширина'][fb] || 0) + 1;
+      }
+    });
+  }
 
   const totalProducts = products.length;
 
@@ -429,29 +487,41 @@ export function matchProductFeature(
   if (!selectedValues || selectedValues.length === 0) return true;
   const targetLower = facetLabel.trim().toLowerCase();
 
-  return (product.features || []).some((f) => {
+  let hasExplicitWidthFeature = false;
+
+  const matchedFeature = (product.features || []).some((f) => {
     const fLower = f.label.trim().toLowerCase();
     let val = f.value?.trim() || '';
-    if (!val || val === '-' || val.toLowerCase() === 'нет') return false;
+    const valLower = val.toLowerCase();
+    if (!val || val === '-' || valLower === 'нет' || valLower === 'отсутствует') return false;
 
     // Width handling with same architectural buckets
     if (fLower.includes('ширина') && (targetLower.includes('ширина') || targetLower === 'ширина')) {
+      if (fLower.includes('упаковк') || fLower.includes('ниши')) return false;
+      hasExplicitWidthFeature = true;
       const num = parseFloat(val.replace(',', '.'));
-      if (!isNaN(num)) {
-        if (num < 37) val = '30 см';
-        else if (num < 55) val = '45 см';
-        else if (num < 67) val = '60 см';
-        else if (num < 77) val = '70–75 см';
-        else if (num < 86) val = '80–85 см';
-        else val = '90 см и шире';
+      if (!isNaN(num) && num > 0) {
+        val = normalizeWidthBucket(num);
       }
       return selectedValues.includes(val);
     }
 
     if (fLower === targetLower) {
+      if (targetLower === 'цвет') {
+        return selectedValues.some((sv) => sv.toLowerCase() === valLower);
+      }
       return selectedValues.includes(val);
     }
 
     return false;
   });
+
+  if (matchedFeature) return true;
+
+  if ((targetLower === 'ширина' || targetLower.includes('ширина')) && !hasExplicitWidthFeature) {
+    const fb = inferFallbackWidthBucket(product);
+    if (fb) return selectedValues.includes(fb);
+  }
+
+  return false;
 }

@@ -11,6 +11,22 @@ import { CatalogSectionSlider, CatalogSectionItem } from './CatalogSectionSlider
 import {
   SimonaIconArrowRight,
 } from '@/components/brand/SimonaIcons';
+import { formatBrandName } from '@/lib/formatters';
+
+interface CatalogHubViewProps {
+  categoryCounts?: Record<string, number>;
+  sectionCounts?: Record<string, number>;
+  totalActiveCount?: number;
+}
+
+function pluralizeModels(count: number): string {
+  const abs = Math.abs(count) % 100;
+  const n1 = abs % 10;
+  if (abs > 10 && abs < 20) return 'моделей';
+  if (n1 > 1 && n1 < 5) return 'модели';
+  if (n1 === 1) return 'модель';
+  return 'моделей';
+}
 
 interface SectionMeta {
   id: string;
@@ -87,7 +103,11 @@ const CATALOG_SECTIONS: SectionMeta[] = [
   },
 ];
 
-export function CatalogHubView() {
+export function CatalogHubView({
+  categoryCounts,
+  sectionCounts,
+  totalActiveCount,
+}: CatalogHubViewProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -123,12 +143,22 @@ export function CatalogHubView() {
   }, []);
 
   const sectionSliderItems: CatalogSectionItem[] = useMemo(() => {
-    return CATALOG_SECTIONS.map((sec) => ({
-      id: sec.id,
-      title: sec.title,
-      count: sec.badgeCount,
-    }));
-  }, []);
+    return CATALOG_SECTIONS.map((sec) => {
+      if (sec.id === 'all' && totalActiveCount && totalActiveCount > 0) {
+        return {
+          id: sec.id,
+          title: sec.title,
+          count: totalActiveCount.toLocaleString('ru-RU'),
+        };
+      }
+      const liveSecCount = sectionCounts?.[sec.id];
+      return {
+        id: sec.id,
+        title: sec.title,
+        count: typeof liveSecCount === 'number' && liveSecCount > 0 ? liveSecCount.toLocaleString('ru-RU') : sec.badgeCount,
+      };
+    });
+  }, [sectionCounts, totalActiveCount]);
 
   // Filter categories according to selected global section
   const displayedCategories = useMemo(() => {
@@ -215,7 +245,9 @@ export function CatalogHubView() {
 
                       <div className="pt-3 border-t border-[#2B313A]/50 space-y-2">
                         <div className="text-xs font-semibold text-simona-teal font-mono">
-                          {cat.count}
+                          {typeof categoryCounts?.[cat.slug] === 'number' && categoryCounts[cat.slug] > 0
+                            ? `${categoryCounts[cat.slug]} ${pluralizeModels(categoryCounts[cat.slug])}`
+                            : cat.count}
                         </div>
 
                         {/* Featured Brands Pills: up to 3 lines */}
@@ -231,7 +263,7 @@ export function CatalogHubView() {
                               }}
                               className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#1E2228]/80 text-[#D7D9DB] border border-[#2B313A]/60 hover:border-simona-teal hover:text-white hover:bg-[#252A32] cursor-pointer transition-all duration-200 active:scale-95 select-none"
                             >
-                              {brand}
+                              {formatBrandName(brand)}
                             </button>
                           ))}
                         </div>

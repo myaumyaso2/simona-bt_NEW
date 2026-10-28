@@ -17,8 +17,73 @@ export interface CatalogFacetDefinition {
     featuresJson?: string | null;
     brand?: string | null;
     dimensions?: string | null;
+    color?: string | null;
   }) => boolean;
   faq: Array<{ question: string; answer: string }>;
+}
+
+interface RawFeatureItem {
+  label?: string;
+  value?: string;
+}
+
+function parseFacetFeatures(featuresJson?: string | null): RawFeatureItem[] {
+  if (!featuresJson) return [];
+  try {
+    const parsed = JSON.parse(featuresJson);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function isNegativeFeatureValue(val: string): boolean {
+  const v = val.trim().toLowerCase();
+  return !v || v === '-' || v === 'нет' || v === 'отсутствует' || v === 'без' || v === 'false' || v === '0';
+}
+
+function hasPositiveFeature(
+  featuresJson: string | null | undefined,
+  labelCheck: (labelLower: string) => boolean,
+  valueCheck?: (valLower: string) => boolean
+): boolean {
+  const items = parseFacetFeatures(featuresJson);
+  for (const item of items) {
+    const l = (item.label || '').trim().toLowerCase();
+    const v = (item.value || '').trim().toLowerCase();
+    if (!l || isNegativeFeatureValue(v)) continue;
+    if (labelCheck(l)) {
+      if (!valueCheck || valueCheck(v)) return true;
+    }
+  }
+  return false;
+}
+
+function extractNumericDimensionCm(
+  p: { featuresJson?: string | null; dimensions?: string | null; name?: string },
+  dimType: 'width' | 'height'
+): number | null {
+  const items = parseFacetFeatures(p.featuresJson);
+  const keyword = dimType === 'width' ? 'ширина' : 'высота';
+  for (const item of items) {
+    const l = (item.label || '').trim().toLowerCase();
+    if (l.includes(keyword) && !l.includes('упаковк') && !l.includes('ниши')) {
+      const num = parseFloat((item.value || '').replace(',', '.'));
+      if (!isNaN(num) && num > 0) {
+        return num > 250 ? num / 10 : num;
+      }
+    }
+  }
+  for (const item of items) {
+    const l = (item.label || '').trim().toLowerCase();
+    if (l.includes(keyword) && !l.includes('упаковк')) {
+      const num = parseFloat((item.value || '').replace(',', '.'));
+      if (!isNaN(num) && num > 0) {
+        return num > 250 ? num / 10 : num;
+      }
+    }
+  }
+  return null;
 }
 
 export const CATALOG_FACETS: CatalogFacetDefinition[] = [
@@ -117,8 +182,11 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
       'Световой индикатор «Луч на полу» — ключевой элемент комфорта в полновстраиваемых посудомоечных машинах. Поскольку фасад гарнитура полностью скрывает дисплей, световая точка или цифровая проекция времени на полу информирует о ходе программы без необходимости приоткрывать дверцу.',
     minProductsThreshold: 3,
     filter: (p) => {
-      const f = (p.featuresJson || '').toLowerCase();
-      return f.includes('луч') || f.includes('индикация времени') || f.includes('timebeam');
+      return hasPositiveFeature(
+        p.featuresJson,
+        (l) => l.includes('луч') || l.includes('индикация') || l.includes('timebeam'),
+        (v) => v.includes('есть') || v.includes('луч') || v.includes('пол') || v.includes('время') || v.includes('таймер')
+      ) || (p.featuresJson || '').toLowerCase().includes('луч на полу');
     },
     faq: [
       {
@@ -258,8 +326,17 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return n.includes('пиролиз') || f.includes('пиролиз') || f.includes('пиролитическ');
+      const g = (p.productGroup || '').toLowerCase();
+      return (
+        g.includes('pyro') ||
+        g.includes('пироли') ||
+        n.includes('пиролиз') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('очистк'),
+          (v) => v.includes('пироли')
+        )
+      );
     },
     faq: [
       {
@@ -290,16 +367,19 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
+      const g = (p.productGroup || '').toLowerCase();
       return (
+        g.includes('пароварк') ||
         n.includes('пароварк') ||
         n.includes(' steam') ||
-        n.includes('паром') ||
-        f.includes('пароварк') ||
-        f.includes('добавлением пара') ||
-        f.includes('пар ') ||
-        f.includes('паром') ||
-        f.includes('приготовление на пару')
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) =>
+            l.includes('приготовление на пару') ||
+            l.includes('добавление пара') ||
+            l.includes('функция пара') ||
+            l.includes('пароварк')
+        )
       );
     },
     faq: [
@@ -331,8 +411,14 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return n.includes('катализ') || f.includes('катализ') || f.includes('каталитическ');
+      return (
+        n.includes('катализ') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('очистк'),
+          (v) => v.includes('катали')
+        )
+      );
     },
     faq: [
       {
@@ -358,8 +444,20 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return n.includes('no frost') || n.includes('nofrost') || f.includes('no frost') || f.includes('nofrost');
+      return (
+        n.includes('no frost') ||
+        n.includes('nofrost') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('no frost') || l.includes('nofrost') || l.includes('размораживан'),
+          (v) =>
+            v.includes('есть') ||
+            v.includes('no frost') ||
+            v.includes('nofrost') ||
+            v.includes('морозильн') ||
+            v.includes('холодильн')
+        )
+      );
     },
     faq: [
       {
@@ -429,8 +527,18 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return n.includes('настенная') || n.includes('пристенная') || f.includes('настенная') || f.includes('пристенная');
+      const g = (p.productGroup || '').toLowerCase();
+      return (
+        g.includes('настенн') ||
+        g.includes('пристенн') ||
+        n.includes('настенн') ||
+        n.includes('пристенн') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('тип') || l.includes('монтаж') || l.includes('установк'),
+          (v) => v.includes('настенн') || v.includes('пристенн')
+        )
+      );
     },
     faq: [
       {
@@ -461,8 +569,16 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return n.includes('островная') || n.includes('остров') || f.includes('островная');
+      const g = (p.productGroup || '').toLowerCase();
+      return (
+        g.includes('островн') ||
+        n.includes('островн') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('тип') || l.includes('монтаж') || l.includes('установк'),
+          (v) => v.includes('островн')
+        )
+      );
     },
     faq: [
       {
@@ -492,9 +608,9 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
       'Вытяжки шириной 60 см — золотой стандарт для большинства кухонь. Они идеально перекрывают стандартные 4-конфорочные варочные панели шириной 58–60 см, обеспечивая 100% захват восходящего столба пара и капель масла. В каталоге представлены как невидимые полновстраиваемые блоки, так и дизайнерские наклонные решения.',
     minProductsThreshold: 3,
     filter: (p) => {
-      const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return n.includes(' 60') || f.includes('"ширина (см)","value":"60"') || f.includes('"ширина (см)","value":"59.8"');
+      const w = extractNumericDimensionCm(p, 'width');
+      if (w !== null) return w >= 55 && w < 67;
+      return /\b(59|60)(\.\d+)?\s*(см|cm)?\b/i.test(p.name || '');
     },
     faq: [
       {
@@ -519,9 +635,9 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
       'Вытяжки шириной 90 см предназначены для просторных кухонь и увеличенных варочных поверхностей (70–90 см). Увеличенная площадь жировых фильтров позволяет работать при меньшей скорости воздушного потока с сохранением предельной акустической тишины.',
     minProductsThreshold: 3,
     filter: (p) => {
-      const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return n.includes(' 90') || f.includes('"ширина (см)","value":"90"') || f.includes('"ширина (см)","value":"89.8"');
+      const w = extractNumericDimensionCm(p, 'width');
+      if (w !== null) return w >= 86;
+      return /\b(89|90)(\.\d+)?\s*(см|cm)?\b/i.test(p.name || '');
     },
     faq: [
       {
@@ -547,8 +663,20 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return f.includes('черн') || n.includes('черн') || n.includes('black') || n.includes('чёрн');
+      const c = (p.color || '').toLowerCase();
+      return (
+        c.includes('черн') ||
+        c.includes('чёрн') ||
+        c.includes('black') ||
+        n.includes('черн') ||
+        n.includes('чёрн') ||
+        n.includes('black') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('цвет'),
+          (v) => v.includes('черн') || v.includes('чёрн') || v.includes('black')
+        )
+      );
     },
     faq: [
       {
@@ -574,8 +702,20 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return n.includes('no frost') || n.includes('nofrost') || f.includes('no frost') || f.includes('nofrost');
+      return (
+        n.includes('no frost') ||
+        n.includes('nofrost') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('no frost') || l.includes('nofrost') || l.includes('размораживан'),
+          (v) =>
+            v.includes('есть') ||
+            v.includes('no frost') ||
+            v.includes('nofrost') ||
+            v.includes('морозильн') ||
+            v.includes('холодильн')
+        )
+      );
     },
     faq: [
       {
@@ -600,9 +740,9 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
       'Высота ниши 177,2–178,8 см — общепринятый мировой эталон для встраиваемых двухкамерных холодильников. Под этот размер проектируются типовые мебельные пеналы кухонных фабрик, что гарантирует идеальное сопряжение зазоров фасадов без индивидуальной подгонки.',
     minProductsThreshold: 3,
     filter: (p) => {
-      const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return f.includes('177') || f.includes('178') || n.includes('177') || n.includes('178');
+      const h = extractNumericDimensionCm(p, 'height');
+      if (h !== null) return h >= 175 && h <= 180;
+      return /\b(177|178)(\.\d+)?\b/.test(p.name || '');
     },
     faq: [
       {
@@ -628,8 +768,15 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return f.includes('свежест') || f.includes('biofresh') || f.includes('нулев') || n.includes('свежест');
+      return (
+        n.includes('biofresh') ||
+        n.includes('свежест') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('свежест') || l.includes('biofresh') || l.includes('нулев'),
+          (v) => !isNegativeFeatureValue(v)
+        )
+      );
     },
     faq: [
       {
@@ -655,8 +802,18 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return f.includes('82') || f.includes('85') || n.includes('под столешницу') || n.includes('под стол') || n.includes('встраиваемый под') || f.includes('под столешницу');
+      const g = (p.productGroup || '').toLowerCase();
+      const h = extractNumericDimensionCm(p, 'height');
+      if (h !== null && h >= 78 && h <= 90) return true;
+      return (
+        n.includes('под столешницу') ||
+        g.includes('под столешницу') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('установк') || l.includes('монтаж') || l.includes('тип'),
+          (v) => v.includes('под столешницу')
+        )
+      );
     },
     faq: [
       {
@@ -682,8 +839,18 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return n.includes('side-by-side') || n.includes('side by side') || n.includes('side') || f.includes('side-by-side') || f.includes('side by side');
+      const g = (p.productGroup || '').toLowerCase();
+      return (
+        g.includes('side-by-side') ||
+        g.includes('side by side') ||
+        n.includes('side-by-side') ||
+        n.includes('side by side') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('тип') || l.includes('конструкц') || l.includes('расположен') || l.includes('side'),
+          (v) => v.includes('side-by-side') || v.includes('side by side') || v.includes('бок о бок')
+        )
+      );
     },
     faq: [
       {
@@ -708,9 +875,9 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
       'Холодильники шириной 70 см — оптимальный компромисс между стандартными моделями 60 см и громоздкими шкафами Side-by-Side 90 см. Лишние 10 см ширины дают до +30% полезного объема, позволяя свободно ставить на одну полку широкие противни, казан или две большие кастрюли рядом.',
     minProductsThreshold: 3,
     filter: (p) => {
-      const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return f.includes('"ширина (см)","value":"70"') || f.includes('"ширина (см)","value":"70.5"') || n.includes(' 70');
+      const w = extractNumericDimensionCm(p, 'width');
+      if (w !== null) return w >= 67 && w < 77;
+      return /\b(70|71|75)(\.\d+)?\s*(см|cm)?\b/i.test(p.name || '');
     },
     faq: [
       {
@@ -736,8 +903,22 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return f.includes('черн') || n.includes('черн') || n.includes('black') || f.includes('графит') || n.includes('графит');
+      const c = (p.color || '').toLowerCase();
+      return (
+        c.includes('черн') ||
+        c.includes('чёрн') ||
+        c.includes('black') ||
+        c.includes('графит') ||
+        n.includes('черн') ||
+        n.includes('чёрн') ||
+        n.includes('black') ||
+        n.includes('графит') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('цвет'),
+          (v) => v.includes('черн') || v.includes('чёрн') || v.includes('black') || v.includes('графит')
+        )
+      );
     },
     faq: [
       {
@@ -763,8 +944,14 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return f.includes('гриль') || n.includes('гриль');
+      return (
+        n.includes('гриль') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('гриль') || l.includes('режим'),
+          (v) => v.includes('есть') || v.includes('да') || v.includes('гриль') || v.includes('кварц') || v.includes('тэн')
+        )
+      );
     },
     faq: [
       {
@@ -789,9 +976,9 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
       'Высота ниши 38 см — международный стандарт для встраиваемых микроволновых печей. Приборы этого типоразмера монтируются в навесные шкафы верхнего яруса (глубиной от 37 см) либо в колонну над полноразмерным духовым шкафом 60 см, образуя гармоничный кухонный тандем.',
     minProductsThreshold: 3,
     filter: (p) => {
-      const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return f.includes('38') || n.includes('38') || f.includes('38.2') || f.includes('38.5');
+      const h = extractNumericDimensionCm(p, 'height');
+      if (h !== null) return h >= 36 && h <= 40;
+      return /\b38(\.\d+)?\s*(см|cm)\b/i.test(p.name || '');
     },
     faq: [
       {
@@ -817,8 +1004,20 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return f.includes('черн') || n.includes('черн') || n.includes('black');
+      const c = (p.color || '').toLowerCase();
+      return (
+        c.includes('черн') ||
+        c.includes('чёрн') ||
+        c.includes('black') ||
+        n.includes('черн') ||
+        n.includes('чёрн') ||
+        n.includes('black') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('цвет'),
+          (v) => v.includes('черн') || v.includes('чёрн') || v.includes('black')
+        )
+      );
     },
     faq: [
       {
@@ -844,14 +1043,528 @@ export const CATALOG_FACETS: CatalogFacetDefinition[] = [
     minProductsThreshold: 3,
     filter: (p) => {
       const n = (p.name || '').toLowerCase();
-      const f = (p.featuresJson || '').toLowerCase();
-      return f.includes('бел') || n.includes('бел') || n.includes('white');
+      const c = (p.color || '').toLowerCase();
+      return (
+        c.includes('бел') ||
+        c.includes('white') ||
+        n.includes('бел') ||
+        n.includes('white') ||
+        hasPositiveFeature(
+          p.featuresJson,
+          (l) => l.includes('цвет'),
+          (v) => v.includes('бел') || v.includes('white')
+        )
+      );
     },
     faq: [
       {
         question: 'Не желтеет ли белое стекло со временем?',
         answer:
           'Белоснежное закаленное стекло керамической закалки не выгорает на солнце, не реагирует на пар и бытовую химию, сохраняя чистый белый цвет на протяжении всего срока службы.',
+      },
+    ],
+  },
+
+  // 28. Sinks: Granite / Composite (Гранитные мойки)
+  {
+    categorySlug: 'mojki-dlya-kuhni',
+    facetSlug: 'granitnye',
+    h1: 'Гранитные кухонные мойки из искусственного камня',
+    shortTitle: 'Гранитные',
+    badge: 'Artgranit и Tetogranit OMOIKIRI',
+    metaTitle: 'Гранитные мойки для кухни в Нижнем Новгороде — купить в салонах СИМОНА',
+    metaDescription:
+      'Каталог гранитных кухонных моек из композитного камня Artgranit и Tetogranit от OMOIKIRI и Franke. Монобрендовый салон на ул. Белинского 11/66, склад в Нижнем Новгороде.',
+    seoLeadText:
+      'Гранитные кухонные мойки из композитного камня (Artgranit, Tetogranit, Fragranite) содержат до 80% частиц натурального гранита и кварца, связанных высокопрочными акриловыми смолами. Поверхность устойчива к ударам тяжелой посуды, царапинам, воздействию пищевых красителей (кофе, вино, свекла) и выдерживает температуру до 280 °C.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const f = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return f.includes('искусственный гранит') || f.includes('гранит') || f.includes('artgranit') || f.includes('tetogranit') || n.includes('artgranit') || n.includes('tetogranit');
+    },
+    faq: [
+      {
+        question: 'Остаются ли пятна от кофе, чая и вина на светлых гранитных мойках?',
+        answer:
+          'В премиальных мойках OMOIKIRI из материалов Artgranit и Tetogranit поры полимера полностью закрыты ионами серебра и полимерным составом. Пигменты не проникают в структуру материала и легко смываются обычной губкой с мыльным раствором.',
+      },
+      {
+        question: 'Можно ли ставить в гранитную мойку горячие кастрюли и сковороды?',
+        answer:
+          'Качественный композитный гранит OMOIKIRI и Franke термостоек до 280 °C. Тем не менее, эксперты «СИМОНЫ» рекомендуют использовать защитные ролл-маты или термоподставки для предотвращения термического шока.',
+      },
+    ],
+  },
+
+  // 29. Sinks: Stainless Steel (Нержавеющая сталь)
+  {
+    categorySlug: 'mojki-dlya-kuhni',
+    facetSlug: 'nerzhaveyushchaya-stal',
+    h1: 'Кухонные мойки из нержавеющей стали',
+    shortTitle: 'Нержавеющая сталь',
+    badge: 'Толщина стали 1.0–1.2 мм и шумоизоляция',
+    metaTitle: 'Кухонные мойки из нержавеющей стали в Нижнем Новгороде | СИМОНА',
+    metaDescription:
+      'Каталог моек из японской нержавеющей стали OMOIKIRI и Franke. Шумопоглощающие накладки, PVD-покрытия, врезной и подстольный монтаж со склада в Нижнем Новгороде.',
+    seoLeadText:
+      'Мойки из японской нержавеющей стали марки AISI 304 толщиной 1.0–1.2 мм (серии OMOIKIRI Akisame, Taki) отличаются абсолютной гигиеничностью, устойчивостью к коррозии и кислотам. Нижняя сторона чаш покрывается вибропоглощающим составом и плотными резиновыми накладками, исключающими металлический звон струи воды.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const f = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return f.includes('нержавеющ') || n.includes('нерж') || n.includes('нержавеющ');
+    },
+    faq: [
+      {
+        question: 'Гремят ли мойки из нержавеющей стали под струей воды?',
+        answer:
+          'Бюджетные тонкие мойки 0.6 мм действительно издают шум. Модели премиального сегмента OMOIKIRI толщиной 1.0–1.2 мм оснащаются многослойным звукопоглощающим покрытием чаши, делая поток воды практически бесшумным.',
+      },
+    ],
+  },
+
+  // 30. Sinks: Undermount (Подстольный монтаж)
+  {
+    categorySlug: 'mojki-dlya-kuhni',
+    facetSlug: 'podstolnyj-montazh',
+    h1: 'Кухонные мойки подстольного монтажа',
+    shortTitle: 'Подстольные',
+    badge: 'Идеально для камня и кварца',
+    metaTitle: 'Кухонные мойки подстольного монтажа в Нижнем Новгороде | СИМОНА',
+    metaDescription:
+      'Каталог подстольных моек под столешницу из камня, кварцевого агломерата и керамогранита. Бесшовный край, салон на ул. Белинского 11/66, склад в НН.',
+    seoLeadText:
+      'Подстольный монтаж (монтируется снизу под вырез в столешнице из искусственного камня, кварца или керамогранита) создает безупречно гладкую рабочую поверхность. Крошки и капли воды смахиваются прямо в чашу одним движением губки, а отсутствие выступающих бортиков исключает скопление грязи и плесени по периметру.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const f = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return f.includes('подстольн') || f.includes('под столешницу') || n.includes('подстольн') || f.includes('интегрирован');
+    },
+    faq: [
+      {
+        question: 'Можно ли установить подстольную мойку в столешницу из ламинированного ДСП?',
+        answer:
+          'Категорически нет! При подстольном монтаже срез столешницы постоянно контактирует с водой. Для ДСП/ЛДСП подходит только врезной монтаж с бортиком. Подстольный способ предназначен исключительно для влагостойких материалов: камня, кварца, керамогранита или массива с полимерной защитой.',
+      },
+    ],
+  },
+
+  // 31. Sinks: Inset / Top-Mount (Врезные)
+  {
+    categorySlug: 'mojki-dlya-kuhni',
+    facetSlug: 'vreznye',
+    h1: 'Врезные кухонные мойки на столешницу',
+    shortTitle: 'Врезные',
+    badge: 'Универсальный монтаж сверху',
+    metaTitle: 'Врезные мойки для кухни в Нижнем Новгороде — купить в салонах СИМОНА',
+    metaDescription:
+      'Каталог врезных кухонных моек из гранита и нержавейки для столешниц из ДСП, пластика и дерева. Большой выбор со склада в Нижнем Новгороде.',
+    seoLeadText:
+      'Врезные мойки устанавливаются сверху в подготовленный пропил столешницы любого типа, включая ламинированный ДСП, дерево и компакт-плиту. Аккуратный плоский кант плотно прижимается клипсами и герметизируется санитарным силиконом, надежно защищая срез мебели от влаги.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const f = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return f.includes('врезн') || f.includes('на столешницу') || n.includes('врезн');
+    },
+    faq: [
+      {
+        question: 'Подходят ли врезные мойки для недорогих гарнитуров со столешницей ДСП?',
+        answer:
+          'Да, врезной монтаж — единственный безопасный вариант для столешниц из ДСП и ЛДСП, так как бортик мойки с уплотнителем перекрывает срез от проникновения воды.',
+      },
+    ],
+  },
+
+  // 32. Sinks: Black (Черные мойки)
+  {
+    categorySlug: 'mojki-dlya-kuhni',
+    facetSlug: 'chernye',
+    h1: 'Черные кухонные мойки и графит',
+    shortTitle: 'Черные',
+    badge: 'Глубокий матовый черный цвет',
+    metaTitle: 'Черные мойки для кухни в Нижнем Новгороде — купить в салонах СИМОНА',
+    metaDescription:
+      'Каталог черных гранитных и стальных кухонных моек OMOIKIRI и Franke. Идеальное сочетание с черными смесителями, салон на Белинского 11/66, склад в НН.',
+    seoLeadText:
+      'Черные кухонные мойки из темного гранита и нержавеющей стали с PVD-покрытием Gun Metal — фавориты современных кухонных интерьеров. Матовая шелковистая фактура не бликует, гармонирует с темной встраиваемой техникой и профильными ручками гарнитура.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const f = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return f.includes('черн') || n.includes('черн') || n.includes('black') || f.includes('графит') || n.includes('графит');
+    },
+    faq: [
+      {
+        question: 'Виден ли белый известковый налет на черной гранитной мойке?',
+        answer:
+          'В жесткой воде минеральные соли могут оседать на темных поверхностях. В мойках OMOIKIRI плотная гидрофобная структура препятствует въеданию налета: достаточно 1 раз в 2 недели протирать чашу мягкой губкой с каплей средства от накипи или растительного масла для восстановления глубокого матового блеска.',
+      },
+    ],
+  },
+
+  // 33. Faucets: Filter 2-in-1 (Под фильтр)
+  {
+    categorySlug: 'smesiteli-dlya-kuhni',
+    facetSlug: 'pod-filtr',
+    h1: 'Смесители для кухни с подключением фильтра питьевой воды (2 в 1)',
+    shortTitle: 'Под фильтр 2-в-1',
+    badge: 'Два контура: водопровод и фильтр',
+    metaTitle: 'Смесители под фильтр питьевой воды 2 в 1 в Нижнем Новгороде | СИМОНА',
+    metaDescription:
+      'Каталог кухонных смесителей с каналом для фильтра питьевой воды OMOIKIRI Pure Life и Franke. Без второго краника, склад в Нижнем Новгороде.',
+    seoLeadText:
+      'Комбинированные смесители 2-в-1 с технологией Pure Life объединяют подачу обычной водопроводной и фильтрованной питьевой воды в едином корпусе. Внутри излива проложены две изолированные трубки: фильтрованная вода никогда не смешивается с технической, избавляя от необходимости сверлить столешницу под отдельный тонкий краник.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const feat = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return feat.includes('фильтр') || feat.includes('питьев') || n.includes('фильтр') || n.includes('2 в 1') || n.includes('pure life');
+    },
+    faq: [
+      {
+        question: 'Как подключается смеситель 2-в-1 к обратному осмосу или проточному фильтру?',
+        answer:
+          'В комплекте смесителя идет специальный быстроразъемный цанговый переходник (John Guest) под стандартную полиэтиленовую трубку фильтра 1/4 дюйма. Управление питьевой водой выведено на отдельный мини-рычаг.',
+      },
+    ],
+  },
+
+  // 34. Faucets: Pull-Out Spray (С выдвижным изливом)
+  {
+    categorySlug: 'smesiteli-dlya-kuhni',
+    facetSlug: 's-vydvizhnym-izlivom',
+    h1: 'Смесители для кухни с выдвижным изливом и лейкой-душем',
+    shortTitle: 'Выдвижной излив',
+    badge: 'Шланг до 1.5 м и режим душ',
+    metaTitle: 'Смесители для кухни с выдвижным изливом в Нижнем Новгороде | СИМОНА',
+    metaDescription:
+      'Каталог кухонных смесителей с выдвижной лейкой-душем OMOIKIRI и Franke. Легкое мытье габаритных кастрюль и чаши мойки со склада в Нижнем Новгороде.',
+    seoLeadText:
+      'Смесители с гибким выдвижным шлангом длиной до 1.2–1.5 метра позволяют наполнять водой высокие вазы и ведра прямо на столешнице, не поднимая их в мойку. Двухрежимная лейка переключается между ламинарной аэрированной струей и интенсивным душем для деликатного мытья зелени и ягод.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const feat = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return feat.includes('выдвижн') || n.includes('выдвижн') || n.includes('душ') || feat.includes('вытяжн');
+    },
+    faq: [
+      {
+        question: 'Не перетирается ли гибкий выдвижной шланг со временем?',
+        answer:
+          'В смесителях OMOIKIRI используется усиленный армированный шланг в нейлоновой оплетке с металлическим наконечником и свинцовым противовесом, рассчитанный более чем на 100 000 циклов выдвижения.',
+      },
+    ],
+  },
+
+  // 35. Faucets: Black (Черные смесители)
+  {
+    categorySlug: 'smesiteli-dlya-kuhni',
+    facetSlug: 'chernye',
+    h1: 'Черные кухонные смесители матовые и графит',
+    shortTitle: 'Черные',
+    badge: 'Стойкое матовое PVD-покрытие',
+    metaTitle: 'Черные смесители для кухни в Нижнем Новгороде — купить в салонах СИМОНА',
+    metaDescription:
+      'Каталог матовых черных смесителей OMOIKIRI под гранитные и стальные мойки. Склад в Нижнем Новгороде, официальная гарантия до 5 лет.',
+    seoLeadText:
+      'Черные кухонные смесители с гальваническим или PVD-напылением создают стильный контрастный ансамбль с гранитными или темными стальными мойками. Матовое покрытие приятно на ощупь и устойчиво к появлению отпечатков пальцев и брызг.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const feat = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return feat.includes('черн') || n.includes('черн') || n.includes('black') || feat.includes('графит') || n.includes('графит');
+    },
+    faq: [
+      {
+        question: 'Не облазит ли черное матовое покрытие от горячей воды и химии?',
+        answer:
+          'В отличие от дешевой порошковой краски, смесители OMOIKIRI окрашиваются методом вакуумного PVD-напыления и запекания при высоких температурах: молекулы цвета внедряются в поверхностный слой латуни и не скалываются.',
+      },
+    ],
+  },
+
+  // 36. Faucets: Stainless Steel (Нержавеющая сталь)
+  {
+    categorySlug: 'smesiteli-dlya-kuhni',
+    facetSlug: 'nerzhaveyushchaya-stal',
+    h1: 'Кухонные смесители из нержавеющей стали',
+    shortTitle: 'Нержавеющая сталь',
+    badge: 'Массивная сталь AISI 304 без свинца',
+    metaTitle: 'Смесители из нержавеющей стали для кухни в Нижнем Новгороде | СИМОНА',
+    metaDescription:
+      'Каталог смесителей из цельной нержавеющей стали AISI 304 от OMOIKIRI. Абсолютная экологичность, склад в Нижнем Новгороде, гарантия.',
+    seoLeadText:
+      'Смесители из цельной нержавеющей стали AISI 304 не содержат свинца и цинка, обеспечивая эталонную экологическую чистоту питьевой воды. Брашированная матовая сталь устойчива к царапинам и идеально сочетается со стальными мойками и фасадами техники.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const feat = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return feat.includes('нержавеющ') || n.includes('нерж') || n.includes('нержавеющ');
+    },
+    faq: [
+      {
+        question: 'В чем преимущество смесителя из цельной нержавеющей стали перед латунным?',
+        answer:
+          'Нержавеющая сталь марки 304 на 100% свободна от примесей тяжелых металлов (свинца), не подвержена вымыванию компонентов сплава и имеет неограниченный срок службы.',
+      },
+    ],
+  },
+
+  // 37. Faucets: Gold & Brass (Золото и латунь)
+  {
+    categorySlug: 'smesiteli-dlya-kuhni',
+    facetSlug: 'zoloto-i-latun',
+    h1: 'Кухонные смесители под золото, латунь и светлую бронзу',
+    shortTitle: 'Золото и латунь',
+    badge: 'Благородные металлические акценты',
+    metaTitle: 'Смесители для кухни под золото и латунь в Нижнем Новгороде | СИМОНА',
+    metaDescription:
+      'Каталог дизайнерских смесителей цвета светлое золото, античная латунь и медь от OMOIKIRI. Шоурум на ул. Белинского 11/66, склад в Нижнем Новгороде.',
+    seoLeadText:
+      'Смесители в оттенках теплого золота, шампань, античной латуни и меди — изысканное украшение кухонь в стиле неоклассика, ар-деко и сканди. Износостойкое PVD-покрытие защищает металл от потускнения и окисления во влажной среде.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const feat = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return feat.includes('латунь') || feat.includes('золот') || feat.includes('бронз') || n.includes('латунь') || n.includes('золот') || n.includes('бронз');
+    },
+    faq: [
+      {
+        question: 'Как ухаживать за золотыми и латунными смесителями?',
+        answer:
+          'Запрещено использовать абразивные чистящие порошки и агрессивные кислоты. Для сохранения зеркального или матового блеска достаточно протирать излив мягкой хлопковой салфеткой с мыльным раствором.',
+      },
+    ],
+  },
+
+  // 38. Washing Machines: Narrow 40-45 cm (Узкие)
+  {
+    categorySlug: 'stiralnye-mashiny',
+    facetSlug: 'uzkie-45-sm',
+    h1: 'Узкие стиральные машины глубиной 40–45 см',
+    shortTitle: 'Узкие 45 см',
+    badge: 'Для компактных ванных комнат',
+    metaTitle: 'Узкие стиральные машины 40–45 см в Нижнем Новгороде | Салоны СИМОНА',
+    metaDescription:
+      'Каталог узких стиральных машин глубиной 40–45 см. Загрузка до 7–8 кг, инверторные моторы, обработка паром. Склад в Нижнем Новгороде.',
+    seoLeadText:
+      'Узкие стиральные машины глубиной 40–45 см специально созданы для типовых ванных комнат многоквартирных домов Нижнего Новгорода. При компактной глубине современные барабаны вмещают от 6 до 8 кг сухого белья и оснащаются тихими инверторными моторами с прямым или ременным приводом.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const feat = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return feat.includes('узк') || feat.includes('40') || feat.includes('45') || n.includes('узк') || n.includes('40') || n.includes('45');
+    },
+    faq: [
+      {
+        question: 'Прыгают ли узкие стиральные машины при отжиме на 1200–1400 оборотов?',
+        answer:
+          'Современные инверторные модели с системой электронного 3D-контроля дисбаланса равномерно распределяют белье по стенкам барабана до начала набора оборотов, исключая вибрации и смещение корпуса.',
+      },
+    ],
+  },
+
+  // 39. Washing Machines: Full-Size 60 cm (Полноразмерные)
+  {
+    categorySlug: 'stiralnye-mashiny',
+    facetSlug: 'polnorazmernye-60-sm',
+    h1: 'Полноразмерные стиральные машины глубиной 55–60 см',
+    shortTitle: 'Полноразмерные 60 см',
+    badge: 'Большая загрузка 8–10 кг',
+    metaTitle: 'Полноразмерные стиральные машины 60 см в Нижнем Новгороде | СИМОНА',
+    metaDescription:
+      'Каталог полноразмерных стиральных машин 60 см от Asko, Schulthess, Miele, Körting. Профессиональные прачечные технологии со склада в Нижнем Новгороде.',
+    seoLeadText:
+      'Полноразмерные стиральные машины глубиной 55–60 см обеспечивают максимальный диаметр барабана для бережной стирки пледов, пуховиков и постельного белья. Увеличенная масса чугунных или чугунно-бетонных противовесов гарантирует идеальную устойчивость при отжиме до 1600 об/мин.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const feat = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return feat.includes('60') || n.includes('60') || n.includes('полноразмер');
+    },
+    faq: [
+      {
+        question: 'Можно ли ставить сушильную машину на узкую стиральную машину 45 см?',
+        answer:
+          'Категорически нет! Сушильная машина всегда имеет полноразмерную базу (глубина 60 см). Вертикальный монтаж в колонну допускается строго на полноразмерные стиральные машины глубиной не менее 55–60 см с использованием соединительной планки Stacking Kit.',
+      },
+    ],
+  },
+
+  // 40. Washing Machines: Steam Function (С паром)
+  {
+    categorySlug: 'stiralnye-mashiny',
+    facetSlug: 's-parom',
+    h1: 'Стиральные машины с функцией обработки паром',
+    shortTitle: 'С паром',
+    badge: 'Антиаллергенная дезинфекция и освежение',
+    metaTitle: 'Стиральные машины с паром в Нижнем Новгороде — купить в салонах СИМОНА',
+    metaDescription:
+      'Каталог стиральных машин с паровыми программами SteamRefresh. Разглаживание складок, удаление 99.9% бактерий, склад в Нижнем Новгороде.',
+    seoLeadText:
+      'Паровые программы (SteamRefresh / SteamCare) глубоко проникают в волокна тканей, уничтожая пылевых клещей, бактерии и аллергены без кипячения. Пар бережно расправляет заломы на рубашках и платьях, сокращая время последующей глажки утюгом в 2 раза.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const feat = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return feat.includes('пар') || n.includes('пар') || feat.includes('steam') || n.includes('steam');
+    },
+    faq: [
+      {
+        question: 'Заменяет ли паровая обработка стирку с порошком?',
+        answer:
+          'Для слабозагрязненной одежды (например, пиджак или блузка после одного дня в офисе) 20-минутный паровой цикл полностью удаляет запахи и освежает ткань без использования воды и порошка.',
+      },
+    ],
+  },
+
+  // 41. Washing Machines: Inverter Motor (Инверторные)
+  {
+    categorySlug: 'stiralnye-mashiny',
+    facetSlug: 'invertornye',
+    h1: 'Стиральные машины с инверторным мотором',
+    shortTitle: 'Инверторные',
+    badge: 'Бесщеточный тихий мотор и долговечность',
+    metaTitle: 'Инверторные стиральные машины в Нижнем Новгороде | Салоны СИМОНА',
+    metaDescription:
+      'Каталог бесшумных инверторных стиральных машин. Экономия энергии А+++, отсутствие трения щеток, склад в Нижнем Новгороде, гарантия.',
+    seoLeadText:
+      'Инверторный бесщеточный мотор (BLDC) работает без трущихся графитовых щеток, что снижает уровень шума до комфортных 50–54 дБ при стирке и повышает надежность привода. Электронное управление частотой вращения обеспечивает плавный разгон и высокий класс энергоэффективности A+++.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const feat = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return feat.includes('инвертор') || n.includes('инвертор') || feat.includes('bldc');
+    },
+    faq: [
+      {
+        question: 'Чем инверторный двигатель лучше коллекторного (щеточного)?',
+        answer:
+          'В нем нет угольных щеток, которые со временем стираются и искрят. Инвертор работает заметно тише, не требует сервисной замены щеток и потребляет на 25–30% меньше электроэнергии.',
+      },
+    ],
+  },
+
+  // 42. Dryers: Heat Pump (С тепловым насосом)
+  {
+    categorySlug: 'sushilnye-mashiny',
+    facetSlug: 's-teplovym-nasosom',
+    h1: 'Сушильные машины с тепловым насосом Heat Pump',
+    shortTitle: 'Тепловой насос',
+    badge: 'Деликатная сушка при 50–55 °C без усадки',
+    metaTitle: 'Сушильные машины с тепловым насосом Heat Pump в Нижнем Новгороде | СИМОНА',
+    metaDescription:
+      'Каталог энергоэффективных сушильных машин Heat Pump A+++. Безопасная сушка шерсти и шелка, склад в Нижнем Новгороде, официальная гарантия.',
+    seoLeadText:
+      'Технология теплового насоса (Heat Pump) работает по замкнутому термодинамическому циклу, вытягивая влагу из белья при деликатной температуре 50–55 °C (вместо 75–80 °C в обычных ТЭНовых сушилках). Это полностью исключает усадку деликатных тканей, шерсти и спортивной мембраны, экономя до 50% электроэнергии.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const feat = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return (
+        feat.includes('теплового') ||
+        feat.includes('тепловым') ||
+        feat.includes('тепловой') ||
+        feat.includes('heat pump') ||
+        feat.includes('heatpump') ||
+        n.includes('hp') ||
+        n.includes('heat pump')
+      );
+    },
+    faq: [
+      {
+        question: 'Садятся ли вещи при сушке в машине с тепловым насосом?',
+        answer:
+          'Нет! Благодаря деликатной температуре обдува 50–55 °C ткань не пересыхает и не деформируется. В таких машинах можно безопасно сушить шерстяные свитера, пуховики и шелковые вещи.',
+      },
+    ],
+  },
+
+  // 43. Dryers: Stacked Column (В колонну)
+  {
+    categorySlug: 'sushilnye-mashiny',
+    facetSlug: 'v-kolonnu',
+    h1: 'Сушильные машины для установки в колонну со стиральной машиной',
+    shortTitle: 'В колонну',
+    badge: 'Экономия площади пола в 2 раза',
+    metaTitle: 'Сушильные машины для установки в колонну в Нижнем Новгороде | СИМОНА',
+    metaDescription:
+      'Каталог сушильных машин для вертикального монтажа в колонну. Фирменные соединительные элементы Stacking Kit с полкой, склад в Нижнем Новгороде.',
+    seoLeadText:
+      'Установка сушильной машины в колонну над полноразмерной стиральной машиной позволяет организовать полноценный прачечный комплекс всего на 0.36 м² площади пола. Специальные монтажные планки (Stacking Kit) с выдвижной полкой для корзины белья обеспечивают 100% устойчивость и гашение вибраций.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const feat = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return feat.includes('колонн') || n.includes('колонн') || feat.includes('в колонну') || n.includes('в колонну') || n.includes('asko') || n.includes('schulthess') || n.includes('korting');
+    },
+    faq: [
+      {
+        question: 'Какая стиральная машина подходит под сушилку в колонну?',
+        answer:
+          'Стиральная машина обязана быть полноразмерной (глубина от 55 до 60 см). Монтаж сушилки на узкую стиральную машину (40–45 см) категорически запрещен производителями из соображений безопасности.',
+      },
+    ],
+  },
+
+  // 44. Dryers: Steam Function (С паром)
+  {
+    categorySlug: 'sushilnye-mashiny',
+    facetSlug: 's-parom',
+    h1: 'Сушильные машины с функцией пара и разглаживания складок',
+    shortTitle: 'С функцией пара',
+    badge: 'Одежда без утюга и складок',
+    metaTitle: 'Сушильные машины с паром в Нижнем Новгороде — купить в салонах СИМОНА',
+    metaDescription:
+      'Каталог сушильных машин с паровым разглаживанием складок и освежением одежды без стирки. В наличии на складе в Нижнем Новгороде, гарантия.',
+    seoLeadText:
+      'Функция паровой обработки в сушильной машине (SteamRefresh) разглаживает складки на сухой одежде, устраняет запахи парфюма или табака и делает глажку рубашек и постельного белья ненужной. Вещи достаются из барабана теплыми, мягкими и готовыми к вывешиванию на плечики.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const feat = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return feat.includes('пар') || n.includes('пар') || feat.includes('steam') || n.includes('steam');
+    },
+    faq: [
+      {
+        question: 'Откуда берется вода для пара в сушильной машине?',
+        answer:
+          'В большинстве современных сушильных машин пар генерируется из сконденсированной влаги предыдущего цикла сушки либо заливается в съемный мини-резервуар дистиллированная вода.',
+      },
+    ],
+  },
+
+  // 45. Dryers: Load Capacity 8-9 kg (Загрузка 8–9 кг)
+  {
+    categorySlug: 'sushilnye-mashiny',
+    facetSlug: 'zagruzka-8-9-kg',
+    h1: 'Сушильные машины с большой загрузкой 8–9 кг',
+    shortTitle: 'Загрузка 8–9 кг',
+    badge: 'Для одеял, пледов и пуховиков',
+    metaTitle: 'Сушильные машины с загрузкой 8–9 кг в Нижнем Новгороде | СИМОНА',
+    metaDescription:
+      'Каталог вместительных сушильных машин с объемом барабана 110–120 л. Сушка тяжелых одеял и пуховиков, склад в Нижнем Новгороде.',
+    seoLeadText:
+      'Сушильные машины с вместимостью барабана 8–9 кг оснащаются огромной камерой объемом 110–125 литров. Большой объем исключает скручивание белья в тугой жгут и позволяет свободно высушить объемное двуспальное одеяло, тяжелый пуховик или 3 комплекта постельного белья за один сеанс.',
+    minProductsThreshold: 3,
+    filter: (p) => {
+      const feat = (p.featuresJson || '').toLowerCase();
+      const n = (p.name || '').toLowerCase();
+      return (
+        /"(максимальная\s*)?загрузка[^"]*"\s*:\s*"[89](\.0)?"/i.test(p.featuresJson || '') ||
+        /"value"\s*:\s*"[89](\.0)?"/i.test(p.featuresJson || '') ||
+        /8\s*кг|9\s*кг/i.test(feat) ||
+        /\b[89]\s*кг/i.test(n)
+      );
+    },
+    faq: [
+      {
+        question: 'Зачем сушильной машине нужен объем барабана 120 литров?',
+        answer:
+          'В отличие от стирки, где белье лежит плотно в воде, для эффективной сушки горячему воздуху требуется свободное пространство вокруг каждого изделия. Барабан 120 л обеспечивает свободное парение ткани и отсутствие складок.',
       },
     ],
   },

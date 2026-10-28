@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FilterState } from './CatalogSidebar';
 import { SimonaIconFilter, SimonaIconCheck } from '@/components/brand/SimonaIcons';
 import { CategoryFacet } from '@/lib/productFeatures';
+import { formatBrandName } from '@/lib/formatters';
 
 export type SortOption = 'popular' | 'price_asc' | 'price_desc' | 'newest';
 export type ViewMode = 'grid' | 'list';
@@ -159,7 +160,7 @@ export function CatalogToolbar({
               >
                 <span className="text-[#87888A]">Бренд:</span>
                 <span className="font-semibold text-simona-teal group-hover:text-white transition-colors">
-                  {brand}
+                  {formatBrandName(brand)}
                 </span>
                 <X className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
               </button>
