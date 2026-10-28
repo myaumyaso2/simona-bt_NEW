@@ -17,6 +17,7 @@ import { getCategoryBySlug, getCategorySlugByName } from '@/data/catalogCategori
 import { formatProductName } from '@/lib/catalog/productTitle';
 import { resolveBrandEntry } from '@/lib/catalog/brandsRegistry';
 import { formatBrandName } from '@/lib/formatters';
+import { getCatalogCategorySession } from '@/lib/catalog/filterUrlSync';
 
 interface ProductDetailViewProps {
   product: ProductItem;
@@ -37,6 +38,15 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
   const canonicalBrandParam = brandReg
     ? brandReg.dbBrand
     : (product.brand || '').trim().toUpperCase();
+
+  const [returnUrl, setReturnUrl] = useState(`/catalog/${categorySlug}`);
+
+  useEffect(() => {
+    const sess = getCatalogCategorySession(categorySlug);
+    if (sess?.url) {
+      setReturnUrl(sess.url);
+    }
+  }, [categorySlug]);
 
   const [activeTab, setActiveTab] = useState('specs');
   const [isOneClickBuyOpen, setIsOneClickBuyOpen] = useState(false);
@@ -61,7 +71,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
           skipJsonLd
           items={[
             { name: 'Каталог', url: '/catalog' },
-            { name: categoryDisplayName, url: `/catalog/${categorySlug}` },
+            { name: categoryDisplayName, url: returnUrl },
             ...(brandDisplay && canonicalBrandParam
               ? [
                   {
@@ -74,7 +84,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
           ]}
           rightContent={
             <Link
-              href={`/catalog/${categorySlug}`}
+              href={returnUrl}
               className="inline-flex items-center gap-1.5 text-simona-teal hover:text-simona-teal-light transition-colors font-medium shrink-0"
             >
               <SimonaIconArrowLeft className="w-3.5 h-3.5" />

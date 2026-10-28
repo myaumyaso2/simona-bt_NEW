@@ -19,6 +19,8 @@ import { getDiscountBadgeInfo } from '@/lib/catalog/badgeHelper';
 import { formatProductName } from '@/lib/catalog/productTitle';
 import { formatBrandName } from '@/lib/formatters';
 import { ProductCardGallery } from './ProductCardGallery';
+import { getCategorySlugByName } from '@/data/catalogCategories';
+import { saveCatalogCategorySession } from '@/lib/catalog/filterUrlSync';
 
 function getProductChips(product: ProductItem): string[] {
   const chips: string[] = [];
@@ -138,6 +140,7 @@ function getProductChips(product: ProductItem): string[] {
 
 interface LuxuryProductCardProps {
   product: ProductItem;
+  categorySlug?: string;
   selectedPromos?: string[];
   showCompareRemove?: boolean;
   onRemoveFromCompare?: () => void;
@@ -145,10 +148,22 @@ interface LuxuryProductCardProps {
 
 export function LuxuryProductCard({
   product,
+  categorySlug,
   selectedPromos,
   showCompareRemove = false,
   onRemoveFromCompare,
 }: LuxuryProductCardProps) {
+  const targetCategorySlug = categorySlug || getCategorySlugByName(product.category);
+
+  const handleProductClick = () => {
+    if (typeof window !== 'undefined' && targetCategorySlug) {
+      saveCatalogCategorySession(targetCategorySlug, {
+        url: window.location.href,
+        scrollY: window.scrollY,
+        lastProductId: product.id,
+      });
+    }
+  };
   const {
     openModal,
     addToCart,
@@ -297,7 +312,10 @@ export function LuxuryProductCard({
   );
 
   return (
-    <div className={`group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 transition-all duration-300 shadow-xl flex flex-col justify-between relative ${isTooltipOpen ? 'z-40' : 'z-10'}`}>
+    <div
+      id={`product-${product.id}`}
+      className={`group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 transition-all duration-300 shadow-xl flex flex-col justify-between relative ${isTooltipOpen ? 'z-40' : 'z-10'}`}
+    >
       <div>
         {/* Top Media Area (White Luxury Showcase Tablet with object-contain) */}
         <div className="relative aspect-[4/3] rounded-xl">
@@ -323,6 +341,7 @@ export function LuxuryProductCard({
 
           <Link
             href={`/product/${product.slug}`}
+            onClick={handleProductClick}
             className="block w-full h-full bg-white rounded-xl overflow-hidden p-3 border border-white/10 group-hover:border-simona-teal/50 transition-colors shadow-inner flex items-center justify-center"
           >
             {/* Badges Stack (Top-Left): Availability Status + Brand Tag */}
@@ -527,7 +546,7 @@ export function LuxuryProductCard({
           </div>
 
           {/* Product Name */}
-          <Link href={`/product/${product.slug}`} className="block">
+          <Link href={`/product/${product.slug}`} onClick={handleProductClick} className="block">
             <h3 className="text-[15px] font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors line-clamp-2 leading-snug">
               {formattedTitle}
             </h3>

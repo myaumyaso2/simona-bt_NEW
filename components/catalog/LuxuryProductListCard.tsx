@@ -19,9 +19,12 @@ import { extractKeySpecs } from '@/lib/productFeatures';
 import { formatProductName } from '@/lib/catalog/productTitle';
 import { formatBrandName } from '@/lib/formatters';
 import { ProductCardGallery } from './ProductCardGallery';
+import { getCategorySlugByName } from '@/data/catalogCategories';
+import { saveCatalogCategorySession } from '@/lib/catalog/filterUrlSync';
 
 interface LuxuryProductListCardProps {
   product: ProductItem;
+  categorySlug?: string;
   selectedPromos?: string[];
 }
 
@@ -62,7 +65,18 @@ function getProductSpecs(product: ProductItem): SpecRow[] {
   return rows.slice(0, 4);
 }
 
-export function LuxuryProductListCard({ product, selectedPromos }: LuxuryProductListCardProps) {
+export function LuxuryProductListCard({ product, categorySlug, selectedPromos }: LuxuryProductListCardProps) {
+  const targetCategorySlug = categorySlug || getCategorySlugByName(product.category);
+
+  const handleProductClick = () => {
+    if (typeof window !== 'undefined' && targetCategorySlug) {
+      saveCatalogCategorySession(targetCategorySlug, {
+        url: window.location.href,
+        scrollY: window.scrollY,
+        lastProductId: product.id,
+      });
+    }
+  };
   const {
     openModal,
     addToCart,
@@ -146,11 +160,15 @@ export function LuxuryProductListCard({ product, selectedPromos }: LuxuryProduct
     : 'Акция';
 
   return (
-    <div className={`group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 sm:p-5 transition-all duration-300 shadow-xl flex flex-col sm:flex-row gap-5 items-stretch relative ${isTooltipOpen ? 'z-40' : 'z-10'}`}>
+    <div
+      id={`product-${product.id}`}
+      className={`group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 sm:p-5 transition-all duration-300 shadow-xl flex flex-col sm:flex-row gap-5 items-stretch relative ${isTooltipOpen ? 'z-40' : 'z-10'}`}
+    >
       {/* 1. Left Media Area: White Showcase Tablet with object-contain */}
       <div className="relative w-full sm:w-52 sm:h-52 md:w-56 md:h-56 aspect-square shrink-0 rounded-xl">
         <Link
           href={`/product/${product.slug}`}
+          onClick={handleProductClick}
           className="block w-full h-full rounded-xl overflow-hidden bg-white border border-white/10 group-hover:border-simona-teal/50 transition-colors p-3 flex items-center justify-center shadow-inner"
         >
           {/* Badges Stack (Top-Left): Status + Brand directly below */}
@@ -358,7 +376,7 @@ export function LuxuryProductListCard({ product, selectedPromos }: LuxuryProduct
           </div>
 
           {/* Product Name */}
-          <Link href={`/product/${product.slug}`} className="block">
+          <Link href={`/product/${product.slug}`} onClick={handleProductClick} className="block">
             <h3 className="text-base sm:text-lg font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors leading-snug">
               {formattedTitle}
             </h3>

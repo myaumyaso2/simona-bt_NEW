@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SimonaIconChevronLeft, SimonaIconChevronRight } from '@/components/brand/SimonaIcons';
 import { getActiveCatalogBrands } from '@/data/catalogMegaMenuBrands';
+import { clearCatalogCategorySession } from '@/lib/catalog/filterUrlSync';
 
 export interface CatalogMegaMenuProps {
   isOpen: boolean;
@@ -325,7 +326,10 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
                       key={brand.name}
                       data-brand={brand.name.toUpperCase()}
                       href={`/catalog?brand=${encodeURIComponent(brand.slug)}`}
-                      onClick={onClose}
+                      onClick={() => {
+                        clearCatalogCategorySession();
+                        onClose();
+                      }}
                       className={`shrink-0 inline-flex items-center justify-center px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wider font-montserrat uppercase transition-all whitespace-nowrap text-center ${
                         isBrandActive
                           ? 'bg-simona-teal/20 text-simona-teal-light border border-simona-teal shadow-[0_0_12px_rgba(0,151,156,0.35)] font-bold'
@@ -378,7 +382,10 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
                           <span className="w-1.5 h-1.5 rounded-full bg-simona-teal shadow-[0_0_6px_rgba(0,151,156,0.6)]" />
                           <Link
                             href={group.href || '/catalog'}
-                            onClick={onClose}
+                            onClick={() => {
+                              clearCatalogCategorySession();
+                              onClose();
+                            }}
                             className="font-montserrat font-semibold text-xs text-white hover:text-simona-teal transition-colors"
                           >
                             {group.title}
@@ -398,7 +405,10 @@ export function CatalogMegaMenu({ isOpen, onClose }: CatalogMegaMenuProps) {
                         <li key={itemIdx}>
                           <Link
                             href={item.href}
-                            onClick={onClose}
+                            onClick={() => {
+                              clearCatalogCategorySession();
+                              onClose();
+                            }}
                             className="group/link flex items-center justify-between text-xs text-[#D7D9DB] hover:text-white px-2 py-0.5 rounded-md hover:bg-simona-teal/[0.07] hover:translate-x-1 transition-all"
                           >
                             <span className="group-hover/link:text-white transition-colors">
