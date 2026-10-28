@@ -7,7 +7,6 @@ import {
 import {
   SimonaIconFlame,
   SimonaIconShieldCheck,
-  SimonaIconSparkles,
   SimonaIconInfo,
   SimonaIconCheck,
 } from '@/components/brand/SimonaIcons';
@@ -50,7 +49,7 @@ export function CategoryExpertGuide({
   };
 
   return (
-    <section className="mt-16 pt-12 border-t border-[#2B313A]/60 pb-12">
+    <section className="pt-8 sm:pt-10 border-t border-[#2B313A]/60 pb-12">
       {/* Schema.org FAQPage for Direct AI / Yandex Нейро / Gemini Extraction */}
       <script
         type="application/ld+json"
@@ -60,10 +59,6 @@ export function CategoryExpertGuide({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Header Block (Unified Left-Aligned Standard) */}
         <div className="text-left max-w-4xl">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-simona-teal/10 border border-simona-teal/30 text-simona-teal text-xs font-medium mb-3">
-            <SimonaIconSparkles className="w-3.5 h-3.5" />
-            <span>Экспертный анализ технологий «СИМОНА»</span>
-          </div>
           <h2 className="text-2xl sm:text-3xl font-bold font-montserrat text-white tracking-tight leading-snug">
             {mainHeading}
           </h2>
@@ -177,9 +172,6 @@ export function CategoryExpertGuide({
         {/* 3. 3-Tier Budget Matrix: Expert Choices */}
         <div className="space-y-6 text-left">
           <div>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#1E2228] border border-[#2B313A] text-xs text-[#D7D9DB] mb-2 font-montserrat">
-              <span>Принцип «СИМОНЫ»</span>
-            </div>
             <h3 className="text-xl sm:text-2xl font-bold font-montserrat text-white tracking-tight">
               {guide.segmentsTitle}
             </h3>
