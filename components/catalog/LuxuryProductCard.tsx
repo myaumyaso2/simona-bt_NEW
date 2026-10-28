@@ -144,6 +144,7 @@ interface LuxuryProductCardProps {
   selectedPromos?: string[];
   showCompareRemove?: boolean;
   onRemoveFromCompare?: () => void;
+  priority?: boolean;
 }
 
 export function LuxuryProductCard({
@@ -152,6 +153,7 @@ export function LuxuryProductCard({
   selectedPromos,
   showCompareRemove = false,
   onRemoveFromCompare,
+  priority = false,
 }: LuxuryProductCardProps) {
   const targetCategorySlug = categorySlug || getCategorySlugByName(product.category);
 
@@ -378,6 +380,7 @@ export function LuxuryProductCard({
             <ProductCardGallery
               images={images}
               title={formattedTitle}
+              priority={priority}
             />
           </Link>
 

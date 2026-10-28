@@ -1172,13 +1172,14 @@ export function CatalogView({
                     : 'flex flex-col space-y-4'
                 }
               >
-                {paginatedProducts.map((product) =>
+                {paginatedProducts.map((product, index) =>
                   viewMode === 'grid' ? (
                     <LuxuryProductCard
                       key={product.id}
                       product={product}
                       categorySlug={categorySlug || activeCategorySlug}
                       selectedPromos={filters.selectedPromos}
+                      priority={index < 4}
                     />
                   ) : (
                     <LuxuryProductListCard
@@ -1186,6 +1187,7 @@ export function CatalogView({
                       product={product}
                       categorySlug={categorySlug || activeCategorySlug}
                       selectedPromos={filters.selectedPromos}
+                      priority={index < 4}
                     />
                   )
                 )}

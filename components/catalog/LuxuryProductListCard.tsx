@@ -26,6 +26,7 @@ interface LuxuryProductListCardProps {
   product: ProductItem;
   categorySlug?: string;
   selectedPromos?: string[];
+  priority?: boolean;
 }
 
 interface SpecRow {
@@ -65,7 +66,7 @@ function getProductSpecs(product: ProductItem): SpecRow[] {
   return rows.slice(0, 4);
 }
 
-export function LuxuryProductListCard({ product, categorySlug, selectedPromos }: LuxuryProductListCardProps) {
+export function LuxuryProductListCard({ product, categorySlug, selectedPromos, priority = false }: LuxuryProductListCardProps) {
   const targetCategorySlug = categorySlug || getCategorySlugByName(product.category);
 
   const handleProductClick = () => {
@@ -206,6 +207,7 @@ export function LuxuryProductListCard({ product, categorySlug, selectedPromos }:
           <ProductCardGallery
             images={images}
             title={formattedTitle}
+            priority={priority}
           />
         </Link>
 

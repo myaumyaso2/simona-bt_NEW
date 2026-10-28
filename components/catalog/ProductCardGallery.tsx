@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+import Image from 'next/image';
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80';
@@ -9,14 +10,17 @@ interface ProductCardGalleryProps {
   images: string[];
   title: string;
   className?: string;
+  priority?: boolean;
 }
 
 export function ProductCardGallery({
   images,
   title,
   className = '',
+  priority = false,
 }: ProductCardGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
   const containerRef = useRef<HTMLDivElement>(null);
   const preloadedRef = useRef(false);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
@@ -24,9 +28,9 @@ export function ProductCardGallery({
 
   // Filter valid image URLs
   const cleanImages = useMemo(() => {
-    const valid = (images || []).filter(
-      (img) => typeof img === 'string' && img.trim().length > 0
-    );
+    const valid = (images || [])
+      .filter((img) => typeof img === 'string' && img.trim().length > 0)
+      .map((img) => img.trim());
     return valid.length > 0 ? valid : [FALLBACK_IMAGE];
   }, [images]);
 
@@ -35,7 +39,7 @@ export function ProductCardGallery({
     if (preloadedRef.current || cleanImages.length <= 1) return;
     preloadedRef.current = true;
     cleanImages.slice(1).forEach((src) => {
-      const img = new Image();
+      const img = new window.Image();
       img.src = src;
     });
   }, [cleanImages]);
@@ -124,7 +128,11 @@ export function ProductCardGallery({
     }
   };
 
-  const currentImage = cleanImages[activeIndex] || cleanImages[0];
+  const currentImageSrc = imageErrors[activeIndex]
+    ? FALLBACK_IMAGE
+    : cleanImages[activeIndex] || cleanImages[0];
+
+  const isLcpPriority = Boolean(priority && activeIndex === 0);
 
   return (
     <div
@@ -138,16 +146,22 @@ export function ProductCardGallery({
       onClickCapture={handleClickCapture}
       className={`relative w-full h-full flex items-center justify-center select-none ${className}`}
     >
-      {/* Active Product Image */}
-      <img
-        src={currentImage}
-        alt={`${title}${cleanImages.length > 1 ? ` — ракурс ${activeIndex + 1} из ${cleanImages.length}` : ''}`}
-        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 select-none pointer-events-none"
-        loading="lazy"
-        onError={(e) => {
-          e.currentTarget.src = FALLBACK_IMAGE;
-        }}
-      />
+      {/* Active Product Image with Next/Image AVIF/WebP, sizes and LCP priority */}
+      <div className="relative w-full h-full p-2">
+        <Image
+          src={currentImageSrc}
+          alt={`${title}${cleanImages.length > 1 ? ` — ракурс ${activeIndex + 1} из ${cleanImages.length}` : ''}`}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          priority={isLcpPriority}
+          fetchPriority={isLcpPriority ? 'high' : 'auto'}
+          loading={isLcpPriority ? 'eager' : 'lazy'}
+          className="object-contain group-hover:scale-105 transition-transform duration-500 select-none pointer-events-none p-2"
+          onError={() => {
+            setImageErrors((prev) => ({ ...prev, [activeIndex]: true }));
+          }}
+        />
+      </div>
 
       {/* Segmented Indicator Bars (Bottom of Showcase Tablet) */}
       {cleanImages.length > 1 && (

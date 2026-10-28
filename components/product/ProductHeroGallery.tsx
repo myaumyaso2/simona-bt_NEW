@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProductItem } from '@/types';
 import {
@@ -53,12 +54,16 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
                   : 'border-[#2B313A] hover:border-[#87888A]/60 opacity-80 hover:opacity-100'
               }`}
             >
-              <img
-                src={img}
-                alt={`${product.name} - ракурс ${idx + 1}`}
-                className="w-full h-full object-contain"
-                loading="lazy"
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src={img}
+                  alt={`${product.name} - ракурс ${idx + 1}`}
+                  fill
+                  sizes="88px"
+                  className="object-contain p-1"
+                  loading="lazy"
+                />
+              </div>
               {isActive && (
                 <div className="absolute inset-0 border-2 border-simona-teal rounded-xl pointer-events-none" />
               )}
@@ -106,10 +111,14 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
             transition={{ duration: 0.25, ease: 'easeOut' }}
             className="w-full h-full flex items-center justify-center relative"
           >
-            <img
+            <Image
               src={images[activeImageIndex]}
               alt={product.name}
-              className="max-h-full max-w-full object-contain drop-shadow-md cursor-zoom-in"
+              fill
+              priority={activeImageIndex === 0}
+              fetchPriority={activeImageIndex === 0 ? 'high' : 'auto'}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-contain drop-shadow-md cursor-zoom-in p-2 sm:p-4"
               onClick={() => setIsZoomed(true)}
             />
           </motion.div>
