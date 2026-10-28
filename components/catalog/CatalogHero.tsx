@@ -20,6 +20,12 @@ export interface SubcategoryLinkItem {
   href: string;
 }
 
+export interface CatalogHeroBreadcrumbItem {
+  name: string;
+  url?: string;
+  href?: string;
+}
+
 interface CatalogHeroProps {
   activeSubcategory?: string;
   onSelectSubcategory?: (id: string) => void;
@@ -35,6 +41,7 @@ interface CatalogHeroProps {
   activeCategorySlug?: string;
   onSelectCategory?: (slug: string) => void;
   subcategoryLinks?: SubcategoryLinkItem[];
+  breadcrumbs?: CatalogHeroBreadcrumbItem[];
 }
 
 export function CatalogHero({
@@ -48,6 +55,7 @@ export function CatalogHero({
   activeCategorySlug,
   onSelectCategory,
   subcategoryLinks,
+  breadcrumbs,
 }: CatalogHeroProps) {
   const allTabs: PresenceTabItem[] = [
     { id: 'ALL', label: 'Все', count: presenceCounts?.ALL ?? totalCount },
@@ -77,10 +85,14 @@ export function CatalogHero({
     <>
       <Breadcrumbs
         skipJsonLd
-        items={[
-          { name: 'Каталог', url: '/catalog' },
-          { name: categoryTitle },
-        ]}
+        items={
+          breadcrumbs && breadcrumbs.length > 0
+            ? breadcrumbs
+            : [
+                { name: 'Каталог', url: '/catalog' },
+                { name: categoryTitle },
+              ]
+        }
       />
       <section className="pt-8 pb-6 border-b border-[#2B313A]/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CATALOG_PRODUCTS } from '@/data/catalogData';
 import { MANUFACTURER_PROMOS, isProductInPromo } from '@/data/promosData';
-import { CatalogHero, PhysicalTabType, SubcategoryLinkItem } from './CatalogHero';
+import { CatalogHero, PhysicalTabType, SubcategoryLinkItem, CatalogHeroBreadcrumbItem } from './CatalogHero';
 import { CatalogSidebar, FilterState } from './CatalogSidebar';
 import { CatalogToolbar, SortOption, ViewMode } from './CatalogToolbar';
 import { LuxuryProductCard } from './LuxuryProductCard';
@@ -44,6 +44,7 @@ interface CatalogViewProps {
   searchQuery?: string;
   brandDetails?: BrandDetails;
   subcategoryLinks?: SubcategoryLinkItem[];
+  breadcrumbs?: CatalogHeroBreadcrumbItem[];
 }
 
 const PAGE_SIZE = 24;
@@ -59,6 +60,7 @@ export function CatalogView({
   searchQuery,
   brandDetails,
   subcategoryLinks,
+  breadcrumbs,
 }: CatalogViewProps = {}) {
   const searchParams = useSearchParams();
   const { openModal } = useStore();
@@ -698,6 +700,7 @@ export function CatalogView({
             activeCategorySlug={activeCategorySlug}
             onSelectCategory={handleCategorySelect}
             subcategoryLinks={subcategoryLinks}
+            breadcrumbs={breadcrumbs}
           />
 
           {/* 1.5. Inventory Presence Tabs for Brand Page (lowered below Hero per user request) */}

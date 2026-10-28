@@ -199,9 +199,9 @@ export function CategoryExpertGuide({
                 }`}
               >
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-3">
                     <span
-                      className={`px-2.5 py-1 rounded-md text-xs font-semibold font-montserrat ${
+                      className={`px-3 py-1 rounded-md text-xs font-semibold font-montserrat whitespace-nowrap shrink-0 ${
                         idx === 1
                           ? 'bg-simona-teal text-white'
                           : idx === 2
@@ -211,7 +211,7 @@ export function CategoryExpertGuide({
                     >
                       {seg.tierBadge}
                     </span>
-                    <span className="text-xs font-mono font-medium text-white">
+                    <span className="text-xs font-mono font-medium text-white whitespace-nowrap shrink-0">
                       {seg.priceRange}
                     </span>
                   </div>

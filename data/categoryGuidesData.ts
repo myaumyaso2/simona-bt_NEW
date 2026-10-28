@@ -122,9 +122,9 @@ export const CATEGORY_EXPERT_GUIDES: Record<string, CategoryExpertGuideData> = {
     segmentsSubtitle: 'Отобрали проверенные решения на любой кошелек на основе 30-летнего опыта сервиса и рекламаций.',
     segments: [
       {
-        tierBadge: 'Базовый надежный сегмент',
+        tierBadge: 'Бюджетный',
         title: 'Проверенная механика и безопасная электроника',
-        priceRange: 'от 18 000 до 35 000 ₽',
+        priceRange: 'от 18 000 до 35 000\u00A0₽',
         brands: 'Midea, Körting',
         criteria: [
           'Независимый таймер с отключением на каждую конфорку',
@@ -136,9 +136,9 @@ export const CATEGORY_EXPERT_GUIDES: Record<string, CategoryExpertGuideData> = {
           'Честная надежная рабочая лошадка без переплаты за лишние режимы. Отлично подходит для квартир под аренду, загородных домов и типовых кухонных гарнитуров.',
       },
       {
-        tierBadge: 'Оптимальный баланс',
+        tierBadge: 'Оптимум',
         title: 'Мостовые зоны Flex, слайдеры и тихие вентиляторы',
-        priceRange: 'от 35 000 до 90 000 ₽',
+        priceRange: 'от 35 000 до 90 000\u00A0₽',
         brands: 'Gorenje, Vard, Bosch, Falmec',
         criteria: [
           'Объединение зон нагрева (Bridge / FlexZone) для гриля и утятницы',
@@ -150,9 +150,9 @@ export const CATEGORY_EXPERT_GUIDES: Record<string, CategoryExpertGuideData> = {
           'Золотая середина для современной семейной кухни. Импульсный нагрев на низких ступенях сглажен, что позволяет томить каши и соусы без подгорания.',
       },
       {
-        tierBadge: 'Премиальный сегмент',
+        tierBadge: 'Премиум',
         title: 'Эталонная стеклокерамика, датчики жарки и европейская сборка',
-        priceRange: 'от 90 000 ₽',
+        priceRange: 'от 90 000\u00A0₽',
         brands: 'Asko, Miele, Smeg',
         criteria: [
           'Стеклокерамика Schott Ceran / EuroKera с алмазной микрошлифовкой против царапин',
@@ -254,9 +254,9 @@ export const CATEGORY_EXPERT_GUIDES: Record<string, CategoryExpertGuideData> = {
     segmentsSubtitle: 'Оптимальные модели в каждом бюджете от инженеров с 30-летним стажем.',
     segments: [
       {
-        tierBadge: 'Базовый надежный сегмент',
+        tierBadge: 'Бюджетный',
         title: 'Равномерная конвекция, гриль и безопасное стекло',
-        priceRange: 'от 25 000 до 45 000 ₽',
+        priceRange: 'от 25 000 до 45 000\u00A0₽',
         brands: 'Midea, Körting',
         criteria: [
           'Кольцевой нагреватель с вентилятором конвекции для равномерного пропекания на 2 уровнях',
@@ -268,9 +268,9 @@ export const CATEGORY_EXPERT_GUIDES: Record<string, CategoryExpertGuideData> = {
           'Надежная и долговечная духовка для ежедневной готовки. Полный комплект базовых функций без переплаты.',
       },
       {
-        tierBadge: 'Оптимальный баланс',
+        tierBadge: 'Оптимум',
         title: 'Добавление пара SteamAssist, телескопы и катализ',
-        priceRange: 'от 45 000 до 115 000 ₽',
+        priceRange: 'от 45 000 до 115 000\u00A0₽',
         brands: 'Gorenje, Vard, Bosch',
         criteria: [
           'Режим выпечки с добавлением пара (хрустящая корочка у хлеба и сочное мясо)',
@@ -282,9 +282,9 @@ export const CATEGORY_EXPERT_GUIDES: Record<string, CategoryExpertGuideData> = {
           'Самый популярный выбор для семей, которые любят домашнюю выпечку и запеченное мясо ресторанного качества.',
       },
       {
-        tierBadge: 'Премиальный сегмент',
+        tierBadge: 'Премиум',
         title: '100% комби-пар Sous-Vide, пиролиз и цветной TFT-ассистент',
-        priceRange: 'от 115 000 ₽',
+        priceRange: 'от 115 000\u00A0₽',
         brands: 'Asko, Miele, Smeg',
         criteria: [
           'Полноценный парогенератор с внешней подачей пара и режимами Sous-Vide',
@@ -377,9 +377,9 @@ export const CATEGORY_EXPERT_GUIDES: Record<string, CategoryExpertGuideData> = {
     segmentsSubtitle: 'Проверенные посудомоечные машины с официальной гарантией.',
     segments: [
       {
-        tierBadge: 'Базовый надежный сегмент',
+        tierBadge: 'Бюджетный',
         title: 'Инверторный мотор, 3 корзины и луч на полу',
-        priceRange: 'от 28 000 до 45 000 ₽',
+        priceRange: 'от 28 000 до 45 000\u00A0₽',
         brands: 'Midea, Körting',
         criteria: [
           'Тихий бесщеточный инверторный двигатель (шум до 44–47 дБ)',
@@ -391,9 +391,9 @@ export const CATEGORY_EXPERT_GUIDES: Record<string, CategoryExpertGuideData> = {
           'Отличный базовый прибор на 10–14 комплектов посуды. Надежный мотор и удобная регулировка средней корзины по высоте.',
       },
       {
-        tierBadge: 'Оптимальный баланс',
+        tierBadge: 'Оптимум',
         title: 'Автооткрывание, тихая ночная программа и быстрая мойка',
-        priceRange: 'от 45 000 до 95 000 ₽',
+        priceRange: 'от 45 000 до 95 000\u00A0₽',
         brands: 'Gorenje, Vard, Falmec',
         criteria: [
           'Автоматическое приоткрывание дверцы TotalDry по завершении программы',
@@ -405,9 +405,9 @@ export const CATEGORY_EXPERT_GUIDES: Record<string, CategoryExpertGuideData> = {
           'Идеальная сушка без разводов и запаха за счет естественной циркуляции воздуха. Экономит время и энергию.',
       },
       {
-        tierBadge: 'Премиальный сегмент',
+        tierBadge: 'Премиум',
         title: 'Цельнометаллическая сталь 18/9 без пластика и ресурс 20 лет',
-        priceRange: 'от 95 000 ₽',
+        priceRange: 'от 95 000\u00A0₽',
         brands: 'Asko, Miele',
         criteria: [
           'Конструкция 8Steel: 8 ключевых деталей (камера, корзины, трубки, фильтры) из нержавеющей стали без пластика на дне',

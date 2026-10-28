@@ -253,6 +253,13 @@ export default async function CatalogFacetPage({ params, searchParams }: FacetPa
     { name: facetDef.shortTitle },
   ];
 
+  const heroBreadcrumbs = [
+    { name: 'Каталог', url: '/catalog' },
+    { name: category.sectionTitle, url: `/catalog/${category.sectionSlug}` },
+    { name: category.title, url: `/catalog/${category.slug}` },
+    { name: facetDef.shortTitle },
+  ];
+
   const pageTitle = brandDisplay ? `${facetDef.h1} ${brandDisplay}` : facetDef.h1;
 
   // Schema.org FAQPage JSON-LD
@@ -285,46 +292,16 @@ export default async function CatalogFacetPage({ params, searchParams }: FacetPa
         />
       )}
 
-      {/* Quiet Luxury Facet Header Lead Banner */}
-      <section className="bg-[#111315] pt-4 pb-2 border-b border-[#2B313A]/40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-[#16191D] via-[#1E2228]/80 to-[#16191D] border border-[#2B313A] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-left">
-            <div className="space-y-1.5 max-w-3xl">
-              {facetDef.badge && (
-                <span className="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-simona-teal/15 text-simona-teal border border-simona-teal/30">
-                  {facetDef.badge}
-                </span>
-              )}
-              <h1 className="text-xl sm:text-2xl font-bold font-montserrat text-white tracking-tight">
-                {pageTitle} в Нижнем Новгороде
-              </h1>
-              <p className="text-xs sm:text-sm text-[#87888A] leading-relaxed">
-                {facetDef.seoLeadText}
-              </p>
-            </div>
-            <div className="flex sm:flex-col gap-2 shrink-0">
-              <span className="px-3.5 py-2 rounded-xl bg-[#111315] border border-[#2B313A] text-xs font-mono text-[#D7D9DB]">
-                Моделей: <span className="text-white font-bold">{scopedProducts.length}</span>
-              </span>
-              {minPrice > 0 && (
-                <span className="px-3.5 py-2 rounded-xl bg-[#111315] border border-simona-teal/40 text-xs font-mono text-simona-teal">
-                  От <span className="font-bold">{Math.round(minPrice).toLocaleString('ru-RU')} ₽</span>
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
       <Suspense fallback={<div className="min-h-screen bg-[#111315]" />}>
         <CatalogView
           initialProducts={facetProducts}
           totalCount={facetProducts.length}
           categorySlug={category.slug}
-          categoryTitle={pageTitle}
+          categoryTitle={`${pageTitle} в Нижнем Новгороде`}
           categoryDescription={facetDef.seoLeadText}
           initialBrand={canonicalBrandParam}
           initialPage={pageNum}
+          breadcrumbs={heroBreadcrumbs}
         />
       </Suspense>
 

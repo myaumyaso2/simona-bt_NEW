@@ -517,6 +517,12 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           categoryDescription={category.heroSubtitle}
           initialBrand={canonicalBrandParam}
           initialPage={pageNum}
+          breadcrumbs={[
+            { name: 'Каталог', url: '/catalog' },
+            { name: category.sectionTitle, url: `/catalog/${category.sectionSlug}` },
+            { name: category.title, ...(brandDisplay ? { url: `/catalog/${category.slug}` } : {}) },
+            ...(brandDisplay ? [{ name: brandDisplay }] : []),
+          ]}
         />
       </Suspense>
       <CategoryExpertGuide
