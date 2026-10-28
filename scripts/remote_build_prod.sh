@@ -59,6 +59,8 @@ npx prisma generate
 npx prisma db push --skip-generate --accept-data-loss
 PGPASSWORD='SmBt_Staging_2026_PgPass!' psql -h localhost -U simona_app -d simona_prod -c 'CREATE SEQUENCE IF NOT EXISTS order_number_seq START WITH 15104;' 2>/dev/null || true
 PGPASSWORD='SmBt_Staging_2026_PgPass!' psql -h localhost -U simona_app -d simona_prod -c "UPDATE \"Order\" SET \"isOneClick\" = true, \"status\" = 'NEW' WHERE \"status\" = 'ONE_CLICK';" 2>/dev/null || true
+PGPASSWORD='SmBt_Staging_2026_PgPass!' psql -h localhost -U simona_app -d simona_prod -c "UPDATE \"Product\" SET \"inStock\" = false WHERE \"physicalStatus\" = 'REMOTE_STOCK' AND (\"stockKominterna\" = 0 OR \"stockKominterna\" IS NULL);" 2>/dev/null || true
+
 
 if [ "$FULL_IMPORT" = "True" ] || [ "$FULL_IMPORT" = "true" ]; then
     echo "💾 Importing updated catalog into simona_prod..."

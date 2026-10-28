@@ -406,12 +406,15 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const pageSlice = scopedProducts.slice((pageNum - 1) * PAGE_SIZE, pageNum * PAGE_SIZE);
   const facetLinks = getFacetsByCategory(category.slug)
     .map((f) => {
-      const matchCount = products.filter((p: ProductItem) => f.filter(p)).length;
+      const matchCount = scopedProducts.filter((p: ProductItem) => f.filter(p)).length;
+      const facetHref = canonicalBrandParam
+        ? `/catalog/${category.slug}/${f.facetSlug}?brand=${encodeURIComponent(canonicalBrandParam)}`
+        : `/catalog/${category.slug}/${f.facetSlug}`;
       return {
         shortTitle: f.shortTitle,
         facetSlug: f.facetSlug,
         count: matchCount,
-        href: `/catalog/${category.slug}/${f.facetSlug}`,
+        href: facetHref,
       };
     })
     .filter((f) => f.count >= 3);
@@ -433,7 +436,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           initialBrand={canonicalBrandParam}
           initialPage={pageNum}
           facetLinks={facetLinks}
-          facetAllCount={products.length}
+          facetAllCount={scopedProducts.length}
           breadcrumbs={[
             { name: 'Каталог', url: '/catalog' },
             { name: category.sectionTitle, url: `/catalog/${category.sectionSlug}` },

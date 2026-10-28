@@ -38,11 +38,11 @@ export function resolvePhysicalStatus(params: {
   isDiscount?: boolean;
   isSpecial?: boolean;
 }): { physicalStatus: string; inStock: boolean } {
-  // 1. SHOWROOM («На витрине»): в 1С Уценка == 1 и Спец предложени == 1
+  // 1. SHOWROOM («На витрине»): в 1С Уценка == 1 и Спец предложени == 1 (при наличии товара)
   if (params.isDiscount && params.isSpecial && params.stockKominterna > 0) {
     return { physicalStatus: 'SHOWROOM', inStock: true };
   }
-  // 2. DISCOUNT («Уценка»): в 1С Уценка == 1 и Спец предложени == 0
+  // 2. DISCOUNT («Уценка»): в 1С Уценка == 1 и Спец предложени == 0 (при наличии товара)
   if (params.isDiscount && !params.isSpecial && params.stockKominterna > 0) {
     return { physicalStatus: 'DISCOUNT', inStock: true };
   }
@@ -52,7 +52,7 @@ export function resolvePhysicalStatus(params: {
     params.currentStatus && showroomStatuses.includes(params.currentStatus)
   );
 
-  if (params.stockBelinskogo15 > 0 || isCurrentlyShowroom) {
+  if (params.stockBelinskogo15 > 0 || (isCurrentlyShowroom && (params.stockKominterna > 0 || params.currentStatus !== 'SHOWROOM'))) {
     const status = isCurrentlyShowroom ? params.currentStatus! : 'SHOWROOM';
     return { physicalStatus: status, inStock: true };
   }
@@ -60,7 +60,7 @@ export function resolvePhysicalStatus(params: {
     return { physicalStatus: 'LOCAL_STOCK', inStock: true };
   }
   if (params.stockRemote > 0) {
-    return { physicalStatus: 'REMOTE_STOCK', inStock: true };
+    return { physicalStatus: 'REMOTE_STOCK', inStock: false };
   }
   return { physicalStatus: 'ON_ORDER', inStock: false };
 }
@@ -245,6 +245,8 @@ export async function syncFastStock(
       stockCount: true,
       inStock: true,
       physicalStatus: true,
+      isDiscount: true,
+      isSpecial: true,
     },
   });
 
@@ -274,6 +276,8 @@ export async function syncFastStock(
       stockBelinskogo15: product.stockBelinskogo15,
       stockKominterna: newStock,
       stockRemote: product.stockRemote,
+      isDiscount: Boolean(product.isDiscount),
+      isSpecial: Boolean(product.isSpecial),
     });
 
     if (
@@ -512,7 +516,7 @@ export async function syncFullCatalog(
                     : existingProduct.stockRemote > 0
                     ? 'REMOTE_STOCK'
                     : 'ON_ORDER',
-                inStock: existingProduct.stockBelinskogo15 > 0 || existingProduct.stockRemote > 0,
+                inStock: existingProduct.stockBelinskogo15 > 0,
               }
             : resolvePhysicalStatus({
                 currentStatus: existingProduct.physicalStatus,

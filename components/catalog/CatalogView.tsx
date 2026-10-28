@@ -481,34 +481,13 @@ export function CatalogView({
 
   // 2. Dynamic presence counts based on current sidebar filters (Zero Dead Ends reactivity)
   const presenceCounts = useMemo(() => {
-    const effectiveFilterBrands = filters.selectedBrands.length > 0
-      ? filters.selectedBrands
-      : (lockedBrand ? [lockedBrand] : []);
-
-    const filteredForPresence = categoryProducts.filter((p) => {
-      if (filters.selectedGroups.length > 0 && !filters.selectedGroups.includes(getProductGroup(p))) return false;
-      if (effectiveFilterBrands.length > 0) {
-        const matchesBrand = effectiveFilterBrands.some((b) => {
-          const tb = b.trim().toUpperCase();
-          const pb = p.brand?.trim().toUpperCase() || '';
-          if (pb === tb) return true;
-          if ((pb === 'KORTING' || pb === 'KÖRTING') && (tb === 'KORTING' || tb === 'KÖRTING')) return true;
-          if ((pb === 'SIEMENS' || pb === 'SIEMENS LV') && (tb === 'SIEMENS' || tb === 'SIEMENS LV')) return true;
-          return false;
-        });
-        if (!matchesBrand) return false;
-      }
-      if (p.price < filters.priceMin || p.price > filters.priceMax) return false;
-      return true;
-    });
-
     let showroom = 0;
     let localStock = 0;
     let discount = 0;
     let remoteStock = 0;
     let onOrder = 0;
 
-    filteredForPresence.forEach((p) => {
+    sidebarFilteredProducts.forEach((p) => {
       const status = getProductPhysicalStatus(p);
       if (status === 'DISCOUNT') discount++;
       else if (status === 'SHOWROOM') showroom++;
@@ -518,14 +497,14 @@ export function CatalogView({
     });
 
     return {
-      ALL: filteredForPresence.length,
+      ALL: sidebarFilteredProducts.length,
       LOCAL_STOCK: localStock,
       SHOWROOM: showroom,
       DISCOUNT: discount,
       REMOTE_STOCK: remoteStock,
       ON_ORDER: onOrder,
     };
-  }, [categoryProducts, filters.selectedGroups, filters.selectedBrands, lockedBrand, filters.priceMin, filters.priceMax]);
+  }, [sidebarFilteredProducts]);
 
   // 3. Final filtered and sorted products (strictly unified with getProductPhysicalStatus)
   const filteredProducts = useMemo(() => {

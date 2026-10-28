@@ -117,34 +117,38 @@ export function getProductPhysicalStatus(product: {
   stockRemote?: number;
   inStock?: boolean;
 }): EffectivePhysicalStatus {
-  // 1. Уценка (DISCOUNT): в 1С Уценка == 1 и Спец предложени == 0
+  // 1. Уценка (DISCOUNT): в 1С Уценка == 1 и Спец предложени == 0 (при наличии товара)
   if (
     product.physicalStatus === 'DISCOUNT' ||
-    (Boolean(product.isDiscount) && !Boolean(product.isSpecial))
+    (Boolean(product.isDiscount) &&
+      !Boolean(product.isSpecial) &&
+      ((product.stockKominterna !== undefined && product.stockKominterna > 0) || Boolean(product.inStock)))
   ) {
     return 'DISCOUNT';
   }
 
-  // 2. На витрине (SHOWROOM): в 1С Уценка == 1 и Спец предложени == 1
+  // 2. На витрине (SHOWROOM): в 1С Уценка == 1 и Спец предложени == 1 (при наличии товара) или экспозиция
   const isShowroom =
     product.physicalStatus === 'SHOWROOM' ||
-    (Boolean(product.isDiscount) && Boolean(product.isSpecial)) ||
     product.physicalStatus === 'ACTIVE_KITCHEN' ||
     product.physicalStatus === 'EXHIBITION_15' ||
     product.physicalStatus === 'EXHIBITION_11' ||
+    (Boolean(product.isDiscount) &&
+      Boolean(product.isSpecial) &&
+      ((product.stockKominterna !== undefined && product.stockKominterna > 0) || Boolean(product.inStock))) ||
     (product.stockBelinskogo15 !== undefined && product.stockBelinskogo15 > 0);
 
   if (isShowroom) return 'SHOWROOM';
 
-  // 3. На складе в НН (LOCAL_STOCK)
+  // 3. На складе в НН (LOCAL_STOCK): реальный остаток на складе в НН (ул. Коминтерна)
   const isLocal =
-    product.physicalStatus === 'LOCAL_STOCK' ||
-    Boolean(product.inStock) ||
-    (product.stockKominterna !== undefined && product.stockKominterna > 0);
+    (product.stockKominterna !== undefined && product.stockKominterna > 0) ||
+    (product.physicalStatus === 'LOCAL_STOCK' && (!product.stockKominterna || product.stockKominterna > 0)) ||
+    (Boolean(product.inStock) && product.physicalStatus !== 'REMOTE_STOCK' && (!product.stockRemote || product.stockRemote === 0));
 
   if (isLocal) return 'LOCAL_STOCK';
 
-  // 4. Удаленный склад (REMOTE_STOCK)
+  // 4. Удаленный склад (REMOTE_STOCK): склады поставщиков в РФ
   const isRemote =
     product.physicalStatus === 'REMOTE_STOCK' ||
     (product.stockRemote !== undefined && product.stockRemote > 0);

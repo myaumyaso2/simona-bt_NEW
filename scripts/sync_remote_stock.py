@@ -613,29 +613,35 @@ def main():
         # Priority 1: DISCOUNT
         if curr_phys == 'DISCOUNT' or (bool(is_disc) and not bool(is_spec)):
             new_phys = 'DISCOUNT'
+            new_in_stock = 1 if (st_kom and st_kom > 0) else 0
         # Priority 2: SHOWROOM
         elif curr_phys == 'SHOWROOM' or (st_bel and st_bel > 0) or (bool(is_disc) and bool(is_spec)):
             new_phys = 'SHOWROOM'
+            new_in_stock = 1
             preserved_showroom.append(r)
         # Priority 3: LOCAL_STOCK
-        elif curr_phys == 'LOCAL_STOCK' or bool(in_st) or (st_kom and st_kom > 0):
+        elif (st_kom and st_kom > 0) or (curr_phys == 'LOCAL_STOCK' and (st_kom is None or st_kom > 0)):
             new_phys = 'LOCAL_STOCK'
+            new_in_stock = 1
             preserved_local_stock.append(r)
         # Priority 4: REMOTE_STOCK
         elif supplier_stock >= args.threshold:
             new_phys = 'REMOTE_STOCK'
+            new_in_stock = 0
             if curr_phys != 'REMOTE_STOCK' or st_rem != supplier_stock:
                 updated_to_remote_stock.append((r, supplier_stock))
         # Priority 5: ON_ORDER
         else:
             new_phys = 'ON_ORDER'
+            new_in_stock = 0
             if curr_phys == 'REMOTE_STOCK' or (st_rem and st_rem > 0):
                 reset_to_on_order.append(r)
 
         # Record update if values changed
         new_rem_val = supplier_stock if supplier_stock >= args.threshold else 0
-        if new_rem_val != st_rem or new_phys != curr_phys:
-            db_updates.append((new_rem_val, new_phys, pid))
+        curr_in_st_int = 1 if in_st else 0
+        if new_rem_val != st_rem or new_phys != curr_phys or new_in_stock != curr_in_st_int:
+            db_updates.append((new_rem_val, new_phys, new_in_stock, pid))
 
     print(f"\n--- SYNCHRONIZATION RESULTS ---")
     print(f"Processed supplier files: {files_processed}")
@@ -651,7 +657,7 @@ def main():
     if not args.dry_run:
         cur.executemany("""
             UPDATE Product
-            SET stockRemote = ?, physicalStatus = ?, updatedAt = CURRENT_TIMESTAMP
+            SET stockRemote = ?, physicalStatus = ?, inStock = ?, updatedAt = CURRENT_TIMESTAMP
             WHERE id = ?
         """, db_updates)
         conn.commit()

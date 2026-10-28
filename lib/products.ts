@@ -125,7 +125,7 @@ export async function getCatalogProducts(options?: {
     const [items, total] = await Promise.all([
       prisma.product.findMany({
         where,
-        take: options?.limit || 24,
+        take: options?.limit || 2000,
         skip: options?.offset || 0,
         orderBy: orderByObj,
       }),
@@ -170,7 +170,7 @@ export async function getCatalogProducts(options?: {
   }
 
   return {
-    products: CATALOG_PRODUCTS.slice(0, options?.limit || 24),
+    products: CATALOG_PRODUCTS.slice(0, options?.limit || 2000),
     total: CATALOG_PRODUCTS.length,
   };
 }

@@ -87,7 +87,12 @@ export async function generateMetadata({ params, searchParams }: FacetPageProps)
   let matchCount = 0;
 
   try {
-    const { products } = await getCatalogProducts({ categories: category.dbCategories });
+    const { products } = await getCatalogProducts({
+      categories: category.dbCategories,
+      categorySlug: category.slug,
+      includeOutlet: true,
+      limit: 2000,
+    });
     const catProducts = products.filter((p: ProductItem) => {
       const matchFacet = facetDef.filter(p);
       const matchBrand =
@@ -162,6 +167,9 @@ export default async function CatalogFacetPage({ params, searchParams }: FacetPa
 
   const { products: allCategoryProducts } = await getCatalogProducts({
     categories: category.dbCategories,
+    categorySlug: category.slug,
+    includeOutlet: true,
+    limit: 2000,
   });
 
   const facetProducts = allCategoryProducts.filter((p: ProductItem) => facetDef.filter(p));
@@ -174,18 +182,28 @@ export default async function CatalogFacetPage({ params, searchParams }: FacetPa
     ? facetProducts.filter((p: ProductItem) => brandVariantsUpper.has((p.brand || '').trim().toUpperCase()))
     : facetProducts;
 
+  const scopedAllCategoryProducts = brandVariantsUpper
+    ? allCategoryProducts.filter((p: ProductItem) => brandVariantsUpper.has((p.brand || '').trim().toUpperCase()))
+    : allCategoryProducts;
+
   const pageSlice = scopedProducts.slice((pageNum - 1) * PAGE_SIZE, pageNum * PAGE_SIZE);
 
-  // Sibling facet link chips for popular collections slider
+  // Sibling facet link chips for popular collections slider (preserving active brand filter)
   const siblingFacets = getFacetsByCategory(params.category);
   const facetLinks: CategoryFacetLinkItem[] = siblingFacets
-    .map((sf) => ({
-      shortTitle: sf.shortTitle,
-      facetSlug: sf.facetSlug,
-      count: allCategoryProducts.filter((p: ProductItem) => sf.filter(p)).length,
-      href: `/catalog/${params.category}/${sf.facetSlug}`,
-      isActive: sf.facetSlug === params.facet,
-    }))
+    .map((sf) => {
+      const matchCount = scopedAllCategoryProducts.filter((p: ProductItem) => sf.filter(p)).length;
+      const facetHref = canonicalBrandParam
+        ? `/catalog/${params.category}/${sf.facetSlug}?brand=${encodeURIComponent(canonicalBrandParam)}`
+        : `/catalog/${params.category}/${sf.facetSlug}`;
+      return {
+        shortTitle: sf.shortTitle,
+        facetSlug: sf.facetSlug,
+        count: matchCount,
+        href: facetHref,
+        isActive: sf.facetSlug === params.facet,
+      };
+    })
     .filter((f) => (f.count ?? 0) >= 3);
 
   // Breadcrumbs
@@ -248,7 +266,7 @@ export default async function CatalogFacetPage({ params, searchParams }: FacetPa
           breadcrumbs={heroBreadcrumbs}
           facetLinks={facetLinks}
           activeFacetSlug={facetDef.facetSlug}
-          facetAllCount={allCategoryProducts.length}
+          facetAllCount={scopedAllCategoryProducts.length}
         />
       </Suspense>
 

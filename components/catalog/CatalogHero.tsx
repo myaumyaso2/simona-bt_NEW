@@ -158,7 +158,8 @@ export function CatalogHero({
                   !facetLinks.some(
                     (f) => f.isActive || f.facetSlug === activeFacetSlug
                   );
-                const allHref = `/catalog/${categorySlug || ''}`;
+                const brandQuery = facetLinks.find((f) => f.href.includes('brand='))?.href.split('?')[1];
+                const allHref = `/catalog/${categorySlug || ''}${brandQuery ? `?${brandQuery}` : ''}`;
                 return (
                   <Link
                     href={allHref}
