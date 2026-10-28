@@ -73,7 +73,7 @@ npm run build
 
 echo "🚀 Managing PM2 process..."
 if pm2 describe simona-staging > /dev/null 2>&1; then
-    pm2 reload simona-staging --update-env
+    pm2 restart simona-staging --update-env
 else
     pm2 start npm --name "simona-staging" -- start -- -p 3005
     pm2 save
