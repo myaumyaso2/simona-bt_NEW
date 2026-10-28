@@ -4,6 +4,7 @@ import { normalizeRussianPhone } from '@/lib/utils';
 import { getNextOrderNumber } from '@/lib/orders/orderNumber';
 import { createAsanaOrderTask } from '@/lib/integrations/asana';
 import { notifyNewOrderInMax } from '@/lib/integrations/maxMessenger';
+import { sendOrderCreatedEmails } from '@/lib/mail/mailer';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -114,10 +115,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // 4. Оповещение операторов в Asana и мессенджер MAX
-    const [asanaResult, maxResult] = await Promise.all([
+    // 4. Оповещение операторов в Asana, мессенджер MAX и отправка Email менеджерам
+    const [asanaResult, maxResult, emailResult] = await Promise.all([
       createAsanaOrderTask(order),
       notifyNewOrderInMax(order),
+      sendOrderCreatedEmails(order),
     ]);
 
     if (asanaResult.taskId) {
@@ -134,6 +136,7 @@ export async function POST(req: NextRequest) {
       totalAmount: order.totalAmount,
       customerPhone: order.customerPhone,
       notifications: {
+        email: emailResult,
         asanaTaskId: asanaResult.taskId,
         maxAlert: maxResult.deliveredMax || maxResult.mode === 'LOCAL_QUEUE',
       },

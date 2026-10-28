@@ -33,7 +33,7 @@ SMTP_PORT="465"
 SMTP_USER="inet@simona-bt.ru"
 SMTP_PASS="LNZOs9Wva6kfehXvRgM1"
 SMTP_FROM="«СИМОНА» Бытовая техника <inet@simona-bt.ru>"
-MANAGER_EMAIL="inet@simona-bt.ru"
+MANAGER_EMAIL="inet@simona-bt.ru, absergin@mail.ru"
 
 # YooKassa Live Production
 YOOKASSA_SHOP_ID="388703"

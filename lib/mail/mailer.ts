@@ -8,7 +8,7 @@ const SMTP_USER = process.env.SMTP_USER || 'inet@simona-bt.ru';
 const SMTP_PASS = process.env.SMTP_PASS || 'LNZOs9Wva6kfehXvRgM1';
 const SMTP_FROM =
   process.env.SMTP_FROM || '«СИМОНА» Бытовая техника <inet@simona-bt.ru>';
-const MANAGER_EMAIL = process.env.MANAGER_EMAIL || 'inet@simona-bt.ru';
+const MANAGER_EMAIL = process.env.MANAGER_EMAIL || 'inet@simona-bt.ru, absergin@mail.ru';
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://simona-bt.ru';
 
 const MAIL_LOG_FILE = path.join(process.cwd(), 'storage', 'logs', 'mail.log');
@@ -49,20 +49,33 @@ export async function verifySmtpConnection(): Promise<{ ok: boolean; error?: str
 }
 
 export async function sendEmail(options: {
-  to: string;
+  to: string | string[];
   subject: string;
   html: string;
   text?: string;
+  cc?: string | string[];
+  bcc?: string | string[];
 }): Promise<{ sent: boolean; messageId?: string; error?: string }> {
-  if (!options.to || !options.to.includes('@')) {
+  const recipientList = Array.isArray(options.to)
+    ? options.to.map((r) => r.trim()).filter(Boolean)
+    : String(options.to || '')
+        .split(',')
+        .map((r) => r.trim())
+        .filter(Boolean);
+
+  const validRecipients = recipientList.filter((r) => r.includes('@'));
+
+  if (validRecipients.length === 0) {
     return { sent: false, error: 'Invalid recipient email' };
   }
+
+  const toFormatted = validRecipients.join(', ');
 
   if (process.env.SMTP_DRY_RUN === '1') {
     const mockId = `<dryrun-${Date.now()}@simona-bt.ru>`;
     logMailEvent({
       status: 'DRY_RUN_SENT',
-      to: options.to,
+      to: toFormatted,
       subject: options.subject,
       messageId: mockId,
       hasOnlinePayButton: options.html.includes('Оплатить заказ онлайн'),
@@ -74,15 +87,17 @@ export async function sendEmail(options: {
     const transporter = createTransporter();
     const info = await transporter.sendMail({
       from: SMTP_FROM,
-      to: options.to,
+      to: toFormatted,
       subject: options.subject,
       html: options.html,
       text: options.text,
+      cc: options.cc,
+      bcc: options.bcc,
     });
 
     logMailEvent({
       status: 'SENT',
-      to: options.to,
+      to: toFormatted,
       subject: options.subject,
       messageId: info.messageId,
     });
@@ -92,11 +107,11 @@ export async function sendEmail(options: {
     const errorMessage = err instanceof Error ? err.message : String(err);
     logMailEvent({
       status: 'FALLBACK_LOGGED',
-      to: options.to,
+      to: toFormatted,
       subject: options.subject,
       error: errorMessage,
     });
-    console.warn(`[Mailer] SMTP warning for "${options.subject}" -> ${options.to}: ${errorMessage}`);
+    console.warn(`[Mailer] SMTP warning for "${options.subject}" -> ${toFormatted}: ${errorMessage}`);
     return { sent: false, error: errorMessage };
   }
 }
