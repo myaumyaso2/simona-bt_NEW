@@ -79,7 +79,7 @@ npm run build
 
 echo "🚀 Starting PM2 process simona-prod on port 3000..."
 if pm2 describe simona-prod > /dev/null 2>&1; then
-    pm2 reload simona-prod --update-env
+    pm2 restart simona-prod --update-env
 else
     pm2 start npm --name "simona-prod" -- start -- -p 3000
     pm2 save
