@@ -34,7 +34,7 @@ export function CartDrawer() {
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
-  const [showQuickForm, setShowQuickForm] = useState(false);
+  const [showQuickForm, setShowQuickForm] = useState(true);
   const [loading, setLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
 
@@ -229,7 +229,7 @@ export function CartDrawer() {
                               />
                             </div>
                             <div className="min-w-0">
-                              <div className="text-xs font-semibold text-white truncate">
+                              <div className="text-xs font-semibold text-white line-clamp-2 leading-snug">
                                 {formatProductName(product)}
                               </div>
                               <div className="text-[10px] font-mono text-[#87888A]">
@@ -391,7 +391,7 @@ export function CartDrawer() {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="Ваше имя *"
-                                className="w-full px-3 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
+                                className="w-full px-3.5 py-3 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-base sm:text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
                               />
                             </div>
 
@@ -405,7 +405,7 @@ export function CartDrawer() {
                                   if (phoneError) setPhoneError(null);
                                 }}
                                 placeholder="+7 (___) ___-__-__"
-                                className={`w-full px-3 py-2.5 rounded-xl bg-[#111315] border text-white text-xs placeholder-[#6E7074] focus:outline-none focus:ring-1 font-medium transition ${
+                                className={`w-full px-3.5 py-3 rounded-xl bg-[#111315] border text-white text-base sm:text-xs placeholder-[#6E7074] focus:outline-none focus:ring-1 font-medium transition ${
                                   phoneError
                                     ? 'border-red-500/80 focus:border-red-500 focus:ring-red-500/30'
                                     : 'border-[#2B313A] focus:border-simona-teal focus:ring-simona-teal/50'
@@ -424,7 +424,7 @@ export function CartDrawer() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="E-mail (для чека и статуса заказа)"
-                                className="w-full px-3 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
+                                className="w-full px-3.5 py-3 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-base sm:text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
                               />
                             </div>
 
@@ -436,7 +436,7 @@ export function CartDrawer() {
                                   value={address}
                                   onChange={(e) => setAddress(e.target.value)}
                                   placeholder="Адрес доставки (улица, дом, квартира)"
-                                  className="w-full px-3 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
+                                  className="w-full px-3.5 py-3 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-base sm:text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal focus:ring-1 focus:ring-simona-teal/50 font-medium"
                                 />
                               </div>
                             )}
@@ -445,9 +445,9 @@ export function CartDrawer() {
                               <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-2.5 rounded-xl bg-[#1E2228] hover:bg-[#2B313A] border border-[#2B313A] text-white text-xs font-semibold transition flex items-center justify-center space-x-2 cursor-pointer active:scale-[0.98]"
+                                className="w-full py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-sm font-bold tracking-wide transition shadow-lg shadow-simona-teal/25 flex items-center justify-center space-x-2 cursor-pointer active:scale-[0.98]"
                               >
-                                <span>{loading ? 'Отправка...' : 'Подтвердить быстрый заказ'}</span>
+                                <span>{loading ? 'Отправка...' : 'Подтвердить быстрый заказ в 1 клик'}</span>
                               </button>
                             </div>
                           </form>
@@ -460,7 +460,7 @@ export function CartDrawer() {
 
               {/* Footer with Payment summary & Direct Checkout Button */}
               {cart.length > 0 && !orderSuccess && (
-                <div className="p-5 border-t border-[#2B313A] bg-[#111315]/90 backdrop-blur-md space-y-3">
+                <div className="p-5 border-t border-[#2B313A] bg-[#111315]/90 backdrop-blur-md space-y-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
                   <div className="flex items-baseline justify-between">
                     <span className="text-xs text-[#87888A] font-medium">Итого к оплате:</span>
                     <span className="text-2xl font-montserrat font-bold text-white">
@@ -471,10 +471,10 @@ export function CartDrawer() {
                   <button
                     type="button"
                     onClick={handleGoToCheckout}
-                    className="w-full py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white font-semibold text-sm transition shadow-lg shadow-simona-teal/25 flex items-center justify-center space-x-2 active:scale-[0.98] cursor-pointer"
+                    className="w-full py-2.5 rounded-xl bg-[#1E2228] hover:bg-[#252A32] border border-[#2B313A] text-[#D7D9DB] hover:text-white text-xs font-semibold transition flex items-center justify-center space-x-2 active:scale-[0.98] cursor-pointer"
                   >
-                    <span>Перейти к оформлению заказа</span>
-                    <SimonaIconArrowRight className="w-4 h-4" />
+                    <span>Оформить заказ подробно на сайте</span>
+                    <SimonaIconArrowRight className="w-3.5 h-3.5" />
                   </button>
 
                   <div className="flex items-center justify-start space-x-2 text-[10px] text-[#87888A]">

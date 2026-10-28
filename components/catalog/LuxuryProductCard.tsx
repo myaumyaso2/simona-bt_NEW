@@ -301,11 +301,11 @@ export function LuxuryProductCard({
   );
 
   const renderChips = () => (
-    <div className="flex items-center gap-1.5 overflow-hidden w-full">
+    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar whitespace-nowrap w-full py-0.5 scroll-smooth">
       {chips.map((chip, idx) => (
         <span
           key={idx}
-          className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#1E2228] text-[#D7D9DB] border border-[#2B313A] shrink-0"
+          className="inline-flex items-center px-2 py-0.5 rounded-md text-[10.5px] font-medium bg-[#1E2228] text-[#D7D9DB] border border-[#2B313A] shrink-0"
         >
           {chip}
         </span>
@@ -316,7 +316,7 @@ export function LuxuryProductCard({
   return (
     <div
       id={`product-${product.id}`}
-      className={`group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-4 transition-all duration-300 shadow-xl flex flex-col justify-between relative ${isTooltipOpen ? 'z-40' : 'z-10'}`}
+      className={`group rounded-2xl bg-[#16191D] border border-[#2B313A] hover:border-simona-teal/60 p-3 sm:p-4 transition-all duration-300 shadow-xl flex flex-col justify-between relative ${isTooltipOpen ? 'z-40' : 'z-10'}`}
     >
       <div>
         {/* Top Media Area (White Luxury Showcase Tablet with object-contain) */}
@@ -426,7 +426,7 @@ export function LuxuryProductCard({
                         exit={{ opacity: 0, y: 4, scale: 0.95 }}
                         transition={{ duration: 0.18, ease: 'easeOut' }}
                         onWheel={handlePopoverWheel}
-                        className="absolute right-0 top-full mt-2 w-[340px] z-50 text-left"
+                        className="absolute right-0 top-full mt-2 w-[calc(100vw-2.5rem)] max-w-[340px] z-50 text-left"
                       >
                         {/* Soft Diffuse Shadow Halo (мягкий градиентный спад тени в 0 без жесткой границы плашки) */}
                         <div className="absolute inset-0 rounded-2xl pointer-events-none -z-10 shadow-[0_0_50px_25px_rgba(0,0,0,0.85),0_20px_60px_10px_rgba(0,0,0,0.95)]" />
@@ -539,9 +539,9 @@ export function LuxuryProductCard({
         </div>
 
         {/* Content Area */}
-        <div className="mt-3.5">
+        <div className="mt-2.5 sm:mt-3.5">
           {/* Category & SKU */}
-          <div className="flex items-center justify-between gap-2 text-[11px] text-[#87888A] mb-1.5 font-medium">
+          <div className="flex items-center justify-between gap-2 text-[10.5px] sm:text-[11px] text-[#87888A] mb-1 sm:mb-1.5 font-medium">
             <span className="truncate">{product.category}</span>
             <span className="font-mono text-[#D7D9DB] shrink-0 font-medium">
               Код: {product.sku}
@@ -550,7 +550,7 @@ export function LuxuryProductCard({
 
           {/* Product Name */}
           <Link href={`/product/${product.slug}`} onClick={handleProductClick} className="block">
-            <h3 className="text-[15px] font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors line-clamp-2 leading-snug">
+            <h3 className="text-sm sm:text-[15px] font-montserrat font-bold text-white group-hover:text-simona-teal transition-colors line-clamp-2 leading-snug">
               {formattedTitle}
             </h3>
           </Link>
@@ -558,10 +558,10 @@ export function LuxuryProductCard({
       </div>
 
       {/* Price & Smart CTA Actions */}
-      <div className="mt-4 pt-3.5 border-t border-[#2B313A]">
+      <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3.5 border-t border-[#2B313A]">
         <div className="flex items-baseline justify-between mb-1">
           <div className="flex items-baseline">
-            <span className="text-lg font-montserrat font-bold text-white">
+            <span className="text-base sm:text-lg font-montserrat font-bold text-white">
               {formatPrice(product.price)}
             </span>
             {product.oldPrice && (
@@ -573,7 +573,7 @@ export function LuxuryProductCard({
         </div>
 
         {/* Action / Specs Slot */}
-        <div className="mt-3">
+        <div className="mt-2 sm:mt-3">
           {/* Desktop (lg:): Elevator animation or fixed buttons if isActionsFixed */}
           <div className="hidden lg:block">
             {isActionsFixed ? (
@@ -596,7 +596,7 @@ export function LuxuryProductCard({
           </div>
 
           {/* Mobile & Tablet (< lg): Chips + Buttons always visible */}
-          <div className="lg:hidden space-y-2.5">
+          <div className="lg:hidden space-y-2">
             <div>{renderChips()}</div>
             <div>{renderActionButtons()}</div>
           </div>

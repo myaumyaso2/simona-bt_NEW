@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
+import { useStore } from '@/components/providers/StoreContext';
 import {
   SimonaIconChat,
   SimonaIconClose,
@@ -38,6 +40,8 @@ const DEFAULT_WELCOME_MESSAGE: ChatMessageItem = {
 };
 
 export function LiveChatWidget() {
+  const pathname = usePathname();
+  const { isCartOpen } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string>('');
   const [inputText, setInputText] = useState('');
@@ -174,27 +178,32 @@ export function LiveChatWidget() {
     }
   };
 
+  if (isCartOpen) return null;
+
+  const isProductPage = pathname?.startsWith('/product/');
+  const positionClass = isProductPage ? 'bottom-24 md:bottom-6' : 'bottom-5 md:bottom-6';
+
   return (
-    <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-40">
+    <div className={`fixed ${positionClass} right-3 sm:right-6 z-30`}>
       {/* Trigger Button (Quiet Luxury Online Indicator, strict rounded-xl) */}
       {!isOpen && (
         <div className="relative flex items-center justify-center">
-          <span className="absolute -inset-1.5 rounded-xl bg-simona-teal/25 animate-pulse blur-[3px] pointer-events-none" />
+          <span className="absolute -inset-1 rounded-xl bg-simona-teal/25 animate-pulse blur-[3px] pointer-events-none" />
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="relative w-14 h-14 rounded-xl bg-simona-teal hover:bg-[#008489] text-white shadow-xl shadow-simona-teal/30 hover:shadow-simona-teal/50 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center"
+            className="relative w-12 h-12 md:w-14 md:h-14 rounded-xl bg-simona-teal hover:bg-[#008489] text-white shadow-xl shadow-simona-teal/30 hover:shadow-simona-teal/50 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer"
             aria-label="Онлайн-консультант СИМОНА"
             title="Онлайн-консультант СИМОНА"
           >
-            <SimonaIconChat className="w-6 h-6" />
+            <SimonaIconChat className="w-5 h-5 md:w-6 md:h-6" />
           </button>
         </div>
       )}
 
       {/* Chat Box */}
       {isOpen && (
-        <div className="w-[340px] sm:w-[390px] h-[510px] rounded-2xl bg-[#16191D] border border-[#2B313A] shadow-2xl flex flex-col justify-between overflow-hidden text-xs text-white">
+        <div className="w-[calc(100vw-1.5rem)] max-w-[360px] sm:w-[390px] h-[480px] sm:h-[510px] rounded-2xl bg-[#16191D] border border-[#2B313A] shadow-2xl flex flex-col justify-between overflow-hidden text-xs text-white">
           {/* Top Bar */}
           <div className="p-4 bg-[#1E2228] border-b border-[#2B313A] flex items-center justify-between">
             <div className="flex items-center space-x-3 text-left">

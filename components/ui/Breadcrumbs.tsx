@@ -39,10 +39,10 @@ export function Breadcrumbs({ items, rightContent, className = '', skipJsonLd = 
     <>
       {!skipJsonLd && <SchemaOrgBreadcrumbs items={schemaItems} />}
       <div className={`w-full border-b border-[#2B313A] bg-[#16191D]/60 backdrop-blur-md ${className}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-3 flex items-center justify-between gap-3 sm:gap-4 overflow-hidden">
           <nav
             aria-label="Хлебные крошки"
-            className="flex items-center space-x-2 text-xs text-[#87888A] min-w-0 flex-wrap sm:flex-nowrap gap-y-1"
+            className="flex items-center space-x-2 text-xs text-[#87888A] min-w-0 overflow-x-auto no-scrollbar whitespace-nowrap scroll-smooth py-0.5"
           >
             {normalizedItems.map((item, index) => {
               const isLast = index === normalizedItems.length - 1;
@@ -73,7 +73,7 @@ export function Breadcrumbs({ items, rightContent, className = '', skipJsonLd = 
           </nav>
 
           {rightContent && (
-            <div className="shrink-0 text-xs">
+            <div className="shrink-0 text-xs hidden sm:block">
               {rightContent}
             </div>
           )}

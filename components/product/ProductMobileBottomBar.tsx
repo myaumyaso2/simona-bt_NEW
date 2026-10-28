@@ -47,7 +47,7 @@ export function ProductMobileBottomBar({ product }: ProductMobileBottomBarProps)
       : 'text-emerald-400';
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#16191D]/95 backdrop-blur-lg border-t border-[#2B313A] px-4 py-3 flex items-center justify-between shadow-2xl safe-area-bottom">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#16191D]/95 backdrop-blur-lg border-t border-[#2B313A] px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center justify-between shadow-2xl">
       {/* Left: Price and In-Stock */}
       <div className="flex flex-col">
         <span className="text-base font-montserrat font-extrabold text-white">

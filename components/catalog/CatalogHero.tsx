@@ -120,20 +120,20 @@ export function CatalogHero({
               ]
         }
       />
-      <section className="pt-8 pb-6 border-b border-[#2B313A]/50">
+      <section className="pt-4 sm:pt-8 pb-3 sm:pb-6 border-b border-[#2B313A]/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Title & Count Badge */}
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-2">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-montserrat font-bold text-white tracking-tight">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 mb-1.5 sm:mb-2">
+          <h1 className="text-xl sm:text-3xl lg:text-4xl font-montserrat font-bold text-white tracking-tight">
             {categoryTitle}
           </h1>
-          <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-[#16191D] border border-[#2B313A] text-simona-teal shadow-sm">
+          <span className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-lg text-[11px] sm:text-xs font-semibold bg-[#16191D] border border-[#2B313A] text-simona-teal shadow-sm">
             {totalCount} {pluralizeModels(totalCount)}
           </span>
         </div>
 
         {/* 3. Description Subtitle */}
-        <p className="text-sm text-[#87888A] max-w-2xl leading-relaxed mb-5">
+        <p className="text-xs sm:text-sm text-[#87888A] max-w-2xl leading-relaxed mb-3 sm:mb-5 line-clamp-2 sm:line-clamp-none">
           {categoryDescription}
         </p>
 
@@ -141,7 +141,7 @@ export function CatalogHero({
         {subcategoryLinks && subcategoryLinks.length > 0 && (
           <nav
             aria-label="Подкатегории раздела"
-            className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 sm:flex-wrap sm:overflow-visible mb-5"
+            className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 sm:flex-wrap sm:overflow-visible mb-3 sm:mb-5"
           >
             {subcategoryLinks.map((item) => (
               <Link
@@ -157,11 +157,11 @@ export function CatalogHero({
 
         {/* 4. Popular Facet Collections Slider (Top Row) */}
         {facetLinks && facetLinks.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="text-xs text-[#87888A] font-medium shrink-0 w-20">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 mb-2.5 sm:mb-3">
+            <span className="text-[11px] sm:text-xs text-[#87888A] font-medium shrink-0">
               Подборки:
             </span>
-            <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
+            <div className="relative w-full sm:w-auto overflow-x-auto no-scrollbar flex-nowrap inline-flex items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1 scroll-smooth">
               {/* "Все" Tab */}
               {(() => {
                 const isAllActive =
@@ -250,11 +250,11 @@ export function CatalogHero({
             onSelectCategory={onSelectCategory}
           />
         ) : (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-[#87888A] font-medium shrink-0 w-20">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2">
+            <span className="text-[11px] sm:text-xs text-[#87888A] font-medium shrink-0">
               Наличие:
             </span>
-            <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
+            <div className="relative w-full sm:w-auto overflow-x-auto no-scrollbar flex-nowrap inline-flex items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1 scroll-smooth">
               {presenceTabs.map((tab) => {
                 const isActive = activePhysicalTab === tab.id;
                 const isDiscount = tab.id === 'DISCOUNT';

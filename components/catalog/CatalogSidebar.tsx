@@ -3,10 +3,15 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, X } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { MANUFACTURER_PROMOS } from '@/data/promosData';
-import { SimonaIconSearch, SimonaIconCheck, SimonaIconClock } from '@/components/brand/SimonaIcons';
+import {
+  SimonaIconSearch,
+  SimonaIconCheck,
+  SimonaIconClock,
+  SimonaIconChevronDown,
+  SimonaIconClose,
+} from '@/components/brand/SimonaIcons';
 import { CategoryFacet, groupCategoryFacets } from '@/lib/productFeatures';
 import { useStore } from '@/components/providers/StoreContext';
 import { ManufacturerPromo } from '@/types';
@@ -48,6 +53,7 @@ interface CatalogSidebarProps {
   onOpenDrawer?: () => void;
   brandLock?: string;
   onUnlockBrand?: () => void;
+  hideHeader?: boolean;
 }
 
 export function CatalogSidebar({
@@ -62,6 +68,7 @@ export function CatalogSidebar({
   categoryFacets = [],
   brandLock,
   onUnlockBrand,
+  hideHeader = false,
 }: CatalogSidebarProps) {
   const { openModal } = useStore();
   const [mounted, setMounted] = useState(false);
@@ -313,7 +320,7 @@ export function CatalogSidebar({
               </span>
             )}
           </div>
-          <ChevronDown
+          <SimonaIconChevronDown
             className={`w-4 h-4 shrink-0 transition-transform duration-300 ${
               open ? 'rotate-180 text-simona-teal' : 'text-[#87888A] group-hover:text-simona-teal'
             }`}
@@ -378,20 +385,26 @@ export function CatalogSidebar({
     <aside
       ref={asideRef}
       data-lenis-prevent="true"
-      className="w-full lg:w-[300px] shrink-0 bg-[#16191D] rounded-2xl p-5 border border-[#2B313A] space-y-6 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto simona-sidebar-scrollbar overscroll-contain scroll-smooth"
+      className={
+        hideHeader
+          ? 'w-full space-y-6'
+          : 'w-full lg:w-[300px] shrink-0 bg-[#16191D] rounded-2xl p-5 border border-[#2B313A] space-y-6 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto simona-sidebar-scrollbar overscroll-contain scroll-smooth'
+      }
     >
       {/* Top Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-[#2B313A]">
-        <h3 className="text-base font-montserrat font-bold text-white tracking-tight">
-          Фильтры
-        </h3>
-        <button
-          onClick={onResetFilters}
-          className="text-xs text-[#87888A] hover:text-simona-teal transition-colors font-medium cursor-pointer"
-        >
-          Сбросить все
-        </button>
-      </div>
+      {!hideHeader && (
+        <div className="flex items-center justify-between pb-3 border-b border-[#2B313A]">
+          <h3 className="text-base font-montserrat font-bold text-white tracking-tight">
+            Фильтры
+          </h3>
+          <button
+            onClick={onResetFilters}
+            className="text-xs text-[#87888A] hover:text-simona-teal transition-colors font-medium cursor-pointer"
+          >
+            Сбросить все
+          </button>
+        </div>
+      )}
 
       {/* 0. ТИП ПРИБОРА (Столбец C "Группа товара" из 1C_import.csv) — Расположен на самом верху */}
       {availableGroups.length > 0 && (
@@ -408,7 +421,7 @@ export function CatalogSidebar({
                 </span>
               )}
             </div>
-            <ChevronDown
+            <SimonaIconChevronDown
               className={`w-4 h-4 transition-all duration-300 ${
                 groupOpen
                   ? 'rotate-180 text-simona-teal'
@@ -496,7 +509,7 @@ export function CatalogSidebar({
                 {activePromos.length}
               </span>
             </div>
-            <ChevronDown
+            <SimonaIconChevronDown
               className={`w-4 h-4 transition-all duration-300 ${
                 promoOpen
                   ? 'rotate-180 text-simona-wine-light'
@@ -612,7 +625,7 @@ export function CatalogSidebar({
                   title="Сбросить фильтр по бренду"
                   aria-label="Сбросить фильтр по бренду"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <SimonaIconClose className="w-3.5 h-3.5" />
                 </button>
               )}
             </span>
@@ -632,7 +645,7 @@ export function CatalogSidebar({
                 </span>
               )}
             </div>
-            <ChevronDown
+            <SimonaIconChevronDown
               className={`w-4 h-4 transition-all duration-300 ${
                 brandOpen
                   ? 'rotate-180 text-simona-teal'
@@ -710,7 +723,7 @@ export function CatalogSidebar({
           className="w-full flex items-center justify-between text-sm font-semibold text-white py-1 group cursor-pointer transition-colors"
         >
           <span className="group-hover:text-white transition-colors">Цена, ₽</span>
-          <ChevronDown
+          <SimonaIconChevronDown
             className={`w-4 h-4 transition-all duration-300 ${
               priceOpen
                 ? 'rotate-180 text-simona-teal'
@@ -849,7 +862,7 @@ export function CatalogSidebar({
                 {hiddenActiveCount}
               </span>
             )}
-            <ChevronDown
+            <SimonaIconChevronDown
               className={`w-4 h-4 text-[#87888A] group-hover:text-simona-teal transition-transform duration-300 ${
                 isSecondaryExpanded ? 'rotate-180 text-simona-teal' : ''
               }`}

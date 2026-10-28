@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronDown } from 'lucide-react';
 import { useStore } from '@/components/providers/StoreContext';
 import { SimonaLogo } from '@/components/brand/SimonaLogo';
 import { CatalogMegaMenu } from './CatalogMegaMenu';
@@ -13,6 +12,8 @@ import {
   SimonaIconCompare,
   SimonaIconUser,
   SimonaIconSearch,
+  SimonaIconMenu,
+  SimonaIconClose,
 } from '@/components/brand/SimonaIcons';
 import { useSiteContent } from '@/components/providers/ContentContext';
 
@@ -293,7 +294,7 @@ export function Header({
               aria-label="Меню"
               className="lg:hidden p-2 sm:p-2.5 text-[#87888A] hover:text-white bg-[#1E2228] rounded-xl border border-[#2B313A] transition ml-0.5 sm:ml-1"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <SimonaIconClose className="w-5 h-5" /> : <SimonaIconMenu className="w-5 h-5" />}
             </button>
           </div>
         </div>

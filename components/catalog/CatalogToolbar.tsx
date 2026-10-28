@@ -1,10 +1,14 @@
 'use client';
 
 import React from 'react';
-import { X, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FilterState } from './CatalogSidebar';
-import { SimonaIconFilter, SimonaIconCheck } from '@/components/brand/SimonaIcons';
+import {
+  SimonaIconFilter,
+  SimonaIconCheck,
+  SimonaIconClose,
+  SimonaIconChevronDown,
+} from '@/components/brand/SimonaIcons';
 import { CategoryFacet } from '@/lib/productFeatures';
 import { formatBrandName } from '@/lib/formatters';
 
@@ -145,7 +149,7 @@ export function CatalogToolbar({
                 className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-simona-teal/50 hover:border-rose-500/50 text-xs text-white transition group cursor-pointer"
               >
                 <span className="font-medium text-simona-teal">{group}</span>
-                <X className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
+                <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
               </button>
             ))}
 
@@ -162,7 +166,7 @@ export function CatalogToolbar({
                 <span className="font-semibold text-simona-teal group-hover:text-white transition-colors">
                   {formatBrandName(brand)}
                 </span>
-                <X className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
+                <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
               </button>
             ))}
 
@@ -172,7 +176,7 @@ export function CatalogToolbar({
               className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group cursor-pointer"
             >
               <span>{filters.selectedWidth}</span>
-              <X className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
+              <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
             </button>
           )}
 
@@ -182,7 +186,7 @@ export function CatalogToolbar({
               className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group cursor-pointer"
             >
               <span>Цвет отделки</span>
-              <X className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
+              <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
             </button>
           )}
 
@@ -196,7 +200,7 @@ export function CatalogToolbar({
               >
                 <span className="text-[#87888A]">{label}:</span>
                 <span className="font-semibold">{val}</span>
-                <X className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
+                <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
               </button>
             ))
           )}
@@ -218,7 +222,7 @@ export function CatalogToolbar({
               }`}
             >
               <span>{currentSortLabel}</span>
-              <ChevronDown
+              <SimonaIconChevronDown
                 className={`w-3.5 h-3.5 transition-transform duration-300 ${
                   isSortOpen
                     ? 'rotate-180 text-simona-teal'
@@ -344,7 +348,7 @@ export function CatalogToolbar({
                       {selectedVals.length}
                     </span>
                   )}
-                  <ChevronDown
+                  <SimonaIconChevronDown
                     className={`w-3.5 h-3.5 transition-transform duration-200 ${
                       isChipOpen ? 'rotate-180 text-simona-teal' : 'text-[#87888A]'
                     }`}

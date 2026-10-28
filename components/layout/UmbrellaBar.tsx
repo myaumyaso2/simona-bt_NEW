@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
 import {
   SimonaIconPin,
   SimonaIconClock,
   SimonaIconPhoneSolid,
+  SimonaIconExternalLink,
 } from '@/components/brand/SimonaIcons';
 import { useSiteContent } from '@/components/providers/ContentContext';
 
@@ -29,7 +29,7 @@ export function UmbrellaBar() {
             className="flex items-center space-x-1 text-[#87888A] hover:text-white transition-colors text-[11px] font-medium group"
           >
             <span>Кухни и мебель</span>
-            <ExternalLink className="w-2.5 h-2.5 text-[#87888A] group-hover:text-white transition-transform group-hover:translate-x-0.5" />
+            <SimonaIconExternalLink className="w-2.5 h-2.5 text-[#87888A] group-hover:text-white transition-transform group-hover:translate-x-0.5" />
           </a>
         </div>
 

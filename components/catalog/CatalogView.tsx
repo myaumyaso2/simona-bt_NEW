@@ -876,7 +876,7 @@ export function CatalogView({
             )}
 
             {/* Row 2: Inventory Presence Tabs */}
-            <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
+            <div className="relative w-full sm:w-auto overflow-x-auto no-scrollbar flex-nowrap inline-flex items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1 scroll-smooth">
               {[
                 { id: 'ALL' as const, label: 'Все', count: presenceCounts.ALL },
                 { id: 'LOCAL_STOCK' as const, label: 'На складе', count: presenceCounts.LOCAL_STOCK },
@@ -976,11 +976,11 @@ export function CatalogView({
           {/* 1.5. Inventory Presence Tabs for Brand Page (lowered below Hero per user request) */}
           {isDedicatedBrandPage && (
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs text-[#87888A] font-medium shrink-0 w-20">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2">
+                <span className="text-[11px] sm:text-xs text-[#87888A] font-medium shrink-0">
                   Наличие:
                 </span>
-                <div className="relative inline-flex flex-wrap items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1">
+                <div className="relative w-full sm:w-auto overflow-x-auto no-scrollbar flex-nowrap inline-flex items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] gap-1 scroll-smooth">
                 {[
                   { id: 'ALL' as const, label: 'Все', count: presenceCounts.ALL },
                   { id: 'SHOWROOM' as const, label: 'На витрине', count: presenceCounts.SHOWROOM },

@@ -7,6 +7,7 @@ import { ProductItem } from '@/types';
 import {
   SimonaIconCheck,
   SimonaIconShare,
+  SimonaIconClose,
 } from '@/components/brand/SimonaIcons';
 import { formatBrandName } from '@/lib/formatters';
 
@@ -38,17 +39,26 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
     }
   };
 
+  const handleDragEnd = (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
+    const swipeThreshold = 35;
+    if ((info.offset.x < -swipeThreshold || info.velocity.x < -300) && activeImageIndex < images.length - 1) {
+      setActiveImageIndex((prev) => prev + 1);
+    } else if ((info.offset.x > swipeThreshold || info.velocity.x > 300) && activeImageIndex > 0) {
+      setActiveImageIndex((prev) => prev - 1);
+    }
+  };
+
   return (
-    <div className="flex flex-col md:flex-row gap-4 w-full">
+    <div className="flex flex-col md:flex-row gap-3 sm:gap-4 w-full">
       {/* 1. Vertical Thumbnails Strip (Desktop: left, Mobile: horizontal scroll) */}
-      <div className="order-2 md:order-1 flex md:flex-col gap-3 overflow-x-auto md:overflow-visible pb-2 md:pb-0 scrollbar-none shrink-0">
+      <div className="order-2 md:order-1 flex md:flex-col gap-2 sm:gap-3 overflow-x-auto md:overflow-visible pb-1 md:pb-0 no-scrollbar shrink-0">
         {images.map((img, idx) => {
           const isActive = idx === activeImageIndex;
           return (
             <button
               key={idx}
               onClick={() => setActiveImageIndex(idx)}
-              className={`relative w-[76px] h-[76px] md:w-[88px] md:h-[88px] rounded-xl overflow-hidden bg-white border transition-all duration-200 cursor-pointer shrink-0 p-1 flex items-center justify-center ${
+              className={`relative w-[60px] h-[60px] sm:w-[76px] sm:h-[76px] md:w-[88px] md:h-[88px] rounded-xl overflow-hidden bg-white border transition-all duration-200 cursor-pointer shrink-0 p-1 flex items-center justify-center ${
                 isActive
                   ? 'border-simona-teal ring-1 ring-simona-teal/50 shadow-md shadow-simona-teal/10'
                   : 'border-[#2B313A] hover:border-[#87888A]/60 opacity-80 hover:opacity-100'
@@ -72,21 +82,21 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
         })}
       </div>
 
-      {/* 2. Main Image Stage (White Luxury Showcase Tablet with object-contain) */}
-      <div className="order-1 md:order-2 flex-1 relative h-[380px] sm:h-[480px] md:h-[580px] bg-white rounded-2xl border border-white/10 shadow-inner overflow-hidden flex items-center justify-center p-4 sm:p-6 select-none">
+      {/* 2. Main Image Stage with Touch Swipe & Dots (White Luxury Showcase Tablet with object-contain) */}
+      <div className="order-1 md:order-2 flex-1 relative h-[320px] sm:h-[460px] md:h-[560px] bg-white rounded-2xl border border-white/10 shadow-inner overflow-hidden flex items-center justify-center p-3 sm:p-6 select-none touch-pan-y">
         {/* Brand Tag (Top-Left) */}
-        <div className="absolute top-4 left-4 z-20 pointer-events-none">
+        <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-20 pointer-events-none">
           <span className="px-2.5 py-0.5 rounded-md bg-[#16191D]/90 backdrop-blur-md text-[10px] font-bold tracking-wider text-white border border-[#2B313A] shadow-md">
             {brandFormatted}
           </span>
         </div>
 
         {/* Top-Right Share Button */}
-        <div className="absolute top-4 right-4 z-20">
+        <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-20">
           <button
             onClick={handleShare}
             title="Поделиться ссылкой"
-            className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#111315]/80 backdrop-blur-md border border-[#2B313A] text-[#D7D9DB] hover:text-white hover:border-[#87888A] transition-all duration-200 cursor-pointer shadow-md relative"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-[#111315]/80 backdrop-blur-md border border-[#2B313A] text-[#D7D9DB] hover:text-white hover:border-[#87888A] transition-all duration-200 cursor-pointer shadow-md relative"
           >
             {copied ? (
               <SimonaIconCheck className="w-4 h-4 text-emerald-400" />
@@ -101,15 +111,19 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
           </button>
         </div>
 
-        {/* Main Photo with smooth animation */}
+        {/* Main Photo with Swipeable Animation */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeImageIndex}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={handleDragEnd}
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="w-full h-full flex items-center justify-center relative"
+            transition={{ duration: 0.22, ease: 'easeOut' }}
+            className="w-full h-full flex items-center justify-center relative cursor-grab active:cursor-grabbing"
           >
             <Image
               src={images[activeImageIndex]}
@@ -118,11 +132,27 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
               priority={activeImageIndex === 0}
               fetchPriority={activeImageIndex === 0 ? 'high' : 'auto'}
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-contain drop-shadow-md cursor-zoom-in p-2 sm:p-4"
+              className="object-contain drop-shadow-md p-2 sm:p-4"
               onClick={() => setIsZoomed(true)}
             />
           </motion.div>
         </AnimatePresence>
+
+        {/* Dots Pagination Indicator (Mobile & Tablet) */}
+        {images.length > 1 && (
+          <div className="absolute bottom-3 left-0 right-0 z-20 flex justify-center items-center gap-1.5 pointer-events-none md:hidden">
+            {images.map((_, dotIdx) => (
+              <span
+                key={dotIdx}
+                className={`transition-all duration-300 rounded-full ${
+                  dotIdx === activeImageIndex
+                    ? 'w-5 h-1.5 bg-simona-teal shadow-[0_0_6px_rgba(0,151,156,0.6)]'
+                    : 'w-1.5 h-1.5 bg-[#2B313A]/70'
+                }`}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Fullscreen Zoom Lightbox Modal */}
         <AnimatePresence>
@@ -134,6 +164,7 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
               onClick={() => setIsZoomed(false)}
               className="fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4 sm:p-10 cursor-zoom-out"
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={images[activeImageIndex]}
                 alt={product.name}
@@ -142,8 +173,9 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
               <button
                 onClick={() => setIsZoomed(false)}
                 className="absolute top-6 right-6 text-white bg-[#1E2228] border border-[#2B313A] rounded-xl w-10 h-10 flex items-center justify-center hover:border-white transition-colors cursor-pointer"
+                aria-label="Закрыть полноэкранный просмотр"
               >
-                ✕
+                <SimonaIconClose className="w-5 h-5 text-white" />
               </button>
             </motion.div>
           )}
