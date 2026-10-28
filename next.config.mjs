@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  distDir: process.env.BUILD_DIR || '.next',
+  distDir: '.next',
   generateBuildId: async () => 'simona-build',
   skipTrailingSlashRedirect: true,
   experimental: {
