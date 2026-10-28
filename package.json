@@ -11,7 +11,9 @@
     "prisma:push": "prisma db push",
     "prisma:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "sync-telegram": "node scripts/sync_telegram_videos.mjs"
+    "sync-telegram": "node scripts/sync_telegram_videos.mjs",
+    "sync:remote-stock": "py scripts/sync_remote_stock.py",
+    "sync:remote-stock:dry": "py scripts/sync_remote_stock.py --dry-run"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
