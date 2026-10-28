@@ -77,8 +77,14 @@ if [ "$CUSTOMERS" -eq "0" ] && [ -f "data/exported_umi_customers_orders.json.gz"
 fi
 
 echo "🔨 Building Next.js production build..."
-rm -rf .next 2>/dev/null || rm -rf .next || true
-npm run build
+rm -rf .next_build
+BUILD_DIR=.next_build npm run build
+rm -rf .next_old
+if [ -d ".next" ]; then
+    mv .next .next_old
+fi
+mv .next_build .next
+rm -rf .next_old 2>/dev/null || true
 
 echo "🚀 Starting PM2 process simona-prod on port 3000..."
 if pm2 describe simona-prod > /dev/null 2>&1; then
