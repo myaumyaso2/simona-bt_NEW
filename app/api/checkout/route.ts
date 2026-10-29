@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
     const paymentMethod = String(body.paymentMethod || 'IN_SALON').trim();
     const companyName = body.companyName ? String(body.companyName).trim() : null;
     const companyInn = body.companyInn ? String(body.companyInn).trim() : null;
+    const isQuickOrder = Boolean(body.isQuickOrder);
     const items = Array.isArray(body.items) ? (body.items as CheckoutItemInput[]) : [];
 
     const utmSource = body.utmSource ? String(body.utmSource).trim() : null;
@@ -216,6 +217,7 @@ export async function POST(req: NextRequest) {
         deliveryComment: effectiveDeliveryComment,
         totalAmount,
         status: 'NEW',
+        isQuickOrder,
         paymentStatus: 'PENDING',
         paymentMethod,
         companyName,

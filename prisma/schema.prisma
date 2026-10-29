@@ -118,6 +118,7 @@ model Order {
   totalAmount     Float
   status          String      @default("NEW")     // NEW, IN_PROGRESS, CONFIRMED, PAID, READY_FOR_PICKUP, DELIVERED, CANCELLED, TEST
   isOneClick      Boolean     @default(false)
+  isQuickOrder    Boolean     @default(false)
   paymentStatus   String      @default("PENDING") // PENDING, HOLD, PAID, CANCELLED, REFUNDED
   paymentMethod   String      @default("IN_SALON") // IN_SALON, CARD_ONLINE, ON_RECEIPT, B2B_INVOICE
   paymentId       String?

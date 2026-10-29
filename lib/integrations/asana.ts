@@ -206,7 +206,12 @@ export async function createAsanaOrderTask(order: OrderEmailData): Promise<Asana
   }
 
   const isOneClick = Boolean(order.isOneClick) || order.status === 'ONE_CLICK';
-  const prefix = isOneClick ? '[Заказ в 1 клик' : '[Заказ';
+  const isQuickOrder = Boolean(order.isQuickOrder);
+  const prefix = isOneClick
+    ? '[Заказ в 1 клик'
+    : isQuickOrder
+    ? '[БЫСТРЫЙ ЗАКАЗ'
+    : '[Заказ';
   const title = `${prefix} №${order.orderNumber}] — ${order.customerName} (${order.customerPhone}) — ${Math.round(order.totalAmount).toLocaleString('ru-RU')} ₽`;
   const notes = [
     `Номер заказа: ${order.orderNumber}`,

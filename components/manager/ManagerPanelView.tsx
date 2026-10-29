@@ -71,6 +71,7 @@ interface OrderRecord {
   totalAmount: number;
   status: string;
   isOneClick?: boolean;
+  isQuickOrder?: boolean;
   paymentStatus: string;
   paymentMethod: string;
   paymentLink: string | null;
@@ -725,10 +726,18 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
                               </div>
                               {order.isOneClick && (
                                 <span
-                                  title="Быстрый заказ в 1 клик"
+                                  title="Заказ в 1 клик с карточки товара"
                                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 select-none"
                                 >
                                   <span>⚡ В 1 клик</span>
+                                </span>
+                              )}
+                              {order.isQuickOrder && (
+                                <span
+                                  title="Быстрый заказ из шторки корзины"
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40 select-none"
+                                >
+                                  <span>⚡ Быстрый</span>
                                 </span>
                               )}
                             </div>
@@ -761,10 +770,18 @@ export function ManagerPanelView({ initialTab = 'orders' }: { initialTab?: Manag
                           </div>
                           {selectedOrder.isOneClick && (
                             <span
-                              title="Быстрый заказ в 1 клик (признак неизменяем)"
+                              title="Заказ в 1 клик с карточки товара (признак неизменяем)"
                               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 select-none"
                             >
                               <span>⚡ В 1 клик</span>
+                            </span>
+                          )}
+                          {selectedOrder.isQuickOrder && (
+                            <span
+                              title="Быстрый заказ из шторки корзины (признак неизменяем)"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40 select-none"
+                            >
+                              <span>⚡ Быстрый</span>
                             </span>
                           )}
                         </div>

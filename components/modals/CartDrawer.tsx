@@ -86,6 +86,7 @@ export function CartDrawer() {
         deliveryType,
         deliveryAddress: deliveryType === 'COURIER_DELIVERY' ? address : null,
         paymentMethod: 'IN_SALON',
+        isQuickOrder: true,
         items: cart.map((item) => ({
           productId: item.product.id,
           sku: item.product.sku,
@@ -281,7 +282,7 @@ export function CartDrawer() {
                         className="w-full flex items-center justify-between text-xs font-semibold text-simona-teal hover:text-simona-teal-hover py-1.5 px-1 rounded-lg hover:bg-simona-teal/5 cursor-pointer transition-all duration-200 group"
                       >
                         <span className="tracking-wide">
-                          {showQuickForm ? 'Скрыть быстрый заказ' : 'Быстрый заказ в 1 клик'}
+                          {showQuickForm ? 'Скрыть быстрый заказ' : 'Быстрый заказ'}
                         </span>
                         <SimonaIconChevronDown
                           className={`w-3.5 h-3.5 transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] ${
@@ -447,7 +448,7 @@ export function CartDrawer() {
                                 disabled={loading}
                                 className="w-full py-3.5 rounded-xl bg-simona-teal hover:bg-simona-teal-hover text-white text-sm font-bold tracking-wide transition shadow-lg shadow-simona-teal/25 flex items-center justify-center space-x-2 cursor-pointer active:scale-[0.98]"
                               >
-                                <span>{loading ? 'Отправка...' : 'Подтвердить быстрый заказ в 1 клик'}</span>
+                                <span>{loading ? 'Отправка...' : 'Подтвердить быстрый заказ'}</span>
                               </button>
                             </div>
                           </form>

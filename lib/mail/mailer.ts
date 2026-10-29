@@ -313,6 +313,7 @@ export interface OrderEmailData {
   totalAmount: number;
   status: string;
   isOneClick?: boolean;
+  isQuickOrder?: boolean;
   paymentMethod: string;
   paymentLink?: string | null;
   companyName?: string | null;
@@ -475,11 +476,18 @@ export async function sendOrderCreatedEmails(order: OrderEmailData) {
   }
 
   // Б) Письмо менеджеру
+  const orderTypeBadge = order.isOneClick
+    ? `<div><strong style="color:#FFFFFF;">Тип заказа:</strong> <span style="color:#FDBF3E;font-weight:700;">⚡ В 1 клик (с карточки товара)</span></div>`
+    : order.isQuickOrder
+    ? `<div><strong style="color:#FFFFFF;">Тип заказа:</strong> <span style="color:#2DD4BF;font-weight:700;">⚡ Быстрый заказ (из корзины)</span></div>`
+    : '';
+
   const managerBody = `
     <h1 style="font-size:20px;font-weight:700;color:#FFFFFF;margin:0 0 12px 0;">
-      Новый заказ №${order.orderNumber} на сумму ${formatRub(order.totalAmount)}
+      ${order.isOneClick ? '⚡ Заказ в 1 клик' : order.isQuickOrder ? '⚡ Быстрый заказ' : 'Новый заказ'} №${order.orderNumber} на сумму ${formatRub(order.totalAmount)}
     </h1>
     <div style="padding:16px;background-color:#1E2228;border:1px solid #2B313A;border-radius:12px;font-size:13px;line-height:1.7;margin-bottom:16px;">
+      ${orderTypeBadge}
       <div><strong style="color:#FFFFFF;">Покупатель:</strong> <span style="color:#FFFFFF;">${cleanCustomerName(order.customerName)}</span></div>
       <div><strong style="color:#FFFFFF;">Телефон:</strong> <a href="tel:${order.customerPhone}" style="color:#00979C;font-weight:700;text-decoration:none;"><span style="white-space:nowrap;color:#00979C;font-weight:700;">${formatNonBreakingPhone(order.customerPhone)}</span></a></div>
       <div><strong style="color:#FFFFFF;">Email:</strong> <span style="color:#FFFFFF;">${order.customerEmail || 'не указан'}</span></div>
@@ -507,9 +515,15 @@ export async function sendOrderCreatedEmails(order: OrderEmailData) {
     </div>
   `;
 
+  const orderSubjectPrefix = order.isOneClick
+    ? '[В 1 КЛИК] '
+    : order.isQuickOrder
+    ? '[БЫСТРЫЙ ЗАКАЗ] '
+    : '';
+
   return sendEmail({
     to: MANAGER_EMAIL,
-    subject: `[Новый заказ №${order.orderNumber}] ${order.customerName} (${order.customerPhone}) — ${formatRub(order.totalAmount)}`,
+    subject: `${orderSubjectPrefix}[Новый заказ №${order.orderNumber}] ${order.customerName} (${order.customerPhone}) — ${formatRub(order.totalAmount)}`,
     html: wrapLuxuryEmailHtml(
       `Новый заказ №${order.orderNumber}`,
       'Операционная панель менеджера',
