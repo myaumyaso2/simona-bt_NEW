@@ -6,6 +6,7 @@ export interface SimonaLogoProps {
   signOnly?: boolean;
   className?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  style?: React.CSSProperties;
 }
 
 /**
@@ -57,6 +58,7 @@ export function SimonaLogo({
   signOnly = false,
   className = '',
   size = 'md',
+  style,
 }: SimonaLogoProps) {
   // Brandbook color rules:
   // - 'teal' / 'salad' / 'default': official Pantone 7716 C (#00979C) on white canvas
@@ -114,7 +116,7 @@ export function SimonaLogo({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className={`${signSizeMap[size]} transition-colors ${className}`}
-        style={{ height: `${h}px`, width: 'auto', maxHeight: '100%' }}
+        style={{ height: `${h}px`, width: 'auto', maxHeight: '100%', ...style }}
         aria-label="СИМОНА Знак"
       >
         <path d={SIGN_PATHS[0]} fill={primaryColor} />

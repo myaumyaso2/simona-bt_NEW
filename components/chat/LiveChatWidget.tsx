@@ -9,8 +9,8 @@ import {
   SimonaIconArrowRight,
   SimonaIconPhoneSolid,
   SimonaIconCheckCircle,
-  SimonaIconMax,
 } from '@/components/brand/SimonaIcons';
+import { SimonaLogo } from '@/components/brand/SimonaLogo';
 
 interface ChatMessageItem {
   id: string;
@@ -23,6 +23,35 @@ const SESSION_STORAGE_KEY = 'simona_chat_session_id';
 const CLIENT_PHONE_STORAGE_KEY = 'simona_chat_client_phone';
 const CLIENT_NAME_STORAGE_KEY = 'simona_chat_client_name';
 
+const WORKING_HOURS_WELCOME =
+  'Здравствуйте! Я дежурный эксперт салонов «СИМОНА». Подсказать наличие прибора на витрине в Нижнем Новгороде, проверить схему встройки или записать на тест-драйв «Активной кухни» на ул. Белинского, 15?';
+
+const OFF_HOURS_WELCOME =
+  'Здравствуйте! Сейчас нерабочее время, но вы можете оставить вопрос или контакт — менеджер ответит вам в ближайший рабочий день с 9:00.';
+
+function isWithinWorkingHours(date = new Date()): boolean {
+  try {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Europe/Moscow',
+      hour12: false,
+      weekday: 'short',
+      hour: 'numeric',
+    });
+    const parts = formatter.formatToParts(date);
+    const weekday = parts.find((p) => p.type === 'weekday')?.value;
+    const hour = parseInt(parts.find((p) => p.type === 'hour')?.value || '0', 10);
+
+    const isWorkday = weekday !== 'Sat' && weekday !== 'Sun';
+    const isWorkHours = hour >= 9 && hour < 18;
+
+    return isWorkday && isWorkHours;
+  } catch {
+    const day = date.getDay();
+    const hour = date.getHours();
+    return day >= 1 && day <= 5 && hour >= 9 && hour < 18;
+  }
+}
+
 function getOrCreateSessionId(): string {
   if (typeof window === 'undefined') return 'sess_ssr';
   const existing = window.localStorage.getItem(SESSION_STORAGE_KEY);
@@ -31,13 +60,6 @@ function getOrCreateSessionId(): string {
   window.localStorage.setItem(SESSION_STORAGE_KEY, created);
   return created;
 }
-
-const DEFAULT_WELCOME_MESSAGE: ChatMessageItem = {
-  id: 'welcome-system',
-  sender: 'SYSTEM',
-  text: 'Здравствуйте! Я дежурный эксперт салонов «СИМОНА». Подсказать наличие прибора на витрине в Нижнем Новгороде, проверить схему встройки или записать на тест-драйв «Активной кухни» на ул. Белинского, 15?',
-  createdAt: new Date().toISOString(),
-};
 
 export function LiveChatWidget() {
   const pathname = usePathname();
@@ -49,8 +71,28 @@ export function LiveChatWidget() {
   const [phone, setPhone] = useState('');
   const [phoneSubmitted, setPhoneSubmitted] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [messages, setMessages] = useState<ChatMessageItem[]>([DEFAULT_WELCOME_MESSAGE]);
+  const [isOnline, setIsOnline] = useState<boolean>(true);
+  const [messages, setMessages] = useState<ChatMessageItem[]>([]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  const getSystemWelcomeMessage = useCallback((online: boolean): ChatMessageItem => ({
+    id: 'welcome-system',
+    sender: 'SYSTEM',
+    text: online ? WORKING_HOURS_WELCOME : OFF_HOURS_WELCOME,
+    createdAt: new Date().toISOString(),
+  }), []);
+
+  useEffect(() => {
+    const onlineNow = isWithinWorkingHours();
+    setIsOnline(onlineNow);
+    setMessages([getSystemWelcomeMessage(onlineNow)]);
+
+    const checkInterval = setInterval(() => {
+      setIsOnline(isWithinWorkingHours());
+    }, 60000);
+
+    return () => clearInterval(checkInterval);
+  }, [getSystemWelcomeMessage]);
 
   useEffect(() => {
     const sid = getOrCreateSessionId();
@@ -77,13 +119,14 @@ export function LiveChatWidget() {
       if (data.ok && Array.isArray(data.messages)) {
         const dbMsgs = data.messages as ChatMessageItem[];
         if (dbMsgs.length > 0) {
-          setMessages([DEFAULT_WELCOME_MESSAGE, ...dbMsgs]);
+          const welcome = getSystemWelcomeMessage(isWithinWorkingHours());
+          setMessages([welcome, ...dbMsgs]);
         }
       }
     } catch {
       // ignore transient network errors during polling
     }
-  }, []);
+  }, [getSystemWelcomeMessage]);
 
   // Poll every 4 seconds when chat window is open
   useEffect(() => {
@@ -207,20 +250,29 @@ export function LiveChatWidget() {
           {/* Top Bar */}
           <div className="p-4 bg-[#1E2228] border-b border-[#2B313A] flex items-center justify-between">
             <div className="flex items-center space-x-3 text-left">
-              <div className="relative">
-                <div className="w-9 h-9 rounded-xl bg-simona-teal/20 text-simona-teal font-montserrat font-bold text-sm flex items-center justify-center border border-simona-teal/40">
-                  С
-                </div>
-                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-md bg-simona-teal border border-[#1E2228] shadow-[0_0_6px_rgba(0,151,156,0.8)]" />
+              <div className="shrink-0 flex items-center">
+                <SimonaLogo
+                  signOnly
+                  variant="teal"
+                  size="sm"
+                  style={{ height: '26px' }}
+                />
               </div>
               <div>
-                <div className="font-semibold text-white flex items-center space-x-1.5">
-                  <span>Салоны «СИМОНА»</span>
-                  <SimonaIconMax className="w-3.5 h-3.5" />
+                <div className="font-semibold text-white text-[13px] leading-tight">
+                  СИМОНА. Бытовая техника и кухни
                 </div>
-                <div className="text-[10px] text-simona-teal flex items-center mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-md bg-simona-teal mr-1.5 animate-pulse" />
-                  <span>Дежурный эксперт онлайн (MAX)</span>
+                <div className="text-[10px] mt-1 flex items-center">
+                  {isOnline ? (
+                    <span className="text-simona-teal flex items-center font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-simona-teal mr-1.5 animate-pulse" />
+                      Менеджер онлайн
+                    </span>
+                  ) : (
+                    <span className="text-[#87888A]">
+                      Менеджер свяжется с вами в рабочее время
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -246,7 +298,7 @@ export function LiveChatWidget() {
                 >
                   {msg.sender === 'MANAGER' && (
                     <span className="text-[10px] text-simona-teal font-semibold mb-1 px-1">
-                      Эксперт салона «СИМОНА»
+                      Менеджер салона «СИМОНА»
                     </span>
                   )}
                   <div
@@ -273,7 +325,7 @@ export function LiveChatWidget() {
               >
                 <div className="text-[11px] text-[#D7D9DB] font-medium flex items-center">
                   <SimonaIconPhoneSolid className="w-3 h-3 mr-1.5 text-simona-teal" />
-                  <span>Оставьте контакт для прямой связи с экспертом:</span>
+                  <span>Оставьте контакт для прямой связи с менеджером:</span>
                 </div>
                 <div className="flex flex-col gap-2">
                   <input
@@ -304,7 +356,7 @@ export function LiveChatWidget() {
             ) : (
               <div className="p-2.5 rounded-xl bg-simona-teal/10 border border-simona-teal/30 text-[#D7D9DB] text-[11px] flex items-center">
                 <SimonaIconCheckCircle className="w-3.5 h-3.5 mr-1.5 text-simona-teal shrink-0" />
-                <span>Контакт {phone} передан эксперту в мессенджер MAX.</span>
+                <span>Контакт передан менеджеру.</span>
               </div>
             )}
 
@@ -320,7 +372,7 @@ export function LiveChatWidget() {
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Напишите вопрос эксперту салона..."
+              placeholder="Напишите вопрос менеджеру салона..."
               className="flex-1 px-3.5 py-2.5 rounded-xl bg-[#111315] border border-[#2B313A] text-white text-xs placeholder-[#6E7074] focus:outline-none focus:border-simona-teal"
             />
             <button
