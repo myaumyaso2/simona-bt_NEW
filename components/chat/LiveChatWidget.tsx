@@ -23,8 +23,7 @@ const SESSION_STORAGE_KEY = 'simona_chat_session_id';
 const CLIENT_PHONE_STORAGE_KEY = 'simona_chat_client_phone';
 const CLIENT_NAME_STORAGE_KEY = 'simona_chat_client_name';
 
-const WORKING_HOURS_WELCOME =
-  'Здравствуйте! Я дежурный эксперт салонов «СИМОНА». Подсказать наличие прибора на витрине в Нижнем Новгороде, проверить схему встройки или записать на тест-драйв «Активной кухни» на ул. Белинского, 15?';
+const WORKING_HOURS_WELCOME = 'Здравствуйте! Что вас интересует?';
 
 const OFF_HOURS_WELCOME =
   'Здравствуйте! Сейчас нерабочее время, но вы можете оставить вопрос или контакт — менеджер ответит вам в ближайший рабочий день с 9:00.';
