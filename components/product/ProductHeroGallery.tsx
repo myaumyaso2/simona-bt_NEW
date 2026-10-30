@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProductItem } from '@/types';
@@ -8,6 +8,8 @@ import {
   SimonaIconCheck,
   SimonaIconShare,
   SimonaIconClose,
+  SimonaIconChevronLeft,
+  SimonaIconChevronRight,
 } from '@/components/brand/SimonaIcons';
 import { formatBrandName } from '@/lib/formatters';
 
@@ -39,18 +41,44 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
     }
   };
 
+  const handlePrevImage = useCallback(() => {
+    setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : prev));
+  }, []);
+
+  const handleNextImage = useCallback(() => {
+    setActiveImageIndex((prev) => (prev < images.length - 1 ? prev + 1 : prev));
+  }, [images.length]);
+
   const handleDragEnd = (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
     const swipeThreshold = 35;
     if ((info.offset.x < -swipeThreshold || info.velocity.x < -300) && activeImageIndex < images.length - 1) {
-      setActiveImageIndex((prev) => prev + 1);
+      handleNextImage();
     } else if ((info.offset.x > swipeThreshold || info.velocity.x > 300) && activeImageIndex > 0) {
-      setActiveImageIndex((prev) => prev - 1);
+      handlePrevImage();
     }
   };
 
+  // Keyboard navigation when fullscreen lightbox is active
+  useEffect(() => {
+    if (!isZoomed) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsZoomed(false);
+      } else if (e.key === 'ArrowLeft') {
+        handlePrevImage();
+      } else if (e.key === 'ArrowRight') {
+        handleNextImage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isZoomed, handlePrevImage, handleNextImage]);
+
   return (
     <div className="flex flex-col md:flex-row gap-3 sm:gap-4 w-full">
-      {/* 1. Vertical Thumbnails Strip (Desktop: left, Mobile: horizontal scroll) */}
+      {/* 1. Thumbnails Strip (Desktop: left vertical, Mobile: bottom horizontal scroll) */}
       <div className="order-2 md:order-1 flex md:flex-col gap-2 sm:gap-3 overflow-x-auto md:overflow-visible pb-1 md:pb-0 no-scrollbar shrink-0">
         {images.map((img, idx) => {
           const isActive = idx === activeImageIndex;
@@ -82,8 +110,8 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
         })}
       </div>
 
-      {/* 2. Main Image Stage with Touch Swipe & Dots (White Luxury Showcase Tablet with object-contain) */}
-      <div className="order-1 md:order-2 flex-1 relative h-[320px] sm:h-[460px] md:h-[560px] bg-white rounded-2xl border border-white/10 shadow-inner overflow-hidden flex items-center justify-center p-3 sm:p-6 select-none touch-pan-y">
+      {/* 2. Main Image Stage with Touch Swipe & Dots (Responsive square on mobile, fixed height on desktop) */}
+      <div className="order-1 md:order-2 w-full aspect-square sm:aspect-auto sm:h-[460px] md:h-[560px] md:flex-1 relative bg-white rounded-2xl border border-white/10 shadow-inner overflow-hidden flex items-center justify-center p-3 sm:p-6 select-none touch-pan-y">
         {/* Brand Tag (Top-Left) */}
         <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-20 pointer-events-none">
           <span className="px-2.5 py-0.5 rounded-md bg-[#16191D]/90 backdrop-blur-md text-[10px] font-bold tracking-wider text-white border border-[#2B313A] shadow-md">
@@ -161,22 +189,104 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsZoomed(false)}
-              className="fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4 sm:p-10 cursor-zoom-out"
+              className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col justify-between p-4 sm:p-6 select-none"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={images[activeImageIndex]}
-                alt={product.name}
-                className="max-h-[90vh] max-w-[90vw] object-contain rounded-xl shadow-2xl border border-[#2B313A]"
-              />
-              <button
-                onClick={() => setIsZoomed(false)}
-                className="absolute top-6 right-6 text-white bg-[#1E2228] border border-[#2B313A] rounded-xl w-10 h-10 flex items-center justify-center hover:border-white transition-colors cursor-pointer"
-                aria-label="Закрыть полноэкранный просмотр"
-              >
-                <SimonaIconClose className="w-5 h-5 text-white" />
-              </button>
+              {/* Lightbox Header Bar */}
+              <div className="flex items-center justify-between z-20 w-full max-w-5xl mx-auto pt-2">
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-xl bg-[#1E2228] border border-[#2B313A] text-xs font-semibold tracking-wider text-white">
+                    {brandFormatted}
+                  </span>
+                  {images.length > 1 && (
+                    <span className="px-2.5 py-1 rounded-xl bg-[#16191D] border border-[#2B313A] text-xs font-medium text-[#87888A]">
+                      {activeImageIndex + 1} / {images.length}
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => setIsZoomed(false)}
+                  className="text-white bg-[#1E2228] border border-[#2B313A] rounded-xl w-10 h-10 flex items-center justify-center hover:border-white transition-colors cursor-pointer shadow-lg"
+                  aria-label="Закрыть полноэкранный просмотр"
+                >
+                  <SimonaIconClose className="w-5 h-5 text-white" />
+                </button>
+              </div>
+
+              {/* Lightbox Main Stage with Touch Swipe & Desktop Arrows */}
+              <div className="relative flex-1 flex items-center justify-center w-full max-w-5xl mx-auto my-3 overflow-hidden">
+                {/* Prev Arrow Button (Desktop / Tablet) */}
+                {images.length > 1 && activeImageIndex > 0 && (
+                  <button
+                    onClick={handlePrevImage}
+                    className="hidden sm:flex absolute left-2 md:left-4 z-20 w-11 h-11 rounded-xl bg-[#1E2228]/80 hover:bg-[#1E2228] border border-[#2B313A] text-white items-center justify-center cursor-pointer transition-colors"
+                    aria-label="Предыдущее фото"
+                  >
+                    <SimonaIconChevronLeft className="w-5 h-5" />
+                  </button>
+                )}
+
+                {/* Next Arrow Button (Desktop / Tablet) */}
+                {images.length > 1 && activeImageIndex < images.length - 1 && (
+                  <button
+                    onClick={handleNextImage}
+                    className="hidden sm:flex absolute right-2 md:right-4 z-20 w-11 h-11 rounded-xl bg-[#1E2228]/80 hover:bg-[#1E2228] border border-[#2B313A] text-white items-center justify-center cursor-pointer transition-colors"
+                    aria-label="Следующее фото"
+                  >
+                    <SimonaIconChevronRight className="w-5 h-5" />
+                  </button>
+                )}
+
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeImageIndex}
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.2}
+                    onDragEnd={handleDragEnd}
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={images[activeImageIndex]}
+                      alt={`${product.name} - ракурс ${activeImageIndex + 1}`}
+                      className="max-h-[75vh] max-w-[92vw] object-contain rounded-2xl drop-shadow-2xl bg-white p-4"
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Lightbox Footer Thumbnails Strip */}
+              {images.length > 1 && (
+                <div className="z-20 flex items-center justify-center gap-2 overflow-x-auto no-scrollbar py-2 max-w-full mx-auto px-2">
+                  {images.map((img, idx) => {
+                    const isActive = idx === activeImageIndex;
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => setActiveImageIndex(idx)}
+                        className={`relative w-12 h-12 rounded-lg overflow-hidden bg-white border transition-all cursor-pointer shrink-0 p-0.5 flex items-center justify-center ${
+                          isActive
+                            ? 'border-simona-teal ring-2 ring-simona-teal/50'
+                            : 'border-[#2B313A] opacity-60 hover:opacity-100'
+                        }`}
+                        aria-label={`Ракурс ${idx + 1}`}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={img}
+                          alt=""
+                          className="w-full h-full object-contain"
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
