@@ -52,7 +52,7 @@ DIRECT_DAILY_SPEND_LIMIT_RUB="3500"
 ENVEOF
 cp .env .env.production
 
-sed -i 's/provider = "sqlite"/provider = "postgresql"/g' prisma/schema.prisma
+# Schema provider is natively postgresql (matching dev & prod parities)
 
 echo "📦 Generating Prisma client and syncing database schema..."
 npx prisma generate

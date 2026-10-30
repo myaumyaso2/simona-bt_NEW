@@ -7,20 +7,11 @@ let sequenceInitialized = false;
 
 /**
  * Инициализирует и синхронизирует последовательность PostgreSQL order_number_seq.
- * Если подключена СУБД PostgreSQL:
  * 1. Создает SEQUENCE order_number_seq START WITH 15104 (если еще не существует).
  * 2. Синхронизирует sequence с максимальным числовым номером заказа в таблице Order (если он >= 15104).
- *
- * Для SQLite (локальный dev) этот блок безопасно перехватывается, и система переходит на fallback-механизм.
  */
-async function ensurePostgresSequence(): Promise<boolean> {
+export async function ensurePostgresSequence(): Promise<boolean> {
   if (sequenceInitialized) return true;
-
-  const dbUrl = process.env.DATABASE_URL || '';
-  const isPostgres = dbUrl.startsWith('postgres://') || dbUrl.startsWith('postgresql://');
-  if (!isPostgres) {
-    return false;
-  }
 
   try {
     await prisma.$executeRawUnsafe(`
@@ -45,66 +36,26 @@ async function ensurePostgresSequence(): Promise<boolean> {
 
     sequenceInitialized = true;
     return true;
-  } catch {
-    // Не удалось инициализировать sequence — используем fallback
+  } catch (err) {
+    console.error('[orderNumber] Ошибка инициализации PostgreSQL sequence:', err);
     return false;
   }
 }
 
 /**
- * Генерирует следующий порядковый номер заказа.
- * 1. Продакшн / Staging (PostgreSQL): атомарный вызов `SELECT nextval('order_number_seq')`.
- * 2. Локальная разработка (SQLite): безопасный поиск максимального числового номера + 1 (минимум 15104).
+ * Генерирует следующий порядковый номер заказа через атомарный вызов PostgreSQL:
+ * `SELECT nextval('order_number_seq')`.
  */
 export async function getNextOrderNumber(): Promise<string> {
-  // 1. Попытка через PostgreSQL Sequence
-  const isPg = await ensurePostgresSequence();
-  if (isPg) {
-    try {
-      const res = await prisma.$queryRawUnsafe<Array<{ next_num: string | bigint | number }>>(
-        `SELECT nextval('order_number_seq')::text AS next_num;`
-      );
-      if (res && res.length > 0 && res[0].next_num) {
-        return String(res[0].next_num);
-      }
-    } catch {
-      // Игнорируем и переходим к fallback
-    }
+  await ensurePostgresSequence();
+
+  const res = await prisma.$queryRawUnsafe<Array<{ next_num: string | bigint | number }>>(
+    `SELECT nextval('order_number_seq')::text AS next_num;`
+  );
+
+  if (res && res.length > 0 && res[0].next_num) {
+    return String(res[0].next_num);
   }
 
-  // 2. Резервный расчет для SQLite / Dev окружения
-  try {
-    // В SQLite используем выборку всех номеров или поиск максимума
-    const orders = await prisma.order.findMany({
-      select: { orderNumber: true },
-      take: 100,
-      orderBy: { createdAt: 'desc' },
-    });
-
-    let maxNum = LAST_UMI_ORDER_NUMBER;
-    for (const ord of orders) {
-      const parsed = parseInt(ord.orderNumber, 10);
-      if (!isNaN(parsed) && String(parsed) === ord.orderNumber && parsed > maxNum) {
-        maxNum = parsed;
-      }
-    }
-
-    // Если в последних 100 заказах не нашли числового (или база свежая), проверяем глобально
-    if (maxNum <= LAST_UMI_ORDER_NUMBER) {
-      const allOrders = await prisma.order.findMany({
-        select: { orderNumber: true },
-      });
-      for (const ord of allOrders) {
-        const parsed = parseInt(ord.orderNumber, 10);
-        if (!isNaN(parsed) && String(parsed) === ord.orderNumber && parsed > maxNum) {
-          maxNum = parsed;
-        }
-      }
-    }
-
-    return String(maxNum + 1);
-  } catch (err) {
-    console.error('[orderNumber] Ошибка fallback-генератора номера заказа:', err);
-    return String(INITIAL_ORDER_NUMBER);
-  }
+  throw new Error('[orderNumber] Не удалось получить следующий номер заказа из order_number_seq');
 }
