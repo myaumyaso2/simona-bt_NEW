@@ -24,16 +24,16 @@ export function ProductMobileBottomBar({ product }: ProductMobileBottomBarProps)
   const statusLabel = useMemo(() => {
     switch (o2oInfo.physicalStatus) {
       case 'SHOWROOM':
-        return '• В экспозиции в салоне';
+        return 'На витрине';
       case 'DISCOUNT':
-        return '• Уценка (салон на Белинского)';
+        return 'Уценка';
       case 'LOCAL_STOCK':
-        return '• На складе в НН (1–2 дня)';
+        return 'На складе';
       case 'REMOTE_STOCK':
-        return '• Удаленный склад (3–7 дней)';
+        return 'На удаленном складе';
       case 'ON_ORDER':
       default:
-        return '• Фабричный заказ из Европы';
+        return 'Под заказ';
     }
   }, [o2oInfo.physicalStatus]);
 
@@ -42,9 +42,7 @@ export function ProductMobileBottomBar({ product }: ProductMobileBottomBarProps)
       ? 'text-simona-wine-light'
       : o2oInfo.physicalStatus === 'ON_ORDER'
       ? 'text-[#D7D9DB]'
-      : o2oInfo.physicalStatus === 'REMOTE_STOCK'
-      ? 'text-simona-teal'
-      : 'text-emerald-400';
+      : 'text-simona-teal';
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#16191D]/95 backdrop-blur-lg border-t border-[#2B313A] px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center justify-between shadow-2xl">
