@@ -41,7 +41,7 @@ const SHOWROOMS = [
       'Встраиваемая техника Körting',
       'Подбор аксессуаров и дозаторов в тон мойки',
     ],
-    image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1000&q=80',
+    image: '/showrooms/belinskogo-15/salon_01.jpg',
     mapQuery: 'Нижний Новгород, улица Белинского, 11/66',
   },
 ];

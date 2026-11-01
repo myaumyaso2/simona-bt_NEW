@@ -3,8 +3,7 @@
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 
-const FALLBACK_IMAGE =
-  'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80';
+const FALLBACK_IMAGE = '/images/placeholder-product.webp';
 
 interface ProductCardGalleryProps {
   images: string[];

@@ -21,7 +21,7 @@ export function ProductHeroGallery({ product }: ProductHeroGalleryProps) {
   const images =
     product.images && product.images.length > 0
       ? product.images
-      : ['https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80'];
+      : ['/images/placeholder-product.webp'];
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [copied, setCopied] = useState(false);

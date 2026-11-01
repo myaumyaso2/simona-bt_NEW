@@ -161,6 +161,8 @@ const LEGACY_PROMO_SLUG_MAP: Record<string, string> = {
   'vard_skidki_pri_pokupke_komplekta': '/promos/vard-kaskad',
   'falmec-water-50': '/promos/falmec-akciya-water-50',
   'falmec_water_50': '/promos/falmec-akciya-water-50',
+  'komplekt_kuhni_korting_so_skidkoj_do_50': '/promos/korting-kaskad',
+  'skidki_na_komplekty_tehniki_midea': '/promos/midea-kaskad',
 };
 
 function isProductionDomain(host: string): boolean {
@@ -230,8 +232,18 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(buildRedirectUrl('/catalog/ucenennye-tovary', request), 301);
   }
 
-  if (cleanPath === '/actions_sales' || cleanPath.startsWith('/actions_sales/')) {
-    const subSlugRaw = cleanPath.replace(/^\/actions_sales\/?/, '').split('/')[0]?.toLowerCase();
+  if (
+    cleanPath === '/actions_sales' ||
+    cleanPath.startsWith('/actions_sales/') ||
+    cleanPath === '/akcii_dlya_tovarov' ||
+    cleanPath.startsWith('/akcii_dlya_tovarov/') ||
+    cleanPath === '/bonus' ||
+    cleanPath.startsWith('/bonus/')
+  ) {
+    const subSlugRaw = cleanPath
+      .replace(/^\/(?:actions_sales|akcii_dlya_tovarov|bonus)\/?/, '')
+      .split('/')[0]
+      ?.toLowerCase();
     if (subSlugRaw) {
       if (subSlugRaw in LEGACY_PROMO_SLUG_MAP) {
         return NextResponse.redirect(buildRedirectUrl(LEGACY_PROMO_SLUG_MAP[subSlugRaw], request), 301);

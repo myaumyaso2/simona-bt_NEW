@@ -7,6 +7,7 @@ import { syncFastStock, syncFullCatalog, saveSyncSession } from '../lib/sync/one
 const INCOMING_DIRS = [
   '/var/www/simona-bt.ru/data/www/simona-bt.ru/159.253.20.27',
   path.join(process.cwd(), 'storage', 'sync'),
+  '/var/www/simona-bt.ru/data/www/simona-prod/storage/sync',
   '/var/www/simona-bt.ru/data/www/new.simona-bt.ru/storage/sync',
   path.join(process.cwd(), 'data'),
 ];

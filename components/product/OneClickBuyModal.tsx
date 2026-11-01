@@ -110,7 +110,7 @@ export function OneClickBuyModal({
   };
 
   const images = product.images || [];
-  const thumbnail = images[0] || 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=200&q=80';
+  const thumbnail = images[0] || '/images/placeholder-product.webp';
 
   return (
     <AnimatePresence>

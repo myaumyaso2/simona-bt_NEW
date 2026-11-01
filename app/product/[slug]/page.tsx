@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { getProductBySlug } from '@/lib/products';
 import { ProductDetailView } from '@/components/product/ProductDetailView';
 import { SchemaOrgProduct } from '@/components/seo/SchemaOrgProduct';
@@ -94,8 +94,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const formattedTitle = formatProductName(product);
   const categorySlug = getCategorySlugByName(product.category);
+
+  // Zero Dead Ends: redirect inactive / photo-less archived products to their parent catalog category
+  if (product.isActive === false) {
+    permanentRedirect(`/catalog/${categorySlug}`);
+  }
+
+  const formattedTitle = formatProductName(product);
   const categoryObj = getCategoryBySlug(categorySlug);
   const categoryDisplayName = categoryObj ? categoryObj.title : product.category;
 

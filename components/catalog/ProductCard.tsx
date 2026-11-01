@@ -25,7 +25,7 @@ export function ProductCard({ product }: ProductCardProps) {
     ? JSON.parse(product.imagesJson || '[]')
     : [];
 
-  const mainImage = images[0] || 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80';
+  const mainImage = images[0] || '/images/placeholder-product.webp';
   const formattedTitle = formatProductName(product);
 
   return (

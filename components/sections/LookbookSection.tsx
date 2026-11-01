@@ -14,7 +14,7 @@ const LOOKBOOK_PROJECTS: LookbookProject[] = [
     title: 'Пентхаус на Верхне-Волжской набережной',
     designer: 'Архитектурное бюро «STUDIO 52» (Нижний Новгород)',
     location: 'Нижний Новгород, Верхне-Волжская наб.',
-    imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=85',
+    imageUrl: '/showrooms/belinskogo-15/salon_01.jpg',
     description: 'Интерьер в стиле современного минимализма с открытой островной кухней. Интегрирован комбинированный комплект Miele Obsidian Black с пароваркой и вакууматором.',
     hotspots: [
       {
@@ -48,7 +48,7 @@ const LOOKBOOK_PROJECTS: LookbookProject[] = [
     title: 'Загородная резиденция в Александровском саду',
     designer: 'Дизайнер интерьеров Екатерина Морозова',
     location: 'Нижегородская область',
-    imageUrl: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1600&q=85',
+    imageUrl: '/showrooms/belinskogo-15/salon_01.jpg',
     description: 'Просторная кухня-гостиная с акцентом на натуральный камень и японскую эстетику OMOIKIRI в мокрой зоне.',
     hotspots: [
       {

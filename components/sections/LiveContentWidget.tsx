@@ -9,25 +9,25 @@ const LIVE_STORIES = [
     title: 'Готовим стейк рибай на пару в Miele DGC 7865',
     tag: 'Мастер-класс',
     views: '1.4k',
-    thumbnail: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80',
+    thumbnail: '/showrooms/belinskogo-15/salon_01.jpg',
   },
   {
     title: 'Обзор варочной панели ASKO Celsius°Cooking',
     tag: 'Технологии',
     views: '2.1k',
-    thumbnail: 'https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=600&q=80',
+    thumbnail: '/showrooms/belinskogo-15/salon_01.jpg',
   },
   {
     title: 'Распаковка лимитированного холодильника SMEG x D&G',
     tag: 'Эксклюзив',
     views: '3.8k',
-    thumbnail: 'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=600&q=80',
+    thumbnail: '/showrooms/belinskogo-15/salon_01.jpg',
   },
   {
     title: 'Тест на прочность японской мойки OMOIKIRI Artgranit',
     tag: 'Краш-тест',
     views: '980',
-    thumbnail: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80',
+    thumbnail: '/showrooms/belinskogo-15/salon_01.jpg',
   },
 ];
 

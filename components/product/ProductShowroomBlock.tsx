@@ -29,7 +29,7 @@ export function ProductShowroomBlock({ product }: ProductShowroomBlockProps) {
         title: `Видеоэкскурсия по экспозиции салона на ${o2oInfo.showroomAddress}`,
         views: '1 480 просмотров',
         thumbnail:
-          'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80',
+          '/showrooms/belinskogo-15/salon_01.jpg',
         telegramUrl: 'https://t.me/simonabt_official',
       },
     });
@@ -41,7 +41,7 @@ export function ProductShowroomBlock({ product }: ProductShowroomBlockProps) {
         {/* Left: Panoramic Showroom Photo with Video Play Overlay */}
         <div className="w-full lg:w-[55%] relative min-h-[320px] lg:min-h-[440px] bg-[#1E2228] overflow-hidden group">
           <img
-            src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80"
+            src="/showrooms/belinskogo-15/salon_01.jpg"
             alt={o2oInfo.showroomName}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />

@@ -44,7 +44,7 @@ export function getProductBundle(product: ProductItem): ProductBundleResult {
       name: product.name,
       category: product.category,
       price: product.price,
-      imageUrl: product.images?.[0] || 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80',
+      imageUrl: product.images?.[0] || '/images/placeholder-product.webp',
       isMain: true,
     };
 
@@ -56,7 +56,7 @@ export function getProductBundle(product: ProductItem): ProductBundleResult {
         name: cp.name,
         category: cp.category,
         price: cp.price,
-        imageUrl: cp.images?.[0] || 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80',
+        imageUrl: cp.images?.[0] || '/images/placeholder-product.webp',
         isMain: false,
       })),
     ];

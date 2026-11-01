@@ -122,7 +122,7 @@ const SHOWROOMS_DATA: Record<'belinskogo-15' | 'belinskogo-11', ShowroomData> = 
         title: 'Японский гранит Tetogranit',
         subtitle: 'Экспозиция моек Omoikiri во всех фирменных цветах',
         photo:
-          'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1400&q=80',
+          '/showrooms/belinskogo-15/salon_01.jpg',
       },
       {
         id: 'omoikiri-2',

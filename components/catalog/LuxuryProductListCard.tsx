@@ -140,7 +140,7 @@ export function LuxuryProductListCard({ product, categorySlug, selectedPromos, p
 
   const mainImage =
     images[0] ||
-    'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80';
+    '/images/placeholder-product.webp';
 
   const specs = getProductSpecs(product);
   const physicalStatus = getProductPhysicalStatus(product);

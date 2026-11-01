@@ -1,0 +1,48 @@
+# СИМОНА (SIMONA-BT.RU) — Сеть салонов и интернет-магазин бытовой техники в Нижнем Новгороде
+
+> Более 30 лет на рынке (с 1994 года). Благодаря опыту подобрали наилучшие модели бытовой техники и кухонной сантехники в каждом ценовом сегменте. Предложим оптимальный комплект на любой кошелек — от надежных базовых решений до флагманских приборов Miele, Asko, Liebherr, Smeg, Omoikiri и Körting.
+
+- Канонический домен: https://www.simona-bt.ru
+- Регион работы: Нижний Новгород, Нижегородская область и доставка по РФ
+- Телефон единой справочной: +7 (831) 437-11-28
+- Мессенджеры: MAX (https://max.ru), Telegram (@SimonaExpert)
+- Карта сайта (XML): https://www.simona-bt.ru/sitemap.xml
+- Товарный фид (YML): https://www.simona-bt.ru/feeds/yandex.xml
+
+## Физические локации в Нижнем Новгороде
+
+1. **Флагманский салон «СИМОНА» (с зоной «Активной кухни» для тест-драйва подключенных приборов)**
+   - Адрес: г. Нижний Новгород, ул. Белинского, д. 15
+   - Режим работы: Пн–Пт 10:00–19:00, Сб 10:00–18:00, Вс 10:00–17:00
+2. **Фирменный салон Omoikiri & Körting**
+   - Адрес: г. Нижний Новгород, ул. Белинского, д. 11/66
+   - Режим работы: Пн–Пт 10:00–19:00, Сб 10:00–18:00, Вс 10:00–17:00
+3. **Центральный склад и пункт самовывоза**
+   - Адрес: г. Нижний Новгород, ул. Коминтерна, д. 27
+
+## Ключевые разделы сайта
+
+- [Каталог бытовой техники](https://www.simona-bt.ru/catalog): более 6 600 актуальных моделей с прозрачными статусами наличия (`На витрине`, `На складе`, `На удаленном складе`, `Под заказ`, `Дисконт / С витрины`).
+- [Встраиваемая техника](https://www.simona-bt.ru/catalog/vstraivaemaya-tehnika):
+  - [Варочные панели](https://www.simona-bt.ru/catalog/varochnye-paneli) (индукционные, электрические, газовые, со встроенной вытяжкой)
+  - [Встраиваемые духовые шкафы](https://www.simona-bt.ru/catalog/vstraivaemye-duhovye-shkafy) (с паром, с пиролизом, с СВЧ, компактные 45 см)
+  - [Вытяжки](https://www.simona-bt.ru/catalog/vytyazhki) (встраиваемые в шкаф, наклонные, купольные, островные, потолочные)
+  - [Встраиваемые посудомоечные машины](https://www.simona-bt.ru/catalog/vstraivaemye-posudomoechnye-mashiny) (45 см и 60 см, с третьим коробом, с автооткрыванием)
+  - [Встраиваемые холодильники](https://www.simona-bt.ru/catalog/vstraivaemye-holodilniki) (No Frost, двухкамерные, однокамерные, под столешницу)
+  - [Встраиваемые микроволновые печи](https://www.simona-bt.ru/catalog/vstraivaemye-mikrovolnovye-pechi)
+  - [Встраиваемые винные шкафы](https://www.simona-bt.ru/catalog/vstraivaemye-vinnye-shkafy)
+  - [Встраиваемые кофемашины](https://www.simona-bt.ru/catalog/vstraivaemye-kofemashiny)
+- [Крупная соло-техника](https://www.simona-bt.ru/catalog/krupnaya-bytovaya-tehnika):
+  - [Холодильники](https://www.simona-bt.ru/catalog/holodilniki) (Side-by-Side, многодверные French Door, с ледогенератором)
+  - [Стиральные машины](https://www.simona-bt.ru/catalog/stiralnye-mashiny) и [Сушильные машины](https://www.simona-bt.ru/catalog/sushilnye-mashiny) (с тепловым насосом Heat Pump, для установки в колонну)
+  - [Винные шкафы](https://www.simona-bt.ru/catalog/vinnye-shkafy)
+- [Мойки и смесители для кухни](https://www.simona-bt.ru/catalog/mojki-i-smesiteli):
+  - [Кухонные мойки](https://www.simona-bt.ru/catalog/mojki-dlya-kuhni) (нержавеющая сталь с PVD, искусственный гранит, подстольный монтаж)
+  - [Смесители для кухни](https://www.simona-bt.ru/catalog/smesiteli-dlya-kuhni) (с подключением к фильтру питьевой воды 2-в-1, с выдвижным изливом)
+  - [Измельчители пищевых отходов](https://www.simona-bt.ru/catalog/izmelchiteli-pishchevyh-othodov)
+- [Бренды](https://www.simona-bt.ru/brands): Omoikiri, Körting, Smeg, Asko, Miele, Liebherr, Bosch, Falmec, Elica, Kuppersberg, Graude, Vard, Midea, Evelux, Bertazzoni, Gorenje, Meyvel, Dunavox, Riedel, Laurastar.
+- [Акции и спецпредложения производителей](https://www.simona-bt.ru/promos): каскадные скидки на комплекты техники для кухни и подарки от официальных дистрибьюторов.
+- [Уцененные товары и образцы с витрины](https://www.simona-bt.ru/catalog/ucenennye-tovary)
+- [Сервис, доставка и установка](https://www.simona-bt.ru/services): аккуратная доставка и подъем на этаж собственной службой, бесплатное ответственное хранение на складе до завершения ремонта, профессиональная установка и подключение встраиваемой техники, проверка чертежей мебели.
+- [Клуб дизайнеров и архитекторов (B2B)](https://www.simona-bt.ru/designers)
+- [Оптовый отдел](https://www.simona-bt.ru/opt)

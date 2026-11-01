@@ -40,11 +40,11 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     schematicDwgUrl: '/schematics/miele-dgc7860.dwg',
     manualUrl: '/manuals/miele-dgc7860-ru.pdf',
     images: [
-      'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80',
+      '/images/placeholder-product.webp',
+      '/images/placeholder-product.webp',
+      '/images/placeholder-product.webp',
+      '/images/placeholder-product.webp',
+      '/images/placeholder-product.webp',
     ],
     badge: 'На витрине',
     isFeatured: true,
@@ -59,19 +59,19 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
         title: 'DualSteam: Точная подача пара',
         subtitle: 'Внешний парогенератор',
         description: 'Равномерное распределение пара за 40 секунд, сохранение клеточной структуры и микроэлементов продуктов на уровне ресторанной гастрономии.',
-        imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80',
+        imageUrl: '/images/placeholder-product.webp',
       },
       {
         title: 'Встроенная HD-камера FoodView',
         subtitle: 'Интеллектуальный контроль',
         description: 'Визуальный контроль процесса приготовления в рабочей камере в режиме реального времени через мобильное приложение Miele@mobile.',
-        imageUrl: 'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=800&q=80',
+        imageUrl: '/images/placeholder-product.webp',
       },
       {
         title: 'Пиролиз и покрытие PerfectClean',
         subtitle: 'Безупречная самоочистка',
         description: 'Термолиз любых загрязнений при 480°C и запатентованная антипригарная эмаль PerfectClean. Уборка сводится к протиранию влажной салфеткой.',
-        imageUrl: 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=80',
+        imageUrl: '/images/placeholder-product.webp',
       },
     ],
     specGroups: [
@@ -101,7 +101,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     expertVerdict: {
       expertName: 'Михаил Семенов',
       expertRole: 'Ведущий технический специалист салона «СИМОНА»',
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      avatarUrl: '/images/placeholder-product.webp',
       title: 'Прецизионная инженерия пара Miele',
       quote: 'DGC 7860 — один из самых сбалансированных комби-приборов в линейке Generation 7000. Внешний парогенератор DualSteam полностью исключает образование накипи внутри рабочей камеры, а точность беспроводного термощупа до 1 градуса позволяет готовить сложные ресторанные блюда без риска температурной ошибки.',
       scores: [
@@ -120,8 +120,8 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
         date: '14 февраля 2026',
         text: 'Установили в колонну вместе с кофемашиной Miele в ЖК «Дворянский». Черное стекло Obsidian выглядит монолитно. Функция пара великолепно раскрывает домашнюю выпечку и деликатную рыбу.',
         photos: [
-          'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=500&q=80',
-          'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=500&q=80',
+          '/images/placeholder-product.webp',
+          '/images/placeholder-product.webp',
         ],
       },
       {
@@ -155,7 +155,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     dimensions: '595 × 595 × 546 мм (60 см)',
     schematicPdfUrl: '/schematics/asko-op8664s.pdf',
     images: [
-      'https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=1000&q=80',
+      '/images/placeholder-product.webp',
     ],
     badge: 'На витрине',
     isFeatured: true,
@@ -180,7 +180,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     dimensions: '592 × 598 × 550 мм (60 см)',
     schematicPdfUrl: '/schematics/bertazzoni-f6011.pdf',
     images: [
-      'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?auto=format&fit=crop&w=1000&q=80',
+      '/images/placeholder-product.webp',
     ],
     badge: 'На складе',
     isFeatured: false,
@@ -205,7 +205,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     dimensions: '596 × 595 × 569 мм (60 см)',
     schematicPdfUrl: '/schematics/miele-h7464.pdf',
     images: [
-      'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=1000&q=80',
+      '/images/placeholder-product.webp',
     ],
     badge: 'На витрине',
     isFeatured: true,
@@ -231,7 +231,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     dimensions: '592 × 597 × 548 мм (60 см)',
     schematicPdfUrl: '/schematics/smeg-sf6604.pdf',
     images: [
-      'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80',
+      '/images/placeholder-product.webp',
     ],
     badge: 'На удаленном складе',
     isFeatured: true,
@@ -257,7 +257,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     dimensions: '595 × 595 × 546 мм (60 см)',
     schematicPdfUrl: '/schematics/asko-ocs8664s.pdf',
     images: [
-      'https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=1000&q=80',
+      '/images/placeholder-product.webp',
     ],
     badge: 'Под заказ',
     isFeatured: false,
@@ -283,7 +283,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     dimensions: '455 × 595 × 568 мм (45 см)',
     schematicPdfUrl: '/schematics/miele-dgc7440.pdf',
     images: [
-      'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=1000&q=80',
+      '/images/placeholder-product.webp',
     ],
     badge: 'На витрине',
     isFeatured: true,
@@ -309,7 +309,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     dimensions: '595 × 895 × 570 мм (90 см)',
     schematicPdfUrl: '/schematics/bertazzoni-f90.pdf',
     images: [
-      'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?auto=format&fit=crop&w=1000&q=80',
+      '/images/placeholder-product.webp',
     ],
     badge: 'На удаленном складе',
     isFeatured: false,
@@ -334,7 +334,7 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
     dimensions: '595 × 595 × 565 мм (60 см)',
     schematicPdfUrl: '/schematics/korting-okb9102.pdf',
     images: [
-      'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=1000&q=80',
+      '/images/placeholder-product.webp',
     ],
     badge: 'На складе',
     isFeatured: true,
@@ -3793,7 +3793,7 @@ export const MIELE_SUITE_BUNDLE: BundleItem[] = [
     name: 'Духовой шкаф с паром Miele DGC 7860 Obsidian Black',
     category: 'Духовой шкаф',
     price: 489900,
-    imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80',
+    imageUrl: '/images/placeholder-product.webp',
     isMain: true,
   },
   {
@@ -3802,7 +3802,7 @@ export const MIELE_SUITE_BUNDLE: BundleItem[] = [
     name: 'Встраиваемая кофемашина Miele CVA 7845 Obsidian Black',
     category: 'Кофемашина',
     price: 429900,
-    imageUrl: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80',
+    imageUrl: '/images/placeholder-product.webp',
     isMain: false,
   },
   {
@@ -3811,7 +3811,7 @@ export const MIELE_SUITE_BUNDLE: BundleItem[] = [
     name: 'Подогреватель посуды Miele ESW 7010 Obsidian Black',
     category: 'Подогреватель посуды',
     price: 149900,
-    imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80',
+    imageUrl: '/images/placeholder-product.webp',
     isMain: false,
   },
 ];
@@ -3823,7 +3823,7 @@ export const MIELE_CARE_ACCESSORIES: AccessoryItem[] = [
     name: 'Противень с покрытием PerfectClean',
     category: 'Оригинальный аксессуар',
     price: 18900,
-    imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80',
+    imageUrl: '/images/placeholder-product.webp',
     badge: 'Рекомендация Miele',
   },
   {
@@ -3832,7 +3832,7 @@ export const MIELE_CARE_ACCESSORIES: AccessoryItem[] = [
     name: 'Беспроводной пищевой термощуп Miele',
     category: 'Высокоточный датчик',
     price: 14200,
-    imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=400&q=80',
+    imageUrl: '/images/placeholder-product.webp',
   },
   {
     id: 'acc-3',
@@ -3840,7 +3840,7 @@ export const MIELE_CARE_ACCESSORIES: AccessoryItem[] = [
     name: 'Таблетки от накипи для пароварок Miele',
     category: 'Фирменная химия',
     price: 3490,
-    imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80',
+    imageUrl: '/images/placeholder-product.webp',
     badge: 'Хит продаж',
   },
   {
@@ -3849,7 +3849,7 @@ export const MIELE_CARE_ACCESSORIES: AccessoryItem[] = [
     name: 'Очиститель рабочей камеры DGClean Miele',
     category: 'Фирменный уход',
     price: 2890,
-    imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80',
+    imageUrl: '/images/placeholder-product.webp',
   },
 ];
 

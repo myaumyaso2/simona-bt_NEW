@@ -84,6 +84,7 @@ export interface ProductItem {
   images?: string[];
   imagesJson?: string;
   badge?: string | null;
+  isActive?: boolean;
   isFeatured?: boolean;
   isDiscount?: boolean;
   isSpecial?: boolean;
