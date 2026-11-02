@@ -336,7 +336,10 @@ export async function POST(req: NextRequest) {
 
     const cleanFeatures: Array<{ label: string; value: string }> = (features || [])
       .filter((f: { label?: string; value?: string }) => f && f.label && f.value && f.value.trim() !== '')
-      .map((f: { label: string; value: string }) => ({ label: f.label.trim(), value: f.value.trim() }));
+      .map((f: { label: string; value: string }) => ({
+        label: f.label.trim(),
+        value: f.value.trim().replace(/(\d+),(\d+)/g, '$1.$2'),
+      }));
 
     const { dimensions, color } = deriveDimensionsAndColorFromFeatures(cleanFeatures);
 

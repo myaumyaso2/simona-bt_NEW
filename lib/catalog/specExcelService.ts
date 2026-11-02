@@ -50,6 +50,61 @@ function sanitizeSheetName(name: string): string {
 }
 
 /**
+ * Formats specification value for Excel export:
+ * Replaces decimal dots strictly between digits with commas (e.g. 13.5 -> 13,5, 59.5 -> 59,5),
+ * while preserving text enumerations like "металл, стекло" intact.
+ */
+function formatSpecValueForExcel(val: string): string {
+  if (!val) return '';
+  return val.replace(/(\d+)\.(\d+)/g, '$1,$2');
+}
+
+/**
+ * Robust cell value extractor for Excel import:
+ * 1. Date Rescue: If Russian Excel converted e.g. 13.5 into a Date object (13 May),
+ *    reconstructs the decimal number (13.5) instead of storing a date string.
+ * 2. Normalizes decimal commas strictly between digits back to dots for database/website.
+ * 3. Preserves text enumerations like "металл, стекло" intact.
+ */
+function extractStringValueFromCell(cellVal: unknown): string {
+  if (cellVal === null || cellVal === undefined) return '';
+
+  // 1. Date Rescue: handles accidental Excel date parsing for decimal values
+  if (cellVal instanceof Date) {
+    const day = cellVal.getDate();
+    const month = cellVal.getMonth() + 1;
+    const year = cellVal.getFullYear();
+    // Case A: 13.5 parsed as day=13, month=5 (current era year)
+    if (year >= 2020 && year <= 2030) {
+      return `${day}.${month}`;
+    }
+    // Case B: 5.95 parsed as month=5, year=1995
+    if (year >= 1970 && year <= 1999) {
+      const shortYear = year % 100;
+      return `${month}.${shortYear}`;
+    }
+    return `${day}.${month}`;
+  }
+
+  // 2. Object with text / result / richText (ExcelJS formulas, rich strings)
+  if (typeof cellVal === 'object') {
+    const obj = cellVal as Record<string, unknown>;
+    if (obj.text !== undefined) return String(obj.text).trim().replace(/(\d+),(\d+)/g, '$1.$2');
+    if (obj.result !== undefined) return String(obj.result).trim().replace(/(\d+),(\d+)/g, '$1.$2');
+    if (Array.isArray(obj.richText)) {
+      const merged = obj.richText.map((rt: { text?: string }) => rt.text || '').join('').trim();
+      return merged.replace(/(\d+),(\d+)/g, '$1.$2');
+    }
+  }
+
+  // 3. String / number primitive
+  let str = String(cellVal).trim();
+  // Normalize decimal commas strictly between digits back to canonical dot
+  str = str.replace(/(\d+),(\d+)/g, '$1.$2');
+  return str;
+}
+
+/**
  * Generates an Excel workbook (.xlsx) customized specifically for a given subcategory,
  * containing its products, canonical specification columns, and any extra features.
  */
@@ -220,8 +275,9 @@ export async function generateSubcategorySpecWorkbook(
     };
 
     allSpecLabels.forEach((label, idx) => {
-      const val = featMap.get(label.toLowerCase().trim()) || '';
-      rowData[`spec_${idx}`] = val;
+      const rawVal = featMap.get(label.toLowerCase().trim()) || '';
+      // Format decimal numbers with comma for Excel (e.g. 13.5 -> 13,5, 59.5 -> 59,5)
+      rowData[`spec_${idx}`] = formatSpecValueForExcel(rawVal);
     });
 
     const row = worksheet.addRow(rowData);
@@ -261,6 +317,10 @@ export async function generateSubcategorySpecWorkbook(
         // Price
         cell.alignment = { vertical: 'middle', horizontal: 'right' };
         cell.numFmt = '#,##0" ₽"';
+      } else if (colNumber >= 8) {
+        // Specification columns: enforce text format '@' to block Excel auto-converting numbers with dots into dates
+        cell.alignment = { vertical: 'middle', horizontal: 'left' };
+        cell.numFmt = '@';
       } else {
         cell.alignment = { vertical: 'middle', horizontal: 'left' };
       }
@@ -348,8 +408,7 @@ export async function parseSubcategorySpecWorkbook(
 
     colIndexToLabel.forEach((label, colNum) => {
       const cellVal = row.getCell(colNum).value;
-      if (cellVal === null || cellVal === undefined) return;
-      const strVal = String(cellVal).trim();
+      const strVal = extractStringValueFromCell(cellVal);
       if (!strVal || strVal === '-' || strVal.toLowerCase() === 'нет') return;
 
       rowFeatures.push({ label, value: strVal });

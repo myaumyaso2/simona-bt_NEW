@@ -391,7 +391,7 @@ export function ManagerSpecsView() {
     const all = [...editFeatures, ...customFields];
     for (const f of all) {
       const l = (f.label || '').toLowerCase().trim();
-      const v = (f.value || '').trim();
+      const v = (f.value || '').trim().replace(/(\d+),(\d+)/g, '$1.$2');
       if (!v) continue;
 
       if (l === 'цвет') color = v;

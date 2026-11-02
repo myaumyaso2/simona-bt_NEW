@@ -218,7 +218,8 @@ export function deriveDimensionsAndColorFromFeatures(
   for (const f of features) {
     if (!f.label || !f.value || f.value === '-' || f.value.trim() === '') continue;
     const l = f.label.toLowerCase().trim();
-    const v = f.value.trim();
+    // Normalize any decimal comma back to dot for website standard
+    const v = f.value.trim().replace(/(\d+),(\d+)/g, '$1.$2');
 
     if (l === 'цвет') {
       color = v;
