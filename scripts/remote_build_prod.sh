@@ -6,6 +6,7 @@ PROD_DIR="/var/www/simona-bt.ru/data/www/simona-prod"
 if [ -f "/tmp/simona_prod_bundle.tar.gz" ]; then
     echo "📦 Extracting files into $PROD_DIR..."
     mkdir -p "$PROD_DIR"
+    chmod -R u+w "$PROD_DIR" 2>/dev/null || true
     tar -xzf /tmp/simona_prod_bundle.tar.gz -C "$PROD_DIR"
     rm -f /tmp/simona_prod_bundle.tar.gz
 fi
