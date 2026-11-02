@@ -10,6 +10,7 @@ chmod -R u+w "$REMOTE_DIR" 2>/dev/null || true
 cd "$REMOTE_DIR"
 tar --overwrite --warning=no-unknown-keyword -xzf /tmp/simona_staging_bundle.tar.gz -C "$REMOTE_DIR"
 rm -f /tmp/simona_staging_bundle.tar.gz
+chmod -R u+w "$REMOTE_DIR" 2>/dev/null || true
 
 echo "📝 Configuring environment..."
 cat << 'ENVEOF' > .env

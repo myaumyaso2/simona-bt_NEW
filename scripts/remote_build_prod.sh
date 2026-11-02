@@ -9,6 +9,7 @@ if [ -f "/tmp/simona_prod_bundle.tar.gz" ]; then
     chmod -R u+w "$PROD_DIR" 2>/dev/null || true
     tar --overwrite --warning=no-unknown-keyword -xzf /tmp/simona_prod_bundle.tar.gz -C "$PROD_DIR"
     rm -f /tmp/simona_prod_bundle.tar.gz
+    chmod -R u+w "$PROD_DIR" 2>/dev/null || true
 fi
 
 cd "$PROD_DIR"
