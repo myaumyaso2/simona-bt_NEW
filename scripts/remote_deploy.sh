@@ -6,8 +6,9 @@ REMOTE_DIR="/var/www/simona-bt.ru/data/www/new.simona-bt.ru"
 
 echo "📦 Extracting files into $REMOTE_DIR..."
 mkdir -p "$REMOTE_DIR"
+chmod -R u+w "$REMOTE_DIR" 2>/dev/null || true
 cd "$REMOTE_DIR"
-tar -xzf /tmp/simona_staging_bundle.tar.gz -C "$REMOTE_DIR"
+tar --overwrite --warning=no-unknown-keyword -xzf /tmp/simona_staging_bundle.tar.gz -C "$REMOTE_DIR"
 rm -f /tmp/simona_staging_bundle.tar.gz
 
 echo "📝 Configuring environment..."
