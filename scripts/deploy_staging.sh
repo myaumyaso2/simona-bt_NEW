@@ -5,9 +5,27 @@ SSH_HOST="simona_prod"
 REMOTE_DIR="/var/www/simona-bt.ru/data/www/new.simona-bt.ru"
 BUNDLE_PATH="./staging_bundle.tar.gz"
 
+CANONICAL_PROD_IP="185.11.244.235"
+DECOMMISSIONED_IP="5.188.30.184"
+
 echo "=========================================================="
 echo "🚀 SIMONA-BT: Deploying to Staging (https://new.simona-bt.ru)"
+echo "Target Host: $SSH_HOST ($CANONICAL_PROD_IP)"
 echo "=========================================================="
+
+echo "🛡️ Step 0: Verifying target server and IP guardrails..."
+REMOTE_IP=$(ssh -o ConnectTimeout=5 "$SSH_HOST" "curl -s -4 --max-time 3 ifconfig.me || curl -s -4 --max-time 3 icanhazip.com" 2>/dev/null | tr -d '[:space:]')
+
+if [ "$REMOTE_IP" = "$DECOMMISSIONED_IP" ]; then
+    echo "❌ CRITICAL GUARDRAIL TRIGGERED: Remote server IP is $DECOMMISSIONED_IP (decommissioned server)! Aborting deployment."
+    exit 1
+fi
+
+if [ "$REMOTE_IP" != "$CANONICAL_PROD_IP" ]; then
+    echo "❌ CRITICAL GUARDRAIL TRIGGERED: Remote server IP is '$REMOTE_IP', expected $CANONICAL_PROD_IP! Aborting deployment."
+    exit 1
+fi
+echo "  -> Guardrail PASSED: Connected to canonical server ($CANONICAL_PROD_IP)."
 
 echo "🔍 Step 1: Running local TypeScript verification..."
 npx tsc --noEmit

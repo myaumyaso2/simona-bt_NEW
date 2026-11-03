@@ -1,5 +1,5 @@
 # PowerShell Automated Staging Deployment Script for SIMONA-BT
-# Target: https://new.simona-bt.ru (simona_prod, 5.188.30.184)
+# Target: https://new.simona-bt.ru (simona_prod, 185.11.244.235)
 
 param (
     [switch]$FullImport
@@ -7,11 +7,38 @@ param (
 
 $ErrorActionPreference = "Stop"
 $SSH_HOST = "simona_prod"
+$CANONICAL_PROD_IP = "185.11.244.235"
+$DECOMMISSIONED_IP = "5.188.30.184"
 $BUNDLE_PATH = Join-Path $PSScriptRoot "staging_bundle.tar.gz"
 
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "SIMONA-BT: Deploying to Staging (https://new.simona-bt.ru)" -ForegroundColor Cyan
+Write-Host "Target Host: $SSH_HOST ($CANONICAL_PROD_IP)" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
+
+# 0. Remote Server & IP Guardrail Verification
+Write-Host "Step 0: Verifying target server and IP guardrails..." -ForegroundColor Yellow
+
+$ResolvedHost = (ssh.exe -T -G $SSH_HOST 2>$null | Select-String -Pattern "^hostname\s+(.+)$").Matches.Groups[1].Value.Trim()
+if ($ResolvedHost -match [regex]::Escape($DECOMMISSIONED_IP)) {
+    Write-Error "CRITICAL GUARDRAIL TRIGGERED: Target host '$SSH_HOST' resolves to decommissioned server IP $DECOMMISSIONED_IP! Aborting deployment."
+    exit 1
+}
+if ($ResolvedHost -ne $CANONICAL_PROD_IP -and $ResolvedHost -ne "simona-bt.ru") {
+    Write-Error "CRITICAL GUARDRAIL TRIGGERED: Target host '$SSH_HOST' resolves to '$ResolvedHost', but canonical server IP is $CANONICAL_PROD_IP. Aborting deployment."
+    exit 1
+}
+
+$RemotePublicIp = (ssh.exe -T -o ConnectTimeout=5 $SSH_HOST "curl -s -4 --max-time 3 ifconfig.me || curl -s -4 --max-time 3 icanhazip.com" 2>$null).Trim()
+if ($RemotePublicIp -eq $DECOMMISSIONED_IP) {
+    Write-Error "CRITICAL GUARDRAIL TRIGGERED: Remote server public IP is $DECOMMISSIONED_IP (decommissioned server)! Aborting deployment."
+    exit 1
+}
+if ($RemotePublicIp -ne $CANONICAL_PROD_IP) {
+    Write-Error "CRITICAL GUARDRAIL TRIGGERED: Remote server public IP is '$RemotePublicIp', expected canonical IP $CANONICAL_PROD_IP! Aborting deployment."
+    exit 1
+}
+Write-Host "Guardrail PASSED: Connected to canonical server ($CANONICAL_PROD_IP)." -ForegroundColor Green
 
 # 1. Typecheck
 Write-Host "Step 1: Running local TypeScript verification..." -ForegroundColor Yellow

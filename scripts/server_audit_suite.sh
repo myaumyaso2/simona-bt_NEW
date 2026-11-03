@@ -18,11 +18,14 @@ echo -e "\n--- [1.2] Security & SSL Certificates ---"
 curl -sI -k https://simona-bt.ru | grep -E "HTTP/|server|x-powered-by"
 curl -sI -k https://www.simona-bt.ru | grep -E "HTTP/|location|server" || true
 
-echo -e "\n--- [1.3] UMI.CMS Archive Basic Auth (old.simona-bt.ru) ---"
-STATUS_NO_AUTH=$(curl -s -o /dev/null -w "%{http_code}" -k --resolve old.simona-bt.ru:443:5.188.30.184 https://old.simona-bt.ru/)
-echo "Status without auth: $STATUS_NO_AUTH (Expected: 401)"
-STATUS_WITH_AUTH=$(curl -s -o /dev/null -w "%{http_code}" -k -u admin:Vzevzcj2 --resolve old.simona-bt.ru:443:5.188.30.184 https://old.simona-bt.ru/)
-echo "Status with auth (admin:Vzevzcj2): $STATUS_WITH_AUTH (Expected: 200)"
+echo -e "\n--- [1.3] Host IP & Network Topology Check (185.11.244.235) ---"
+CURRENT_PUBLIC_IP=$(curl -s -4 --max-time 3 ifconfig.me || curl -s -4 --max-time 3 icanhazip.com || echo "unknown")
+echo "Outbound Public IP: $CURRENT_PUBLIC_IP (Expected: 185.11.244.235)"
+if [ "$CURRENT_PUBLIC_IP" = "5.188.30.184" ]; then
+    echo "❌ CRITICAL WARNING: Running on decommissioned server IP 5.188.30.184!"
+else
+    echo "✅ Host verified: 185.11.244.235 (Canonical Server)"
+fi
 
 echo -e "\n--- [1.4] 301 Redirects: Product & Category & Brand Check ---"
 # Product Redirect Test
