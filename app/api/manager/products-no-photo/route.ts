@@ -57,10 +57,27 @@ export async function GET(req: NextRequest) {
     const query = searchParams.get('q')?.trim().toLowerCase() || '';
     const onlyInStock = searchParams.get('onlyInStock') === 'true';
 
-    // All products without photos in database
+    // All actual products without photos in database that can be automatically activated
     const rawProducts = await prisma.product.findMany({
       where: {
-        OR: [{ imagesJson: '[]' }, { imagesJson: '' }],
+        AND: [
+          {
+            OR: [{ imagesJson: '[]' }, { imagesJson: '' }],
+          },
+          {
+            price: { gt: 0 },
+            noPrice: false,
+          },
+          {
+            NOT: {
+              AND: [
+                { isDiscount: true },
+                { stockKominterna: { lte: 0 } },
+                { stockBelinskogo15: { lte: 0 } },
+              ],
+            },
+          },
+        ],
       },
       orderBy: [
         { inStock: 'desc' },
