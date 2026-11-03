@@ -30,11 +30,25 @@ export async function GET(req: NextRequest) {
         price: { gt: 0 },
         noPrice: false,
       },
-      // 3. Исключить архивную уценку с нулевым остатком (гасится 1С, на витрине не открывается)
+      // 3. Исключить товары со статусом "Не используется" (столбец 11 1C_import.csv)
+      {
+        isDisabled: false,
+      },
+      // 4. Исключить архивную уценку с нулевым остатком (гасится 1С, на витрине не открывается)
       {
         NOT: {
           AND: [
             { isDiscount: true },
+            { stockKominterna: { lte: 0 } },
+            { stockBelinskogo15: { lte: 0 } },
+          ],
+        },
+      },
+      // 5. Исключить спецпредложения с нулевым остатком (столбец 8 == 1 и остаток == 0)
+      {
+        NOT: {
+          AND: [
+            { isSpecial: true },
             { stockKominterna: { lte: 0 } },
             { stockBelinskogo15: { lte: 0 } },
           ],

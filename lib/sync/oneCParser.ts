@@ -182,48 +182,11 @@ export function resolveProductPricing(
 }
 
 /**
- * Предварительный проход по 1C_import.csv (аналог importPrepare в OneCImportCsv.php строки 235-237):
- * Собирает карту disabledAmount[article] для строк, где:
- * Остаток товара (колонка 6) > 0 && Спец предложени (колонка 7) == 1 && Не используется (колонка 10) == 1
+ * Отключено: искусственный перенос остатков от служебных/отключенных строк (isDisabled)
+ * Остаток берется строго из строки конкретного SKU.
  */
-export async function collectDisabledAmounts(filePath: string): Promise<Map<string, number>> {
-  const disabledAmountMap = new Map<string, number>();
-  if (!fs.existsSync(filePath)) {
-    return disabledAmountMap;
-  }
-
-  const fileStream = fs.createReadStream(filePath, { encoding: 'latin1' });
-  const decoder = new TextDecoder('windows-1251');
-  const rl = readline.createInterface({
-    input: fileStream,
-    crlfDelay: Infinity,
-  });
-
-  for await (const rawLine of rl) {
-    let line: string;
-    try {
-      line = decoder.decode(Buffer.from(rawLine, 'latin1'));
-    } catch {
-      line = rawLine;
-    }
-    line = line.trim();
-    if (!line) continue;
-
-    const parts = parseCsvLine(line);
-    const code = parts[0]?.trim();
-    if (!code || isNaN(Number(code)) || code === '0') continue;
-
-    const article = parts[4]?.trim() || '';
-    const amount = Math.max(0, parseInt(parts[6] || '0', 10) || 0);
-    const isSpecial = parts[7] === '1';
-    const isDisabled = parts[10] === '1';
-
-    if (amount > 0 && isSpecial && isDisabled && article) {
-      disabledAmountMap.set(article, amount);
-    }
-  }
-
-  return disabledAmountMap;
+export async function collectDisabledAmounts(_filePath: string): Promise<Map<string, number>> {
+  return new Map<string, number>();
 }
 
 /**
@@ -302,12 +265,9 @@ export async function streamCatalogCsv(
     const isDisabled = parts[10] === '1';
     const isNoPrice = parts[11] === '1';
 
-    // Прибавляем disabledAmount к активному товару с тем же Артикулом (OneCImportCsv.php строки 235, 881-884)
-    const additionalDisabledAmount =
-      !isDisabled && article && disabledAmountMap.has(article)
-        ? disabledAmountMap.get(article)!
-        : 0;
-    const totalAmount = rawAmount + additionalDisabledAmount;
+    // Остаток товара берется честно и напрямую из строки SKU без подмешивания отключенных позиций
+    const additionalDisabledAmount = 0;
+    const totalAmount = rawAmount;
 
     const priceBase = parseFloat(parts[12]?.replace(',', '.') || '0') || 0;
     const priceAction = parseFloat(parts[13]?.replace(',', '.') || '0') || 0;
@@ -337,11 +297,12 @@ export async function streamCatalogCsv(
       isLeader
     );
 
-    // Правила деактивации bDelete из OneCImportCsv.php (строки 605-617)
+    // Правила деактивации bDelete из OneCImportCsv.php (строки 605-617) + блокировка спецпредложений без остатка
     const shouldDeactivateBy1C =
       priceBase <= 0 ||
       pricing.price <= 0 ||
       isDisabled ||
+      (isSpecial && rawAmount <= 0) ||
       (isRetired && (rawAmount <= 0 || pricing.price <= 0)) ||
       (isDiscount && rawAmount <= 0);
 

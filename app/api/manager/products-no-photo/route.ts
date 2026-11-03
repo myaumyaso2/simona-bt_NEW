@@ -69,9 +69,21 @@ export async function GET(req: NextRequest) {
             noPrice: false,
           },
           {
+            isDisabled: false,
+          },
+          {
             NOT: {
               AND: [
                 { isDiscount: true },
+                { stockKominterna: { lte: 0 } },
+                { stockBelinskogo15: { lte: 0 } },
+              ],
+            },
+          },
+          {
+            NOT: {
+              AND: [
+                { isSpecial: true },
                 { stockKominterna: { lte: 0 } },
                 { stockBelinskogo15: { lte: 0 } },
               ],

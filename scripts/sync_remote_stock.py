@@ -485,12 +485,13 @@ def main():
         print(f"Error: database file {args.db_path} not found!")
         sys.exit(1)
 
-    # 1. Load DB products
+    # 1. Load active DB products only (never match or update remote stock for inactive/disabled products)
     conn = sqlite3.connect(args.db_path)
     cur = conn.cursor()
     cur.execute("""
         SELECT id, sku, brand, name, systemArticle, inStock, stockKominterna, stockBelinskogo15, stockRemote, physicalStatus, isDiscount, isSpecial
         FROM Product
+        WHERE isActive = 1 AND (isDisabled = 0 OR isDisabled IS NULL)
     """)
     db_rows = cur.fetchall()
     print(f"Loaded {len(db_rows)} products from database.")

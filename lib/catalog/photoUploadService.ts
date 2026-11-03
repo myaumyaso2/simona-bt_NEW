@@ -279,13 +279,22 @@ export async function processPhotoUploadBatch(
       // Deduplicate consecutive identical URLs if any
       const nextImages = currentImages;
 
-      // 5. Activate product if it was hidden and has price > 0, not noPrice, and not zero-stock discount
+      // 5. Activate product if it was hidden and has price > 0, not noPrice, not isDisabled, and not zero-stock discount/special
       const wasHidden = !product.isActive;
       const isZeroStockDiscount =
         product.isDiscount &&
         (product.stockKominterna || 0) <= 0 &&
         (product.stockBelinskogo15 || 0) <= 0;
-      const shouldActivate = product.price > 0 && !product.noPrice && !isZeroStockDiscount;
+      const isZeroStockSpecial =
+        product.isSpecial &&
+        (product.stockKominterna || 0) <= 0 &&
+        (product.stockBelinskogo15 || 0) <= 0;
+      const shouldActivate =
+        product.price > 0 &&
+        !product.noPrice &&
+        !product.isDisabled &&
+        !isZeroStockDiscount &&
+        !isZeroStockSpecial;
 
       await prisma.product.update({
         where: { id: product.id },

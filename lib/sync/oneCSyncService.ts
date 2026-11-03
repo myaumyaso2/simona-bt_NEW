@@ -444,6 +444,7 @@ export async function syncFullCatalog(
           isActive: true,
           isSpecial: true,
           isDiscount: true,
+          isDisabled: true,
           noPrice: true,
         },
       });
@@ -527,10 +528,11 @@ export async function syncFullCatalog(
                 isSpecial: item.isSpecial,
               });
 
-          const nextPrice =
-            item.resolvedPrice > 0 ? item.resolvedPrice : existingProduct.price;
-          const nextOldPrice = item.shouldDeactivateBy1C ? null : item.resolvedOldPrice;
-          const nextBadge = item.shouldDeactivateBy1C ? null : item.resolvedBadge;
+          const nextPrice = item.resolvedPrice > 0 ? item.resolvedPrice : 0;
+          const nextOldPrice =
+            item.shouldDeactivateBy1C || nextPrice === 0 ? null : item.resolvedOldPrice;
+          const nextBadge =
+            item.shouldDeactivateBy1C || nextPrice === 0 ? null : item.resolvedBadge;
           const nextPriceOpt = item.priceOpt > 0 ? item.priceOpt : null;
           const nextColor = item.color || existingProduct.color || null;
           const nextProductGroup = item.group || existingProduct.productGroup || null;
@@ -550,7 +552,9 @@ export async function syncFullCatalog(
               const reason = !hasPhoto
                 ? 'Отсутствует фото'
                 : item.isDisabled
-                ? 'Не используется (кол. 10)'
+                ? 'Не используется (кол. 11)'
+                : item.isSpecial && item.rawAmount === 0
+                ? 'Спецпредложение с остатком 0'
                 : item.isDiscount && item.rawAmount === 0
                 ? 'Уценка с остатком 0'
                 : item.isRetired
@@ -612,10 +616,8 @@ export async function syncFullCatalog(
             }
           }
 
-          // Сравнение цены
-          const priceDiff =
-            item.resolvedPrice > 0 &&
-            Math.abs(existingProduct.price - nextPrice) > 0.01;
+          // Сравнение цены (включая обнуление цены, если 1С убрала ее из выгрузки)
+          const priceDiff = Math.abs(existingProduct.price - nextPrice) > 0.01;
           if (priceDiff) {
             updatedPrices++;
             changes.price = nextPrice;
@@ -730,8 +732,12 @@ export async function syncFullCatalog(
           if (existingProduct.isDiscount !== item.isDiscount) {
             changes.isDiscount = item.isDiscount;
           }
-          if (existingProduct.noPrice !== item.isNoPrice) {
-            changes.noPrice = item.isNoPrice;
+          if (existingProduct.isDisabled !== item.isDisabled) {
+            changes.isDisabled = item.isDisabled;
+          }
+          const nextNoPrice = item.isNoPrice || item.priceBase <= 0 || nextPrice === 0;
+          if (existingProduct.noPrice !== nextNoPrice) {
+            changes.noPrice = nextNoPrice;
           }
           if (existingProduct.color !== nextColor) {
             changes.color = nextColor;
@@ -836,7 +842,8 @@ export async function syncFullCatalog(
             isActive,
             isSpecial: item.isSpecial,
             isDiscount: item.isDiscount,
-            noPrice: item.isNoPrice,
+            isDisabled: item.isDisabled,
+            noPrice: item.isNoPrice || item.priceBase <= 0 || item.resolvedPrice <= 0,
           };
 
           createBatch.push(newProduct);
