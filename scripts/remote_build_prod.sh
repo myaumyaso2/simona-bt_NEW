@@ -6,10 +6,10 @@ PROD_DIR="/var/www/simona-bt.ru/data/www/simona-prod"
 if [ -f "/tmp/simona_prod_bundle.tar.gz" ]; then
     echo "📦 Extracting files into $PROD_DIR..."
     mkdir -p "$PROD_DIR"
-    chmod -R u+w "$PROD_DIR" 2>/dev/null || true
-    tar --overwrite --warning=no-unknown-keyword -xzf /tmp/simona_prod_bundle.tar.gz -C "$PROD_DIR"
+    sudo chmod -R 775 "$PROD_DIR" 2>/dev/null || true
+    tar --delay-directory-restore --no-same-permissions --no-same-owner --warning=no-unknown-keyword -xzf /tmp/simona_prod_bundle.tar.gz -C "$PROD_DIR"
     rm -f /tmp/simona_prod_bundle.tar.gz
-    chmod -R u+w "$PROD_DIR" 2>/dev/null || true
+    sudo chmod -R 775 "$PROD_DIR" 2>/dev/null || true
 fi
 
 cd "$PROD_DIR"

@@ -6,11 +6,11 @@ REMOTE_DIR="/var/www/simona-bt.ru/data/www/new.simona-bt.ru"
 
 echo "📦 Extracting files into $REMOTE_DIR..."
 mkdir -p "$REMOTE_DIR"
-chmod -R u+w "$REMOTE_DIR" 2>/dev/null || true
+sudo chmod -R 775 "$REMOTE_DIR" 2>/dev/null || true
 cd "$REMOTE_DIR"
-tar --overwrite --warning=no-unknown-keyword -xzf /tmp/simona_staging_bundle.tar.gz -C "$REMOTE_DIR"
+tar --delay-directory-restore --no-same-permissions --no-same-owner --warning=no-unknown-keyword -xzf /tmp/simona_staging_bundle.tar.gz -C "$REMOTE_DIR"
 rm -f /tmp/simona_staging_bundle.tar.gz
-chmod -R u+w "$REMOTE_DIR" 2>/dev/null || true
+sudo chmod -R 775 "$REMOTE_DIR" 2>/dev/null || true
 
 echo "📝 Configuring environment..."
 cat << 'ENVEOF' > .env
