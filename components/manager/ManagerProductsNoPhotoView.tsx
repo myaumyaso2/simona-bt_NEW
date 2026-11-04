@@ -22,6 +22,8 @@ import {
 import {
   PhotoUploadBatchResult,
   PhotoUploadLogEntry,
+  ProcessedUploadResult,
+  RejectedUploadFile,
   parsePhotoFileName,
 } from '@/lib/catalog/photoUploadService';
 
@@ -51,6 +53,7 @@ export function ManagerProductsNoPhotoView() {
   const [isDraggingOverZone, setIsDraggingOverZone] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgressText, setUploadProgressText] = useState('');
+  const [uploadProgressPercent, setUploadProgressPercent] = useState<number>(0);
   const [uploadResult, setUploadResult] = useState<PhotoUploadBatchResult | null>(null);
 
   // Single-product drop state
@@ -133,39 +136,98 @@ export function ManagerProductsNoPhotoView() {
     loadLogs();
   }, [loadData]);
 
-  // Handle files upload (both batch and single)
+  // Handle files upload (both batch and single) with дозированной чанковой отправкой
   const handleProcessFiles = async (fileList: FileList | File[], specificSku?: string) => {
     const filesArray = Array.from(fileList);
     if (filesArray.length === 0) return;
 
     setIsUploading(true);
-    setUploadProgressText(`Подготовка и проверка ${filesArray.length} файлов...`);
+    setUploadProgressPercent(0);
+    setUploadProgressText(`Подготовка ${filesArray.length} файлов...`);
     setUploadResult(null);
 
+    const sessionId = `upload-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const CHUNK_SIZE = 12; // безопасная пачка, предотвращающая тайм-ауты и ограничения полезной нагрузки
+    const totalFiles = filesArray.length;
+
+    let cumulativeItems: ProcessedUploadResult[] = [];
+    let cumulativeRejected: RejectedUploadFile[] = [];
+    const touchedSkus = new Set<string>();
+
     try {
-      const formData = new FormData();
-      if (specificSku && filesArray.length === 1) {
-        formData.append('sku', specificSku);
+      for (let i = 0; i < totalFiles; i += CHUNK_SIZE) {
+        const chunk = filesArray.slice(i, i + CHUNK_SIZE);
+        const currentProcessed = Math.min(i + chunk.length, totalFiles);
+        const percent = Math.round((currentProcessed / totalFiles) * 100);
+
+        setUploadProgressPercent(percent);
+        setUploadProgressText(
+          totalFiles > CHUNK_SIZE
+            ? `Обработка: загружено ${currentProcessed} из ${totalFiles} файлов (${percent}%)...`
+            : `Конвертация в WebP и привязка к товарам 1С...`
+        );
+
+        const formData = new FormData();
+        formData.append('sessionId', sessionId);
+        if (specificSku && filesArray.length === 1) {
+          formData.append('sku', specificSku);
+        }
+
+        for (const file of chunk) {
+          formData.append('files', file);
+        }
+
+        const res = await fetch('/api/manager/products-no-photo', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const rawText = await res.text();
+          let errMsg = `Ошибка сервера (HTTP ${res.status})`;
+          try {
+            const parsed = JSON.parse(rawText);
+            if (parsed.error) errMsg = parsed.error;
+          } catch {
+            if (res.status === 413) {
+              errMsg = 'Размер файлов превысил лимит сервера (HTTP 413)';
+            } else if (rawText.includes('<html')) {
+              errMsg = `Сбой сервера при загрузке файлов (HTTP ${res.status})`;
+            } else if (rawText) {
+              errMsg = rawText.slice(0, 150);
+            }
+          }
+          throw new Error(errMsg);
+        }
+
+        const chunkResult: PhotoUploadBatchResult = await res.json();
+        if (chunkResult.items) {
+          cumulativeItems = cumulativeItems.concat(chunkResult.items);
+          chunkResult.items.forEach((it) => touchedSkus.add(it.sku));
+        }
+        if (chunkResult.rejectedFiles) {
+          cumulativeRejected = cumulativeRejected.concat(chunkResult.rejectedFiles);
+        }
       }
 
-      for (const file of filesArray) {
-        formData.append('files', file);
-      }
+      const newCount = cumulativeItems.filter((i) => i.fileAction === 'new').length;
+      const replacedCount = cumulativeItems.filter((i) => i.fileAction === 'replaced').length;
+      const summaryMessage = `Успешно загружено ${cumulativeItems.length} картинок (${newCount} новых, ${replacedCount} перезаписано, ${touchedSkus.size} товаров обновлено)`;
 
-      setUploadProgressText(`Конвертация в WebP и привязка к товарам 1С...`);
+      const finalResult: PhotoUploadBatchResult = {
+        success: true,
+        uploadedCount: cumulativeItems.length,
+        newCount,
+        replacedCount,
+        updatedProductsCount: touchedSkus.size,
+        items: cumulativeItems,
+        rejectedCount: cumulativeRejected.length,
+        rejectedFiles: cumulativeRejected,
+        summaryMessage,
+      };
 
-      const res = await fetch('/api/manager/products-no-photo', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const result: PhotoUploadBatchResult = await res.json();
-      if (!res.ok) {
-        throw new Error((result as unknown as { error?: string }).error || 'Ошибка загрузки файлов');
-      }
-
-      setUploadResult(result);
-      showToast('success', result.summaryMessage);
+      setUploadResult(finalResult);
+      showToast('success', summaryMessage);
       loadData();
       loadLogs();
     } catch (err: unknown) {
@@ -174,6 +236,7 @@ export function ManagerProductsNoPhotoView() {
     } finally {
       setIsUploading(false);
       setUploadProgressText('');
+      setUploadProgressPercent(0);
     }
   };
 
@@ -314,10 +377,13 @@ export function ManagerProductsNoPhotoView() {
           <div className="mt-6 pt-6 border-t border-[#2B313A] space-y-2">
             <div className="flex justify-between text-xs font-medium text-white">
               <span>{uploadProgressText}</span>
-              <span className="text-simona-teal animate-pulse">Обработка...</span>
+              <span className="text-simona-teal font-mono font-bold">{uploadProgressPercent}%</span>
             </div>
             <div className="w-full h-2 rounded-full bg-[#1E2228] overflow-hidden">
-              <div className="h-full bg-simona-teal rounded-full animate-pulse w-3/4 transition-all duration-300" />
+              <div
+                className="h-full bg-simona-teal rounded-full transition-all duration-300"
+                style={{ width: `${Math.max(5, uploadProgressPercent)}%` }}
+              />
             </div>
           </div>
         )}
@@ -360,15 +426,24 @@ export function ManagerProductsNoPhotoView() {
                       className="w-10 h-10 rounded-lg object-contain bg-white p-0.5 shrink-0"
                     />
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center space-x-1.5">
+                      <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
                         <span className="font-mono text-simona-teal font-bold text-[11px]">
                           {item.sku}
                         </span>
                         <span className="text-[10px] text-[#87888A]">
                           (кадр {item.slotIndex})
                         </span>
+                        {item.fileAction === 'replaced' ? (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            Перезаписана
+                          </span>
+                        ) : (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            Новая
+                          </span>
+                        )}
                         {item.wasActivated && (
-                          <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-300">
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-simona-teal/20 text-simona-teal border border-simona-teal/30">
                             Активирован
                           </span>
                         )}
@@ -428,18 +503,31 @@ export function ManagerProductsNoPhotoView() {
                       onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
                       className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 cursor-pointer select-none"
                     >
-                      <div className="flex items-center space-x-2.5">
-                        <span className="font-mono text-white font-semibold">
-                          {log.dateFormatted}
-                        </span>
-                        <span className="text-[#87888A]">—</span>
-                        <span className="text-emerald-400 font-bold">
-                          {log.uploadedCount} файлов загружено
-                        </span>
-                        <span className="text-[#87888A]">
-                          ({log.updatedProductsCount} товаров обновлено)
-                        </span>
-                      </div>
+                      {(() => {
+                        const newCount =
+                          log.newCount ?? log.items.filter((it) => it.fileAction === 'new').length;
+                        const replacedCount =
+                          log.replacedCount ?? log.items.filter((it) => it.fileAction === 'replaced').length;
+
+                        return (
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <span className="font-mono text-white font-semibold">
+                              {log.dateFormatted}
+                            </span>
+                            <span className="text-[#87888A]">—</span>
+                            <span className="text-emerald-400 font-bold">
+                              {log.uploadedCount} файлов загружено
+                            </span>
+                            <span className="text-xs text-[#87888A]">
+                              ({newCount} новых, {replacedCount} перезаписано)
+                            </span>
+                            <span className="text-[#87888A] hidden sm:inline">•</span>
+                            <span className="text-xs text-[#D7D9DB]">
+                              {log.updatedProductsCount} товаров обновлено
+                            </span>
+                          </div>
+                        );
+                      })()}
 
                       <div className="flex items-center space-x-2 text-[11px] text-[#87888A]">
                         {log.rejectedCount > 0 && (
@@ -462,10 +550,21 @@ export function ManagerProductsNoPhotoView() {
                               {log.items.map((item, i) => (
                                 <div
                                   key={i}
-                                  className="p-2 rounded-lg bg-[#16191D] border border-[#2B313A] flex items-center justify-between text-[11px]"
+                                  className="p-2 rounded-lg bg-[#16191D] border border-[#2B313A] flex items-center justify-between text-[11px] gap-2"
                                 >
-                                  <span className="font-mono text-simona-teal">{item.filename}</span>
-                                  <span className="text-white truncate max-w-[200px]">
+                                  <div className="flex items-center space-x-2 min-w-0">
+                                    <span className="font-mono text-simona-teal shrink-0">{item.filename}</span>
+                                    {item.fileAction === 'replaced' ? (
+                                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
+                                        Перезаписана
+                                      </span>
+                                    ) : (
+                                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">
+                                        Новая
+                                      </span>
+                                    )}
+                                  </div>
+                                  <span className="text-[#D7D9DB] truncate max-w-[200px]" title={item.productName}>
                                     {item.productName}
                                   </span>
                                 </div>

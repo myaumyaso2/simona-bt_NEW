@@ -12,6 +12,7 @@ export interface ProcessedUploadResult {
   brand: string;
   imageUrl: string;
   wasActivated: boolean;
+  fileAction: 'new' | 'replaced';
 }
 
 export interface RejectedUploadFile {
@@ -22,6 +23,8 @@ export interface RejectedUploadFile {
 export interface PhotoUploadBatchResult {
   success: boolean;
   uploadedCount: number;
+  newCount: number;
+  replacedCount: number;
   updatedProductsCount: number;
   items: ProcessedUploadResult[];
   rejectedCount: number;
@@ -34,6 +37,8 @@ export interface PhotoUploadLogEntry {
   timestamp: string;
   dateFormatted: string;
   uploadedCount: number;
+  newCount?: number;
+  replacedCount?: number;
   updatedProductsCount: number;
   items: ProcessedUploadResult[];
   rejectedCount: number;
@@ -132,9 +137,12 @@ export async function convertToWebP(inputBuffer: Buffer): Promise<Buffer> {
 }
 
 /**
- * Records an upload session into storage/logs/photo_uploads.json
+ * Records or updates an upload session into storage/logs/photo_uploads.json
  */
-export function recordUploadLog(entry: Omit<PhotoUploadLogEntry, 'id' | 'timestamp' | 'dateFormatted'>) {
+export function recordUploadLog(
+  entry: Omit<PhotoUploadLogEntry, 'id' | 'timestamp' | 'dateFormatted'>,
+  sessionId?: string
+): PhotoUploadLogEntry | null {
   try {
     const dir = path.dirname(LOG_FILE_PATH);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -159,24 +167,50 @@ export function recordUploadLog(entry: Omit<PhotoUploadLogEntry, 'id' | 'timesta
       minute: '2-digit',
     });
 
-    const newRecord: PhotoUploadLogEntry = {
-      id: `upload-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-      timestamp: now.toISOString(),
-      dateFormatted,
-      uploadedCount: entry.uploadedCount,
-      updatedProductsCount: entry.updatedProductsCount,
-      items: entry.items,
-      rejectedCount: entry.rejectedCount,
-      rejectedFiles: entry.rejectedFiles,
-    };
+    let targetRecord: PhotoUploadLogEntry | undefined;
 
-    logs.unshift(newRecord);
+    if (sessionId) {
+      targetRecord = logs.find((l) => l.id === sessionId);
+    }
+
+    if (targetRecord) {
+      // Append new items to existing session log
+      targetRecord.items = [...targetRecord.items, ...entry.items];
+      targetRecord.rejectedFiles = [...targetRecord.rejectedFiles, ...entry.rejectedFiles];
+      targetRecord.uploadedCount = targetRecord.items.length;
+      targetRecord.newCount = targetRecord.items.filter((it) => it.fileAction === 'new').length;
+      targetRecord.replacedCount = targetRecord.items.filter((it) => it.fileAction === 'replaced').length;
+      targetRecord.updatedProductsCount = new Set(targetRecord.items.map((it) => it.sku)).size;
+      targetRecord.rejectedCount = targetRecord.rejectedFiles.length;
+    } else {
+      const recordId = sessionId || `upload-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const newCount = entry.newCount ?? entry.items.filter((it) => it.fileAction === 'new').length;
+      const replacedCount = entry.replacedCount ?? entry.items.filter((it) => it.fileAction === 'replaced').length;
+
+      targetRecord = {
+        id: recordId,
+        timestamp: now.toISOString(),
+        dateFormatted,
+        uploadedCount: entry.uploadedCount,
+        newCount,
+        replacedCount,
+        updatedProductsCount: entry.updatedProductsCount,
+        items: entry.items,
+        rejectedCount: entry.rejectedCount,
+        rejectedFiles: entry.rejectedFiles,
+      };
+
+      logs.unshift(targetRecord);
+    }
+
     // Keep last 100 upload sessions
     if (logs.length > 100) logs = logs.slice(0, 100);
 
     fs.writeFileSync(LOG_FILE_PATH, JSON.stringify(logs, null, 2), 'utf-8');
+    return targetRecord;
   } catch (err) {
     console.error('Error writing photo upload log:', err);
+    return null;
   }
 }
 
@@ -198,7 +232,8 @@ export function getPhotoUploadLogs(): PhotoUploadLogEntry[] {
  * Processes a batch of uploaded files
  */
 export async function processPhotoUploadBatch(
-  files: Array<{ name: string; buffer: Buffer }>
+  files: Array<{ name: string; buffer: Buffer }>,
+  options?: { sessionId?: string }
 ): Promise<PhotoUploadBatchResult> {
   const destDirs = getDestinationDirectories();
   const successfulItems: ProcessedUploadResult[] = [];
@@ -232,12 +267,40 @@ export async function processPhotoUploadBatch(
     }
 
     try {
+      const targetFileName = slotIndex === 1 ? `${sku}.webp` : `${sku}_${slotIndex}.webp`;
+
+      // Check whether this file previously existed on disk in target directories
+      let fileExistedBefore = false;
+      for (const dir of destDirs) {
+        try {
+          if (fs.existsSync(path.join(dir, targetFileName))) {
+            fileExistedBefore = true;
+            break;
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      // Check if product gallery already contained an image at this slot
+      let currentImages: string[] = [];
+      try {
+        const parsedImages = JSON.parse(product.imagesJson || '[]');
+        if (Array.isArray(parsedImages)) {
+          currentImages = parsedImages.map(String).filter(Boolean);
+        }
+      } catch {
+        currentImages = [];
+      }
+
+      const targetPos = slotIndex - 1;
+      const slotHadImage = Boolean(currentImages[targetPos]);
+      const fileAction: 'new' | 'replaced' = fileExistedBefore || slotHadImage ? 'replaced' : 'new';
+
       // 2. Convert to WebP
       const webpBuffer = await convertToWebP(file.buffer);
 
       // 3. Save to disk (both canonical server dir and local public dir)
-      const targetFileName = slotIndex === 1 ? `${sku}.webp` : `${sku}_${slotIndex}.webp`;
-
       for (const dir of destDirs) {
         try {
           const filePath = path.join(dir, targetFileName);
@@ -250,17 +313,6 @@ export async function processPhotoUploadBatch(
       const publicUrl = `/images/cms/data/photo_code/${targetFileName}`;
 
       // 4. Update product imagesJson gallery
-      let currentImages: string[] = [];
-      try {
-        const parsedImages = JSON.parse(product.imagesJson || '[]');
-        if (Array.isArray(parsedImages)) {
-          currentImages = parsedImages.map(String).filter(Boolean);
-        }
-      } catch {
-        currentImages = [];
-      }
-
-      const targetPos = slotIndex - 1;
       if (targetPos === 0) {
         // Main photo
         if (currentImages.length === 0) {
@@ -276,7 +328,6 @@ export async function processPhotoUploadBatch(
         currentImages[targetPos] = publicUrl;
       }
 
-      // Deduplicate consecutive identical URLs if any
       const nextImages = currentImages;
 
       // 5. Activate product if it was hidden and has price > 0, not noPrice, not isDisabled, and not zero-stock discount/special
@@ -321,6 +372,7 @@ export async function processPhotoUploadBatch(
         brand: product.brand,
         imageUrl: publicUrl,
         wasActivated: wasHidden && shouldActivate,
+        fileAction,
       });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Ошибка обработки изображения';
@@ -331,20 +383,30 @@ export async function processPhotoUploadBatch(
     }
   }
 
-  // 6. Record upload session in log file
-  recordUploadLog({
-    uploadedCount: successfulItems.length,
-    updatedProductsCount: updatedProductIds.size,
-    items: successfulItems,
-    rejectedCount: rejectedFiles.length,
-    rejectedFiles,
-  });
+  const newCount = successfulItems.filter((i) => i.fileAction === 'new').length;
+  const replacedCount = successfulItems.filter((i) => i.fileAction === 'replaced').length;
 
-  const summaryMessage = `Успешно загружено и сопоставлено с товарами ${successfulItems.length} картинок (${updatedProductIds.size} товаров обновлено)`;
+  // 6. Record upload session in log file
+  recordUploadLog(
+    {
+      uploadedCount: successfulItems.length,
+      newCount,
+      replacedCount,
+      updatedProductsCount: updatedProductIds.size,
+      items: successfulItems,
+      rejectedCount: rejectedFiles.length,
+      rejectedFiles,
+    },
+    options?.sessionId
+  );
+
+  const summaryMessage = `Успешно загружено и сопоставлено с товарами ${successfulItems.length} картинок (${newCount} новых, ${replacedCount} перезаписано, ${updatedProductIds.size} товаров обновлено)`;
 
   return {
     success: true,
     uploadedCount: successfulItems.length,
+    newCount,
+    replacedCount,
     updatedProductsCount: updatedProductIds.size,
     items: successfulItems,
     rejectedCount: rejectedFiles.length,

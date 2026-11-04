@@ -274,6 +274,7 @@ export async function POST(req: NextRequest) {
 
     // Support manual SKU override if single file is provided with explicit "sku" field
     const explicitSku = (formData.get('sku') as string | null)?.trim();
+    const sessionId = (formData.get('sessionId') as string | null)?.trim() || undefined;
 
     if (rawFiles.length === 0) {
       return NextResponse.json({ error: 'Файлы изображений не переданы' }, { status: 400 });
@@ -298,8 +299,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Process batch through unified service
-    const result = await processPhotoUploadBatch(filesToProcess);
+    // Process batch through unified service with optional session consolidation
+    const result = await processPhotoUploadBatch(filesToProcess, { sessionId });
 
     return NextResponse.json(result);
   } catch (err: unknown) {
