@@ -410,9 +410,11 @@ export default function AnalyticsDashboardPage() {
             <div className="text-xs text-amber-400/90 mt-2">
               +{summary?.leadsCount || 0} консультаций и подборов
             </div>
-            <div className="text-[11px] text-[#87888A] mt-1">
-              Включая заказ №15124 (Smeg на 39 990 ₽)
-            </div>
+            {orders.length > 0 && (
+              <div className="text-[11px] text-[#87888A] mt-1 truncate">
+                Последний: №{orders[0].orderNumber} ({formatPrice(orders[0].totalAmount)})
+              </div>
+            )}
           </div>
 
           {/* Реально оплачено в 1С (Касса) */}
