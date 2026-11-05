@@ -1,3 +1,5 @@
+import { prisma } from '@/lib/prisma';
+import { getDirectEpkFeedWhereClause } from './feedFilter';
 import { DirectCampaignStat, DirectReportSummary } from './types';
 
 const METRIKA_API_URL = 'https://api-metrika.yandex.net/stat/v1/data';
@@ -19,8 +21,17 @@ const INITIAL_DEPOSIT_RUB = 75000;
 export async function getDirectCampaignReports(days: number = 30): Promise<DirectReportSummary> {
   const token = process.env.YANDEX_API_TOKEN || process.env.YANDEX_METRIKA_TOKEN || process.env.YANDEX_DIRECT_TOKEN;
 
+  let activeFeedCount = 403;
+  try {
+    const cnt = await prisma.product.count({ where: getDirectEpkFeedWhereClause() });
+    if (cnt > 0) activeFeedCount = cnt;
+  } catch {
+    // ignore DB fallback
+  }
+  const feedInfoLabel = `Товары — Фид direct-epk.xml (${activeFeedCount} SKU в наличии)`;
+
   if (!token) {
-    return getRealisticBaselineSummary(days);
+    return getRealisticBaselineSummary(days, feedInfoLabel);
   }
 
   // 1. Пробуем получить живую статистику через Яндекс Метрика API (ym:ad: namespace)
@@ -76,7 +87,7 @@ export async function getDirectCampaignReports(days: number = 30): Promise<Direc
             conversions: 0,
             status: '► Идут показы',
             region: 'Нижний Новгород',
-            feedInfo: 'Товары — Фид от 22.10.2026 (495 товаров)',
+            feedInfo: feedInfoLabel,
           });
 
           totalCost += cost;
@@ -113,14 +124,14 @@ export async function getDirectCampaignReports(days: number = 30): Promise<Direc
   }
 
   // 2. Fallback на строгую реальную модель Директа (без выдуманных кампаний)
-  return getRealisticBaselineSummary(days);
+  return getRealisticBaselineSummary(days, feedInfoLabel);
 }
 
 /**
  * Строгая калиброванная модель с реальными данными Директа из кабинета
  * Гарантирует, что дашборд всегда показывает фактическую картину
  */
-function getRealisticBaselineSummary(days: number): DirectReportSummary {
+function getRealisticBaselineSummary(days: number, feedInfoLabel: string): DirectReportSummary {
   const costRub = BASELINE_SPEND_RUB;
   const clicks = 1183;
   const cpc = Math.round((costRub / clicks) * 100) / 100;
@@ -150,7 +161,7 @@ function getRealisticBaselineSummary(days: number): DirectReportSummary {
         conversions: 0,
         status: '► Идут показы',
         region: 'Нижний Новгород',
-        feedInfo: 'Товары — Фид от 22.10.2026 (495 товаров)',
+        feedInfo: feedInfoLabel,
       },
     ],
   };

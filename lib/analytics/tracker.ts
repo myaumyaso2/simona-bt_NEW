@@ -1,14 +1,30 @@
 'use client';
 
 import { ProductItem } from '@/types';
-import { METRIKA_COUNTER_ID } from '@/components/analytics/YandexMetrika';
+
+export const METRIKA_COUNTER_ID = 1351807;
 
 declare global {
   interface Window {
-    dataLayer?: any[];
-    ym?: (counterId: number, method: string, ...args: any[]) => void;
+    dataLayer?: Record<string, unknown>[];
+    ym?: (counterId: number, method: string, ...args: unknown[]) => void;
   }
 }
+
+/**
+ * Единая таблица нормализации идентификаторов целей в счетчике Метрики №1351807
+ */
+const CANONICAL_GOAL_MAP: Record<string, string> = {
+  PRICE_MATCH_SUBMIT: 'PRICE_MATCH',
+  PROJECT_MATCHING: 'EQUIPMENT_SELECTION',
+  KITCHEN_ESTIMATE: 'EQUIPMENT_SELECTION',
+  SHOWROOM_VISIT_BOOKED: 'SHOWROOM_VISIT',
+  DESIGNER_SPEC_SUBMIT: 'B2B_CLUB',
+  OPT_COOPERATION_SUBMIT: 'B2B_CLUB',
+  CONTACT_FEEDBACK_SUBMIT: 'QUICK_CONSULT',
+  SERVICE_REQUEST_SUBMIT: 'QUICK_CONSULT',
+  WARRANTY_CLAIM_SUBMIT: 'QUICK_CONSULT',
+};
 
 /**
  * Enhanced Ecommerce: Просмотр карточки товара
@@ -141,7 +157,7 @@ const KNOWN_TEST_PHONES = [
  * 2. Имя, комментарий или другое поле содержит ключевое слово "тест" или "test" (без учета регистра).
  * Достаточно выполнения любого из условий (ИЛИ).
  */
-export function isTestSubmission(data?: Record<string, any>): boolean {
+export function isTestSubmission(data?: Record<string, unknown>): boolean {
   if (!data) return false;
 
   // 1. Проверка номера телефона
@@ -180,7 +196,7 @@ export function isTestSubmission(data?: Record<string, any>): boolean {
  * Достижение цели в Яндекс Метрике
  * Если переданные параметры соответствуют тестовым данным, отправка цели блокируется.
  */
-export function trackGoal(goalName: string, params?: Record<string, any>) {
+export function trackGoal(goalName: string, params?: Record<string, unknown>) {
   if (typeof window === 'undefined' || typeof window.ym !== 'function') return;
 
   if (params && isTestSubmission(params)) {
@@ -190,8 +206,10 @@ export function trackGoal(goalName: string, params?: Record<string, any>) {
     return;
   }
 
+  const normalizedGoal = CANONICAL_GOAL_MAP[goalName] || goalName;
+
   try {
-    window.ym(METRIKA_COUNTER_ID, 'reachGoal', goalName, params);
+    window.ym(METRIKA_COUNTER_ID, 'reachGoal', normalizedGoal, params);
   } catch (e) {
     console.error('Metrika trackGoal error:', e);
   }
@@ -213,9 +231,9 @@ export async function getYandexClientId(): Promise<string | null> {
   if (typeof window.ym === 'function') {
     return new Promise((resolve) => {
       try {
-        window.ym!(METRIKA_COUNTER_ID, 'getClientID', (id: string) => {
+        window.ym!(METRIKA_COUNTER_ID, 'getClientID', ((id: string) => {
           resolve(id || null);
-        });
+        }) as unknown);
       } catch {
         resolve(null);
       }

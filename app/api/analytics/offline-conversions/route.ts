@@ -11,8 +11,12 @@ export async function GET(req: NextRequest) {
   try {
     const orders = await prisma.order.findMany({
       where: {
-        status: { in: ['COMPLETED', 'PAID', 'DELIVERED'] },
+        status: { notIn: ['TEST', 'CANCELLED'] },
         ymClientId: { not: null },
+        OR: [
+          { status: { in: ['COMPLETED', 'PAID', 'DELIVERED'] } },
+          { paymentStatus: 'PAID' },
+        ],
       },
       take: 1000,
       orderBy: { createdAt: 'desc' },

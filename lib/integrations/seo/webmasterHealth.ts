@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { getDirectEpkFeedWhereClause } from '@/lib/integrations/direct/feedFilter';
 import fs from 'fs';
 import path from 'path';
 
@@ -161,21 +162,14 @@ async function fetchYandexWebmasterLiveStats(): Promise<YandexWebmasterLiveStats
  * Получение диагностической сводки состояния SEO, поисковых фидов и карт сайта
  */
 export async function getWebmasterHealthStats(): Promise<WebmasterHealthSummary> {
-  let epkCount = 495;
+  let epkCount = 400;
   let totalIndexedCount = 6705;
   let feedTotalCount = 6500;
 
   try {
     const [epkDbCount, totalDbCount, feedDbCount] = await Promise.all([
       prisma.product.count({
-        where: {
-          isActive: true,
-          price: { gte: 30000 },
-          OR: [
-            { stockKominterna: { gt: 0 } },
-            { inStock: true, stockCount: { gt: 0 } },
-          ],
-        },
+        where: getDirectEpkFeedWhereClause(),
       }),
       prisma.product.count({
         where: { isActive: true },

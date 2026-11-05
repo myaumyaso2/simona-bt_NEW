@@ -48,13 +48,27 @@ export function captureUtmParams(): AnalyticsPayload {
     }
   } catch {}
 
+  const urlYclid = urlParams.get('yclid');
+
   const current: AnalyticsPayload = {
-    utmSource: urlParams.get('utm_source') || stored.utmSource || undefined,
-    utmMedium: urlParams.get('utm_medium') || stored.utmMedium || undefined,
-    utmCampaign: urlParams.get('utm_campaign') || stored.utmCampaign || undefined,
+    utmSource:
+      urlParams.get('utm_source') ||
+      (urlYclid ? 'yandex' : undefined) ||
+      stored.utmSource ||
+      undefined,
+    utmMedium:
+      urlParams.get('utm_medium') ||
+      (urlYclid ? 'cpc' : undefined) ||
+      stored.utmMedium ||
+      undefined,
+    utmCampaign:
+      urlParams.get('utm_campaign') ||
+      (urlYclid ? 'direct_auto' : undefined) ||
+      stored.utmCampaign ||
+      undefined,
     utmContent: urlParams.get('utm_content') || stored.utmContent || undefined,
     utmTerm: urlParams.get('utm_term') || stored.utmTerm || undefined,
-    yclid: urlParams.get('yclid') || stored.yclid || undefined,
+    yclid: urlYclid || stored.yclid || undefined,
     ysclid: urlParams.get('ysclid') || stored.ysclid || undefined,
     gclid: urlParams.get('gclid') || stored.gclid || undefined,
     referrer: document.referrer || stored.referrer || undefined,

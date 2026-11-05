@@ -74,17 +74,23 @@ export async function GET(req: NextRequest) {
     let ymOrdersCount = 0;
     let directPaidRevenue = 0;
     let directPaidCount = 0;
+    let directPipelineRevenue = 0;
+    let directPipelineCount = 0;
 
     const utmMap = new Map<
       string,
-      { count: number; revenue: number; paidCount: number }
+      { count: number; revenue: number; paidCount: number; pipelineRevenue: number }
     >();
     const statusMap = new Map<string, number>();
 
     for (const order of orders) {
       const amount = order.totalAmount || 0;
-      // В переходный период 1С 7.7 оба статуса PAID и DELIVERED являются успешными индикаторами кассы
-      const isPaid = ['PAID', 'COMPLETED', 'DELIVERED'].includes(order.status);
+      const isCancelled = order.status === 'CANCELLED';
+      // В переходный период 1С 7.7 оплата засчитывается при статусе заказа PAID/COMPLETED/DELIVERED либо при paymentStatus === 'PAID'
+      const isPaid =
+        !isCancelled &&
+        (['PAID', 'COMPLETED', 'DELIVERED'].includes(order.status) ||
+          order.paymentStatus === 'PAID');
 
       if (isPaid) {
         totalRevenue += amount;
@@ -95,27 +101,47 @@ export async function GET(req: NextRequest) {
         ymOrdersCount++;
       }
 
-      // Атрибуция Яндекс Директа (по меткам yclid или utm_source === yandex)
+      // Строгая атрибуция платного Яндекс Директа (исключая yandex/organic)
+      const lowerUtmSource = (order.utmSource || '').toLowerCase();
+      const lowerUtmMedium = (order.utmMedium || '').toLowerCase();
+      const lowerUtmCampaign = (order.utmCampaign || '').toLowerCase();
+
       const isDirectAttributed =
         Boolean(order.yclid) ||
-        (order.utmSource && order.utmSource.toLowerCase().includes('yandex'));
+        lowerUtmCampaign.includes('direct') ||
+        (lowerUtmSource.includes('yandex') && lowerUtmMedium !== 'organic');
 
-      if (isPaid && isDirectAttributed) {
-        directPaidRevenue += amount;
-        directPaidCount++;
+      if (isDirectAttributed) {
+        if (isPaid) {
+          directPaidRevenue += amount;
+          directPaidCount++;
+        }
+        if (!isCancelled) {
+          directPipelineRevenue += amount;
+          directPipelineCount++;
+        }
       }
 
       // Group by status
       statusMap.set(order.status, (statusMap.get(order.status) || 0) + 1);
 
-      // Group by UTM Source
-      const source = (order.utmSource || 'organic / direct').toLowerCase();
+      // Group by Traffic Channel (с учетом yclid и разделения платного Директа и органики)
+      const source = isDirectAttributed
+        ? 'yandex direct (cpc)'
+        : lowerUtmSource && lowerUtmMedium === 'organic'
+        ? `${lowerUtmSource} (organic)`
+        : lowerUtmSource || 'organic / direct';
+
       const existingUtm = utmMap.get(source) || {
         count: 0,
         revenue: 0,
         paidCount: 0,
+        pipelineRevenue: 0,
       };
       existingUtm.count++;
+      if (!isCancelled) {
+        existingUtm.pipelineRevenue += amount;
+      }
       if (isPaid) {
         existingUtm.revenue += amount;
         existingUtm.paidCount++;
@@ -126,12 +152,19 @@ export async function GET(req: NextRequest) {
     const averageCheck =
       paidOrdersCount > 0 ? Math.round(totalRevenue / paidOrdersCount) : 0;
 
-    // Расчет ДРР: отношение расходов Директа к выручке от Директа (или к общей выручке кассы)
-    const revenueForDrr = directPaidRevenue > 0 ? directPaidRevenue : totalRevenue;
-    const drrPercent =
-      revenueForDrr > 0
-        ? ((directStats.totalCostRub / revenueForDrr) * 100).toFixed(1)
-        : '0.0';
+    // Строгий двухконтурный расчет ДРР исключительно по заказам самого Яндекс Директа (без примешивания чужой органики)
+    const directPaidDrrPercent =
+      directPaidRevenue > 0
+        ? ((directStats.totalCostRub / directPaidRevenue) * 100).toFixed(1)
+        : null;
+
+    const directPipelineDrrPercent =
+      directPipelineRevenue > 0
+        ? ((directStats.totalCostRub / directPipelineRevenue) * 100).toFixed(1)
+        : null;
+
+    const isDrrPreliminary = directPaidRevenue === 0 && directPipelineRevenue > 0;
+    const drrPercent = directPaidDrrPercent ?? directPipelineDrrPercent ?? '0.0';
 
     // Convert UTM stats to array
     const utmStats = Array.from(utmMap.entries())
@@ -140,9 +173,10 @@ export async function GET(req: NextRequest) {
         ordersCount: data.count,
         paidCount: data.paidCount,
         revenue: data.revenue,
+        pipelineRevenue: data.pipelineRevenue,
         avgCheck: data.paidCount > 0 ? Math.round(data.revenue / data.paidCount) : 0,
       }))
-      .sort((a, b) => b.revenue - a.revenue);
+      .sort((a, b) => b.revenue - a.revenue || b.pipelineRevenue - a.pipelineRevenue);
 
     const statusStats = Array.from(statusMap.entries()).map(([status, count]) => ({
       status,
@@ -167,6 +201,11 @@ export async function GET(req: NextRequest) {
         initialDeposit: directStats.initialDepositRub,
         directPaidRevenue,
         directPaidCount,
+        directPipelineRevenue,
+        directPipelineCount,
+        directPaidDrrPercent,
+        directPipelineDrrPercent,
+        isDrrPreliminary,
         drrPercent,
       },
       directStats,
@@ -176,8 +215,9 @@ export async function GET(req: NextRequest) {
       statusStats,
       recentOrders: orders.slice(0, 30),
     });
-  } catch (e: any) {
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'Internal Server Error';
     console.error('Analytics stats error:', e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

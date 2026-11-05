@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { formatProductName } from '@/lib/catalog/productTitle';
+import { getDirectEpkFeedWhereClause } from '@/lib/integrations/direct/feedFilter';
 
 function escapeXml(unsafe: string | null | undefined): string {
   if (!unsafe) return '';
@@ -23,21 +24,15 @@ export const revalidate = 1800; // Кэширование 30 минут
  * Специализированный YML-фид для рекламных кампаний Яндекс Директ (ЕПК и Товарная галерея).
  * Требования:
  * 1. Исключительно товары со статусом «На складе» (ул. Коминтерна, 27): stockKominterna > 0 или inStock = true.
- * 2. Чек от 30 000 ₽ (исключена мелочевка и дешевые расходники).
- * 3. Физическое наличие для быстрой доставки/самовывоза в Нижнем Новгороде.
- * 4. Канонический брендбук «Сеть салонов бытовой техники СИМОНА».
+ * 2. Чек от 30 000 ₽.
+ * 3. Строгий белый список маржинальных категорий (исключены уценка, посуда, барное стекло, МБТ, расходники и кондиционеры).
+ * 4. Физическое наличие для быстрой доставки/самовывоза в Нижнем Новгороде.
+ * 5. Канонический брендбук «Сеть салонов бытовой техники СИМОНА».
  */
 export async function GET() {
   try {
     const products = await prisma.product.findMany({
-      where: {
-        isActive: true,
-        price: { gte: 30000 },
-        OR: [
-          { stockKominterna: { gt: 0 } },
-          { inStock: true, stockCount: { gt: 0 } },
-        ],
-      },
+      where: getDirectEpkFeedWhereClause(),
       take: 4000,
       orderBy: [{ isFeatured: 'desc' }, { price: 'desc' }],
     });

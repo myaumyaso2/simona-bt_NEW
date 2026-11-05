@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { CORE_NEGATIVE_KEYWORDS } from '../../lib/integrations/direct/negatives';
+import { BLOCKED_PLACEMENTS, CORE_NEGATIVE_KEYWORDS } from '../../lib/integrations/direct/negatives';
 
 // Загрузка переменных окружения из .env
 const envPath = path.resolve(process.cwd(), '.env');
@@ -82,7 +82,18 @@ export async function checkDirectApiHealth(): Promise<boolean> {
 }
 
 /**
- * Описание 3 согласованных поисковых кампаний для создания через API
+ * Действующая ЕПК №715374018: защитные фильтры площадок и минус-слов
+ * (Применяются в веб-кабинете и автоматически синхронизируются через campaigns.update при активации Direct API v5)
+ */
+export const ACTIVE_EPK_PROTECTION = {
+  campaignId: 715374018,
+  weeklyBudgetRub: 11250,
+  excludedSites: BLOCKED_PLACEMENTS,
+  negativeKeywords: CORE_NEGATIVE_KEYWORDS,
+};
+
+/**
+ * Описание 3 согласованных поисковых кампаний для создания через API (ожидают одобрения Direct API v5)
  */
 export const CAMPAIGNS_SPEC = [
   {

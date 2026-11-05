@@ -36,6 +36,11 @@ interface SummaryData {
   initialDeposit?: number;
   directPaidRevenue?: number;
   directPaidCount?: number;
+  directPipelineRevenue?: number;
+  directPipelineCount?: number;
+  directPaidDrrPercent?: string | null;
+  directPipelineDrrPercent?: string | null;
+  isDrrPreliminary?: boolean;
   drrPercent?: string;
 }
 
@@ -44,6 +49,7 @@ interface UtmStat {
   ordersCount: number;
   paidCount: number;
   revenue: number;
+  pipelineRevenue?: number;
   avgCheck: number;
 }
 
@@ -257,8 +263,9 @@ export default function AnalyticsDashboardPage() {
     );
   }
 
+  const hasDirectOrders = (summary?.directPipelineCount || 0) > 0 || (summary?.directPaidCount || 0) > 0;
   const drrValue = parseFloat(summary?.drrPercent || '0');
-  const isDrrSafe = drrValue <= 5.0;
+  const isDrrSafe = hasDirectOrders && drrValue <= 5.0;
 
   // Чистый баланс и расход
   const liveBalance = directStats?.balanceRub ?? 55955.81;
@@ -435,27 +442,51 @@ export default function AnalyticsDashboardPage() {
             </div>
           </div>
 
-          {/* ДРР (Доля рекламных расходов) */}
+          {/* ДРР (Доля рекламных расходов — двухконтурный расчет строго по Директу) */}
           <div className="bg-[#16191D] border border-[#2B313A] rounded-2xl p-5 relative overflow-hidden">
             <div className="flex items-center justify-between text-xs text-[#87888A] mb-2 font-medium">
-              <span>Доля рекламных расходов (ДРР)</span>
-              <SimonaIconSparkles className={`w-4 h-4 ${isDrrSafe ? 'text-emerald-400' : 'text-amber-400'}`} />
+              <span>ДРР Яндекс Директ</span>
+              {summary?.isDrrPreliminary ? (
+                <span className="text-[11px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+                  В работе
+                </span>
+              ) : (
+                <SimonaIconSparkles className={`w-4 h-4 ${isDrrSafe ? 'text-emerald-400' : 'text-amber-400'}`} />
+              )}
             </div>
             <div className="text-2xl font-bold tracking-tight text-white font-mono">
-              {summary?.drrPercent || '0.0'}%
+              {summary?.directPaidDrrPercent
+                ? `${summary.directPaidDrrPercent}%`
+                : summary?.directPipelineDrrPercent
+                ? `~${summary.directPipelineDrrPercent}%`
+                : '—'}
             </div>
             <div className="text-xs mt-2 flex items-center space-x-1.5">
               <span
                 className={`w-2 h-2 rounded-full ${
-                  isDrrSafe ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+                  !hasDirectOrders
+                    ? 'bg-[#87888A]'
+                    : isDrrSafe
+                    ? 'bg-emerald-400 animate-pulse'
+                    : 'bg-amber-400'
                 }`}
               />
-              <span className={isDrrSafe ? 'text-emerald-400 font-medium' : 'text-amber-400'}>
-                {isDrrSafe ? 'Целевой норматив: не более 5%' : 'Внимание: превышение нормы 5%'}
+              <span className={!hasDirectOrders ? 'text-[#87888A]' : isDrrSafe ? 'text-emerald-400 font-medium' : 'text-amber-400'}>
+                {!hasDirectOrders
+                  ? 'Нет заказов с Директа за период'
+                  : summary?.isDrrPreliminary
+                  ? 'Расчетный по оформленным (норма ≤ 5%)'
+                  : isDrrSafe
+                  ? 'Целевой норматив: не более 5%'
+                  : 'Внимание: превышение нормы 5%'}
               </span>
             </div>
             <div className="text-[11px] text-[#87888A] mt-1">
-              Расчет: расход Директа / выручка
+              {summary?.directPaidRevenue && summary.directPaidRevenue > 0
+                ? `Касса Директа: ${formatPrice(summary.directPaidRevenue)} (${summary.directPaidCount} зак.)`
+                : summary?.directPipelineRevenue && summary.directPipelineRevenue > 0
+                ? `В работе: ${summary.directPipelineCount} зак. на ${formatPrice(summary.directPipelineRevenue)} (касса: 0 ₽)`
+                : 'Строго по заказам с метками Директа'}
             </div>
           </div>
         </div>
@@ -517,7 +548,7 @@ export default function AnalyticsDashboardPage() {
                       <td className="px-6 py-4 text-[#87888A]">
                         <div className="text-white font-medium">Товарная галерея на поиске</div>
                         <div className="text-[11px] text-simona-teal font-mono mt-0.5">
-                          {c.feedInfo || 'Товары — Фид 495 товаров'}
+                          {c.feedInfo || 'Товары — Фид direct-epk.xml'}
                         </div>
                       </td>
                       <td className="px-6 py-4 text-white font-medium">
@@ -797,7 +828,7 @@ export default function AnalyticsDashboardPage() {
                   </span>
                 </div>
                 <div className="text-lg font-bold text-simona-teal font-mono">
-                  {webmasterHealth?.directEpkFeed.itemsCount || 495} SKU
+                  {webmasterHealth?.directEpkFeed.itemsCount || 400} SKU
                 </div>
                 <p className="text-[11px] text-[#87888A] mt-1">
                   Наличие Коминтерна 27, цена от 30 000 ₽
@@ -964,7 +995,12 @@ export default function AnalyticsDashboardPage() {
                         {formatPrice(u.avgCheck)}
                       </td>
                       <td className="px-6 py-4 text-right font-bold text-white font-mono">
-                        {formatPrice(u.revenue)}
+                        <div>{formatPrice(u.revenue)}</div>
+                        {u.pipelineRevenue && u.pipelineRevenue > u.revenue ? (
+                          <div className="text-[10px] font-normal text-amber-400/90 mt-0.5">
+                            в работе: {formatPrice(u.pipelineRevenue)}
+                          </div>
+                        ) : null}
                       </td>
                     </tr>
                   ))
@@ -1032,7 +1068,10 @@ export default function AnalyticsDashboardPage() {
                       <td className="px-6 py-4">
                         <span
                           className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-semibold ${
-                            o.status === 'PAID' || o.status === 'COMPLETED' || o.status === 'DELIVERED'
+                            o.status === 'PAID' ||
+                            o.status === 'COMPLETED' ||
+                            o.status === 'DELIVERED' ||
+                            (o.status !== 'CANCELLED' && o.paymentStatus === 'PAID')
                               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                               : o.status === 'CANCELLED'
                               ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'

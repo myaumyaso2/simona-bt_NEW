@@ -4,8 +4,9 @@ import React, { useEffect, useRef, Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 import { captureUtmParams } from '@/lib/analytics/utm';
+import { METRIKA_COUNTER_ID, trackGoal } from '@/lib/analytics/tracker';
 
-export const METRIKA_COUNTER_ID = 1351807;
+export { METRIKA_COUNTER_ID };
 
 function MetrikaHitTracker() {
   const pathname = usePathname();
@@ -13,8 +14,34 @@ function MetrikaHitTracker() {
   const isFirstRender = useRef(true);
   const prevUrlRef = useRef<string | null>(null);
 
+  // Глобальный трекинг кликов по номерам телефонов (цель 47836282: phone_click в Метрике и Директе)
   useEffect(() => {
-    // Re-capture UTM/ysclid params on route change
+    const handleTelClick = (e: MouseEvent) => {
+      if (typeof window === 'undefined') return;
+      const currentPath = window.location.pathname;
+      // Исключаем служебные клики менеджеров по номерам клиентов в админке и на дашборде
+      if (currentPath.startsWith('/manager') || currentPath.startsWith('/analytics')) {
+        return;
+      }
+
+      const target = e.target as HTMLElement | null;
+      const anchor = target?.closest?.('a[href^="tel:"]') as HTMLAnchorElement | null;
+      if (!anchor) return;
+
+      trackGoal('phone_click', {
+        phoneHref: anchor.getAttribute('href') || '',
+        pagePath: currentPath,
+      });
+    };
+
+    document.addEventListener('click', handleTelClick, { capture: true });
+    return () => {
+      document.removeEventListener('click', handleTelClick, { capture: true });
+    };
+  }, []);
+
+  useEffect(() => {
+    // Re-capture UTM/yclid/ysclid params on route change
     captureUtmParams();
 
     const search = searchParams?.toString();

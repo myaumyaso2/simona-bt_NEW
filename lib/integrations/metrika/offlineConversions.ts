@@ -17,11 +17,15 @@ export interface OfflineConversionUploadResult {
 export async function uploadOfflineConversionsToMetrika(): Promise<OfflineConversionUploadResult> {
   const token = process.env.YANDEX_API_TOKEN || process.env.YANDEX_METRIKA_TOKEN;
 
-  // 1. Извлекаем оплаченные или доставленные заказы со сквозным ClientID
+  // 1. Извлекаем оплаченные или доставленные заказы со сквозным ClientID (исключая TEST и CANCELLED)
   const eligibleOrders = await prisma.order.findMany({
     where: {
-      status: { in: ['PAID', 'DELIVERED', 'COMPLETED'] },
+      status: { notIn: ['TEST', 'CANCELLED'] },
       ymClientId: { not: null },
+      OR: [
+        { status: { in: ['PAID', 'DELIVERED', 'COMPLETED'] } },
+        { paymentStatus: 'PAID' },
+      ],
     },
     take: 1000,
     orderBy: { createdAt: 'desc' },
