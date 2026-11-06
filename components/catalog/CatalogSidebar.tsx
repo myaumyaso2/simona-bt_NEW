@@ -87,6 +87,18 @@ export function CatalogSidebar({
   const [mobilePromoInfo, setMobilePromoInfo] = useState<ManufacturerPromo | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Close promo sheet on Escape key
+  useEffect(() => {
+    if (!mobilePromoInfo) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobilePromoInfo(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobilePromoInfo]);
+
   const [brandSearch, setBrandSearch] = useState('');
   const [brandOpen, setBrandOpen] = useState(true);
 
@@ -556,30 +568,36 @@ export function CatalogSidebar({
                         : `${promoBrandClean}. ${promoTitleClean}`;
 
                       return (
-                        <label
+                        <div
                           key={promo.id}
-                          onClick={() => togglePromo(promo.slug)}
-                          onMouseEnter={(e) => {
-                            if (typeof window !== 'undefined') {
-                              if (window.innerWidth < 1024 || !window.matchMedia('(hover: hover)').matches) {
-                                return;
-                              }
-                            }
-                            if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-                            const rect = e.currentTarget.getBoundingClientRect();
-                            hoverTimeoutRef.current = setTimeout(() => {
-                              setHoveredPromo({ promo, rect });
-                            }, 150);
-                          }}
-                          onMouseLeave={() => {
-                            if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-                            hoverTimeoutRef.current = setTimeout(() => {
-                              setHoveredPromo(null);
-                            }, 200);
-                          }}
-                          className="flex items-start justify-between text-xs cursor-pointer group/item py-1.5 px-2 rounded-lg hover:bg-white/[0.04] transition-colors"
+                          className="flex items-start justify-between text-xs group/item py-1.5 px-2 rounded-lg hover:bg-white/[0.04] transition-colors"
                         >
-                          <div className="flex items-start space-x-2.5 min-w-0 pr-2">
+                          <div
+                            onClick={() => {
+                              if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+                              setHoveredPromo(null);
+                              togglePromo(promo.slug);
+                            }}
+                            onMouseEnter={(e) => {
+                              if (typeof window !== 'undefined') {
+                                if (window.innerWidth < 1024 || !window.matchMedia('(hover: hover)').matches) {
+                                  return;
+                                }
+                              }
+                              if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              hoverTimeoutRef.current = setTimeout(() => {
+                                setHoveredPromo({ promo, rect });
+                              }, 150);
+                            }}
+                            onMouseLeave={() => {
+                              if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+                              hoverTimeoutRef.current = setTimeout(() => {
+                                setHoveredPromo(null);
+                              }, 200);
+                            }}
+                            className="flex items-start space-x-2.5 min-w-0 flex-1 pr-2 cursor-pointer"
+                          >
                             <div
                               className={`w-4 h-4 rounded-[4px] border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
                                 isChecked
@@ -607,16 +625,19 @@ export function CatalogSidebar({
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                e.preventDefault();
+                                if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+                                setHoveredPromo(null);
                                 setMobilePromoInfo(promo);
                               }}
-                              className="lg:hidden p-0.5 text-[#87888A] hover:text-simona-wine-light transition-colors"
+                              className="lg:hidden p-1 -mr-1 text-[#87888A] hover:text-simona-wine-light active:scale-90 transition-all cursor-pointer"
                               title="Условия акции"
                               aria-label={`Условия акции ${promo.title}`}
                             >
                               <SimonaIconInfo className="w-3.5 h-3.5" />
                             </button>
                           </div>
-                        </label>
+                        </div>
                       );
                     })}
                   </div>
@@ -1010,55 +1031,82 @@ export function CatalogSidebar({
       )}
 
       {/* 2. Mobile Promo Info Bottom Sheet / Modal (Opened via (i) icon) */}
-      {mounted && mobilePromoInfo && createPortal(
-        <div className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center p-0 sm:p-4">
-          {/* Backdrop */}
-          <div
-            onClick={() => setMobilePromoInfo(null)}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
-          />
-
-          {/* Modal Sheet Content */}
-          <div className="relative w-full sm:max-w-md bg-[#16191D] border-t sm:border border-[#2B313A] sm:rounded-2xl rounded-t-3xl p-5 shadow-2xl z-10 max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom-8 duration-200">
-            {/* Header */}
-            <div className="flex items-center justify-between gap-2 mb-3 pb-3 border-b border-[#2B313A]">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-simona-wine-light font-mono px-2 py-0.5 rounded-md bg-simona-wine/15 border border-simona-wine/30">
-                  {mobilePromoInfo.brand}
-                </span>
-                <span className="text-xs text-[#87888A] font-mono flex items-center gap-1">
-                  <SimonaIconClock className="w-3.5 h-3.5 text-simona-wine-light" />
-                  {mobilePromoInfo.endDate ? `до ${mobilePromoInfo.endDate}` : 'Бессрочно'}
-                </span>
-              </div>
-
-              <button
-                type="button"
+      {mounted && createPortal(
+        <AnimatePresence>
+          {mobilePromoInfo && (
+            <div className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center p-0 sm:p-4">
+              {/* Backdrop */}
+              <motion.div
+                key="promo-info-backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.22, ease: 'easeOut' }}
                 onClick={() => setMobilePromoInfo(null)}
-                className="w-8 h-8 rounded-xl bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-                aria-label="Закрыть"
+                className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+              />
+
+              {/* Modal Sheet Content */}
+              <motion.div
+                key="promo-info-sheet"
+                initial={{ y: '100%', opacity: 0.6 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: '100%', opacity: 0 }}
+                transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+                drag="y"
+                dragConstraints={{ top: 0, bottom: 0 }}
+                dragElastic={{ top: 0.05, bottom: 0.7 }}
+                onDragEnd={(_e, info) => {
+                  if (info.offset.y > 80 || info.velocity.y > 300) {
+                    setMobilePromoInfo(null);
+                  }
+                }}
+                className="relative w-full sm:max-w-md bg-[#16191D] border-t sm:border border-[#2B313A] sm:rounded-2xl rounded-t-3xl p-5 shadow-2xl z-10 max-h-[85vh] overflow-y-auto overscroll-contain touch-pan-y"
               >
-                <SimonaIconClose className="w-4 h-4" />
-              </button>
+                {/* Drag Handle for mobile sheet */}
+                <div className="w-10 h-1 bg-[#2B313A] rounded-full mx-auto mb-4 sm:hidden shrink-0" />
+
+                {/* Header */}
+                <div className="flex items-center justify-between gap-2 mb-3 pb-3 border-b border-[#2B313A]">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-simona-wine-light font-mono px-2 py-0.5 rounded-md bg-simona-wine/15 border border-simona-wine/30">
+                      {mobilePromoInfo.brand}
+                    </span>
+                    <span className="text-xs text-[#87888A] font-mono flex items-center gap-1">
+                      <SimonaIconClock className="w-3.5 h-3.5 text-simona-wine-light" />
+                      {mobilePromoInfo.endDate ? `до ${mobilePromoInfo.endDate}` : 'Бессрочно'}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setMobilePromoInfo(null)}
+                    className="w-8 h-8 rounded-xl bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                    aria-label="Закрыть"
+                  >
+                    <SimonaIconClose className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Title */}
+                <h4 className="text-sm font-montserrat font-bold text-white mb-2 leading-snug">
+                  {mobilePromoInfo.title}
+                </h4>
+
+                {/* Description */}
+                <p className="text-xs text-[#D7D9DB] leading-relaxed mb-4">
+                  {mobilePromoInfo.shortDescription}
+                </p>
+
+                {mobilePromoInfo.fullDescription && mobilePromoInfo.fullDescription !== mobilePromoInfo.shortDescription && (
+                  <div className="text-xs text-[#87888A] leading-relaxed pt-2 border-t border-[#2B313A]/60">
+                    {mobilePromoInfo.fullDescription}
+                  </div>
+                )}
+              </motion.div>
             </div>
-
-            {/* Title */}
-            <h4 className="text-sm font-montserrat font-bold text-white mb-2 leading-snug">
-              {mobilePromoInfo.title}
-            </h4>
-
-            {/* Description */}
-            <p className="text-xs text-[#D7D9DB] leading-relaxed mb-4">
-              {mobilePromoInfo.shortDescription}
-            </p>
-
-            {mobilePromoInfo.fullDescription && mobilePromoInfo.fullDescription !== mobilePromoInfo.shortDescription && (
-              <div className="text-xs text-[#87888A] leading-relaxed pt-2 border-t border-[#2B313A]/60">
-                {mobilePromoInfo.fullDescription}
-              </div>
-            )}
-          </div>
-        </div>,
+          )}
+        </AnimatePresence>,
         document.body
       )}
     </aside>
