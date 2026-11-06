@@ -1111,51 +1111,45 @@ export function CatalogView({
               isBrandPage={isDedicatedBrandPage}
             />
 
-            {/* Active Promo Chips per AGENTS.md 8.2 & Grill-me Alignment */}
+            {/* Selected Promo Chips Slider */}
             {filters.selectedPromos.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2 mb-5 p-3 bg-simona-wine/10 border border-simona-wine/30 rounded-xl animate-fade-in">
-                <div className="flex items-center gap-1.5 text-xs text-simona-wine-light font-semibold">
-                  <span className="w-1.5 h-1.5 rounded-md bg-simona-wine" />
-                  <span>Активные акции:</span>
-                </div>
-                {filters.selectedPromos.map((slug) => {
-                  const promo = MANUFACTURER_PROMOS.find((p) => p.slug === slug);
-                  if (!promo) return null;
-                  const promoTitleClean = promo.title.trim();
-                  const promoBrandClean = promo.brand.trim();
-                  const promoDisplayName = promoTitleClean.toLowerCase().startsWith(promoBrandClean.toLowerCase())
-                    ? promoTitleClean
-                    : `${promoBrandClean}. ${promoTitleClean}`;
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 mb-4 animate-fade-in">
+                <span className="text-[11px] sm:text-xs text-[#87888A] font-medium shrink-0">
+                  Выбранные акции:
+                </span>
+                <div className="relative w-full overflow-x-auto flex-nowrap inline-flex items-center gap-1.5 scroll-smooth py-1">
+                  {filters.selectedPromos.map((slug) => {
+                    const promo = MANUFACTURER_PROMOS.find((p) => p.slug === slug);
+                    if (!promo) return null;
+                    const promoTitleClean = promo.title.trim();
+                    const promoBrandClean = promo.brand.trim();
+                    const promoDisplayName = promoTitleClean.toLowerCase().startsWith(promoBrandClean.toLowerCase())
+                      ? promoTitleClean
+                      : `${promoBrandClean}. ${promoTitleClean}`;
 
-                  return (
-                    <span
-                      key={slug}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-simona-wine/25 text-white border border-simona-wine/50 text-xs font-medium shadow-sm backdrop-blur-md max-w-full"
-                    >
-                      <span className="truncate max-w-[240px] sm:max-w-[340px]" title={promoDisplayName}>
-                        {promoDisplayName}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const next = filters.selectedPromos.filter((s) => s !== slug);
-                          handleFilterChange({ selectedPromos: next });
-                        }}
-                        className="hover:bg-white/20 rounded-md p-0.5 transition-colors cursor-pointer shrink-0"
-                        aria-label={`Удалить фильтр ${promo.title}`}
+                    return (
+                      <span
+                        key={slug}
+                        className="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-simona-wine/25 text-white border border-simona-wine/50 text-xs font-medium shadow-sm backdrop-blur-md whitespace-nowrap"
                       >
-                        <SimonaIconClose className="w-3 h-3" />
-                      </button>
-                    </span>
-                  );
-                })}
-                <button
-                  type="button"
-                  onClick={() => handleFilterChange({ selectedPromos: [] })}
-                  className="text-xs text-[#87888A] hover:text-white underline ml-auto transition-colors cursor-pointer"
-                >
-                  Сбросить акции
-                </button>
+                        <span className="truncate max-w-[240px] sm:max-w-[340px]" title={promoDisplayName}>
+                          {promoDisplayName}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const next = filters.selectedPromos.filter((s) => s !== slug);
+                            handleFilterChange({ selectedPromos: next });
+                          }}
+                          className="hover:bg-white/20 rounded-md p-0.5 transition-colors cursor-pointer shrink-0"
+                          aria-label={`Удалить фильтр ${promo.title}`}
+                        >
+                          <SimonaIconClose className="w-3 h-3" />
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
               </div>
             )}
 

@@ -116,206 +116,222 @@ export function CatalogToolbar({
     SORT_OPTIONS.find((o) => o.id === sort)?.label || 'Популярные';
 
   const hasActiveFilters =
-    filters.selectedBrands.length > 0 ||
+    Boolean(filters.selectedGroups && filters.selectedGroups.length > 0) ||
+    (!isBrandPage && filters.selectedBrands.length > 0) ||
     filters.selectedWidth !== null ||
     filters.selectedColor !== null ||
     Object.keys(filters.selectedFeatures || {}).length > 0;
 
+  const activeFilterCount =
+    (filters.selectedBrands?.length || 0) +
+    (filters.selectedGroups?.length || 0) +
+    (filters.selectedWidth ? 1 : 0) +
+    (filters.selectedColor ? 1 : 0) +
+    Object.values(filters.selectedFeatures || {}).reduce((acc, v) => acc + v.length, 0);
+
   return (
     <div className="flex flex-col gap-3 pb-4 mb-2">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        {/* Left: Active Chips or Mobile Filter Trigger */}
-        <div className="flex items-center flex-wrap gap-2">
-          {/* Mobile Filter Button */}
+      {/* 1. Main Action Row: Mobile Filter Trigger on Left, Sort + View Mode on Right */}
+      <div className="flex items-center justify-between gap-3 w-full">
+        {/* Left: Mobile Filter Button */}
+        <div>
           <button
             onClick={onOpenMobileFilters}
             className="lg:hidden inline-flex items-center px-3.5 py-2 rounded-xl bg-[#16191D] border border-[#2B313A] text-xs font-semibold text-white hover:border-simona-teal transition active:scale-95 cursor-pointer"
           >
             <SimonaIconFilter className="w-3.5 h-3.5 mr-2 text-simona-teal" />
             Фильтры
-            {filters.selectedBrands.length > 0 && (
+            {activeFilterCount > 0 && (
               <span className="ml-1.5 px-1.5 py-0.2 bg-simona-teal text-white rounded-md text-[10px]">
-                {filters.selectedBrands.length}
+                {activeFilterCount}
               </span>
             )}
           </button>
-
-          {/* Active Filter Chips */}
-          {filters.selectedGroups &&
-            filters.selectedGroups.map((group) => (
-              <button
-                key={group}
-                onClick={() => onRemoveGroup?.(group)}
-                className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-simona-teal/50 hover:border-rose-500/50 text-xs text-white transition group cursor-pointer"
-              >
-                <span className="font-medium text-simona-teal">{group}</span>
-                <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
-              </button>
-            ))}
-
-          {!isBrandPage &&
-            filters.selectedBrands.map((brand) => (
-              <button
-                key={brand}
-                onClick={() => onRemoveBrand(brand)}
-                className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-simona-teal/15 border border-simona-teal/50 hover:border-rose-500/50 text-xs text-white transition group cursor-pointer"
-                title={`Удалить фильтр по бренду ${brand}`}
-                aria-label={`Удалить фильтр по бренду ${brand}`}
-              >
-                <span className="text-[#87888A]">Бренд:</span>
-                <span className="font-semibold text-simona-teal group-hover:text-white transition-colors">
-                  {formatBrandName(brand)}
-                </span>
-                <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
-              </button>
-            ))}
-
-          {filters.selectedWidth && (
-            <button
-              onClick={onRemoveWidth}
-              className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group cursor-pointer"
-            >
-              <span>{filters.selectedWidth}</span>
-              <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
-            </button>
-          )}
-
-          {filters.selectedColor && (
-            <button
-              onClick={onRemoveColor}
-              className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group cursor-pointer"
-            >
-              <span>Цвет отделки</span>
-              <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
-            </button>
-          )}
-
-          {/* Active Feature Chips */}
-          {Object.entries(filters.selectedFeatures || {}).flatMap(([label, values]) =>
-            values.map((val) => (
-              <button
-                key={`${label}-${val}`}
-                onClick={() => onRemoveFeature?.(label, val)}
-                className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-simona-teal/15 border border-simona-teal/40 hover:border-rose-500/50 text-xs text-white transition group cursor-pointer"
-              >
-                <span className="text-[#87888A]">{label}:</span>
-                <span className="font-semibold">{val}</span>
-                <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
-              </button>
-            ))
-          )}
         </div>
 
-      {/* Right: Sorting and View Toggle */}
-      <div className="flex items-center justify-between sm:justify-end space-x-3 shrink-0">
-        {/* Custom Quiet Luxury Sort Dropdown */}
-        <div ref={sortRef} className="relative">
-          <div className="flex items-center space-x-2">
-            <span className="text-xs text-[#87888A] hidden md:inline">Сортировка:</span>
-            <button
-              type="button"
-              onClick={() => setIsSortOpen(!isSortOpen)}
-              className={`group flex items-center justify-between gap-2.5 bg-[#16191D] border rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all duration-200 select-none cursor-pointer ${
-                isSortOpen
-                  ? 'border-simona-teal shadow-md shadow-simona-teal/10 text-white'
-                  : 'border-[#2B313A] hover:border-simona-teal/50 text-[#D7D9DB] hover:text-white'
-              }`}
-            >
-              <span>{currentSortLabel}</span>
-              <SimonaIconChevronDown
-                className={`w-3.5 h-3.5 transition-transform duration-300 ${
+        {/* Right: Sorting and View Toggle (on mobile: Sort is pushed to right edge) */}
+        <div className="flex items-center space-x-3 shrink-0 ml-auto">
+          {/* Custom Quiet Luxury Sort Dropdown */}
+          <div ref={sortRef} className="relative">
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-[#87888A] hidden md:inline">Сортировка:</span>
+              <button
+                type="button"
+                onClick={() => setIsSortOpen(!isSortOpen)}
+                className={`group flex items-center justify-between gap-2.5 bg-[#16191D] border rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all duration-200 select-none cursor-pointer ${
                   isSortOpen
-                    ? 'rotate-180 text-simona-teal'
-                    : 'text-[#87888A] group-hover:text-simona-teal'
+                    ? 'border-simona-teal shadow-md shadow-simona-teal/10 text-white'
+                    : 'border-[#2B313A] hover:border-simona-teal/50 text-[#D7D9DB] hover:text-white'
                 }`}
-              />
-            </button>
+              >
+                <span>{currentSortLabel}</span>
+                <SimonaIconChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-300 ${
+                    isSortOpen
+                      ? 'rotate-180 text-simona-teal'
+                      : 'text-[#87888A] group-hover:text-simona-teal'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Dropdown Menu Popover */}
+            <AnimatePresence>
+              {isSortOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -4, scale: 0.98 }}
+                  transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute right-0 top-full mt-1.5 z-50 min-w-[190px] bg-[#16191D] border border-[#2B313A] rounded-xl shadow-2xl p-1.5 backdrop-blur-md"
+                >
+                  <div className="space-y-0.5">
+                    {SORT_OPTIONS.map((option) => {
+                      const isSelected = sort === option.id;
+                      return (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => {
+                            onSortChange(option.id);
+                            setIsSortOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left ${
+                            isSelected
+                              ? 'bg-simona-teal/15 text-simona-teal font-semibold'
+                              : 'text-[#D7D9DB] hover:bg-[#1E2228] hover:text-white'
+                          }`}
+                        >
+                          <span>{option.label}</span>
+                          {isSelected && (
+                            <SimonaIconCheck className="w-3.5 h-3.5 text-simona-teal shrink-0 ml-2" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Dropdown Menu Popover */}
-          <AnimatePresence>
-            {isSortOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -4, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -4, scale: 0.98 }}
-                transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute right-0 top-full mt-1.5 z-50 min-w-[190px] bg-[#16191D] border border-[#2B313A] rounded-xl shadow-2xl p-1.5 backdrop-blur-md"
-              >
-                <div className="space-y-0.5">
-                  {SORT_OPTIONS.map((option) => {
-                    const isSelected = sort === option.id;
-                    return (
-                      <button
-                        key={option.id}
-                        type="button"
-                        onClick={() => {
-                          onSortChange(option.id);
-                          setIsSortOpen(false);
-                        }}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left ${
-                          isSelected
-                            ? 'bg-simona-teal/15 text-simona-teal font-semibold'
-                            : 'text-[#D7D9DB] hover:bg-[#1E2228] hover:text-white'
-                        }`}
-                      >
-                        <span>{option.label}</span>
-                        {isSelected && (
-                          <SimonaIconCheck className="w-3.5 h-3.5 text-simona-teal shrink-0 ml-2" />
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+          {/* View Mode Switcher (Grid / List) */}
+          <div className="hidden md:flex items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] relative gap-0.5">
+            {/* Grid Button */}
+            <button
+              onClick={() => onViewModeChange('grid')}
+              title="Сетка: 3 колонки"
+              className={`relative z-10 p-2 rounded-lg transition-colors duration-200 cursor-pointer select-none flex items-center justify-center ${
+                viewMode === 'grid'
+                  ? 'text-simona-teal'
+                  : 'text-[#87888A] hover:text-[#D7D9DB]'
+              }`}
+            >
+              {viewMode === 'grid' && (
+                <motion.div
+                  layoutId="catalogViewMode"
+                  className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
+                  transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                />
+              )}
+              <GridViewIcon className="w-4 h-4" />
+            </button>
 
-        {/* View Mode Switcher (Grid / List) */}
-        <div className="hidden md:flex items-center p-1 rounded-xl bg-[#16191D] border border-[#2B313A] relative gap-0.5">
-          {/* Grid Button */}
-          <button
-            onClick={() => onViewModeChange('grid')}
-            title="Сетка: 3 колонки"
-            className={`relative z-10 p-2 rounded-lg transition-colors duration-200 cursor-pointer select-none flex items-center justify-center ${
-              viewMode === 'grid'
-                ? 'text-simona-teal'
-                : 'text-[#87888A] hover:text-[#D7D9DB]'
-            }`}
-          >
-            {viewMode === 'grid' && (
-              <motion.div
-                layoutId="catalogViewMode"
-                className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
-                transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-              />
-            )}
-            <GridViewIcon className="w-4 h-4" />
-          </button>
-
-          {/* List Button */}
-          <button
-            onClick={() => onViewModeChange('list')}
-            title="Список: широкие карточки"
-            className={`relative z-10 p-2 rounded-lg transition-colors duration-200 cursor-pointer select-none flex items-center justify-center ${
-              viewMode === 'list'
-                ? 'text-simona-teal'
-                : 'text-[#87888A] hover:text-[#D7D9DB]'
-            }`}
-          >
-            {viewMode === 'list' && (
-              <motion.div
-                layoutId="catalogViewMode"
-                className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
-                transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-              />
-            )}
-            <ListViewIcon className="w-4 h-4" />
-          </button>
+            {/* List Button */}
+            <button
+              onClick={() => onViewModeChange('list')}
+              title="Список: широкие карточки"
+              className={`relative z-10 p-2 rounded-lg transition-colors duration-200 cursor-pointer select-none flex items-center justify-center ${
+                viewMode === 'list'
+                  ? 'text-simona-teal'
+                  : 'text-[#87888A] hover:text-[#D7D9DB]'
+              }`}
+            >
+              {viewMode === 'list' && (
+                <motion.div
+                  layoutId="catalogViewMode"
+                  className="absolute inset-0 rounded-lg bg-[#1E2228] border border-[#2B313A] shadow-sm -z-10"
+                  transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                />
+              )}
+              <ListViewIcon className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* 2. Active Filter Chips Slider (per user request: single horizontal row with label) */}
+      {hasActiveFilters && (
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2">
+          <span className="text-[11px] sm:text-xs text-[#87888A] font-medium shrink-0">
+            Выбранные фильтры:
+          </span>
+          <div className="relative w-full overflow-x-auto flex-nowrap inline-flex items-center gap-1.5 scroll-smooth py-1">
+            {filters.selectedGroups &&
+              filters.selectedGroups.map((group) => (
+                <button
+                  key={group}
+                  onClick={() => onRemoveGroup?.(group)}
+                  className="shrink-0 inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-simona-teal/50 hover:border-rose-500/50 text-xs text-white transition group cursor-pointer whitespace-nowrap"
+                >
+                  <span className="font-medium text-simona-teal">{group}</span>
+                  <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
+                </button>
+              ))}
+
+            {!isBrandPage &&
+              filters.selectedBrands.map((brand) => (
+                <button
+                  key={brand}
+                  onClick={() => onRemoveBrand(brand)}
+                  className="shrink-0 inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-simona-teal/15 border border-simona-teal/50 hover:border-rose-500/50 text-xs text-white transition group cursor-pointer whitespace-nowrap"
+                  title={`Удалить фильтр по бренду ${brand}`}
+                  aria-label={`Удалить фильтр по бренду ${brand}`}
+                >
+                  <span className="text-[#87888A]">Бренд:</span>
+                  <span className="font-semibold text-simona-teal group-hover:text-white transition-colors">
+                    {formatBrandName(brand)}
+                  </span>
+                  <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
+                </button>
+              ))}
+
+            {filters.selectedWidth && (
+              <button
+                onClick={onRemoveWidth}
+                className="shrink-0 inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group cursor-pointer whitespace-nowrap"
+              >
+                <span>{filters.selectedWidth}</span>
+                <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
+              </button>
+            )}
+
+            {filters.selectedColor && (
+              <button
+                onClick={onRemoveColor}
+                className="shrink-0 inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#16191D] border border-[#2B313A] hover:border-rose-500/50 text-xs text-[#D7D9DB] hover:text-white transition group cursor-pointer whitespace-nowrap"
+              >
+                <span>Цвет отделки</span>
+                <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
+              </button>
+            )}
+
+            {Object.entries(filters.selectedFeatures || {}).flatMap(([label, values]) =>
+              values.map((val) => (
+                <button
+                  key={`${label}-${val}`}
+                  onClick={() => onRemoveFeature?.(label, val)}
+                  className="shrink-0 inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-simona-teal/15 border border-simona-teal/40 hover:border-rose-500/50 text-xs text-white transition group cursor-pointer whitespace-nowrap"
+                >
+                  <span className="text-[#87888A]">{label}:</span>
+                  <span className="font-semibold">{val}</span>
+                  <SimonaIconClose className="w-3 h-3 text-[#87888A] group-hover:text-rose-400 transition-colors" />
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
 
       {/* VARIANT 2: Горизонтальные быстрые чипы характеристик над каталогом */}
       {activeVariant === 'top_chips' && categoryFacets.length > 0 && (

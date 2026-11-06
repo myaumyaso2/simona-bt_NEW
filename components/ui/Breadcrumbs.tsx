@@ -54,7 +54,7 @@ export function Breadcrumbs({ items, rightContent, className = '', skipJsonLd = 
                   )}
                   {isLast || !item.url ? (
                     <span
-                      className="text-[#D7D9DB] font-medium truncate max-w-[200px] sm:max-w-xs md:max-w-md lg:max-w-lg"
+                      className="text-[#D7D9DB] font-medium shrink-0 whitespace-nowrap"
                       title={item.name}
                     >
                       {item.name}
@@ -62,7 +62,7 @@ export function Breadcrumbs({ items, rightContent, className = '', skipJsonLd = 
                   ) : (
                     <Link
                       href={item.url}
-                      className="hover:text-white transition-colors shrink-0"
+                      className="hover:text-white transition-colors shrink-0 whitespace-nowrap"
                     >
                       {item.name}
                     </Link>
