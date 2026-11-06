@@ -11,6 +11,7 @@ import {
   SimonaIconClock,
   SimonaIconChevronDown,
   SimonaIconClose,
+  SimonaIconInfo,
 } from '@/components/brand/SimonaIcons';
 import { CategoryFacet, groupCategoryFacets } from '@/lib/productFeatures';
 import { useStore } from '@/components/providers/StoreContext';
@@ -83,6 +84,7 @@ export function CatalogSidebar({
   const [promoOpen, setPromoOpen] = useState(true);
   const [promoSearch, setPromoSearch] = useState('');
   const [hoveredPromo, setHoveredPromo] = useState<{ promo: ManufacturerPromo; rect: DOMRect } | null>(null);
+  const [mobilePromoInfo, setMobilePromoInfo] = useState<ManufacturerPromo | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const [brandSearch, setBrandSearch] = useState('');
@@ -558,6 +560,11 @@ export function CatalogSidebar({
                           key={promo.id}
                           onClick={() => togglePromo(promo.slug)}
                           onMouseEnter={(e) => {
+                            if (typeof window !== 'undefined') {
+                              if (window.innerWidth < 1024 || !window.matchMedia('(hover: hover)').matches) {
+                                return;
+                              }
+                            }
                             if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
                             const rect = e.currentTarget.getBoundingClientRect();
                             hoverTimeoutRef.current = setTimeout(() => {
@@ -592,9 +599,23 @@ export function CatalogSidebar({
                               {promoDisplayName}
                             </span>
                           </div>
-                          <span className="text-[11px] text-[#87888A] font-mono shrink-0 pt-0.5">
-                            ({count})
-                          </span>
+                          <div className="flex items-center gap-1.5 shrink-0 pt-0.5">
+                            <span className="text-[11px] text-[#87888A] font-mono">
+                              ({count})
+                            </span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setMobilePromoInfo(promo);
+                              }}
+                              className="lg:hidden p-0.5 text-[#87888A] hover:text-simona-wine-light transition-colors"
+                              title="Условия акции"
+                              aria-label={`Условия акции ${promo.title}`}
+                            >
+                              <SimonaIconInfo className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </label>
                       );
                     })}
@@ -914,43 +935,128 @@ export function CatalogSidebar({
         </div>
       )}
 
-      {/* Floating Hover Card with Brief Promo Terms (Rendered via Portal with Variant 2 Halo) */}
-      {mounted && hoveredPromo && createPortal(
-        <div
-          style={{
-            position: 'fixed',
-            top: `${Math.min(window.innerHeight - 260, Math.max(16, hoveredPromo.rect.top - 20))}px`,
-            left: `${hoveredPromo.rect.right + 12}px`,
-            width: '320px',
-          }}
-          className="z-[9999] pointer-events-none animate-in fade-in zoom-in-95 duration-150"
-        >
-          {/* Soft Diffuse Shadow Halo (мягкий градиентный спад тени в 0 без жесткой границы плашки) */}
-          <div className="absolute inset-0 rounded-2xl pointer-events-none -z-10 shadow-[0_0_50px_25px_rgba(0,0,0,0.85),0_20px_60px_10px_rgba(0,0,0,0.95)]" />
+      {/* 1. Desktop Floating Hover Card with Collision Detection & Flip (Rendered only on >= 1024px with mouse) */}
+      {mounted && hoveredPromo && typeof window !== 'undefined' && window.innerWidth >= 1024 && createPortal(
+        (() => {
+          const cardWidth = 320;
+          const cardHeight = 240;
+          const gap = 12;
+          const padding = 16;
 
-          {/* Popover Card Content */}
-          <div className="relative bg-[#16191D]/95 backdrop-blur-xl border border-simona-wine/60 rounded-2xl p-4 shadow-2xl shadow-black/80">
-            <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-[#2B313A]">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-simona-wine-light font-mono">
-                {hoveredPromo.promo.brand}
-              </span>
-              <span className="text-[10px] text-[#87888A] font-mono flex items-center gap-1">
-                <SimonaIconClock className="w-3 h-3 text-simona-wine-light" />
-                {hoveredPromo.promo.endDate ? `до ${hoveredPromo.promo.endDate}` : 'Бессрочно'}
-              </span>
+          // Check available space on the right of the sidebar
+          const spaceRight = window.innerWidth - hoveredPromo.rect.right;
+          let calculatedLeft: number;
+
+          if (spaceRight >= cardWidth + gap + padding) {
+            // Fits cleanly to the right
+            calculatedLeft = hoveredPromo.rect.right + gap;
+          } else {
+            // Check space on the left of the sidebar
+            const spaceLeft = hoveredPromo.rect.left;
+            if (spaceLeft >= cardWidth + gap + padding) {
+              calculatedLeft = hoveredPromo.rect.left - cardWidth - gap;
+            } else {
+              // Clamp to right edge of viewport with safe padding
+              calculatedLeft = Math.max(padding, window.innerWidth - cardWidth - padding);
+            }
+          }
+
+          const calculatedTop = Math.min(
+            window.innerHeight - cardHeight - padding,
+            Math.max(padding, hoveredPromo.rect.top - 20)
+          );
+
+          return (
+            <div
+              style={{
+                position: 'fixed',
+                top: `${calculatedTop}px`,
+                left: `${calculatedLeft}px`,
+                width: `${cardWidth}px`,
+              }}
+              className="z-[9999] pointer-events-none animate-in fade-in zoom-in-95 duration-150"
+            >
+              {/* Soft Diffuse Shadow Halo (мягкий градиентный спад тени в 0 без жесткой границы плашки) */}
+              <div className="absolute inset-0 rounded-2xl pointer-events-none -z-10 shadow-[0_0_50px_25px_rgba(0,0,0,0.85),0_20px_60px_10px_rgba(0,0,0,0.95)]" />
+
+              {/* Popover Card Content */}
+              <div className="relative bg-[#16191D]/95 backdrop-blur-xl border border-simona-wine/60 rounded-2xl p-4 shadow-2xl shadow-black/80">
+                <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-[#2B313A]">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-simona-wine-light font-mono">
+                    {hoveredPromo.promo.brand}
+                  </span>
+                  <span className="text-[10px] text-[#87888A] font-mono flex items-center gap-1">
+                    <SimonaIconClock className="w-3 h-3 text-simona-wine-light" />
+                    {hoveredPromo.promo.endDate ? `до ${hoveredPromo.promo.endDate}` : 'Бессрочно'}
+                  </span>
+                </div>
+
+                <h5 className="text-xs font-montserrat font-bold text-white mb-2 leading-snug">
+                  {hoveredPromo.promo.title}
+                </h5>
+
+                <p className="text-[11px] text-[#D7D9DB] leading-relaxed line-clamp-4 mb-3">
+                  {hoveredPromo.promo.shortDescription}
+                </p>
+
+                <div className="text-[10px] text-simona-wine-light font-medium flex items-center gap-1 bg-simona-wine/10 px-2 py-1 rounded-md border border-simona-wine/20">
+                  <span>● Нажмите чекбокс, чтобы показать приборы акции</span>
+                </div>
+              </div>
+            </div>
+          );
+        })(),
+        document.body
+      )}
+
+      {/* 2. Mobile Promo Info Bottom Sheet / Modal (Opened via (i) icon) */}
+      {mounted && mobilePromoInfo && createPortal(
+        <div className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center p-0 sm:p-4">
+          {/* Backdrop */}
+          <div
+            onClick={() => setMobilePromoInfo(null)}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+          />
+
+          {/* Modal Sheet Content */}
+          <div className="relative w-full sm:max-w-md bg-[#16191D] border-t sm:border border-[#2B313A] sm:rounded-2xl rounded-t-3xl p-5 shadow-2xl z-10 max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom-8 duration-200">
+            {/* Header */}
+            <div className="flex items-center justify-between gap-2 mb-3 pb-3 border-b border-[#2B313A]">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-simona-wine-light font-mono px-2 py-0.5 rounded-md bg-simona-wine/15 border border-simona-wine/30">
+                  {mobilePromoInfo.brand}
+                </span>
+                <span className="text-xs text-[#87888A] font-mono flex items-center gap-1">
+                  <SimonaIconClock className="w-3.5 h-3.5 text-simona-wine-light" />
+                  {mobilePromoInfo.endDate ? `до ${mobilePromoInfo.endDate}` : 'Бессрочно'}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setMobilePromoInfo(null)}
+                className="w-8 h-8 rounded-xl bg-[#1E2228] border border-[#2B313A] text-[#87888A] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                aria-label="Закрыть"
+              >
+                <SimonaIconClose className="w-4 h-4" />
+              </button>
             </div>
 
-            <h5 className="text-xs font-montserrat font-bold text-white mb-2 leading-snug">
-              {hoveredPromo.promo.title}
-            </h5>
+            {/* Title */}
+            <h4 className="text-sm font-montserrat font-bold text-white mb-2 leading-snug">
+              {mobilePromoInfo.title}
+            </h4>
 
-            <p className="text-[11px] text-[#D7D9DB] leading-relaxed line-clamp-4 mb-3">
-              {hoveredPromo.promo.shortDescription}
+            {/* Description */}
+            <p className="text-xs text-[#D7D9DB] leading-relaxed mb-4">
+              {mobilePromoInfo.shortDescription}
             </p>
 
-            <div className="text-[10px] text-simona-wine-light font-medium flex items-center gap-1 bg-simona-wine/10 px-2 py-1 rounded-md border border-simona-wine/20">
-              <span>● Нажмите чекбокс, чтобы показать приборы акции</span>
-            </div>
+            {mobilePromoInfo.fullDescription && mobilePromoInfo.fullDescription !== mobilePromoInfo.shortDescription && (
+              <div className="text-xs text-[#87888A] leading-relaxed pt-2 border-t border-[#2B313A]/60">
+                {mobilePromoInfo.fullDescription}
+              </div>
+            )}
           </div>
         </div>,
         document.body
